@@ -2,4 +2,5 @@
 - Vật lý địa cầu Project
 
 # Run
-`meteor`
+- `cd app`
+- `meteor`
