@@ -9,12 +9,12 @@ import '../../ui/pages/not-found/not-found.js';
 FlowRouter.route('/', {
   name: 'App.home',
   action() {
-    this.render('App_body', 'home');
+    this.render('BodyTemplate', 'home');
   },
 });
 
 FlowRouter.route('*', {
   action() {
-    this.render('App_body', 'App_notFound');
+    this.render('BodyTemplate', 'App_notFound');
   },
 });

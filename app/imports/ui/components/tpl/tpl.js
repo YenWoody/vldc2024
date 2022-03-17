@@ -13,5 +13,5 @@ Template.tpl.helpers({
 });
 
 Template.tpl.events({
-    
+
 });
