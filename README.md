@@ -3,4 +3,5 @@
 
 # Run
 - `cd app`
+- `meteor npm i`
 - `meteor`
