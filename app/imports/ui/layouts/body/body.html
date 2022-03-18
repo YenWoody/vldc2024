@@ -1,3 +1,33 @@
 <template name="BodyTemplate">
-  {{> yield}}
+    <div class="wrapper">
+        <section class="section section--header">
+            {{> nav}}
+        </section>
+        <section class="section section--content">
+            <div style="background: #F9F4EE;">
+                <!--begin Section -->
+                <section class="section section--white pb-0">
+                    <div class="content content--fluid mx-3">
+                        <div class="wrapper-top mt-5">
+                            <div class="row">
+                                <div class="col-lg-6 col-xl-4 col-md-6 text-center">
+                                    <div class="card border-0 card-shadow">
+                                        <div class="card-body">
+                                            <div class="card-container rounded-lg">
+                                                <div class="card-title d-flex align-items-center flex-wrap">
+                                                    <h5 class="font-weight-bold flex-grow-1 pl-0 text-left mr-1">Demo 1</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            {{> yield}}
+        </section>
+    </div>
+    {{> footer}}
 </template>
