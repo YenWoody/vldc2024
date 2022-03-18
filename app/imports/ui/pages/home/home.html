@@ -1,13 +1,12 @@
 <template name="home">
-    <div class="container">
-        <div class="row">
-            <div class="col-8">
+    <div class="container--fluid">
+        <div class="d-grid gap-3" style="grid-template-columns: 2fr 1fr;">
+            <div class="bg-light border rounded-3 map-block">
                 {{> map}}
             </div>
-            <div class="col-4">
+            <div class="bg-light border rounded-3">
                 {{> filter}}
             </div>
         </div>
     </div>
-
 </template>
