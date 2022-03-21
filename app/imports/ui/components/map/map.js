@@ -145,7 +145,587 @@ Template.map.onRendered(() => {
                         },
 
                         "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "serial_dat",
+                        "label": "serial_dat",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "q330_port",
+                        "label": "q330_port",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "start_date",
+                        "label": "start_date",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "end_date",
+                        "label": "end_date",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "local_q330",
+                        "label": "local_q330",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "wan_ip",
+                        "label": "wanp_ip",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "account",
+                        "label": "account",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "passwd",
+                        "label": "passwd",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "sensor_1",
+                        "label": "sensor_1",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "date",
+                        "label": "date",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "serial1",
+                        "label": "serial1",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "sensor_2",
+                        "label": "sensor_2",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "serial2",
+                        "label": "serial2",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "baler",
+                        "label": "baler",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "serial3",
+                        "label": "serial3",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "baler_loca",
+                        "label": "baler_loca",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "baler_port",
+                        "label": "baler_port",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "adr",
+                        "label": "adr",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "monitor_1",
+                        "label": "monitor_1",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "number",
+                        "label": "number",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "monitor_2",
+                        "label": "monitor_2",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "number1",
+                        "label": "number1",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
                     }
+                ]
+            }]
+        }
+
+        const popupTpl2 = {
+            "title": "Thong_tin_co_cau_chan_tieu",
+            "content": [{
+                "type": "fields",
+                "fieldInfos": [
+                    {
+                        "fieldName": "year",
+                        "label": "year",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "month",
+                        "label": "month",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "day",
+                        "label": "day",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "hour",
+                        "label": "hour",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "minute",
+                        "label": "minute",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "second",
+                        "label": "second",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "depth",
+                        "label": "depth",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "mw",
+                        "label": "mw",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "strike_1",
+                        "label": "strike_1",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "dip_1",
+                        "label": "dip_1",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "rake_1",
+                        "label": "rake_1",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "strike_2",
+                        "label": "strike_2",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "dip_2",
+                        "label": "dip_2",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "rake_2",
+                        "label": "rake_2",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "p_axis",
+                        "label": "p_axis",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "t_axis",
+                        "label": "t_axis",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "descriptio",
+                        "label": "descriptio",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    }
+                ]
+            }]
+        }
+
+        const popupTpl3 = {
+            "title": "Event_vldc",
+            "content": [{
+                "type": "fields",
+                "fieldInfos": [
+                    {
+                        "fieldName": "year",
+                        "label": "year",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "month",
+                        "label": "month",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "day",
+                        "label": "day",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "hour",
+                        "label": "hour",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "minute",
+                        "label": "minute",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "second",
+                        "label": "second",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "depth",
+                        "label": "depth",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "ml",
+                        "label": "ml",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "md__vn_",
+                        "label": "md__vn_",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "ms",
+                        "label": "ms",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "mw",
+                        "label": "mw",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
                 ]
             }]
         }
