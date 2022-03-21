@@ -78,15 +78,88 @@ Template.map.onRendered(() => {
         });
         // end init view
 
+        // Define popup for Parks and Open Spaces
+        const popupTpl = {
+            "title": "Station",
+            "content": [{
+                "type": "fields",
+                "fieldInfos": [
+                    {
+                        "fieldName": "name",
+                        "label": "Name",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "network",
+                        "label": "network",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "station",
+                        "label": "station",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "height",
+                        "label": "height",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": null,
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "dataloger",
+                        "label": "dataloger",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    },
+                    {
+                        "fieldName": "serial",
+                        "label": "serial",
+                        "isEditable": true,
+                        "tooltip": "",
+                        "visible": true,
+                        "format": {
+                            "places": 2,
+                            "digitSeparator": true
+                        },
+
+                        "stringFieldOption": "text-box"
+                    }
+                ]
+            }]
+        }
+
         // Start add Layer
         const poi = new FeatureLayer({
             // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services//vldc/vldc_many/MapServer',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services//vldc/station/FeatureServer/0',
             id: 'poi',
             visible: true,
             labelsVisible: false,
-            popupEnabled: true
-
+            popupEnabled: true,
+            outFields: ['*'],
+            popupTemplate: popupTpl
         });
         view.when(function () {
             map.add(poi);
