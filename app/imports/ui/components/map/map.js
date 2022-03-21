@@ -20,6 +20,7 @@ Template.map.onRendered(() => {
         'esri/Basemap',
         'esri/layers/TileLayer',
         'esri/layers/FeatureLayer',
+        'esri/layers/MapImageLayer',
         'esri/widgets/Legend',
         'esri/widgets/Expand',
     ]).then(([
@@ -29,6 +30,7 @@ Template.map.onRendered(() => {
            Basemap,
            TileLayer,
            FeatureLayer,
+           MapImageLayer,
            Legend,
            Expand,
        ]) => {
@@ -75,6 +77,40 @@ Template.map.onRendered(() => {
             },
         });
         // end init view
+
+        // Start add Layer
+        const poi = new FeatureLayer({
+            // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services//vldc/vldc_many/MapServer',
+            id: 'poi',
+            visible: true,
+            labelsVisible: false,
+            popupEnabled: true
+
+        });
+        view.when(function () {
+            map.add(poi);
+        });
+        // End add Layer
+
+        // Start add Legend
+        view.ui.add(new Legend({ view: view }), "bottom-left");
+
+        // End Legend
+
+        view.on("click", (event) => {
+            console.log(event)
+            // Get the coordinates of the click on the view
+            // around the decimals to 3 decimals
+            const lat = Math.round(event.mapPoint.latitude * 1000) / 1000;
+            const lon = Math.round(event.mapPoint.longitude * 1000) / 1000;
+
+            view.popup.open({
+                // Set the popup's title to the coordinates of the clicked location
+                title: "Reverse geocode: [" + lon + ", " + lat + "]",
+                location: event.mapPoint // Set the location of the popup to the clicked location
+            });
+        });
     }).catch(err => {
         // handle any errors
         console.error(err);
