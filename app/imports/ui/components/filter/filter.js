@@ -5,6 +5,7 @@ import wNumb from 'wnumb';
 import 'nouislider/dist/nouislider.css';
 // Litepicker
 import Litepicker from 'litepicker';
+import * as mobilefriendly from 'litepicker/dist/plugins/mobilefriendly';
 import 'litepicker/dist/css/litepicker.css';
 
 Template.filter.onCreated(() => {
@@ -15,14 +16,14 @@ Template.filter.onRendered(() => {
     const magnitudeSlider = document.getElementById('magnitude-slider');
     const depthSlider = document.getElementById('depth-slider');
     noUiSlider.create(magnitudeSlider, {
-        start: [20, 80],
+        start: [2, 7],
         connect: true,
         tooltips: true,
         step: 1,
         behaviour: 'tap-drag',
         range: {
             'min': 0,
-            'max': 100
+            'max': 10
         },
         format: wNumb({
             decimals: 0,
@@ -44,14 +45,35 @@ Template.filter.onRendered(() => {
         })
     });
 
+    // const datePicker = new Litepicker({
+    //     element: document.getElementById('start-date'),
+    //     elementEnd: document.getElementById('end-date'),
+    //     // singleMode: false,
+    //     // inlineMode: true,
+    //     // disallowLockDaysInRange: true,
+    //     singleMode: false,
+    //     allowRepick: true,
+    // });
+    const now = new Date();
+    const demoCfg = {
+
+    }
+
     const datePicker = new Litepicker({
-        element: document.getElementById('start-date'),
-        elementEnd: document.getElementById('end-date'),
-        // singleMode: false,
-        // inlineMode: true,
-        // disallowLockDaysInRange: true,
+        numberOfColumns: 2,
+        numberOfMonths: 2,
+        element: document.getElementById('index-demo-lp'),
         singleMode: false,
-        allowRepick: true,
+        inlineMode: true,
+        plugins: ['mobilefriendly'],
+        mobilefriendly: {
+            breakpoint: 480,
+        },
+        setup: function (picker) {
+            picker.on('selected', function (date1, date2) {
+                document.getElementById('index-demo-selection').innerHTML = date1.format('D MMMM YYYY') + ' - ' + date2.format('D MMMM YYYY');
+            })
+        }
     });
 });
 
