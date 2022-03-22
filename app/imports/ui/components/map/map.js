@@ -746,18 +746,18 @@ Template.map.onRendered(() => {
             listMode: 'show'
         });
 
-        const focusBridgeLayer  = new FeatureLayer({
-            // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/1',
-            id: 'poi',
-            title: 'Cầu chấn tiêu',
-            visible: true,
-            labelsVisible: false,
-            popupEnabled: true,
-            outFields: ['*'],
-            popupTemplate: popupTpl2,
-            listMode: 'show'
-        });
+        // const focusBridgeLayer  = new FeatureLayer({
+        //     // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
+        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/1',
+        //     id: 'poi',
+        //     title: 'Cầu chấn tiêu',
+        //     visible: true,
+        //     labelsVisible: false,
+        //     popupEnabled: true,
+        //     outFields: ['*'],
+        //     popupTemplate: popupTpl2,
+        //     listMode: 'show'
+        // });
 
         const eventsLayer  = new FeatureLayer({
             // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
@@ -771,8 +771,9 @@ Template.map.onRendered(() => {
             popupTemplate: popupTpl3,
             listMode: 'show'
         });
+
         view.when(function () {
-            map.addMany([eventsLayer, focusBridgeLayer, stationLayer]);
+            map.addMany([eventsLayer, stationLayer]);
         });
         // End add Layer
 
