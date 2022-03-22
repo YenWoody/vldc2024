@@ -54,15 +54,11 @@ Template.filter.onRendered(() => {
     //     singleMode: false,
     //     allowRepick: true,
     // });
-    const now = new Date();
-    const demoCfg = {
-
-    }
 
     const datePicker = new Litepicker({
         numberOfColumns: 2,
         numberOfMonths: 2,
-        element: document.getElementById('index-demo-lp'),
+        element: document.getElementById('datepicker-selection'),
         singleMode: false,
         inlineMode: true,
         plugins: ['mobilefriendly'],
@@ -71,7 +67,7 @@ Template.filter.onRendered(() => {
         },
         setup: function (picker) {
             picker.on('selected', function (date1, date2) {
-                document.getElementById('index-demo-selection').innerHTML = date1.format('D MMMM YYYY') + ' - ' + date2.format('D MMMM YYYY');
+                document.getElementById('datepicker-selection-result').innerHTML = date1.format('DD/MM/YYYY') + ' - ' + date2.format('DD/MM/YYYY');
             })
         }
     });

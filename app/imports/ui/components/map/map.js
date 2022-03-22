@@ -21,18 +21,20 @@ Template.map.onRendered(() => {
         'esri/layers/TileLayer',
         'esri/layers/FeatureLayer',
         'esri/layers/MapImageLayer',
+        "esri/layers/GroupLayer",
         'esri/widgets/Legend',
         'esri/widgets/Expand',
     ]).then(([
-           Map,
-           MapView,
-           VectorTileLayer,
-           Basemap,
-           TileLayer,
-           FeatureLayer,
-           MapImageLayer,
-           Legend,
-           Expand,
+        Map,
+        MapView,
+        VectorTileLayer,
+        Basemap,
+        TileLayer,
+        FeatureLayer,
+        MapImageLayer,
+        GroupLayer,
+        Legend,
+        Expand,
        ]) => {
         /**
          * init basemap
@@ -79,7 +81,7 @@ Template.map.onRendered(() => {
         // end init view
 
         // Define popup for Parks and Open Spaces
-        const popupTpl = {
+        const popupTpl1 = {
             "title": "Station",
             "content": [{
                 "type": "fields",
@@ -731,18 +733,46 @@ Template.map.onRendered(() => {
         }
 
         // Start add Layer
-        const poi = new FeatureLayer({
+        const stationLayer = new FeatureLayer({
             // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services//vldc/station/FeatureServer/0',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/0',
             id: 'poi',
+            title: 'Trạm',
             visible: true,
             labelsVisible: false,
             popupEnabled: true,
             outFields: ['*'],
-            popupTemplate: popupTpl
+            popupTemplate: popupTpl1,
+            listMode: 'show'
+        });
+
+        const focusBridgeLayer  = new FeatureLayer({
+            // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/1',
+            id: 'poi',
+            title: 'Cầu chấn tiêu',
+            visible: true,
+            labelsVisible: false,
+            popupEnabled: true,
+            outFields: ['*'],
+            popupTemplate: popupTpl2,
+            listMode: 'show'
+        });
+
+        const eventsLayer  = new FeatureLayer({
+            // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/2',
+            id: 'poi',
+            title: 'Events',
+            visible: true,
+            labelsVisible: false,
+            popupEnabled: true,
+            outFields: ['*'],
+            popupTemplate: popupTpl3,
+            listMode: 'show'
         });
         view.when(function () {
-            map.add(poi);
+            map.addMany([eventsLayer, focusBridgeLayer, stationLayer]);
         });
         // End add Layer
 
@@ -752,18 +782,52 @@ Template.map.onRendered(() => {
         // End Legend
 
         view.on("click", (event) => {
-            console.log(event)
-            // Get the coordinates of the click on the view
-            // around the decimals to 3 decimals
-            const lat = Math.round(event.mapPoint.latitude * 1000) / 1000;
-            const lon = Math.round(event.mapPoint.longitude * 1000) / 1000;
-
-            view.popup.open({
-                // Set the popup's title to the coordinates of the clicked location
-                title: "Reverse geocode: [" + lon + ", " + lat + "]",
-                location: event.mapPoint // Set the location of the popup to the clicked location
-            });
+            // console.log(event)
+            // // Get the coordinates of the click on the view
+            // // around the decimals to 3 decimals
+            // const lat = Math.round(event.mapPoint.latitude * 1000) / 1000;
+            // const lon = Math.round(event.mapPoint.longitude * 1000) / 1000;
+            //
+            // view.popup.open({
+            //     // Set the popup's title to the coordinates of the clicked location
+            //     title: "Reverse geocode: [" + lon + ", " + lat + "]",
+            //     location: event.mapPoint // Set the location of the popup to the clicked location
+            // });
+            // queryFeatures(event);
         });
+
+        let distance = 0.5;
+        let units = "miles";
+        function queryFeatures(screenPoint) {
+            const point = view.toMap(screenPoint);
+            layer
+                .queryFeatures({
+                    geometry: point,
+                    // distance and units will be null if basic query selected
+                    distance: distance,
+                    units: units,
+                    spatialRelationship: "intersects",
+                    returnGeometry: false,
+                    returnQueryGeometry: true,
+                    outFields: ["*"]
+                })
+                .then((featureSet) => {
+                    console.log('featureSet: ', featureSet)
+                    // set graphic location to mouse pointer and add to mapview
+                    // pointGraphic.geometry = point;
+                    // view.graphics.add(pointGraphic);
+                    // // open popup of query result
+                    // view.popup.open({
+                    //     location: point,
+                    //     features: featureSet.features,
+                    //     featureMenuOpen: true
+                    // });
+                    // if (featureSet.queryGeometry) {
+                    //     bufferGraphic.geometry = featureSet.queryGeometry;
+                    //     view.graphics.add(bufferGraphic);
+                    // }
+                });
+        }
     }).catch(err => {
         // handle any errors
         console.error(err);
