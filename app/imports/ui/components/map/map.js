@@ -18,6 +18,7 @@ Template.map.onRendered(() => {
         'esri/views/MapView',
         'esri/layers/VectorTileLayer',
         'esri/Basemap',
+        "esri/widgets/BasemapGallery",
         'esri/layers/TileLayer',
         'esri/layers/FeatureLayer',
         'esri/layers/MapImageLayer',
@@ -29,6 +30,7 @@ Template.map.onRendered(() => {
         MapView,
         VectorTileLayer,
         Basemap,
+        BasemapGallery,
         TileLayer,
         FeatureLayer,
         MapImageLayer,
@@ -61,6 +63,8 @@ Template.map.onRendered(() => {
         const map = new Map({
             basemap: weMap,
         });
+
+       
 
         const view = new MapView({
             map: map,
@@ -781,6 +785,15 @@ Template.map.onRendered(() => {
         view.ui.add(new Legend({ view: view }), "bottom-left");
 
         // End Legend
+
+        const basemapGallery = new BasemapGallery({
+            view: view,
+            container: basemapGalleryDiv
+        });
+
+        view.ui.add(basemapGallery, {
+            position: "top-right"
+        });
 
         view.on("click", (event) => {
             // console.log(event)
