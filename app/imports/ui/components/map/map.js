@@ -1,12 +1,12 @@
 import './map.html';
-import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
+import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
 import { Toast } from 'bootstrap/dist/js/bootstrap.esm.min.js'
 
 Template.map.onCreated(() => {
     setDefaultOptions({
-      version: '4.22',
-      css: true,
-      insertCssBefore: 'style',
+        version: '4.22',
+        css: true,
+        insertCssBefore: 'style',
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
 });
@@ -35,14 +35,14 @@ Template.map.onRendered(() => {
         GroupLayer,
         Legend,
         Expand,
-       ]) => {
+    ]) => {
         /**
          * init basemap
          */
-            // admin đảo
+        // admin đảo
         const adminSea = new TileLayer({
-                url: 'https://tiles.arcgis.com/tiles/EaQ3hSM51DBnlwMq/arcgis/rest/services/VietnamLabels/MapServer',
-            });
+            url: 'https://tiles.arcgis.com/tiles/EaQ3hSM51DBnlwMq/arcgis/rest/services/VietnamLabels/MapServer',
+        });
         // WeMap's basemap
         const weMapVectorTile = new VectorTileLayer({
             url: 'https://vector.wemap.asia/styles/osm-bright/style.json',
@@ -85,10 +85,9 @@ Template.map.onRendered(() => {
             "title": "Station",
             "content": [{
                 "type": "fields",
-                "fieldInfos": [
-                    {
+                "fieldInfos": [{
                         "fieldName": "name",
-                        "label": "Name",
+                        "label": "Tên trạm",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -97,7 +96,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "network",
-                        "label": "network",
+                        "label": "Hệ thống",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -106,7 +105,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "station",
-                        "label": "station",
+                        "label": "Trạm",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -115,7 +114,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "height",
-                        "label": "height",
+                        "label": "Chiều cao",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -124,7 +123,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "dataloger",
-                        "label": "dataloger",
+                        "label": "Máy ghi dữ liệu",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -137,7 +136,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial",
-                        "label": "serial",
+                        "label": "Số seri",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -150,7 +149,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial_dat",
-                        "label": "serial_dat",
+                        "label": "Dữ liệu seri",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -159,7 +158,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "q330_port",
-                        "label": "q330_port",
+                        "label": "Cổng Q330",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -172,7 +171,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "start_date",
-                        "label": "start_date",
+                        "label": "Thời gian bắt đầu",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -181,7 +180,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "end_date",
-                        "label": "end_date",
+                        "label": "Thời gian kết thúc",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -190,7 +189,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "local_q330",
-                        "label": "local_q330",
+                        "label": "Địa chỉ Q330",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -208,7 +207,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "account",
-                        "label": "account",
+                        "label": "Tài khoản",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -217,7 +216,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "passwd",
-                        "label": "passwd",
+                        "label": "Mật khẩu",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -226,7 +225,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "sensor_1",
-                        "label": "sensor_1",
+                        "label": "Cảm biến 1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -235,7 +234,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "date",
-                        "label": "date",
+                        "label": "Thời gian",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -244,7 +243,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial1",
-                        "label": "serial1",
+                        "label": "Số seri 1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -253,7 +252,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "sensor_2",
-                        "label": "sensor_2",
+                        "label": "Cảm biến 2",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -262,7 +261,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial2",
-                        "label": "serial2",
+                        "label": "Số seri 2",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -271,7 +270,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "baler",
-                        "label": "baler",
+                        "label": "Baler",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -280,7 +279,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial3",
-                        "label": "serial3",
+                        "label": "Số seri 3",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -289,7 +288,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "baler_loca",
-                        "label": "baler_loca",
+                        "label": "Địa chỉ Baler",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -298,7 +297,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "baler_port",
-                        "label": "baler_port",
+                        "label": "Cổng Baler",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -307,7 +306,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "adr",
-                        "label": "adr",
+                        "label": "Địa chỉ",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -316,7 +315,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "monitor_1",
-                        "label": "monitor_1",
+                        "label": "Màn hình 1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -325,7 +324,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "number",
-                        "label": "number",
+                        "label": "Số",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -334,7 +333,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "monitor_2",
-                        "label": "monitor_2",
+                        "label": "Màn hình 2",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -343,7 +342,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "number1",
-                        "label": "number1",
+                        "label": "Number1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -358,8 +357,7 @@ Template.map.onRendered(() => {
             "title": "Thong_tin_co_cau_chan_tieu",
             "content": [{
                 "type": "fields",
-                "fieldInfos": [
-                    {
+                "fieldInfos": [{
                         "fieldName": "year",
                         "label": "year",
                         "isEditable": true,
@@ -579,157 +577,21 @@ Template.map.onRendered(() => {
                 ]
             }]
         }
-
         const popupTpl3 = {
-            "title": "Event_vldc",
-            "content": [{
-                "type": "fields",
-                "fieldInfos": [
-                    {
-                        "fieldName": "year",
-                        "label": "year",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "month",
-                        "label": "month",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "day",
-                        "label": "day",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "hour",
-                        "label": "hour",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "minute",
-                        "label": "minute",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "second",
-                        "label": "second",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "depth",
-                        "label": "depth",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "ml",
-                        "label": "ml",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "md__vn_",
-                        "label": "md__vn_",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "ms",
-                        "label": "ms",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "mw",
-                        "label": "mw",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                ]
+            title: "Event_vldc",
+            content: "<table><tr> <td>Thời gian</td> <td>{year}-{month}-{day} {hour}:{minute}:{second} (GMT)</td> </tr> <tr> <td>Độ sâu</td> <td> {depth}</td> </tr> <tr> <td>Ml</td> <td> {ml}</td> </tr> <tr> <td>Md_vn</td> <td> {md__vn_}</td> </tr> <tr> <td>Ms</td> <td> {ms}</td> </tr> <tr> <td>Mw</td> <td> {mw}</td> </tr></table>",
+            outFields: ["*"],
+            fieldInfos: [{
+                "fieldName": " * ",
+                "isEditable": true,
+                "tooltip": "",
+                "visible": true,
+                "format": {
+                    "places": 2,
+                    "digitSeparator": true
+                }
             }]
+
         }
 
         // Start add Layer
@@ -759,7 +621,7 @@ Template.map.onRendered(() => {
         //     listMode: 'show'
         // });
 
-        const eventsLayer  = new FeatureLayer({
+        const eventsLayer = new FeatureLayer({
             // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/2',
             id: 'poi',
@@ -772,7 +634,7 @@ Template.map.onRendered(() => {
             listMode: 'show'
         });
 
-        view.when(function () {
+        view.when(function() {
             map.addMany([eventsLayer, stationLayer]);
         });
         // End add Layer
@@ -799,6 +661,7 @@ Template.map.onRendered(() => {
 
         let distance = 0.5;
         let units = "miles";
+
         function queryFeatures(screenPoint) {
             const point = view.toMap(screenPoint);
             layer
@@ -814,19 +677,19 @@ Template.map.onRendered(() => {
                 })
                 .then((featureSet) => {
                     console.log('featureSet: ', featureSet)
-                    // set graphic location to mouse pointer and add to mapview
-                    // pointGraphic.geometry = point;
-                    // view.graphics.add(pointGraphic);
-                    // // open popup of query result
-                    // view.popup.open({
-                    //     location: point,
-                    //     features: featureSet.features,
-                    //     featureMenuOpen: true
-                    // });
-                    // if (featureSet.queryGeometry) {
-                    //     bufferGraphic.geometry = featureSet.queryGeometry;
-                    //     view.graphics.add(bufferGraphic);
-                    // }
+                        // set graphic location to mouse pointer and add to mapview
+                        // pointGraphic.geometry = point;
+                        // view.graphics.add(pointGraphic);
+                        // // open popup of query result
+                        // view.popup.open({
+                        //     location: point,
+                        //     features: featureSet.features,
+                        //     featureMenuOpen: true
+                        // });
+                        // if (featureSet.queryGeometry) {
+                        //     bufferGraphic.geometry = featureSet.queryGeometry;
+                        //     view.graphics.add(bufferGraphic);
+                        // }
                 });
         }
     }).catch(err => {
