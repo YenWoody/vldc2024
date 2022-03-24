@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - '6742:6742'
     environment:
-      PORT: 3000
+      PORT: 6742
       MONGO_URL: "mongodb://pivasia:fjeu3duqe7j6JEMcr@10.101.3.215:27017/PIVASIA"
       ROOT_URL: "https://vldc.fimo.edu.vn"
       METEOR_SETTINGS: '{
