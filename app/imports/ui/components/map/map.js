@@ -64,7 +64,7 @@ Template.map.onRendered(() => {
             basemap: weMap,
         });
 
-       
+
 
         const view = new MapView({
             map: map,
@@ -85,7 +85,7 @@ Template.map.onRendered(() => {
         // end init view
 
         // Define popup for Parks and Open Spaces
-        const popupTpl1 = {
+        const stationPopupTemplate = {
             "title": "Station",
             "content": [{
                 "type": "fields",
@@ -358,233 +358,7 @@ Template.map.onRendered(() => {
             }]
         }
 
-        const popupTpl2 = {
-            "title": "Thong_tin_co_cau_chan_tieu",
-            "content": [{
-                "type": "fields",
-                "fieldInfos": [
-                    {
-                        "fieldName": "year",
-                        "label": "year",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "month",
-                        "label": "month",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "day",
-                        "label": "day",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "hour",
-                        "label": "hour",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "minute",
-                        "label": "minute",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "second",
-                        "label": "second",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "depth",
-                        "label": "depth",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "mw",
-                        "label": "mw",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "strike_1",
-                        "label": "strike_1",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "dip_1",
-                        "label": "dip_1",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "rake_1",
-                        "label": "rake_1",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "strike_2",
-                        "label": "strike_2",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "dip_2",
-                        "label": "dip_2",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "rake_2",
-                        "label": "rake_2",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "p_axis",
-                        "label": "p_axis",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "t_axis",
-                        "label": "t_axis",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "descriptio",
-                        "label": "descriptio",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": null,
-                        "stringFieldOption": "text-box"
-                    }
-                ]
-            }]
-        }
-
-        const popupTpl3 = {
+        const eventPopupTemplate = {
             "title": "Event_vldc",
             "content": [{
                 "type": "fields",
@@ -738,7 +512,6 @@ Template.map.onRendered(() => {
 
         // Start add Layer
         const stationLayer = new FeatureLayer({
-            // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/0',
             id: 'poi',
             title: 'Trạm',
@@ -746,25 +519,11 @@ Template.map.onRendered(() => {
             labelsVisible: false,
             popupEnabled: true,
             outFields: ['*'],
-            popupTemplate: popupTpl1,
+            popupTemplate: stationPopupTemplate,
             listMode: 'show'
         });
 
-        // const focusBridgeLayer  = new FeatureLayer({
-        //     // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
-        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/1',
-        //     id: 'poi',
-        //     title: 'Cầu chấn tiêu',
-        //     visible: true,
-        //     labelsVisible: false,
-        //     popupEnabled: true,
-        //     outFields: ['*'],
-        //     popupTemplate: popupTpl2,
-        //     listMode: 'show'
-        // });
-
         const eventsLayer  = new FeatureLayer({
-            // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/2',
             id: 'poi',
             title: 'Events',
@@ -772,7 +531,7 @@ Template.map.onRendered(() => {
             labelsVisible: false,
             popupEnabled: true,
             outFields: ['*'],
-            popupTemplate: popupTpl3,
+            popupTemplate: eventPopupTemplate,
             listMode: 'show'
         });
 
@@ -786,6 +545,7 @@ Template.map.onRendered(() => {
 
         // End Legend
 
+        // basemap Gallery
         const basemapGallery = new BasemapGallery({
             view: view,
             container: basemapGalleryDiv
@@ -796,52 +556,8 @@ Template.map.onRendered(() => {
         });
 
         view.on("click", (event) => {
-            // console.log(event)
-            // // Get the coordinates of the click on the view
-            // // around the decimals to 3 decimals
-            // const lat = Math.round(event.mapPoint.latitude * 1000) / 1000;
-            // const lon = Math.round(event.mapPoint.longitude * 1000) / 1000;
-            //
-            // view.popup.open({
-            //     // Set the popup's title to the coordinates of the clicked location
-            //     title: "Reverse geocode: [" + lon + ", " + lat + "]",
-            //     location: event.mapPoint // Set the location of the popup to the clicked location
-            // });
-            // queryFeatures(event);
-        });
 
-        let distance = 0.5;
-        let units = "miles";
-        function queryFeatures(screenPoint) {
-            const point = view.toMap(screenPoint);
-            layer
-                .queryFeatures({
-                    geometry: point,
-                    // distance and units will be null if basic query selected
-                    distance: distance,
-                    units: units,
-                    spatialRelationship: "intersects",
-                    returnGeometry: false,
-                    returnQueryGeometry: true,
-                    outFields: ["*"]
-                })
-                .then((featureSet) => {
-                    console.log('featureSet: ', featureSet)
-                    // set graphic location to mouse pointer and add to mapview
-                    // pointGraphic.geometry = point;
-                    // view.graphics.add(pointGraphic);
-                    // // open popup of query result
-                    // view.popup.open({
-                    //     location: point,
-                    //     features: featureSet.features,
-                    //     featureMenuOpen: true
-                    // });
-                    // if (featureSet.queryGeometry) {
-                    //     bufferGraphic.geometry = featureSet.queryGeometry;
-                    //     view.graphics.add(bufferGraphic);
-                    // }
-                });
-        }
+        });
     }).catch(err => {
         // handle any errors
         console.error(err);
