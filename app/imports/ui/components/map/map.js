@@ -1,6 +1,5 @@
 import './map.html';
 import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
-import { Toast } from 'bootstrap/dist/js/bootstrap.esm.min.js'
 
 Template.map.onCreated(() => {
     setDefaultOptions({
