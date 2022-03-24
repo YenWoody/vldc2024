@@ -15,7 +15,7 @@ Template.filter.onCreated(() => {
 Template.filter.onRendered(() => {
     const magnitudeSlider = document.getElementById('magnitude-slider');
     const depthSlider = document.getElementById('depth-slider');
-    noUiSlider.create(magnitudeSlider, {
+   noUiSlider.create(magnitudeSlider, {
         start: [2, 7],
         connect: true,
         tooltips: true,
@@ -29,7 +29,9 @@ Template.filter.onRendered(() => {
             decimals: 0,
         })
     });
-
+    magnitudeSlider.noUiSlider.on('change.one', function () { 
+        console.log(magnitudeSlider.noUiSlider.get());
+    });
     noUiSlider.create(depthSlider, {
         start: [20, 80],
         connect: true,
@@ -71,6 +73,7 @@ Template.filter.onRendered(() => {
             })
         }
     });
+
 });
 
 Template.filter.helpers({

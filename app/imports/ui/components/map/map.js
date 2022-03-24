@@ -1,12 +1,12 @@
 import './map.html';
-import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
+import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
 import { Toast } from 'bootstrap/dist/js/bootstrap.esm.min.js'
 
 Template.map.onCreated(() => {
     setDefaultOptions({
-      version: '4.22',
-      css: true,
-      insertCssBefore: 'style',
+        version: '4.22',
+        css: true,
+        insertCssBefore: 'style',
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
 });
@@ -37,14 +37,14 @@ Template.map.onRendered(() => {
         GroupLayer,
         Legend,
         Expand,
-       ]) => {
+    ]) => {
         /**
          * init basemap
          */
-            // admin đảo
+        // admin đảo
         const adminSea = new TileLayer({
-                url: 'https://tiles.arcgis.com/tiles/EaQ3hSM51DBnlwMq/arcgis/rest/services/VietnamLabels/MapServer',
-            });
+            url: 'https://tiles.arcgis.com/tiles/EaQ3hSM51DBnlwMq/arcgis/rest/services/VietnamLabels/MapServer',
+        });
         // WeMap's basemap
         const weMapVectorTile = new VectorTileLayer({
             url: 'https://vector.wemap.asia/styles/osm-bright/style.json',
@@ -63,8 +63,6 @@ Template.map.onRendered(() => {
         const map = new Map({
             basemap: weMap,
         });
-
-
 
         const view = new MapView({
             map: map,
@@ -92,7 +90,7 @@ Template.map.onRendered(() => {
                 "fieldInfos": [
                     {
                         "fieldName": "name",
-                        "label": "Name",
+                        "label": "Tên trạm",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -101,7 +99,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "network",
-                        "label": "network",
+                        "label": "Network",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -110,7 +108,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "station",
-                        "label": "station",
+                        "label": "Trạm",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -119,7 +117,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "height",
-                        "label": "height",
+                        "label": "Chiều cao",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -128,7 +126,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "dataloger",
-                        "label": "dataloger",
+                        "label": "Dataloger",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -141,7 +139,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial",
-                        "label": "serial",
+                        "label": "Serial",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -154,7 +152,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial_dat",
-                        "label": "serial_dat",
+                        "label": "Serial data",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -162,21 +160,8 @@ Template.map.onRendered(() => {
                         "stringFieldOption": "text-box"
                     },
                     {
-                        "fieldName": "q330_port",
-                        "label": "q330_port",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
                         "fieldName": "start_date",
-                        "label": "start_date",
+                        "label": "Thời gian bắt đầu",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -185,43 +170,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "end_date",
-                        "label": "end_date",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": null,
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "local_q330",
-                        "label": "local_q330",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": null,
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "wan_ip",
-                        "label": "wanp_ip",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": null,
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "account",
-                        "label": "account",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": null,
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "passwd",
-                        "label": "passwd",
+                        "label": "Thời gian kết thúc",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -230,7 +179,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "sensor_1",
-                        "label": "sensor_1",
+                        "label": "Cảm biến 1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -239,7 +188,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "date",
-                        "label": "date",
+                        "label": "Thời gian",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -248,7 +197,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial1",
-                        "label": "serial1",
+                        "label": "Serial 1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -257,7 +206,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "sensor_2",
-                        "label": "sensor_2",
+                        "label": "Sensor 2",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -266,7 +215,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial2",
-                        "label": "serial2",
+                        "label": "Serial 2",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -275,7 +224,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "baler",
-                        "label": "baler",
+                        "label": "Baler",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -284,25 +233,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "serial3",
-                        "label": "serial3",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": null,
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "baler_loca",
-                        "label": "baler_loca",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": null,
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "baler_port",
-                        "label": "baler_port",
+                        "label": "Serial 3",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -311,7 +242,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "adr",
-                        "label": "adr",
+                        "label": "Địa chỉ",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -320,7 +251,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "monitor_1",
-                        "label": "monitor_1",
+                        "label": "Người giám sát 1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -329,7 +260,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "number",
-                        "label": "number",
+                        "label": "Số điện thoại",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -338,7 +269,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "monitor_2",
-                        "label": "monitor_2",
+                        "label": "Người giám sát 2",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -347,7 +278,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "number1",
-                        "label": "number1",
+                        "label": "Số điện thoại",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -535,7 +466,7 @@ Template.map.onRendered(() => {
             listMode: 'show'
         });
 
-        view.when(function () {
+        view.when(function() {
             map.addMany([eventsLayer, stationLayer]);
         });
         // End add Layer
