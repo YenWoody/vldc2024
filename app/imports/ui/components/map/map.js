@@ -1,7 +1,6 @@
 import './map.html';
 import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
 import { Toast } from 'bootstrap/dist/js/bootstrap.esm.min.js'
-
 Template.map.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
@@ -24,6 +23,8 @@ Template.map.onRendered(() => {
         "esri/layers/GroupLayer",
         'esri/widgets/Legend',
         'esri/widgets/Expand',
+        'esri/rest/support/Query',
+        
     ]).then(([
         Map,
         MapView,
@@ -35,6 +36,7 @@ Template.map.onRendered(() => {
         GroupLayer,
         Legend,
         Expand,
+        Query,
     ]) => {
         /**
          * init basemap
@@ -324,7 +326,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "number",
-                        "label": "Số",
+                        "label": "Số điện thoại 1",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -342,7 +344,7 @@ Template.map.onRendered(() => {
                     },
                     {
                         "fieldName": "number1",
-                        "label": "Number1",
+                        "label": "Số điện thoại 2",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -604,6 +606,7 @@ Template.map.onRendered(() => {
             labelsVisible: false,
             popupEnabled: true,
             outFields: ['*'],
+           
             popupTemplate: popupTpl1,
             listMode: 'show'
         });
@@ -620,7 +623,22 @@ Template.map.onRendered(() => {
         //     popupTemplate: popupTpl2,
         //     listMode: 'show'
         // });
-
+   
+           $("#network-slider").on("select2:select", function (e) { 
+            const query = stationLayer.createQuery();
+            query.where = `network LIKE '%${e.params.data.text}%'`;
+            query.outFields = "*";
+            stationLayer.queryFeatures(query)
+              .then(function(response){
+                console.log(response.features.map(f => f.attributes));
+              
+               })
+               .catch(function(err){
+                console.log(err,"lỗi");
+               });
+        
+            });
+            
         const eventsLayer = new FeatureLayer({
             // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/2',
@@ -696,6 +714,29 @@ Template.map.onRendered(() => {
         // handle any errors
         console.error(err);
     });
+
+    // function queryStation(extent) {
+
+    //     const parcelQuery = {
+    //      where: `station LIKE '%VCVB%'`,  // Set by select element
+    //      spatialRelationship: "intersects", // Relationship operation to apply
+    //      outFields: "*", // Attributes to return
+    //      returnGeometry: true
+    //     };
+
+    //     stationLayer.queryFeatures(parcelQuery)
+
+    //     .then((results) => {
+
+    //       console.log("Feature count: " + results.features.length)
+
+    //       displayResults(results);
+
+    //     }).catch((error) => {
+    //       console.log(error.error);
+    //     });
+    // };
+
 });
 
 Template.map.helpers({});
