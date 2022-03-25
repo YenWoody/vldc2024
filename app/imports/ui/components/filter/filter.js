@@ -1,5 +1,5 @@
 import './filter.html';
-// nouislider
+// noUiSlider
 import * as noUiSlider from 'nouislider';
 import wNumb from 'wnumb';
 import 'nouislider/dist/nouislider.css';
