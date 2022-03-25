@@ -1,6 +1,5 @@
 import './map.html';
-import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
-import { Toast } from 'bootstrap/dist/js/bootstrap.esm.min.js'
+import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
 
 Template.map.onCreated(() => {
     setDefaultOptions({
@@ -27,6 +26,7 @@ Template.map.onRendered(() => {
         'esri/widgets/Expand',
         "esri/tasks/support/Query",
     ]).then(([
+<<<<<<< HEAD
         Map,
         MapView,
         VectorTileLayer,
@@ -40,13 +40,27 @@ Template.map.onRendered(() => {
         Expand,
         Query,
     ]) => {
+=======
+                 Map,
+                 MapView,
+                 VectorTileLayer,
+                 Basemap,
+                 BasemapGallery,
+                 TileLayer,
+                 FeatureLayer,
+                 MapImageLayer,
+                 GroupLayer,
+                 Legend,
+                 Expand,
+             ]) => {
+>>>>>>> 7fa658bf10a672b23f2f5ef8d3701924534ff6df
         /**
          * init basemap
          */
-        // admin đảo
+            // admin đảo
         const adminSea = new TileLayer({
-            url: 'https://tiles.arcgis.com/tiles/EaQ3hSM51DBnlwMq/arcgis/rest/services/VietnamLabels/MapServer',
-        });
+                url: 'https://tiles.arcgis.com/tiles/EaQ3hSM51DBnlwMq/arcgis/rest/services/VietnamLabels/MapServer',
+            });
         // WeMap's basemap
         const weMapVectorTile = new VectorTileLayer({
             url: 'https://vector.wemap.asia/styles/osm-bright/style.json',
@@ -292,155 +306,33 @@ Template.map.onRendered(() => {
         }
 
         const eventPopupTemplate = {
-            "title": "Event_vldc",
-            "content": [{
-                "type": "fields",
-                "fieldInfos": [
-                    {
-                        "fieldName": "year",
-                        "label": "year",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "month",
-                        "label": "month",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "day",
-                        "label": "day",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "hour",
-                        "label": "hour",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "minute",
-                        "label": "minute",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "second",
-                        "label": "second",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "depth",
-                        "label": "depth",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "ml",
-                        "label": "ml",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "md__vn_",
-                        "label": "md__vn_",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "ms",
-                        "label": "ms",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                    {
-                        "fieldName": "mw",
-                        "label": "mw",
-                        "isEditable": true,
-                        "tooltip": "",
-                        "visible": true,
-                        "format": {
-                            "places": 2,
-                            "digitSeparator": true
-                        },
-
-                        "stringFieldOption": "text-box"
-                    },
-                ]
-            }]
+            "title": "Event",
+            content: "<table>" +
+                "<tr>" +
+                "<td>Thời gian</td>" +
+                "<td>{year}-{month}-{day} {hour}:{minute}:{second} (GMT)</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Độ sâu</td>" +
+                "<td> {depth}</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Ml</td>" +
+                "<td> {ml}</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Md_vn</td>" +
+                "<td> {md__vn_}</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Ms</td>" +
+                "<td> {ms}</td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td>Mw</td>" +
+                "<td> {mw}</td>" +
+                "</tr>" +
+                "</table>",
         }
 
         // Start add Layer
@@ -456,7 +348,7 @@ Template.map.onRendered(() => {
             listMode: 'show'
         });
 
-        const eventsLayer  = new FeatureLayer({
+        const eventsLayer = new FeatureLayer({
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/2',
             id: 'poi',
             title: 'Events',
@@ -468,6 +360,7 @@ Template.map.onRendered(() => {
             listMode: 'show'
         });
 
+<<<<<<< HEAD
         const query = new Query();
         query.where = "depth=35";
         // query.outSpatialReference = { wkid: 102100 };
@@ -479,12 +372,15 @@ Template.map.onRendered(() => {
         });
 
         view.when(function() {
+=======
+        view.when(function () {
+>>>>>>> 7fa658bf10a672b23f2f5ef8d3701924534ff6df
             map.addMany([eventsLayer, stationLayer]);
         });
         // End add Layer
 
         // Start add Legend
-        view.ui.add(new Legend({ view: view }), "bottom-left");
+        view.ui.add(new Legend({view: view}), "bottom-left");
 
         // End Legend
 
