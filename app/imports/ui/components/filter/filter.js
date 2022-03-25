@@ -18,20 +18,19 @@ Template.filter.onRendered(() => {
     $("#network-slider").select2({
         placeholder: "Chọn",
         maximumSelectionLength: 1,
-      
+
     });
-    // $("#network-slider").on("select2:select", function (e) { 
+    // $("#network-slider").on("select2:select", function (e) {
 
 
- 
-    //     console.log("select2:select", e.params.data.text); 
+    //     console.log("select2:select", e.params.data.text);
     // });
- 
+
     const networkSlider = document.getElementById('network-slider');
 
     const magnitudeSlider = document.getElementById('magnitude-slider');
     const depthSlider = document.getElementById('depth-slider');
-   noUiSlider.create(magnitudeSlider, {
+    noUiSlider.create(magnitudeSlider, {
         start: [2, 7],
         connect: true,
         tooltips: true,
@@ -45,7 +44,7 @@ Template.filter.onRendered(() => {
             decimals: 0,
         })
     });
-    magnitudeSlider.noUiSlider.on('change.one', function () { 
+    magnitudeSlider.noUiSlider.on('change.one', function () {
         console.log(magnitudeSlider.noUiSlider.get());
     });
     noUiSlider.create(depthSlider, {
@@ -63,19 +62,9 @@ Template.filter.onRendered(() => {
         })
     });
 
-    depthSlider.noUiSlider.on('change.one', function () { 
+    depthSlider.noUiSlider.on('change.one', function () {
         console.log(depthSlider.noUiSlider.get());
     });
-
-    // const datePicker = new Litepicker({
-    //     element: document.getElementById('start-date'),
-    //     elementEnd: document.getElementById('end-date'),
-    //     // singleMode: false,
-    //     // inlineMode: true,
-    //     // disallowLockDaysInRange: true,
-    //     singleMode: false,
-    //     allowRepick: true,
-    // });
 
     const datePicker = new Litepicker({
         numberOfColumns: 2,
