@@ -24,8 +24,5 @@ less                     # Leaner CSS language
 
 meteortesting:mocha               # A package for writing and running your meteor app and package tests with mocha
 johanbrook:publication-collector  # Test a Meteor publication by collecting its output
-<<<<<<< HEAD
 session
-=======
 natestrauser:select2
->>>>>>> b28fd279cdaf9f996cb36ce841dee25b8695dae8

@@ -63,13 +63,8 @@ Template.filter.onRendered(() => {
         })
     });
 
-<<<<<<< HEAD
     depthSlider.noUiSlider.on('change.one', function () { 
         Session.set('mydepth', depthSlider.noUiSlider.get());
-=======
-    depthSlider.noUiSlider.on('change.one', function () {
-        console.log(depthSlider.noUiSlider.get());
->>>>>>> b28fd279cdaf9f996cb36ce841dee25b8695dae8
     });
     
 

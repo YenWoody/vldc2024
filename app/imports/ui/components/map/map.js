@@ -1,10 +1,6 @@
 import './map.html';
 import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
-<<<<<<< HEAD
 import { Session } from 'meteor/session';
-=======
-import {Toast} from 'bootstrap/dist/js/bootstrap.esm.min.js'
->>>>>>> b28fd279cdaf9f996cb36ce841dee25b8695dae8
 
 Template.map.onCreated(() => {
     setDefaultOptions({
