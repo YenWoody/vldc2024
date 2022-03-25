@@ -1,6 +1,17 @@
 <template name="filter">
     <div class="blocker-block p-3">
         <div class="row pt-5">
+            <div class="col-4"><span>Network</span></div>
+            <div class="col-8">
+                <select id="network-slider" multiple="multiple">
+                    <option value=""></option>
+                    <option value="vnnw">VN</option>
+                    <option value="rmnw">RM</option>
+                    <option value="blanknw">Trống</option>
+                </select>
+            </div>
+        </div>
+        <div class="row pt-5">
             <div class="col-4"><span>Magnitude</span></div>
             <div class="col-8">
                 <div id="magnitude-slider"></div>
