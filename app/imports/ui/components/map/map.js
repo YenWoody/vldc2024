@@ -1,6 +1,6 @@
 import './map.html';
-import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
-
+import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
+import { Toast } from 'bootstrap/dist/js/bootstrap.esm.min.js'
 Template.map.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
@@ -24,9 +24,9 @@ Template.map.onRendered(() => {
         "esri/layers/GroupLayer",
         'esri/widgets/Legend',
         'esri/widgets/Expand',
-        "esri/tasks/support/Query",
+        'esri/rest/support/Query',
+
     ]).then(([
-<<<<<<< HEAD
         Map,
         MapView,
         VectorTileLayer,
@@ -40,20 +40,6 @@ Template.map.onRendered(() => {
         Expand,
         Query,
     ]) => {
-=======
-                 Map,
-                 MapView,
-                 VectorTileLayer,
-                 Basemap,
-                 BasemapGallery,
-                 TileLayer,
-                 FeatureLayer,
-                 MapImageLayer,
-                 GroupLayer,
-                 Legend,
-                 Expand,
-             ]) => {
->>>>>>> 7fa658bf10a672b23f2f5ef8d3701924534ff6df
         /**
          * init basemap
          */
@@ -348,6 +334,107 @@ Template.map.onRendered(() => {
             listMode: 'show'
         });
 
+        // const focusBridgeLayer  = new FeatureLayer({
+        //     // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
+        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/1',
+        //     id: 'poi',
+        //     title: 'Cầu chấn tiêu',
+        //     visible: true,
+        //     labelsVisible: false,
+        //     popupEnabled: true,
+        //     outFields: ['*'],
+        //     popupTemplate: popupTpl2,
+        //     listMode: 'show'
+        // });
+
+           $("#network-slider").on("select2:select", function (e) {
+            const query = stationLayer.createQuery();
+            query.where = `network LIKE '%${e.params.data.text}%'`;
+            query.outFields = "*";
+            stationLayer.queryFeatures(query)
+              .then(function(response){
+                console.log(response.features.map(f => f.attributes));
+
+               })
+               .catch(function(err){
+                console.log(err,"lỗi");
+               });
+
+            });
+            const defaultSym = {
+                type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+                color: [238, 174, 15, 0.36],
+                outline: {
+                  color: [238, 174, 15, 0.36],
+                  width: 1,
+                }
+              };
+            const renderer = {
+                type: "simple", // autocasts as new SimpleRenderer()
+                symbol: defaultSym,
+                visualVariables: [
+                    {
+                        type: "size",
+                        field: "ms",
+                        legendOptions: {
+                          title: "Mức độ động đất"
+                        },
+                        stops: [
+                          {
+                            value: 1.9,
+                            size: 2,
+                            label: "0-1.9",
+                            color: "black"
+                          },
+                          {
+                            value: 2.9,
+                            size: 4,
+                            label: "2-2.9"
+                          },
+                          {
+                            value: 3.9,
+                            size: 6,
+                            label: "3-3.9"
+                          },
+                          {
+                            value: 4.9,
+                            size: 8,
+                            label: "4-4.9"
+                          },
+                          {
+                            value: 5.9,
+                            size: 12,
+                            label: "5-5.9"
+                          },
+                          {
+                            value: 6.9,
+                            size: 16,
+                            label: "6-6.9"
+                          },
+
+                        ]
+                      },
+                    //   {
+                    //     type: "color",
+                    //     legendOptions: {
+                    //       title: "Mức độ động đất"
+                    //     },
+                    //     field: "ms", // Carbon storage
+                    //     stops: [
+                    //         {
+                    //             value: 0,
+                    //            color: "black"
+                    //           },
+                    //           {
+                    //             value: 6.9,
+                    //             color: [255, 0, 0, 0.5],
+                    //           },
+
+                    //     ]
+                    //     // Values between 0-8000 will be assigned a color proportionally along the ramp
+                    //   }
+                ]
+              };
         const eventsLayer = new FeatureLayer({
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/2',
             id: 'poi',
@@ -357,24 +444,11 @@ Template.map.onRendered(() => {
             popupEnabled: true,
             outFields: ['*'],
             popupTemplate: eventPopupTemplate,
-            listMode: 'show'
-        });
-
-<<<<<<< HEAD
-        const query = new Query();
-        query.where = "depth=35";
-        // query.outSpatialReference = { wkid: 102100 };
-        query.returnGeometry = true;
-        // query.outFields = [ "year" ];
-
-        eventsLayer.queryFeatures(query).then(function(results){
-        console.log(results.features);  // prints the array of features to the console
+            listMode: 'show',
+            renderer: renderer,
         });
 
         view.when(function() {
-=======
-        view.when(function () {
->>>>>>> 7fa658bf10a672b23f2f5ef8d3701924534ff6df
             map.addMany([eventsLayer, stationLayer]);
         });
         // End add Layer
@@ -401,6 +475,29 @@ Template.map.onRendered(() => {
         // handle any errors
         console.error(err);
     });
+
+    // function queryStation(extent) {
+
+    //     const parcelQuery = {
+    //      where: `station LIKE '%VCVB%'`,  // Set by select element
+    //      spatialRelationship: "intersects", // Relationship operation to apply
+    //      outFields: "*", // Attributes to return
+    //      returnGeometry: true
+    //     };
+
+    //     stationLayer.queryFeatures(parcelQuery)
+
+    //     .then((results) => {
+
+    //       console.log("Feature count: " + results.features.length)
+
+    //       displayResults(results);
+
+    //     }).catch((error) => {
+    //       console.log(error.error);
+    //     });
+    // };
+
 });
 
 Template.map.helpers({});

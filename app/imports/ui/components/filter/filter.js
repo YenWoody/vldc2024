@@ -7,12 +7,28 @@ import 'nouislider/dist/nouislider.css';
 import Litepicker from 'litepicker';
 import * as mobilefriendly from 'litepicker/dist/plugins/mobilefriendly';
 import 'litepicker/dist/css/litepicker.css';
+// Select2
+
 
 Template.filter.onCreated(() => {
 
 });
 
 Template.filter.onRendered(() => {
+    $("#network-slider").select2({
+        placeholder: "Chọn",
+        maximumSelectionLength: 1,
+      
+    });
+    // $("#network-slider").on("select2:select", function (e) { 
+
+
+ 
+    //     console.log("select2:select", e.params.data.text); 
+    // });
+ 
+    const networkSlider = document.getElementById('network-slider');
+
     const magnitudeSlider = document.getElementById('magnitude-slider');
     const depthSlider = document.getElementById('depth-slider');
    noUiSlider.create(magnitudeSlider, {
