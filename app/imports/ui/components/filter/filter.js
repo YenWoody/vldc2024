@@ -12,6 +12,7 @@ import 'litepicker/dist/css/litepicker.css';
 
 Template.filter.onCreated(() => {
 
+    
 });
 
 Template.filter.onRendered(() => {
@@ -62,9 +63,19 @@ Template.filter.onRendered(() => {
         })
     });
 
-    depthSlider.noUiSlider.on('change.one', function () {
-        console.log(depthSlider.noUiSlider.get());
+    depthSlider.noUiSlider.on('change.one', function () { 
+        Session.set('mydepth', depthSlider.noUiSlider.get());
     });
+    
+
+    depthSlider.noUiSlider.on('update', function( values, handle ) {
+        if ( handle ) {
+            $("#depth-slider").data("max", values[handle]);
+        } else {
+            $("#depth-slider").data("min", values[handle]);
+        }
+    });
+
 
     const datePicker = new Litepicker({
         numberOfColumns: 2,
@@ -90,5 +101,9 @@ Template.filter.helpers({
 });
 
 Template.filter.events({
+   
+    'tap-drag #depth-slider': function(){
+        Session.set('depth', mydepth ++);
+    }
 
 });

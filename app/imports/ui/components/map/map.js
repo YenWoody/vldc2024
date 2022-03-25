@@ -1,6 +1,6 @@
 import './map.html';
 import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
-import {Toast} from 'bootstrap/dist/js/bootstrap.esm.min.js'
+import { Session } from 'meteor/session';
 
 Template.map.onCreated(() => {
     setDefaultOptions({
@@ -449,6 +449,24 @@ Template.map.onRendered(() => {
             renderer: renderer,
         });
 
+
+        const query = new Query();
+        query.where = `depth >= 1`;
+        // query.outSpatialReference = { wkid: 102100 };
+        query.returnGeometry = true;
+        // query.outFields = [ "year" ];
+
+        eventsLayer.queryFeatures(query).then(function(results){
+        const mydepth = results.features;
+        Session.set('depthslider', mydepth);
+        });
+
+        Tracker.autorun(function () {
+                var sessionData = Session.get('mydepth');
+                console.log(sessionData)
+            });
+        
+        
         view.when(function () {
             map.addMany([eventsLayer, stationLayer]);
         });
@@ -462,10 +480,19 @@ Template.map.onRendered(() => {
         // basemap Gallery
         const basemapGallery = new BasemapGallery({
             view: view,
-            container: basemapGalleryDiv
+            container: document.createElement("div")
+          });
+          
+          // Create an Expand instance and set the content
+          // property to the DOM node of the basemap gallery widget
+          
+        const bgExpand = new Expand({
+            view: view,
+            content: basemapGallery
         });
-
-        view.ui.add(basemapGallery, {
+        
+        // view.ui.add(bgExpand, "top-right");
+        view.ui.add(bgExpand, {
             position: "top-right"
         });
 
@@ -503,4 +530,7 @@ Template.map.onRendered(() => {
 
 Template.map.helpers({});
 
-Template.map.events({});
+Template.map.events({
+
+    
+});
