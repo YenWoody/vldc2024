@@ -25,6 +25,7 @@ Template.map.onRendered(() => {
         "esri/layers/GroupLayer",
         'esri/widgets/Legend',
         'esri/widgets/Expand',
+        "esri/tasks/support/Query",
     ]).then(([
         Map,
         MapView,
@@ -37,6 +38,7 @@ Template.map.onRendered(() => {
         GroupLayer,
         Legend,
         Expand,
+        Query,
     ]) => {
         /**
          * init basemap
@@ -464,6 +466,16 @@ Template.map.onRendered(() => {
             outFields: ['*'],
             popupTemplate: eventPopupTemplate,
             listMode: 'show'
+        });
+
+        const query = new Query();
+        query.where = "depth=35";
+        // query.outSpatialReference = { wkid: 102100 };
+        query.returnGeometry = true;
+        // query.outFields = [ "year" ];
+
+        eventsLayer.queryFeatures(query).then(function(results){
+        console.log(results.features);  // prints the array of features to the console
         });
 
         view.when(function() {

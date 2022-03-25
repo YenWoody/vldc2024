@@ -47,6 +47,10 @@ Template.filter.onRendered(() => {
         })
     });
 
+    depthSlider.noUiSlider.on('change.one', function () { 
+        console.log(depthSlider.noUiSlider.get());
+    });
+
     // const datePicker = new Litepicker({
     //     element: document.getElementById('start-date'),
     //     elementEnd: document.getElementById('end-date'),
