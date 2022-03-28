@@ -8,7 +8,7 @@ Template.map.onCreated(() => {
         css: true,
         insertCssBefore: 'style',
     });
-    loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
+    loadCss('https://js.arcgis.com/4.22/esri/themes/dark/main.css');
 });
 
 Template.map.onRendered(() => {
@@ -18,6 +18,7 @@ Template.map.onRendered(() => {
         'esri/views/MapView',
         'esri/layers/VectorTileLayer',
         'esri/Basemap',
+        "esri/widgets/TimeSlider",
         "esri/widgets/BasemapGallery",
         'esri/layers/TileLayer',
         'esri/layers/FeatureLayer',
@@ -32,6 +33,7 @@ Template.map.onRendered(() => {
                  MapView,
                  VectorTileLayer,
                  Basemap,
+                 TimeSlider,
                  BasemapGallery,
                  TileLayer,
                  FeatureLayer,
@@ -324,7 +326,7 @@ Template.map.onRendered(() => {
 
         // Start add Layer
         const stationLayer = new FeatureLayer({
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/0',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_1/MapServer',
             id: 'poi',
             title: 'Trạm',
             visible: true,
@@ -437,16 +439,24 @@ Template.map.onRendered(() => {
             ]
         };
         const eventsLayer = new FeatureLayer({
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/2',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_date_time/MapServer',
             id: 'poi',
             title: 'Events',
             visible: true,
             labelsVisible: false,
             popupEnabled: true,
             outFields: ['*'],
+            // timeInfo: {
+            //     startField: "time", // name of the date field
+            //     interval: {
+            //         // set time interval to one day
+            //         unit: "days",
+            //         value: 1
+            //     }
+            // },
             popupTemplate: eventPopupTemplate,
             listMode: 'show',
-            renderer: renderer,
+            // renderer: renderer,
         });
 
 
@@ -465,12 +475,71 @@ Template.map.onRendered(() => {
                 var sessionData = Session.get('mydepth');
                 console.log(sessionData)
             });
-        
-        
+
+
+        const timeSlider = new TimeSlider({
+            container: "timeSlider",
+            playRate: 50,
+            stops: {
+                interval: {
+                    value: 1,
+                    unit: "days"
+                }
+            }
+        });
+        view.ui.add(timeSlider, "bottom-right");
+
+        // wait till the layer view is loaded
+        let layerView;
+
+
         view.when(function () {
             map.addMany([eventsLayer, stationLayer]);
+
+            view.whenLayerView(eventsLayer).then(function (lv) {
+                layerView = lv;
+                // start time of the time slider - 13/02/1918
+                const start = new Date(1918, 2, 13);
+                // set time slider's full extent to
+                // 5/25/5019 - until end date of layer's fullTimeExtent
+                timeSlider.fullTimeExtent = {
+                    start: start,
+                    end: eventsLayer.timeInfo.fullTimeExtent.end
+                };
+
+                // We will be showing earthquakes with one day interval
+                // when the app is loaded we will show earthquakes that
+                // happened between 5/25 - 5/26.
+                const end = new Date();
+                // end of current time extent for time slider
+                // showing earthquakes with one day interval
+                end.setDate(end.getDate() + 1);
+
+                // Values property is set so that timeslider
+                // widget show the first day. We are setting
+                // the thumbs positions.
+                timeSlider.values = [start, end];
+            });
+
+            // watch for time slider timeExtent change
+            timeSlider.watch("timeExtent", function () {
+                console.log(timeSlider.timeExtent);
+                eventsLayer.definitionExpression =
+                    "time <= " + timeSlider.timeExtent.end.getTime();
+
+                // now gray out earthquakes that happened before the time slider's current
+                // timeExtent... leaving footprint of earthquakes that already happened
+                layerView.effect = {
+                    filter: {
+                        timeExtent: timeSlider.timeExtent,
+                        geometry: view.extent
+                    },
+                };
+            });
         });
         // End add Layer
+
+
 
         // Start add Legend
         view.ui.add(new Legend({view: view}), "bottom-left");
