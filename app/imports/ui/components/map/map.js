@@ -506,13 +506,7 @@ Template.map.onRendered(() => {
 
         view.when(function () {
             map.addMany([eventsLayer, stationLayer]);
-            view.whenLayerView(stationLayer).then((layerView) => {
-                floodLayerView = layerView;
-                document.getElementById("clearFilter").addEventListener("click", clearFilter);
-               function clearFilter() {
-                    floodLayerView.filter = null;
-                }
-              });
+     
             view.whenLayerView(eventsLayer).then(function (lv) {
                 layerView = lv;
                 // start time of the time slider - 13/02/1918
@@ -564,8 +558,20 @@ Template.map.onRendered(() => {
                         where: `ms >= ${magnitudeMin} and ms <= ${ magnitudeMax}  `,
                     };
                 });
-
+                document.getElementById("clearFilter").addEventListener("click", clearFilter);
+                function clearFilter() {               
+                     depthLayerView.filter = null;
+                     magnitudeLayerview.filter = null;
+                 }
             });
+            view.whenLayerView(stationLayer).then((layerView) => {
+                floodLayerView = layerView;
+                document.getElementById("clearFilter").addEventListener("click", clearFilter);
+               function clearFilter() {
+                    floodLayerView.filter = null;
+                }
+
+              });
         });
         // End add Layer
 
