@@ -1,0 +1,16 @@
+@litepicker-day-width: 1.45vw;
+@litepicker-month-width: calc(@litepicker-day-width * 7);
+
+.litepicker .container__days > div,
+.litepicker .container__days > a {
+  width: @litepicker-day-width !important;
+}
+
+.litepicker .container__months .month-item {
+  width: @litepicker-month-width !important;
+}
+
+.litepicker .container__months.columns-2 {
+  //width: calc((var(--litepicker-month-width) * 2) + 20px);
+  width: calc((@litepicker-month-width * 2) + 20px) !important;
+}

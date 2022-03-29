@@ -1,6 +1,7 @@
 import './map.html';
 import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
-import { Session } from 'meteor/session';
+import {Session} from 'meteor/session';
+
 Template.map.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
@@ -269,7 +270,7 @@ Template.map.onRendered(() => {
         }
 
         // end init basemap
-         // Start add Layer
+        // Start add Layer
         const stationLayer = new FeatureLayer({
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/0',
             id: 'poi',
@@ -287,7 +288,6 @@ Template.map.onRendered(() => {
          */
         const map = new Map({
             basemap: weMap,
-            layers: [stationLayer],
         });
         let floodLayerView;
         const view = new MapView({
@@ -307,44 +307,23 @@ Template.map.onRendered(() => {
             },
         });
         // end init view
- // Filter by Attribute
-        const seasonsNodes = document.querySelectorAll(`.season-item`);
-        const seasonsElement = document.getElementById("seasons-filter");
+        // // Filter by Attribute
+        // const seasonsNodes = document.querySelectorAll(`.season-item`);
+        // const seasonsElement = document.getElementById("seasons-filter");
+        //
+        // // click event handler for seasons choices
+        // seasonsElement.addEventListener("click", filterBySeason);
+        //
+        // // User clicked on Winter, Spring, Summer or Fall
+        // // set an attribute filter on flood warnings layer view
+        // // to display the warnings issued in that season
+        // function filterBySeason(event) {
+        //     const selectedSeason = event.target.getAttribute("data-season");
+        //     floodLayerView.filter = {
+        //         where: `network LIKE '%${selectedSeason}%'`
+        //     };
+        // }
 
-        // click event handler for seasons choices
-        seasonsElement.addEventListener("click", filterBySeason);
-
-        // User clicked on Winter, Spring, Summer or Fall
-        // set an attribute filter on flood warnings layer view
-        // to display the warnings issued in that season
-        function filterBySeason(event) {
-          const selectedSeason = event.target.getAttribute("data-season");
-          floodLayerView.filter = {
-            where: `network LIKE '%${selectedSeason}%'`
-          };
-        }
-
-        view.whenLayerView(stationLayer).then((layerView) => {
-          // flash flood warnings layer loaded
-          // get a reference to the flood warnings layerview
-          floodLayerView = layerView;
-
-          // set up UI items
-          seasonsElement.style.visibility = "visible";
-          const seasonsExpand = new Expand({
-            view: view,
-            content: seasonsElement,
-            expandIconClass: "esri-icon-review",
-            group: "top-left"
-          });
-          //clear the filters when user closes the expand widget
-          seasonsExpand.watch("expanded", () => {
-            if (!seasonsExpand.expanded) {
-              floodLayerView.filter = null;
-            }
-          });
-          view.ui.add(seasonsExpand, "top-left");
-        }).catch(err => {console.log(err)});
         // End Filter by Attribute
         const eventPopupTemplate = {
             "title": "Event",
@@ -375,9 +354,6 @@ Template.map.onRendered(() => {
                 "</tr>" +
                 "</table>",
         }
-
-
-
 
 
         // const focusBridgeLayer  = new FeatureLayer({
@@ -509,15 +485,15 @@ Template.map.onRendered(() => {
         query.returnGeometry = true;
         // query.outFields = [ "year" ];
 
-        eventsLayer.queryFeatures(query).then(function(results){
-        const mydepth = results.features;
-        Session.set('depthslider', mydepth);
+        eventsLayer.queryFeatures(query).then(function (results) {
+            const mydepth = results.features;
+            Session.set('depthslider', mydepth);
         });
 
         Tracker.autorun(function () {
-                var sessionData = Session.get('mydepth');
-                console.log(sessionData)
-            });
+            var sessionData = Session.get('mydepth');
+            console.log(sessionData)
+        });
 
 
         const timeSlider = new TimeSlider({
@@ -538,6 +514,30 @@ Template.map.onRendered(() => {
 
         view.when(function () {
             map.addMany([eventsLayer, stationLayer]);
+
+            // view.whenLayerView(stationLayer).then((layerView) => {
+            //     // flash flood warnings layer loaded
+            //     // get a reference to the flood warnings layerview
+            //     floodLayerView = layerView;
+            //
+            //     // set up UI items
+            //     seasonsElement.style.visibility = "visible";
+            //     const seasonsExpand = new Expand({
+            //         view: view,
+            //         content: seasonsElement,
+            //         expandIconClass: "esri-icon-review",
+            //         group: "top-left"
+            //     });
+            //     //clear the filters when user closes the expand widget
+            //     seasonsExpand.watch("expanded", () => {
+            //         if (!seasonsExpand.expanded) {
+            //             floodLayerView.filter = null;
+            //         }
+            //     });
+            //     view.ui.add(seasonsExpand, "top-left");
+            // }).catch(err => {
+            //     console.log(err)
+            // });
 
             view.whenLayerView(eventsLayer).then(function (lv) {
                 layerView = lv;
@@ -578,16 +578,16 @@ Template.map.onRendered(() => {
         const basemapGallery = new BasemapGallery({
             view: view,
             container: document.createElement("div")
-          });
-          
-          // Create an Expand instance and set the content
-          // property to the DOM node of the basemap gallery widget
-          
+        });
+
+        // Create an Expand instance and set the content
+        // property to the DOM node of the basemap gallery widget
+
         const bgExpand = new Expand({
             view: view,
             content: basemapGallery
         });
-        
+
         // view.ui.add(bgExpand, "top-right");
         view.ui.add(bgExpand, {
             position: "top-right"
@@ -596,6 +596,8 @@ Template.map.onRendered(() => {
         view.on("click", (event) => {
 
         });
+
+        document.getElementById("infoDiv").style.display = "block";
     }).catch(err => {
         // handle any errors
         console.error(err);
@@ -627,7 +629,4 @@ Template.map.onRendered(() => {
 
 Template.map.helpers({});
 
-Template.map.events({
-
-    
-});
+Template.map.events({});
