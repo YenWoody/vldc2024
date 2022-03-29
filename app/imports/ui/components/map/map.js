@@ -439,21 +439,21 @@ Template.map.onRendered(() => {
             ]
         };
         const eventsLayer = new FeatureLayer({
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_date_time/MapServer',
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
             id: 'poi',
             title: 'Events',
             visible: true,
             labelsVisible: false,
             popupEnabled: true,
             outFields: ['*'],
-            // timeInfo: {
-            //     startField: "time", // name of the date field
-            //     interval: {
-            //         // set time interval to one day
-            //         unit: "days",
-            //         value: 1
-            //     }
-            // },
+            timeInfo: {
+                startField: "time", // name of the date field
+                interval: {
+                    // set time interval to one day
+                    unit: "years",
+                    value: 5
+                }
+            },
             popupTemplate: eventPopupTemplate,
             listMode: 'show',
             // renderer: renderer,
@@ -523,17 +523,9 @@ Template.map.onRendered(() => {
 
             // watch for time slider timeExtent change
             timeSlider.watch("timeExtent", function () {
-                console.log(timeSlider.timeExtent);
-                eventsLayer.definitionExpression =
-                    "time <= " + timeSlider.timeExtent.end.getTime();
-
-                // now gray out earthquakes that happened before the time slider's current
-                // timeExtent... leaving footprint of earthquakes that already happened
-                layerView.effect = {
-                    filter: {
-                        timeExtent: timeSlider.timeExtent,
-                        geometry: view.extent
-                    },
+                layerView.filter = {
+                    where: `time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()}`,
+                    // geometry: view.extent
                 };
             });
         });
