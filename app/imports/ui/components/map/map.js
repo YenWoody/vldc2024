@@ -29,6 +29,7 @@ Template.map.onRendered(() => {
         'esri/widgets/Legend',
         'esri/widgets/Expand',
         'esri/rest/support/Query',
+        'esri/widgets/Slider',
     ]).then(([
                  Map,
                  MapView,
@@ -44,6 +45,7 @@ Template.map.onRendered(() => {
                  Legend,
                  Expand,
                  Query,
+                 Slider,
              ]) => {
         /**
          * init basemap
@@ -495,6 +497,29 @@ Template.map.onRendered(() => {
             console.log(sessionData)
         });
 
+        const depthSlider = new Slider({
+            container: "depthSlider",
+            min: 0,
+            max: 100,
+            values: [ 0, 100 ],
+            step: 1,
+            visibleElements: {
+                rangeLabels: true,
+                labels: true
+              },
+        });
+
+        const magnitudeSlider = new Slider({
+            container: "magnitudeSlider",
+            min: 0,
+            max: 7,
+            values: [ 0, 7 ],
+            step: 1,
+            visibleElements: {
+                rangeLabels: true,
+                labels: true
+              },
+        });
 
         const timeSlider = new TimeSlider({
             container: "timeSlider",
@@ -566,6 +591,30 @@ Template.map.onRendered(() => {
                     // geometry: view.extent
                 };
             });
+
+            view.whenLayerView(eventsLayer).then((layerView) => {
+                // flash flood warnings layer loaded
+                // get a reference to the flood warnings layerview
+                let depthLayerView = layerView;
+                let magnitudeLayerview = layerView;
+
+                depthSlider.on("thumb-drag", function() {
+                    depthMin = depthSlider.values[0];
+                    depthMax = depthSlider.values[1];
+                    depthLayerView.filter = {
+                        where: `depth >= ${depthMin} and depth <= ${depthMax}  `,
+                    };
+                });
+
+                magnitudeSlider.on("thumb-drag", function() {
+                    magnitudeMin = magnitudeSlider.values[0];
+                    magnitudeMax = magnitudeSlider.values[1];
+                    magnitudeLayerview.filter = {
+                        where: `ms >= ${magnitudeMin} and ms <= ${ magnitudeMax}  `,
+                    };
+                });
+
+            });
         });
         // End add Layer
 
@@ -585,17 +634,25 @@ Template.map.onRendered(() => {
 
         const bgExpand = new Expand({
             view: view,
-            content: basemapGallery
+            content: basemapGallery,
+            group: "top-right"
         });
 
         // view.ui.add(bgExpand, "top-right");
-        view.ui.add(bgExpand, {
-            position: "top-right"
-        });
+        // view.ui.add(bgExpand, {
+        //     position: "top-right"
+        // });
 
         view.on("click", (event) => {
 
         });
+
+        const expand = new Expand({
+            view: view,
+            content: document.getElementById("infoDiv"),
+            group: "top-right"
+        });
+        view.ui.add([bgExpand, expand], "top-right");
 
         document.getElementById("infoDiv").style.display = "block";
     }).catch(err => {
