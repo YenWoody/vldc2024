@@ -8,7 +8,7 @@ Template.map.onCreated(() => {
         css: true,
         insertCssBefore: 'style',
     });
-    loadCss('https://js.arcgis.com/4.22/esri/themes/dark/main.css');
+    loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
     loadCss('https://js.arcgis.com/calcite-components/1.0.0-beta.76/calcite.css');
 });
 
@@ -288,6 +288,7 @@ Template.map.onRendered(() => {
          */
         const map = new Map({
             basemap: weMap,
+          
         });
         let floodLayerView;
         const view = new MapView({
@@ -307,22 +308,22 @@ Template.map.onRendered(() => {
             },
         });
         // end init view
-        // // Filter by Attribute
-        // const seasonsNodes = document.querySelectorAll(`.season-item`);
-        // const seasonsElement = document.getElementById("seasons-filter");
-        //
-        // // click event handler for seasons choices
-        // seasonsElement.addEventListener("click", filterBySeason);
-        //
-        // // User clicked on Winter, Spring, Summer or Fall
-        // // set an attribute filter on flood warnings layer view
-        // // to display the warnings issued in that season
-        // function filterBySeason(event) {
-        //     const selectedSeason = event.target.getAttribute("data-season");
-        //     floodLayerView.filter = {
-        //         where: `network LIKE '%${selectedSeason}%'`
-        //     };
-        // }
+        // Filter by Attributes
+        const networkElement = document.getElementById("relationship-select");
+        // click event handler for network choices
+        networkElement.addEventListener("click", filterByNetwork);
+        function filterByNetwork(event) {
+            const selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
+            if (selectedNetWork === "all") {
+                return floodLayerView.filter = null;
+            }
+            else {
+            floodLayerView.filter = {
+                where: `network LIKE '%${selectedNetWork}%'`
+            };
+            }
+        }
+
 
         // End Filter by Attribute
         const eventPopupTemplate = {
@@ -368,21 +369,6 @@ Template.map.onRendered(() => {
         //     popupTemplate: popupTpl2,
         //     listMode: 'show'
         // });
-
-        $("#network-slider").on("select2:select", function (e) {
-            const query = stationLayer.createQuery();
-            query.where = `network LIKE '%${e.params.data.text}%'`;
-            query.outFields = "*";
-            stationLayer.queryFeatures(query)
-                .then(function (response) {
-                    console.log(response.features.map(f => f.attributes));
-
-                })
-                .catch(function (err) {
-                    console.log(err, "lỗi");
-                });
-
-        });
         const defaultSym = {
             type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
             color: [238, 174, 15, 0.36],
@@ -436,25 +422,7 @@ Template.map.onRendered(() => {
 
                     ]
                 },
-                //   {
-                //     type: "color",
-                //     legendOptions: {
-                //       title: "Mức độ động đất"
-                //     },
-                //     field: "ms", // Carbon storage
-                //     stops: [
-                //         {
-                //             value: 0,
-                //            color: "black"
-                //           },
-                //           {
-                //             value: 6.9,
-                //             color: [255, 0, 0, 0.5],
-                //           },
-
-                //     ]
-                //     // Values between 0-8000 will be assigned a color proportionally along the ramp
-                //   }
+               
             ]
         };
         const eventsLayer = new FeatureLayer({
@@ -492,7 +460,6 @@ Template.map.onRendered(() => {
 
         Tracker.autorun(function () {
             var sessionData = Session.get('mydepth');
-            console.log(sessionData)
         });
 
 
@@ -514,31 +481,13 @@ Template.map.onRendered(() => {
 
         view.when(function () {
             map.addMany([eventsLayer, stationLayer]);
-
-            // view.whenLayerView(stationLayer).then((layerView) => {
-            //     // flash flood warnings layer loaded
-            //     // get a reference to the flood warnings layerview
-            //     floodLayerView = layerView;
-            //
-            //     // set up UI items
-            //     seasonsElement.style.visibility = "visible";
-            //     const seasonsExpand = new Expand({
-            //         view: view,
-            //         content: seasonsElement,
-            //         expandIconClass: "esri-icon-review",
-            //         group: "top-left"
-            //     });
-            //     //clear the filters when user closes the expand widget
-            //     seasonsExpand.watch("expanded", () => {
-            //         if (!seasonsExpand.expanded) {
-            //             floodLayerView.filter = null;
-            //         }
-            //     });
-            //     view.ui.add(seasonsExpand, "top-left");
-            // }).catch(err => {
-            //     console.log(err)
-            // });
-
+            view.whenLayerView(stationLayer).then((layerView) => {
+                floodLayerView = layerView;
+                document.getElementById("clearFilter").addEventListener("click", clearFilter);
+               function clearFilter() {
+                    floodLayerView.filter = null;
+                }
+              });
             view.whenLayerView(eventsLayer).then(function (lv) {
                 layerView = lv;
                 // start time of the time slider - 13/02/1918
@@ -557,6 +506,7 @@ Template.map.onRendered(() => {
                 // widget show the first day. We are setting
                 // the thumbs positions.
                 timeSlider.values = [start, end];
+
             });
 
             // watch for time slider timeExtent change
@@ -565,6 +515,7 @@ Template.map.onRendered(() => {
                     where: `time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()}`,
                     // geometry: view.extent
                 };
+               
             });
         });
         // End add Layer
