@@ -1,7 +1,6 @@
 import './map.html';
 import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
 import { Session } from 'meteor/session';
-
 Template.map.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
@@ -9,6 +8,7 @@ Template.map.onCreated(() => {
         insertCssBefore: 'style',
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/dark/main.css');
+    loadCss('https://js.arcgis.com/calcite-components/1.0.0-beta.76/calcite.css');
 });
 
 Template.map.onRendered(() => {
@@ -17,6 +17,7 @@ Template.map.onRendered(() => {
         'esri/Map',
         'esri/views/MapView',
         'esri/layers/VectorTileLayer',
+        'esri/layers/GeoJSONLayer',
         'esri/Basemap',
         "esri/widgets/TimeSlider",
         "esri/widgets/BasemapGallery",
@@ -27,11 +28,11 @@ Template.map.onRendered(() => {
         'esri/widgets/Legend',
         'esri/widgets/Expand',
         'esri/rest/support/Query',
-
     ]).then(([
                  Map,
                  MapView,
                  VectorTileLayer,
+                 GeoJSONLayer,
                  Basemap,
                  TimeSlider,
                  BasemapGallery,
@@ -60,33 +61,6 @@ Template.map.onRendered(() => {
             title: 'WeMap',
             id: 'WeMap',
         });
-        // end init basemap
-
-        /**
-         * init view
-         */
-        const map = new Map({
-            basemap: weMap,
-        });
-
-        const view = new MapView({
-            map: map,
-            zoom: 5,
-            center: [106, 16],
-            container: 'viewDiv',
-            popup: {
-                dockEnabled: true,
-                dockOptions: {
-                    // Ignore the default sizes that trigger responsive docking
-                    breakpoint: false,
-                },
-                visibleElements: {
-                    featureNavigation: false,
-                },
-            },
-        });
-        // end init view
-
         // Define popup for Parks and Open Spaces
         const stationPopupTemplate = {
             "title": "Station",
@@ -294,6 +268,84 @@ Template.map.onRendered(() => {
             }]
         }
 
+        // end init basemap
+         // Start add Layer
+        const stationLayer = new FeatureLayer({
+            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/0',
+            id: 'poi',
+            title: 'Trạm',
+            visible: true,
+            labelsVisible: false,
+            popupEnabled: true,
+            outFields: ['*'],
+            popupTemplate: stationPopupTemplate,
+            listMode: 'show',
+
+        });
+        /**
+         * init view
+         */
+        const map = new Map({
+            basemap: weMap,
+            layers: [stationLayer],
+        });
+        let floodLayerView;
+        const view = new MapView({
+            map: map,
+            zoom: 5,
+            center: [106, 16],
+            container: 'viewDiv',
+            popup: {
+                dockEnabled: true,
+                dockOptions: {
+                    // Ignore the default sizes that trigger responsive docking
+                    breakpoint: false,
+                },
+                visibleElements: {
+                    featureNavigation: false,
+                },
+            },
+        });
+        // end init view
+ // Filter by Attribute
+        const seasonsNodes = document.querySelectorAll(`.season-item`);
+        const seasonsElement = document.getElementById("seasons-filter");
+
+        // click event handler for seasons choices
+        seasonsElement.addEventListener("click", filterBySeason);
+
+        // User clicked on Winter, Spring, Summer or Fall
+        // set an attribute filter on flood warnings layer view
+        // to display the warnings issued in that season
+        function filterBySeason(event) {
+          const selectedSeason = event.target.getAttribute("data-season");
+          floodLayerView.filter = {
+            where: `network LIKE '%${selectedSeason}%'`
+          };
+        }
+
+        view.whenLayerView(stationLayer).then((layerView) => {
+          // flash flood warnings layer loaded
+          // get a reference to the flood warnings layerview
+          floodLayerView = layerView;
+
+          // set up UI items
+          seasonsElement.style.visibility = "visible";
+          const seasonsExpand = new Expand({
+            view: view,
+            content: seasonsElement,
+            expandIconClass: "esri-icon-review",
+            group: "top-left"
+          });
+          //clear the filters when user closes the expand widget
+          seasonsExpand.watch("expanded", () => {
+            if (!seasonsExpand.expanded) {
+              floodLayerView.filter = null;
+            }
+          });
+          view.ui.add(seasonsExpand, "top-left");
+        }).catch(err => {console.log(err)});
+        // End Filter by Attribute
         const eventPopupTemplate = {
             "title": "Event",
             content: "<table>" +
@@ -324,18 +376,9 @@ Template.map.onRendered(() => {
                 "</table>",
         }
 
-        // Start add Layer
-        const stationLayer = new FeatureLayer({
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_1/MapServer',
-            id: 'poi',
-            title: 'Trạm',
-            visible: true,
-            labelsVisible: false,
-            popupEnabled: true,
-            outFields: ['*'],
-            popupTemplate: stationPopupTemplate,
-            listMode: 'show'
-        });
+
+
+
 
         // const focusBridgeLayer  = new FeatureLayer({
         //     // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',

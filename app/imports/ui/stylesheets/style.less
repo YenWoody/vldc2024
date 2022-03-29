@@ -4,7 +4,6 @@
 @import "components/header";
 @import "components/content";
 @import "components/footer";
-
 @litepicker-day-width: 1.45vw;
 @litepicker-month-width: calc(@litepicker-day-width * 7);
 
@@ -20,4 +19,39 @@
 .litepicker .container__months.columns-2 {
     //width: calc((var(--litepicker-month-width) * 2) + 20px);
     width: calc((@litepicker-month-width * 2) + 20px) !important;
+}
+
+#seasons-filter {
+    height: 100%;
+    width: 100%;  
+  }
+
+  .season-item {
+    width: 100%;
+    padding: 8px;
+    text-align: center;
+    vertical-align: baseline;
+    cursor: pointer;
+    height: auto;
+  }
+
+  .season-item:focus {
+    background-color: dimgrey;
+  }
+
+  .season-item:hover {
+    background-color: dimgrey;
+  }
+
+  #titleDiv {
+    padding: 10px;
+  }
+
+  #titleText {
+    font-size: 20pt;
+    font-weight: 60;
+    padding-bottom: 10px;
+  }
+  calcite-radio-button {
+    margin-left: 8px;
 }
