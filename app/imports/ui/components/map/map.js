@@ -512,8 +512,8 @@ Template.map.onRendered(() => {
         const magnitudeSlider = new Slider({
             container: "magnitudeSlider",
             min: 0,
-            max: 7,
-            values: [ 0, 7 ],
+            max: 8,
+            values: [ 0, 8 ],
             step: 1,
             visibleElements: {
                 rangeLabels: true,
