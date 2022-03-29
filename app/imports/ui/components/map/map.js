@@ -456,7 +456,7 @@ Template.map.onRendered(() => {
             },
             popupTemplate: eventPopupTemplate,
             listMode: 'show',
-            // renderer: renderer,
+            renderer: renderer,
         });
 
 
@@ -499,19 +499,14 @@ Template.map.onRendered(() => {
             view.whenLayerView(eventsLayer).then(function (lv) {
                 layerView = lv;
                 // start time of the time slider - 13/02/1918
-                const start = new Date(1918, 2, 13);
+                const start = eventsLayer.timeInfo.fullTimeExtent.start;
+                const end = eventsLayer.timeInfo.fullTimeExtent.end;
                 // set time slider's full extent to
-                // 5/25/5019 - until end date of layer's fullTimeExtent
                 timeSlider.fullTimeExtent = {
                     start: start,
-                    end: eventsLayer.timeInfo.fullTimeExtent.end
+                    end: end
                 };
 
-                // We will be showing earthquakes with one day interval
-                // when the app is loaded we will show earthquakes that
-                // happened between 5/25 - 5/26.
-                const end = new Date();
-                // end of current time extent for time slider
                 // showing earthquakes with one day interval
                 end.setDate(end.getDate() + 1);
 
@@ -530,8 +525,6 @@ Template.map.onRendered(() => {
             });
         });
         // End add Layer
-
-
 
         // Start add Legend
         view.ui.add(new Legend({view: view}), "bottom-left");
