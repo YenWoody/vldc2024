@@ -1,9 +1,27 @@
 <template name="map">
 
     <div id="seasons-filter" class="esri-widget">
-        <div class="season-item visible-season" data-season="VN">VN</div>
-        <div class="season-item visible-season" data-season="RM">RM</div>  
-        <div class="season-item visible-season" data-season=" ">Trống</div>    
+       
+    
+       
+        <calcite-radio-button-group
+        name="selectTopEarthquakes"
+        layout="vertical"
+        scale="s"
+      >
+        <calcite-label layout="inline">
+          <calcite-radio-button ></calcite-radio-button>
+          <div class="season-item visible-season" data-season="VN">Mạng VN</div>
+        </calcite-label>
+        <calcite-label layout="inline">
+          <calcite-radio-button ></calcite-radio-button>
+          <div class="season-item visible-season" data-season="RM">Mạng RM</div>  
+        </calcite-label>
+        <calcite-label layout="inline">
+          <calcite-radio-button ></calcite-radio-button>
+          <div class="season-item visible-season" data-season=" ">Trống</div>
+        </calcite-label>
+      </calcite-radio-button-group>    
     </div>
       <div id="viewDiv"></div>
 

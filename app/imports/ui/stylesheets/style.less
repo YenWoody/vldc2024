@@ -4,7 +4,6 @@
 @import "components/header";
 @import "components/content";
 @import "components/footer";
-
 @litepicker-day-width: 1.45vw;
 @litepicker-month-width: calc(@litepicker-day-width * 7);
 
@@ -24,18 +23,16 @@
 
 #seasons-filter {
     height: 100%;
-    width: 100%;
-    
-    
+    width: 100%;  
   }
 
   .season-item {
     width: 100%;
-    padding: 12px;
+    padding: 8px;
     text-align: center;
     vertical-align: baseline;
     cursor: pointer;
-    height: 40px;
+    height: auto;
   }
 
   .season-item:focus {
@@ -55,3 +52,6 @@
     font-weight: 60;
     padding-bottom: 10px;
   }
+  calcite-radio-button {
+    margin-left: 8px;
+}

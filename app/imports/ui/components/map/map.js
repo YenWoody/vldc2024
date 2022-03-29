@@ -1,7 +1,6 @@
 import './map.html';
 import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
 import { Session } from 'meteor/session';
-
 Template.map.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
@@ -9,6 +8,7 @@ Template.map.onCreated(() => {
         insertCssBefore: 'style',
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
+    loadCss('https://js.arcgis.com/calcite-components/1.0.0-beta.76/calcite.css');
 });
 
 Template.map.onRendered(() => {
@@ -332,7 +332,7 @@ Template.map.onRendered(() => {
           const seasonsExpand = new Expand({
             view: view,
             content: seasonsElement,
-            expandIconClass: "esri-icon-filter",
+            expandIconClass: "esri-icon-review",
             group: "top-left"
           });
           //clear the filters when user closes the expand widget
