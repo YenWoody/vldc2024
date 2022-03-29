@@ -479,8 +479,8 @@ Template.map.onRendered(() => {
         const magnitudeSlider = new Slider({
             container: "magnitudeSlider",
             min: 0,
-            max: 7,
-            values: [ 0, 7 ],
+            max: 8,
+            values: [ 0, 8 ],
             step: 1,
             visibleElements: {
                 rangeLabels: true,
@@ -506,7 +506,6 @@ Template.map.onRendered(() => {
 
         view.when(function () {
             map.addMany([eventsLayer, stationLayer]);
-     
             view.whenLayerView(eventsLayer).then(function (lv) {
                 layerView = lv;
                 // start time of the time slider - 13/02/1918
@@ -536,7 +535,6 @@ Template.map.onRendered(() => {
                 };
                
             });
-
             view.whenLayerView(eventsLayer).then((layerView) => {
                 // flash flood warnings layer loaded
                 // get a reference to the flood warnings layerview
@@ -550,7 +548,6 @@ Template.map.onRendered(() => {
                         where: `depth >= ${depthMin} and depth <= ${depthMax}  `,
                     };
                 });
-
                 magnitudeSlider.on("thumb-drag", function() {
                     magnitudeMin = magnitudeSlider.values[0];
                     magnitudeMax = magnitudeSlider.values[1];
@@ -574,7 +571,6 @@ Template.map.onRendered(() => {
               });
         });
         // End add Layer
-
         // Start add Legend
         view.ui.add(new Legend({view: view}), "bottom-left");
 
