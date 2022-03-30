@@ -498,7 +498,7 @@ Template.map.onRendered(() => {
                 }
             }
         });
-        view.ui.add(timeSlider, "bottom-right");
+        // view.ui.add(timeSlider, "bottom-right");
 
         // wait till the layer view is loaded
         let layerView;
