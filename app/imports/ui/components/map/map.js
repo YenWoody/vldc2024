@@ -1,7 +1,9 @@
 import './map.html';
 import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
 import {Session} from 'meteor/session';
-
+import datatables from 'datatables.net';
+import datatables_bs from 'datatables.net-bs';
+import 'datatables.net-bs/css/dataTables.bootstrap.css';
 Template.map.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
@@ -9,7 +11,10 @@ Template.map.onCreated(() => {
         insertCssBefore: 'style',
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
-    loadCss('https://js.arcgis.com/calcite-components/1.0.0-beta.76/calcite.css');
+    loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
+
+    datatables(window, $);
+    datatables_bs(window, $);
 });
 
 Template.map.onRendered(() => {
@@ -270,8 +275,13 @@ Template.map.onRendered(() => {
                 ]
             }]
         }
-
         // end init basemap
+
+
+
+
+
+
         // Start add Layer
         const stationLayer = new FeatureLayer({
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/0',
@@ -293,6 +303,7 @@ Template.map.onRendered(() => {
           
         });
         let floodLayerView;
+    
         const view = new MapView({
             map: map,
             zoom: 5,
@@ -310,22 +321,81 @@ Template.map.onRendered(() => {
             },
         });
         // end init view
+            // let queryStationTable = stationLayer.createQuery();
+            // queryStationTable.where = `network LIKE '%%'`;
+            // stationLayer.queryFeatures(queryStationTable)
+            // .then(function(response){ 
+            // const table1 = $('#stationtable').DataTable({
+            //     data : response.features,
+            //     "bFilter": false,
+            //     "paging": false,
+            //     "destroy": true,
+            //     "processing": true,
+            //     "dom": '<"toolbar">frtip',
+            //     "language": {
+            //         "info": "Hiển thị từ _START_ đến _END_ Trạm",
+            //       },
+            //     "scrollY": "250",
+            //     "columns": [
+            //         { data: 'attributes.name'},
+            //         { data: 'attributes.network' },
+            //         { data: 'attributes.height' },
+            //         { data: 'attributes.station' },
+            //         { data: 'attributes.lat' },
+            //         { data: 'attributes.long' },
+            //         { data: 'attributes.adr' },
+            //     ],
+
+            //     });  
+               
+            //     });
         // Filter by Attributes
         const networkElement = document.getElementById("relationship-select");
         // click event handler for network choices
         networkElement.addEventListener("click", filterByNetwork);
         function filterByNetwork(event) {
-            const selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
-            if (selectedNetWork === "all") {
-                return floodLayerView.filter = null;
-            }
-            else {
-            floodLayerView.filter = {
-                where: `network LIKE '%${selectedNetWork}%'`
-            };
-            }
+            
+            let selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
+                if (selectedNetWork === "") {
+                    return floodLayerView.filter = null ;
+                }
+                else {
+                floodLayerView.filter = {
+                    where: `network LIKE '%${selectedNetWork}%'`
+                };
+                }
+                // console.log(selectedNetWork,"selectedNetWork");
+                // let queryStationTable = stationLayer.createQuery();
+                // queryStationTable.where = `network LIKE '%${selectedNetWork}%'`;    
+                // stationLayer.queryFeatures(queryStationTable)
+                // .then(function(response){ 
+                //     console.log(response.features);
+                // const table1 = $('#stationtable').DataTable({
+                //     data : response.features,
+                //     "bFilter": false,
+                //     "paging": false,
+                //     "destroy": true,
+                //     "processing": true,
+                //     "dom": '<"toolbar">frtip',
+                //     // "scrollX": 'true',
+                //     "scrollY": "250",
+                //     "language": {
+                //         "info": "Hiển thị từ _START_ đến _END_ Trạm",
+                //       },
+                //     "columns": [
+                //         { data: 'attributes.name'},
+                //         { data: 'attributes.network' },
+                //         { data: 'attributes.height' },
+                //         { data: 'attributes.station' },
+                //         { data: 'attributes.lat' },
+                //         { data: 'attributes.long' },
+                //         { data: 'attributes.adr' },
+                //     ],
+    
+                //     });  
+                   
+                //     });
         }
-
 
         // End Filter by Attribute
         const eventPopupTemplate = {
@@ -545,8 +615,44 @@ Template.map.onRendered(() => {
                     depthMin = depthSlider.values[0];
                     depthMax = depthSlider.values[1];
                     depthLayerView.filter = {
-                        where: `depth >= ${depthMin} and depth <= ${depthMax}  `,
+                        where: `depth >= ${depthMin} and depth <= ${depthMax}`,
                     };
+                    console.log(depthLayerView.filter, "depthLayerView.filter");
+                    // Query
+                    let query = eventsLayer.createQuery();
+                    query.where = `depth >= ${depthMin} and depth <= ${depthMax}`;
+                    query.outFields = "*";
+                    
+                    eventsLayer.queryFeatures(query)
+                      .then(function(response){
+                          console.log(response.features);
+                      const dataSet = response.features;
+                      const table2 = $('#dulieu').DataTable({
+                          data : dataSet,
+                          "bFilter": false,
+                          "paging": false,
+                          "destroy": true,
+                          "processing": true,
+                          "dom": '<"toolbar">frtip',
+                          "scrollX": 'true',
+                          "scrollY": "250",
+                          "language": {
+                            "info": "Hiển thị từ _START_ đến _END_ Events",
+                          },
+                          "columns": [
+                              { data: 'attributes.year'},
+                              { data: 'attributes.month' },
+                              { data: 'attributes.day' },
+                              { data: 'attributes.ms' },
+                              { data: 'attributes.lat' },
+                              { data: 'attributes.lon' },
+                              { data: 'attributes.depth' },
+                          ],
+                        });  
+                      
+                    });
+                    
+                    // End Datatable Event
                 });
                 magnitudeSlider.on("thumb-drag", function() {
                     magnitudeMin = magnitudeSlider.values[0];
@@ -554,22 +660,55 @@ Template.map.onRendered(() => {
                     magnitudeLayerview.filter = {
                         where: `ms >= ${magnitudeMin} and ms <= ${ magnitudeMax}  `,
                     };
+                    console.log(magnitudeLayerview.filter, "magnitudeLayerview.filter");
                 });
                 document.getElementById("clearFilter").addEventListener("click", clearFilter);
                 function clearFilter() {               
                      depthLayerView.filter = null;
                      magnitudeLayerview.filter = null;
+                     floodLayerView.filter = null;
                  }
+                 // Datatable Event
+                 console.log(depthLayerView, "magnitudeMinr");
+    
             });
             view.whenLayerView(stationLayer).then((layerView) => {
                 floodLayerView = layerView;
-                document.getElementById("clearFilter").addEventListener("click", clearFilter);
-               function clearFilter() {
-                    floodLayerView.filter = null;
-                }
-
               });
         });
+        let querytable = eventsLayer.createQuery();
+        querytable.where = `depth >= 0 and depth <= 100`;
+        querytable.outFields = "*";
+   
+        eventsLayer.queryFeatures(querytable)
+          .then(function(response){
+              console.log(response.features);
+          const dataSet = response.features;
+          const table2 = $('#dulieu').DataTable({
+              data : dataSet,
+              "bFilter": false,
+              "paging": false,
+              "destroy": true,
+              "processing": true,
+              "dom": '<"toolbar">frtip',
+              "scrollX": 'true',
+              "scrollY": "250",
+              "language": {
+                "info": "Hiển thị từ _START_ đến _END_ Events",
+              },
+              "columns": [
+                  { data: 'attributes.year'},
+                  { data: 'attributes.month' },
+                  { data: 'attributes.day' },
+                  { data: 'attributes.ms' },
+                  { data: 'attributes.lat' },
+                  { data: 'attributes.lon' },
+                  { data: 'attributes.depth' },
+              ],
+
+          });  
+        });
+      
         // End add Layer
         // Start add Legend
         view.ui.add(new Legend({view: view}), "bottom-left");
