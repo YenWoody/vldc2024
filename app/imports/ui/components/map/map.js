@@ -574,8 +574,6 @@ Template.map.onRendered(() => {
 
         // wait till the layer view is loaded
         let layerView;
-
-
         view.when(function () {
             map.addMany([eventsLayer, stationLayer]);
             view.whenLayerView(eventsLayer).then(function (lv) {
@@ -599,76 +597,56 @@ Template.map.onRendered(() => {
 
             });
 
-            // watch for time slider timeExtent change
-            timeSlider.watch("timeExtent", function () {
-                layerView.filter = {
-                    where: `time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()}`,
-                    // geometry: view.extent
-                };
-               
-            });
+            
+
+            let flView = null;
             view.whenLayerView(eventsLayer).then((layerView) => {
-                // flash flood warnings layer loaded
-                // get a reference to the flood warnings layerview
-                let depthLayerView = layerView;
-                let magnitudeLayerview = layerView;
+                flView = layerView;
+                            // watch for time slider timeExtent change
+                timeSlider.watch("timeExtent", function () {
+                    // layerView.filter = {
+                    //     where: `time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()}`,
+                    //     // geometry: view.extent
+                    // };
+                   updateFilter();
+                });
 
                 depthSlider.on("thumb-drag", function() {
-                    depthMin = depthSlider.values[0];
-                    depthMax = depthSlider.values[1];
-                    depthLayerView.filter = {
-                        where: `depth >= ${depthMin} and depth <= ${depthMax}`,
-                    };
-                    console.log(depthLayerView.filter, "depthLayerView.filter");
-                    // Query
-                    let query = eventsLayer.createQuery();
-                    query.where = `depth >= ${depthMin} and depth <= ${depthMax}`;
-                    query.outFields = "*";
-                    
-                    eventsLayer.queryFeatures(query)
-                      .then(function(response){
-                          console.log(response.features);
-                      const dataSet = response.features;
-                      const table2 = $('#dulieu').DataTable({
-                          data : dataSet,
-                        //   "bFilter": false,
-                          "paging": false,
-                          "destroy": true,
-                          "processing": true,
-                          "dom": '<"toolbar">frtip',
-                          "scrollX": 'true',
-                          "scrollY": "250",
-                          "language": {
-                            "info": "Hiển thị từ _START_ đến _END_ Events",
-                          },
-                          "columns": [
-                              { data: 'attributes.year'},
-                              { data: 'attributes.month' },
-                              { data: 'attributes.day' },
-                              { data: 'attributes.ms' },
-                              { data: 'attributes.lat' },
-                              { data: 'attributes.lon' },
-                              { data: 'attributes.depth' },
-                          ],
-                        });  
-                      
-                    });
-                    
-                    // End Datatable Event
+                    updateFilter();
                 });
                 magnitudeSlider.on("thumb-drag", function() {
+                    updateFilter();
+                });
+
+                const updateFilter = function() {
+                    depthMin = depthSlider.values[0];
+                    depthMax = depthSlider.values[1];
                     magnitudeMin = magnitudeSlider.values[0];
                     magnitudeMax = magnitudeSlider.values[1];
-                    magnitudeLayerview.filter = {
-                        where: `ms >= ${magnitudeMin} and ms <= ${ magnitudeMax}  `,
-                    };
-                    console.log(magnitudeLayerview.filter, "magnitudeLayerview.filter");
-                });
+                    let conditions = [];
+                    if (depthSlider) {
+                      conditions.push(`(depth >= ${depthMin} and depth <= ${depthMax})`);
+                    }
+                    if (magnitudeSlider) {
+                      conditions.push(`(ms >= ${magnitudeMin} and ms <= ${ magnitudeMax})`);
+                    }
+                    if(timeSlider){
+                        conditions.push(`(time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()})`);
+                    }
+                    flView.filter = conditions.length > 0 ? {where: conditions.join("AND")} : null;
+                    console.log(flView.filter && flView.filter.where);
+                  }
+
                 document.getElementById("clearFilter").addEventListener("click", clearFilter);
-                function clearFilter() {               
-                     depthLayerView.filter = null;
-                     magnitudeLayerview.filter = null;
-                     floodLayerView.filter = null;
+                function clearFilter() {     
+                    const start = eventsLayer.timeInfo.fullTimeExtent.start;
+                    const end = eventsLayer.timeInfo.fullTimeExtent.end;          
+                    //  depthSlider.filter = null;
+                    //  magnitudeSlider.filter = null;
+                    flView.filter = null;
+                    depthSlider.values = [0,100];
+                    magnitudeSlider.values = [0,8];
+                    timeSlider.values = [start,end];
                  }
                  // Datatable Event
                  console.log(depthLayerView, "magnitudeMinr");
