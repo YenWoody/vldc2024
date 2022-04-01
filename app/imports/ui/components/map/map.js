@@ -35,6 +35,7 @@ Template.map.onRendered(() => {
         'esri/widgets/Expand',
         'esri/rest/support/Query',
         'esri/widgets/Slider',
+        "esri/Graphic",
     ]).then(([
                  Map,
                  MapView,
@@ -51,6 +52,7 @@ Template.map.onRendered(() => {
                  Expand,
                  Query,
                  Slider,
+                Graphic
              ]) => {
         /**
          * init basemap
@@ -629,7 +631,7 @@ Template.map.onRendered(() => {
                       const dataSet = response.features;
                       const table2 = $('#dulieu').DataTable({
                           data : dataSet,
-                          "bFilter": false,
+                        //   "bFilter": false,
                           "paging": false,
                           "destroy": true,
                           "processing": true,
@@ -686,7 +688,7 @@ Template.map.onRendered(() => {
           const dataSet = response.features;
           const table2 = $('#dulieu').DataTable({
               data : dataSet,
-              "bFilter": false,
+            //   "bFilter": false,
               "paging": false,
               "destroy": true,
               "processing": true,
@@ -707,8 +709,40 @@ Template.map.onRendered(() => {
               ],
 
           });  
+          $('#dulieu tbody').off('click', 'tr');
+          $('#dulieu tbody').on('click', 'tr', function () {
+              const data = $('#dulieu').DataTable().row(this).data();
+                console.log(data,"data");
+                var fillSymbol = {
+                    type: "simple-marker", // autocasts as new SimpleFillSymbol
+                    color: [0, 191, 255,0.8],
+                    outline: {
+                      // autocasts as new SimpleLineSymbol()
+                      color: [0, 191, 255,0.8],
+                      
+                    },
+                };
+                view.graphics.removeAll();
+                var polygonGraphic = new Graphic({
+                        geometry: {
+                            type: "point",
+                            latitude: data.geometry.latitude,
+                            longitude: data.geometry.longitude,
+                          }, 
+
+                        symbol: fillSymbol
+                });
+                view.graphics.add(polygonGraphic);
+                    
+            });
+            // Create a symbol for rendering the graphic
+       
         });
-      
+        // End Datatable Event
+   
+        
+           
+          
         // End add Layer
         // Start add Legend
         view.ui.add(new Legend({view: view}), "bottom-left");
@@ -778,4 +812,6 @@ Template.map.onRendered(() => {
 
 Template.map.helpers({});
 
-Template.map.events({});
+Template.map.events({
+
+});
