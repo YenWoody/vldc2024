@@ -525,12 +525,12 @@ Template.map.onRendered(() => {
 
             });
 
-            // watch for time slider timeExtent change
             
 
             let flView = null;
             view.whenLayerView(eventsLayer).then((layerView) => {
                 flView = layerView;
+                            // watch for time slider timeExtent change
                 timeSlider.watch("timeExtent", function () {
                     // layerView.filter = {
                     //     where: `time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()}`,
@@ -569,11 +569,12 @@ Template.map.onRendered(() => {
                 function clearFilter() {     
                     const start = eventsLayer.timeInfo.fullTimeExtent.start;
                     const end = eventsLayer.timeInfo.fullTimeExtent.end;          
-                     depthSlider.filter = null;
-                     magnitudeSlider.filter = null;
-                     depthSlider.values = [0,100];
-                     magnitudeSlider.values = [0,8];
-                     timeSlider.values = [start,end];
+                    //  depthSlider.filter = null;
+                    //  magnitudeSlider.filter = null;
+                    flView.filter = null;
+                    depthSlider.values = [0,100];
+                    magnitudeSlider.values = [0,8];
+                    timeSlider.values = [start,end];
                  }
             });
             view.whenLayerView(stationLayer).then((layerView) => {
