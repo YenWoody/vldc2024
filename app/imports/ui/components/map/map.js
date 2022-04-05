@@ -30,6 +30,8 @@ Template.map.onRendered(() => {
         'esri/widgets/Expand',
         'esri/rest/support/Query',
         'esri/widgets/Slider',
+        'esri/widgets/BasemapToggle/BasemapToggleViewModel',
+        'esri/widgets/BasemapToggle',
     ]).then(([
                  Map,
                  MapView,
@@ -46,6 +48,8 @@ Template.map.onRendered(() => {
                  Expand,
                  Query,
                  Slider,
+                 BasemapToggleVM,
+                 BasemapToggle,
              ]) => {
         /**
          * init basemap
@@ -53,7 +57,9 @@ Template.map.onRendered(() => {
             // admin đảo
         const adminSea = new TileLayer({
                 url: 'https://tiles.arcgis.com/tiles/EaQ3hSM51DBnlwMq/arcgis/rest/services/VietnamLabels/MapServer',
+                
             });
+        
         // WeMap's basemap
         const weMapVectorTile = new VectorTileLayer({
             url: 'https://vector.wemap.asia/styles/osm-bright/style.json',
@@ -449,20 +455,20 @@ Template.map.onRendered(() => {
         });
 
 
-        const query = new Query();
-        query.where = `depth >= 1`;
-        // query.outSpatialReference = { wkid: 102100 };
-        query.returnGeometry = true;
-        // query.outFields = [ "year" ];
+        // const query = new Query();
+        // query.where = `depth >= 1`;
+        // // query.outSpatialReference = { wkid: 102100 };
+        // query.returnGeometry = true;
+        // // query.outFields = [ "year" ];
 
-        eventsLayer.queryFeatures(query).then(function (results) {
-            const mydepth = results.features;
-            Session.set('depthslider', mydepth);
-        });
+        // eventsLayer.queryFeatures(query).then(function (results) {
+        //     const mydepth = results.features;
+        //     Session.set('depthslider', mydepth);
+        // });
 
-        Tracker.autorun(function () {
-            var sessionData = Session.get('mydepth');
-        });
+        // Tracker.autorun(function () {
+        //     var sessionData = Session.get('mydepth');
+        // });
 
         const depthSlider = new Slider({
             container: "depthSlider",
@@ -588,8 +594,11 @@ Template.map.onRendered(() => {
         });
         // End add Layer
         // Start add Legend
-        view.ui.add(new Legend({view: view}), "bottom-left");
-
+        // view.ui.add(new Legend({view: view}), "bottom-left");
+        var legend = new Legend({
+            view: view,
+            container: legendDiv
+          });
         // End Legend
 
         // basemap Gallery
@@ -597,6 +606,23 @@ Template.map.onRendered(() => {
             view: view,
             container: document.createElement("div")
         });
+
+        let basemapToggle = new BasemapToggle({
+            viewModel: {
+                view: view,
+                basemaps:
+                    {
+                    "weMap":{
+                        "title":"WeMap",
+                        "thumbnailUrl":"https://stamen-tiles.a.ssl.fastly.net/terrain/10/177/409.png"
+                    },
+                    "satellite":{
+                        "title":"satellite"
+                    }
+                }
+            }
+        });
+        view.ui.add(basemapToggle, "bottom-right");
 
         // Create an Expand instance and set the content
         // property to the DOM node of the basemap gallery widget
@@ -616,14 +642,25 @@ Template.map.onRendered(() => {
 
         });
 
+        const legendExpand = new Expand({
+            view: view,
+            content: legendDiv,
+            expandIconClass: 'esri-icon-legend',
+            expandTooltip: 'Legend'
+        });
+        view.ui.add(legendExpand, {
+            position: "bottom-left"
+          });
+
         const expand = new Expand({
             view: view,
             content: document.getElementById("infoDiv"),
             group: "top-right"
         });
-        view.ui.add([bgExpand, expand], "top-right");
+        view.ui.add([bgExpand,expand], "top-right");
 
         document.getElementById("infoDiv").style.display = "block";
+        
     }).catch(err => {
         // handle any errors
         console.error(err);

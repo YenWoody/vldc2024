@@ -1,24 +1,41 @@
 <template name="map">
     <div id="viewDiv">
+        <div id="legendDiv">
+            <h3 class="titleLegend">
+                <span>legend</span>
+            </h3>
+        </div>
         <div id="infoDiv" class="esri-widget">
-            <label for="relationship-select">Network:</label>
-            <select id="relationship-select" class="options">
-                <option value="all" selected >All</option>
-                <option value="VN">VN</option>
-                <option value="RM">RM</option>
-                <option value=" " >Trống</option></select>
-            <br /><br />
-            <label for="depthSlider" style="padding-bottom: 15px;" >Depth:</label>
-            <div id="depthSlider"></div>
-            <br /><br />
-            <label for="magnitudeSlider" style="padding-bottom: 15px;">Magnitude:</label>
-            <div id="magnitudeSlider"></div>
-            <br /><br />
-            <div id="timeSlider"></div>
-            <br /><br />
+            <h3 class="title">
+                <span>Option</span>
+            </h3>
+            <li class="esri-layer-list__item">
+                <label for="relationship-select">Network:</label>
+                <select id="relationship-select" class="options">
+                    <option value="all" selected >All</option>
+                    <option value="VN">VN</option>
+                    <option value="RM">RM</option>
+                    <option value=" " >Trống</option></select>
+                <br /><br />
+            </li>
+           <li class="esri-layer-list__item">
+                <label for="depthSlider" style="padding-bottom: 15px;" >Depth:</label>
+                <div id="depthSlider"></div>
+                <br /><br />
+           </li>
+            <li class="esri-layer-list__item">
+                <label for="magnitudeSlider" style="padding-bottom: 15px;">Magnitude:</label>
+                <div id="magnitudeSlider"></div>
+                <br /><br />
+            </li>
+            <li class="esri-layer-list__item">
+                <div id="timeSlider"></div>
+                <br /><br />
+            </li>
             <button class="esri-button" id="clearFilter" type="button" value="Reset">
                 Clear filter
             </button>
         </div>
     </div>
+    
 </template>
