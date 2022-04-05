@@ -35,9 +35,8 @@ Template.map.onRendered(() => {
         'esri/widgets/Expand',
         'esri/rest/support/Query',
         'esri/widgets/Slider',
-        'esri/widgets/BasemapToggle/BasemapToggleViewModel',
         'esri/widgets/BasemapToggle',
-        "esri/Graphic",
+        'esri/widgets/CoordinateConversion',
     ]).then(([
                  Map,
                  MapView,
@@ -54,9 +53,8 @@ Template.map.onRendered(() => {
                  Expand,
                  Query,
                  Slider,
-                 BasemapToggleVM,
                  BasemapToggle,
-                Graphic
+                 CoordinateConversion
              ]) => {
         /**
          * init basemap
@@ -703,7 +701,7 @@ Template.map.onRendered(() => {
                         "title":"satellite"
                     }
                 }
-            }
+            },
         });
         view.ui.add(basemapToggle, "bottom-right");
 
@@ -741,6 +739,12 @@ Template.map.onRendered(() => {
             group: "top-right"
         });
         view.ui.add([bgExpand,expand], "top-right");
+
+        let ccWidget = new CoordinateConversion({
+            view: view,
+            group: "bottom-right"
+          });
+        view.ui.add(ccWidget,"manual");  
 
         document.getElementById("infoDiv").style.display = "block";
         
