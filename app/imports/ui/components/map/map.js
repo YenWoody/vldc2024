@@ -35,12 +35,9 @@ Template.map.onRendered(() => {
         'esri/widgets/Expand',
         'esri/rest/support/Query',
         'esri/widgets/Slider',
-<<<<<<< HEAD
         'esri/widgets/BasemapToggle/BasemapToggleViewModel',
         'esri/widgets/BasemapToggle',
-=======
         "esri/Graphic",
->>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
     ]).then(([
                  Map,
                  MapView,
@@ -57,12 +54,9 @@ Template.map.onRendered(() => {
                  Expand,
                  Query,
                  Slider,
-<<<<<<< HEAD
                  BasemapToggleVM,
                  BasemapToggle,
-=======
                 Graphic
->>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
              ]) => {
         /**
          * init basemap
@@ -683,7 +677,6 @@ Template.map.onRendered(() => {
                 });
         // End add Layer
         // Start add Legend
-<<<<<<< HEAD
         // view.ui.add(new Legend({view: view}), "bottom-left");
         var legend = new Legend({
             view: view,
@@ -691,16 +684,11 @@ Template.map.onRendered(() => {
           });
         // End Legend
 
-=======
-        view.ui.add(new Legend({view: view}), "bottom-left");
-        // End add Legend
->>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
         // basemap Gallery
         const basemapGallery = new BasemapGallery({
             view: view,
             container: document.createElement("div")
         });
-<<<<<<< HEAD
 
         let basemapToggle = new BasemapToggle({
             viewModel: {
@@ -719,9 +707,6 @@ Template.map.onRendered(() => {
         });
         view.ui.add(basemapToggle, "bottom-right");
 
-=======
-    
->>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
         // Create an Expand instance and set the content
         // property to the DOM node of the basemap gallery widget
 
