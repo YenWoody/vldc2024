@@ -1,7 +1,9 @@
 import './map.html';
 import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
 import {Session} from 'meteor/session';
-
+import datatables from 'datatables.net';
+import datatables_bs from 'datatables.net-bs';
+import 'datatables.net-bs/css/dataTables.bootstrap.css';
 Template.map.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
@@ -9,7 +11,10 @@ Template.map.onCreated(() => {
         insertCssBefore: 'style',
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
-    loadCss('https://js.arcgis.com/calcite-components/1.0.0-beta.76/calcite.css');
+    loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
+
+    datatables(window, $);
+    datatables_bs(window, $);
 });
 
 Template.map.onRendered(() => {
@@ -30,8 +35,12 @@ Template.map.onRendered(() => {
         'esri/widgets/Expand',
         'esri/rest/support/Query',
         'esri/widgets/Slider',
+<<<<<<< HEAD
         'esri/widgets/BasemapToggle/BasemapToggleViewModel',
         'esri/widgets/BasemapToggle',
+=======
+        "esri/Graphic",
+>>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
     ]).then(([
                  Map,
                  MapView,
@@ -48,8 +57,12 @@ Template.map.onRendered(() => {
                  Expand,
                  Query,
                  Slider,
+<<<<<<< HEAD
                  BasemapToggleVM,
                  BasemapToggle,
+=======
+                Graphic
+>>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
              ]) => {
         /**
          * init basemap
@@ -276,8 +289,13 @@ Template.map.onRendered(() => {
                 ]
             }]
         }
-
         // end init basemap
+
+
+
+
+
+
         // Start add Layer
         const stationLayer = new FeatureLayer({
             url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/0',
@@ -299,6 +317,7 @@ Template.map.onRendered(() => {
           
         });
         let floodLayerView;
+    
         const view = new MapView({
             map: map,
             zoom: 5,
@@ -321,17 +340,18 @@ Template.map.onRendered(() => {
         // click event handler for network choices
         networkElement.addEventListener("click", filterByNetwork);
         function filterByNetwork(event) {
-            const selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
-            if (selectedNetWork === "all") {
-                return floodLayerView.filter = null;
-            }
-            else {
-            floodLayerView.filter = {
-                where: `network LIKE '%${selectedNetWork}%'`
-            };
-            }
+            
+            let selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
+                if (selectedNetWork === "") {
+                    return floodLayerView.filter = null ;
+                }
+                else {
+                floodLayerView.filter = {
+                    where: `network LIKE '%${selectedNetWork}%'`
+                };
+                }
+                
         }
-
 
         // End Filter by Attribute
         const eventPopupTemplate = {
@@ -363,20 +383,6 @@ Template.map.onRendered(() => {
                 "</tr>" +
                 "</table>",
         }
-
-
-        // const focusBridgeLayer  = new FeatureLayer({
-        //     // url: 'https://gis.fimo.com.vn/arcgis/rest/services/Pivasia/park_vi/MapServer/0',
-        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/Station_Event_IF/MapServer/1',
-        //     id: 'poi',
-        //     title: 'Cầu chấn tiêu',
-        //     visible: true,
-        //     labelsVisible: false,
-        //     popupEnabled: true,
-        //     outFields: ['*'],
-        //     popupTemplate: popupTpl2,
-        //     listMode: 'show'
-        // });
         const defaultSym = {
             type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
             color: [238, 174, 15, 0.36],
@@ -523,7 +529,6 @@ Template.map.onRendered(() => {
 
                 // showing earthquakes with one day interval
                 end.setDate(end.getDate() + 1);
-
                 // Values property is set so that timeslider
                 // widget show the first day. We are setting
                 // the thumbs positions.
@@ -538,10 +543,6 @@ Template.map.onRendered(() => {
                 flView = layerView;
                             // watch for time slider timeExtent change
                 timeSlider.watch("timeExtent", function () {
-                    // layerView.filter = {
-                    //     where: `time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()}`,
-                    //     // geometry: view.extent
-                    // };
                    updateFilter();
                 });
 
@@ -568,8 +569,42 @@ Template.map.onRendered(() => {
                         conditions.push(`(time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()})`);
                     }
                     flView.filter = conditions.length > 0 ? {where: conditions.join("AND")} : null;
-                    console.log(flView.filter && flView.filter.where);
-                  }
+                    // Datatable 
+                    let query = eventsLayer.createQuery();
+                    query.where = `depth >= 0 and depth <= 100`;
+                    query.outFields = "*";
+                    eventsLayer.queryFeatures(query)
+                      .then(function(response){
+                       const dataSet = response.features.filter( (item) => {
+                         return (item.attributes.time >= timeSlider.timeExtent.start.getTime() && item.attributes.time <= timeSlider.timeExtent.end.getTime()) && (item.attributes.depth >= depthMin && item.attributes.depth <= depthMax) && (item.attributes.ms >= magnitudeMin && item.attributes.ms <= magnitudeMax);
+                      });
+                      const table = $('#dulieu').DataTable({
+                          data : dataSet,
+                        //   "bFilter": false,
+                          "paging": false,
+                          "destroy": true,
+                          "dom": '<"toolbar">frtip',
+                          "scrollX": 'true',
+                          "scrollY": "250",
+                          "language": {
+                            "info": "Hiển thị từ _START_ đến _END_ Events",
+                            "infoFiltered": " ",
+                          },
+                          "columns": [
+                              { data: 'attributes.year'},
+                              { data: 'attributes.month' },
+                              { data: 'attributes.day' },
+                              { data: 'attributes.ms' },
+                              { data: 'attributes.lat' },
+                              { data: 'attributes.lon' },
+                              { data: 'attributes.depth' },
+                          ],
+                        });  
+                      
+                    });
+                    
+                    // End Datatable Event
+                  };
 
                 document.getElementById("clearFilter").addEventListener("click", clearFilter);
                 function clearFilter() {     
@@ -581,19 +616,74 @@ Template.map.onRendered(() => {
                     depthSlider.values = [0,100];
                     magnitudeSlider.values = [0,8];
                     timeSlider.values = [start,end];
+                    view.graphics.removeAll();
                  }
+                 // Datatable Event
+    
             });
             view.whenLayerView(stationLayer).then((layerView) => {
                 floodLayerView = layerView;
-                document.getElementById("clearFilter").addEventListener("click", clearFilter);
-               function clearFilter() {
-                    floodLayerView.filter = null;
-                }
-
               });
-        });
+            });
+            const table = $('#dulieu').DataTable({
+                "paging": false,
+                "destroy": true,
+                "dom": '<"toolbar">frtip',
+                "scrollX": 'true',
+                "scrollY": "250",
+                "language": {
+                    "emptyTable": "Sử dụng bộ lọc để hiển thị dữ liệu",
+                    "info": "Hiển thị từ _START_ đến _END_ Events",
+                    "infoEmpty": "Hiển thị 0 Events",
+                },
+                "columns": [
+                    { data: 'attributes.year'},
+                    { data: 'attributes.month' },
+                    { data: 'attributes.day' },
+                    { data: 'attributes.ms' },
+                    { data: 'attributes.lat' },
+                    { data: 'attributes.lon' },
+                    { data: 'attributes.depth' },
+                ],
+
+            });  
+            let highlightSelect;
+            $('#dulieu tbody').off('click', 'tr');
+            $('#dulieu tbody').on('click', 'tr', function () {
+                const data = $('#dulieu').DataTable().row(this).data();
+                    // var fillSymbol = {
+                    //     type: "simple-marker", // autocasts as new SimpleFillSymbol
+                    //     color: [0, 191, 255,0.8],
+                    //     outline: {
+                    //     color: [0, 191, 255,0.8],
+                    //     },
+                    // };
+                    console.log(data,"data");
+                    view.whenLayerView(data.layer).then(function(layerView){
+                        if (highlightSelect) {
+                            highlightSelect.remove();
+                          }
+                        highlightSelect= layerView.highlight(data);
+                        view.goTo({
+                            geometry: data.geometry,
+                            zoom: 6,
+                        });
+                      });
+                    // var polygonGraphic = new Graphic({
+                    //         geometry: {
+                    //             type: "point",
+                    //             latitude: data.geometry.latitude,
+                    //             longitude: data.geometry.longitude,
+                    //         }, 
+                    //         symbol: fillSymbol,
+                    // });
+                    // view.graphics.add(polygonGraphic);
+                   
+                        
+                });
         // End add Layer
         // Start add Legend
+<<<<<<< HEAD
         // view.ui.add(new Legend({view: view}), "bottom-left");
         var legend = new Legend({
             view: view,
@@ -601,11 +691,16 @@ Template.map.onRendered(() => {
           });
         // End Legend
 
+=======
+        view.ui.add(new Legend({view: view}), "bottom-left");
+        // End add Legend
+>>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
         // basemap Gallery
         const basemapGallery = new BasemapGallery({
             view: view,
             container: document.createElement("div")
         });
+<<<<<<< HEAD
 
         let basemapToggle = new BasemapToggle({
             viewModel: {
@@ -624,6 +719,9 @@ Template.map.onRendered(() => {
         });
         view.ui.add(basemapToggle, "bottom-right");
 
+=======
+    
+>>>>>>> cc8154712da52fd30e145b84f5a92e9f19e7dabb
         // Create an Expand instance and set the content
         // property to the DOM node of the basemap gallery widget
 
@@ -692,4 +790,6 @@ Template.map.onRendered(() => {
 
 Template.map.helpers({});
 
-Template.map.events({});
+Template.map.events({
+
+});
