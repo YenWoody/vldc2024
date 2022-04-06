@@ -12,7 +12,6 @@ Template.map.onCreated(() => {
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
     loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
-
     datatables(window, $);
     datatables_bs(window, $);
 });
@@ -35,7 +34,6 @@ Template.map.onRendered(() => {
         'esri/widgets/Expand',
         'esri/rest/support/Query',
         'esri/widgets/Slider',
-        "esri/Graphic",
     ]).then(([
                  Map,
                  MapView,
@@ -52,7 +50,6 @@ Template.map.onRendered(() => {
                  Expand,
                  Query,
                  Slider,
-                Graphic
              ]) => {
         /**
          * init basemap
@@ -305,10 +302,10 @@ Template.map.onRendered(() => {
           
         });
         let floodLayerView;
-    
+        let highlightSelect;
         const view = new MapView({
             map: map,
-            zoom: 5,
+            zoom: 4,
             center: [106, 16],
             container: 'viewDiv',
             popup: {
@@ -604,7 +601,7 @@ Template.map.onRendered(() => {
                     depthSlider.values = [0,100];
                     magnitudeSlider.values = [0,8];
                     timeSlider.values = [start,end];
-                    view.graphics.removeAll();
+                    highlightSelect.remove();
                  }
                  // Datatable Event
     
@@ -635,7 +632,7 @@ Template.map.onRendered(() => {
                 ],
 
             });  
-            let highlightSelect;
+          
             $('#dulieu tbody').off('click', 'tr');
             $('#dulieu tbody').on('click', 'tr', function () {
                 const data = $('#dulieu').DataTable().row(this).data();
