@@ -333,7 +333,7 @@ Template.map.onRendered(() => {
         function filterByNetwork(event) {
             
             let selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
-                if (selectedNetWork === "") {
+                if (selectedNetWork === "all") {
                     return floodLayerView.filter = null ;
                 }
                 else {

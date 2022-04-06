@@ -1,0 +1,12 @@
+<template name="upload">
+    <div class="fileupload fileupload-new" data-provides="fileupload">
+        <span class="btn btn-file">
+           <span class="fileupload-new">{{file-upload.label.de}}</span>
+           <span class="fileupload-exists">Andere</span>
+           <input name="{{file-upload.name}}" class="file-upload-input" method="{{file-upload.method}}" type="file"/>
+        </span>
+        <span class="fileupload-preview">
+        </span>
+        <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
+     </div>
+</template>
