@@ -63,6 +63,9 @@ Template.nav.helpers({
 
 Template.nav.events({
     'click .header__references_logout'() {
-          Meteor.logout();
+        Meteor.logout();
     }
 });
+
+
+  
