@@ -11,8 +11,6 @@ boilerplate-generator@1.7.1
 caching-compiler@1.2.2
 caching-html-compiler@1.2.0
 callback-hook@1.4.0
-cfs:filesystem@3.0.0
-cfs:standard-packages@3.0.0
 check@1.3.1
 ddp@1.4.0
 ddp-client@2.5.0
@@ -56,6 +54,8 @@ mongo@1.14.6
 mongo-decimal@0.1.2
 mongo-dev-server@1.1.0
 mongo-id@1.0.8
+mrt:filepicker@0.4.0
+mrt:loadpicker@1.0.0
 natestrauser:select2@4.0.3
 npm-mongo@4.3.1
 observe-sequence@1.0.19
