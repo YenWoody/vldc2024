@@ -12,13 +12,16 @@ FlowRouter.route('/', {
     this.render('BodyTemplate', 'home');
   },
 });
+/// Reload the page when the route changes
+
+ 
 FlowRouter.route('/upload', {
   name: 'upload',
   action() {
     this.render('BodyTemplate','upload');
   },
 });
-
+// 404 page
 FlowRouter.route('*', {
   action() {
     this.render('BodyTemplate', 'App_notFound',
