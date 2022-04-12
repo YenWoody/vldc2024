@@ -616,7 +616,15 @@ Template.map.onRendered(() => {
                 floodLayerView = layerView;
               });
             });
-            const table = $('#dulieu').DataTable({
+            // Datatable 
+            let query = eventsLayer.createQuery();
+            query.where = `depth >= 0 and depth <= 100`;
+            query.outFields = "*";
+            eventsLayer.queryFeatures(query)
+              .then(function(response){
+               const dataSet = response.features
+              const table = $('#dulieu').DataTable({
+                  data : dataSet,
                 "paging": false,
                 "destroy": true,
                 "dom": '<"toolbar">frtip',
@@ -637,10 +645,10 @@ Template.map.onRendered(() => {
                     { data: 'attributes.depth' },
                 ],
 
-            });  
+                });  
           
-            $('#dulieu tbody').off('click', 'tr');
-            $('#dulieu tbody').on('click', 'tr', function () {
+                $('#dulieu tbody').off('click', 'tr');
+                $('#dulieu tbody').on('click', 'tr', function () {
                 const data = $('#dulieu').DataTable().row(this).data();
                     // var fillSymbol = {
                     //     type: "simple-marker", // autocasts as new SimpleFillSymbol
@@ -649,8 +657,8 @@ Template.map.onRendered(() => {
                     //     color: [0, 191, 255,0.8],
                     //     },
                     // };
-                    console.log(data,"data");
-                    view.whenLayerView(data.layer).then(function(layerView){
+                 console.log(data,"data");
+                 view.whenLayerView(data.layer).then(function(layerView){
                         if (highlightSelect) {
                             highlightSelect.remove();
                           }
@@ -659,7 +667,7 @@ Template.map.onRendered(() => {
                             geometry: data.geometry,
                             zoom: 6,
                         });
-                      });
+                  });
                     // var polygonGraphic = new Graphic({
                     //         geometry: {
                     //             type: "point",
@@ -671,7 +679,8 @@ Template.map.onRendered(() => {
                     // view.graphics.add(polygonGraphic);
                    
                         
-                });
+                 });
+            }); 
         // End add Layer
         // Start add Legend
         // view.ui.add(new Legend({view: view}), "bottom-left");

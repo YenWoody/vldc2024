@@ -1,11 +1,16 @@
 <template name="upload">
-    <div class="upload" style="text-align: center"><b><p style ="margin-bottom: 30px">Tải dữ liệu lên</p></b>
-        <input type="filepicker"
-        id="filepickerAttachment"
-        data-fp-button-text="Add image" 
-        data-fp-mimetypes="image/*"
-        data-fp-container="modal"
-        data-fp-maxsize="5000000" 
-        data-fp-services="COMPUTER,IMAGE_SEARCH,URL,DROPBOX,GITHUB,GOOGLE_DRIVE,GMAIL">
+    <div class="upload" style="text-align: center">
+        <h2>Tải dữ liệu lên</h2>
+        <fieldset>
+          <div>
+            <input type="hidden" id="file-show" role="uploadcare-uploader" />
+          </div>
+          <p style="margin-top: 10px;margin-bottom: 10px;">
+            {{#if uuid}}
+            <a href="{{cdnUrl}}">{{uuid}}</a>
+            {{else}}Hiển thị link file sau khi upload{{/if}}
+          </p>
+        </fieldset>
+        {{> list}}
         </div>
 </template>

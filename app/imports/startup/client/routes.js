@@ -16,7 +16,7 @@ FlowRouter.route('/', {
 
  
 FlowRouter.route('/upload', {
-  name: 'upload',
+  name: 'App.upload',
   action() {
     this.render('BodyTemplate','upload');
   },

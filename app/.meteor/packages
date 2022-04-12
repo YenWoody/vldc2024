@@ -26,6 +26,6 @@ meteortesting:mocha               # A package for writing and running your meteo
 johanbrook:publication-collector  # Test a Meteor publication by collecting its output
 session
 natestrauser:select2
-mrt:filepicker
 mrt:loadpicker
 kadira:blaze-layout
+uploadcare:uploadcare-widget

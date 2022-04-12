@@ -1,27 +1,31 @@
 import './upload.html';
+import './list/list'
 import { Template }    from 'meteor/templating';
 import { Meteor }      from 'meteor/meteor';
-if(Meteor.isClient){
-Meteor.setTimeout(function(){
-  filepicker.setKey("AdlyLaK64Sj26Yd26tLGsz");
-},1000);
+import {ReactiveVar} from 'meteor/reactive-var'
+import uploadcare from 'meteor/uploadcare:uploadcare-widget'
 
 Template.upload.events({
-  'change #filepickerAttachment': function(evt){
-
-      console.log("Event: ", evt.originalEvent.fpfile.url, evt.originalEvent.fpfile.filename);
-  }
 });
-}
-// if(Meteor.isClient){
-//   Meteor.startup(function() {
-//     filepicker.setKey("YourFilepickerApiKey");
-//   });
-//   Template.yourTemplate.rendered = function(){
-//     filepicker.constructWidget($("#filepickerAttachment"));
-//   }
-//   Template.yourTemplate.events({
-//   'change #filepickerAttachment': function (evt) {
-//     console.log("Event: ", evt, evt.fpfile, "Generated image url:", evt.fpfile.url);
-//   });
-// });
+Template.upload.onRendered(function(){
+  let widget = uploadcare.Widget('[role=uploadcare-uploader]');
+  widget.onUploadComplete(info => {
+    // Handle the uploaded file info.
+    this.uuid.set(info.uuid)
+    this.cdnUrl.set(info.cdnUrl)
+  });
+});
+Template.upload.onCreated(function() {
+	this.uuid = new ReactiveVar('')
+	this.cdnUrl = new ReactiveVar('')
+
+});
+Template.upload.helpers({
+	uuid() {
+		return Template.instance().uuid.get()
+	},
+	cdnUrl() {
+		return Template.instance().cdnUrl.get()
+	},
+
+})
