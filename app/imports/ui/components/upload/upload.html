@@ -1,23 +1,37 @@
 <template name="uploadForm">
-  {{#with currentUpload}}
-    Uploading <b>{{file.name}}</b>: 
-    <span id="progress">{{progress.get}}%</span>
-  {{else}}
-    <input id="fileInput" type="file" />
-{{/with}}
-  {{> uploadedFiles}}
+  <div class ="upload">
+    <div class="upload-progress">
+      {{#with currentUpload}}
+        Uploading <b>{{file.name}}</b>: 
+        <span id="progress">{{progress.get}}%</span>
+      {{else}}
+      <label class="btn btn-outline-info btn-lg">
+       Tải lên tệp tin
+        <input id="fileInput" type="file" hidden/> 
+        <i class="fa fa-cloud-upload fa-lg" aria-hidden="true"></i>
+      </label>
+      {{/with}}
+    </div>
+    <div class="uploaded-files">
+      {{> uploadedFiles}}
+    </div>
+  </div>
 </template>
 <template name="uploadedFiles">
   {{#if uploadedFiles.count}}
-    <ul>
-      {{#each file in uploadedFiles.each}}
-        <li>
-          <a href="{{file.link}}?download=true" download="{{file.name}}">{{file.name}}</a>
-          <button class="delete" value ="{{file._id}}">&times;</button>
+  <ul class="list-group">
+      {{#each file in uploadedFiles.each}}       
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+
+        <span >{{file.name}}</span>
+     <span class="badge badge-primary badge-pill">
+     <a href="{{file.link}}?download=true" download="{{file.name}}"><i class="fa fa-download fa-lg" aria-hidden="true"></i></a>
+         <button class="delete" style ="border: none; background-color: white;" ><i class="fa fa-trash fa-lg" value ="{{file._id}}" aria-hidden="true"></i></button>
+          </span>
         </li>
       {{/each}}
     </ul>
   {{else}}
-    <div>No files uploaded, yet</div>
+    <div style =" margin-top: 10px;">Chưa có tài liệu được tải lên</div>
   {{/if}}
 </template>

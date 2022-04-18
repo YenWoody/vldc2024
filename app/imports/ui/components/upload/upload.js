@@ -2,7 +2,6 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import Files from '/lib/files.collection.js';
 import './upload.html';
-
 Template.uploadedFiles.helpers({
   uploadedFiles: function () {
     return Files.find();
@@ -40,7 +39,7 @@ Template.uploadForm.events({
           if (error) {
             window.alert('Error during upload: ' + error.reason);
           } else {
-            window.alert('File "' + fileObj.name + '" successfully uploaded');
+            window.alert('Tệp tin"' + fileObj.name + '" tải lên thành công');
           }
           template.currentUpload.set(false);
         });
@@ -50,11 +49,12 @@ Template.uploadForm.events({
     }
   },
   'click .delete'(file) { 
+    console.log(file);
     Files.remove({_id: `${file.target.attributes[1].nodeValue}`}, (error) => {
       if (error) {
         window.alertr(`File wasn't removed, error:  ${error.reason}`);
       } else {
-        window.alert('File successfully removed');
+        window.alert('Xóa thành công');
       }
     });
   }
