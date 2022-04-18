@@ -8,7 +8,9 @@ Template.uploadedFiles.helpers({
     return Files.find();
   }
 });
+Template.uploadedFiles.events({
 
+});
 Template.uploadForm.onCreated(function () {
   this.currentUpload = new ReactiveVar(false);
 });
@@ -46,5 +48,14 @@ Template.uploadForm.events({
         uploadInstance.start();
       }
     }
+  },
+  'click .delete'(file) { 
+    Files.remove({_id: `${file.target.attributes[1].nodeValue}`}, (error) => {
+      if (error) {
+        window.alertr(`File wasn't removed, error:  ${error.reason}`);
+      } else {
+        window.alert('File successfully removed');
+      }
+    });
   }
 });
