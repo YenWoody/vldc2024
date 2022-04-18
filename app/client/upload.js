@@ -34,7 +34,6 @@ Template.uploadForm.events({
         uploadInstance.on('start', function() {
           template.currentUpload.set(this);
         });
-
         uploadInstance.on('end', function(error, fileObj) {
           if (error) {
             window.alert('Error during upload: ' + error.reason);

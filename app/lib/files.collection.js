@@ -4,7 +4,7 @@ import { FilesCollection } from 'meteor/ostrio:files';
 const Files = new FilesCollection({
   debug: true,
   collectionName: 'Files',
-  allowClientCode: true, 
+  allowClientCode: true,
   storagePath: () => {
     return `../../../../../public/uploads/`;
 }
@@ -20,11 +20,12 @@ const Files = new FilesCollection({
 
 if (Meteor.isServer) {
   Files.denyClient();
-  Meteor.publish('files.images.all', function () {
+  Meteor.publish('files.all', function () {
+    console.log('Files.all', Files.find().cursor);
     return Files.find().cursor;
   });
 } else {
-  Meteor.subscribe('files.images.all');
+  Meteor.subscribe('files.all');
 }
 
 export default Files;
