@@ -19,7 +19,7 @@ FlowRouter.route('/', {
 FlowRouter.route('/upload', {
   name: 'App.upload',
   action() {
-    this.render('BodyTemplate','upload');
+    this.render('BodyTemplate','uploadForm');
   },
 });
 // 404 page
