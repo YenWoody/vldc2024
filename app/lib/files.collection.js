@@ -6,14 +6,14 @@ const Files = new FilesCollection({
   collectionName: 'Files',
   allowClientCode: true,
   storagePath: () => {
-    return `../../../../../public/uploads/`;
+    return `../../../../../.uploads/`;
 }
 });
 
 if (Meteor.isServer) {
   Files.denyClient();
   Meteor.publish('files.all', function () {
-    console.log('Files.all', Files);
+    // console.log('Files.all', Files);
     return Files.find().cursor;
   });
 } else {
