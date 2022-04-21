@@ -6,7 +6,7 @@ import '../../ui/pages/home/home.js';
 import '../../ui/pages/not-found/not-found.js';
 import '../../ui/pages/register/register.js';
 import '../../ui/pages/login/login.js';
-import '../../ui/pages/profile/profile.js';
+
 
 // Set up all routes in the app
 FlowRouter.route('/', {
@@ -36,9 +36,3 @@ FlowRouter.route('/login', {
   },
 });
 
-FlowRouter.route('/profile', {
-  name: 'App.profile',
-  action() {
-    this.render('BodyTemplate', 'user');
-  },
-});
