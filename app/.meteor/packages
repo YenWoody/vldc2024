@@ -26,16 +26,12 @@ meteortesting:mocha               # A package for writing and running your meteo
 johanbrook:publication-collector  # Test a Meteor publication by collecting its output
 session
 natestrauser:select2
-<<<<<<< HEAD
 mrt:loadpicker
 kadira:blaze-layout
 underscore
 ostrio:files
 fortawesome:fontawesome
-=======
 accounts-base
 accounts-password
 accounts-ui
 kadira:flow-router
-kadira:blaze-layout
->>>>>>> 6b5942adb40babaa998530e054ef8e78db4b7d91

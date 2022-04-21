@@ -2,7 +2,10 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import Files from '/lib/files.collection.js';
 import './upload.html';
+import '../../pages/login/login';
 import {fs} from 'fs';
+const getUser = () => Meteor.user();
+const isUserLogged = () => !!getUser();
 Template.uploadedFiles.helpers({
   uploadedFiles: function () {
     return Files.find();
@@ -15,6 +18,12 @@ Template.uploadForm.onCreated(function () {
 Template.uploadForm.helpers({
   currentUpload: function () {
     return Template.instance().currentUpload.get();
+  },
+  isUserLogged() {
+    return isUserLogged();
+  },
+  getUser() {
+      return getUser();
   }
 });
 

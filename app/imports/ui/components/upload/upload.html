@@ -1,5 +1,6 @@
 <template name="uploadForm">
   <div class ="upload">
+    {{#if isUserLogged}}
     <div class="upload-progress">
       {{#with currentUpload}}
         Uploading <b>{{file.name}}</b>: 
@@ -15,6 +16,9 @@
     <div class="uploaded-files">
       {{> uploadedFiles}}
     </div>
+    {{else}}
+    {{> login_form }}
+    {{/if}}
   </div>
 </template>
 <template name="uploadedFiles">
@@ -39,4 +43,5 @@
   {{else}}
     <div style =" margin-top: 10px;">Chưa có tài liệu được tải lên</div>
   {{/if}}
+
 </template>
