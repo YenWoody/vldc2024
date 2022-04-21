@@ -20,6 +20,7 @@
     "litepicker": "^2.0.12",
     "meteor-node-stubs": "^1.1.0",
     "nouislider": "^15.5.1",
+    "sweetalert2": "^11.4.8",
     "wnumb": "^1.2.0"
   },
   "devDependencies": {

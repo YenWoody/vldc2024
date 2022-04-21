@@ -12,7 +12,7 @@
 
 .header__references_home,
 .header__references_theme,
-.header__references_hire {
+.header__references_dashboard {
     color: #97B4DF !important
 }
 
@@ -290,7 +290,7 @@ footer a:hover {
     justify-content: flex-end
 }
 
-.header__references_home,.header__references_theme,.header__references_hire {
+.header__references_home,.header__references_theme,.header__references_dashboard {
     position: relative;
     font-size: 15px;
     text-decoration: none;
@@ -306,9 +306,9 @@ footer a:hover {
 .header__references_theme:active,
 .header__references_theme:focus,
 .header__references_theme:hover,
-.header__references_hire:active,
-.header__references_hire:focus,
-.header__references_hire:hover {
+.header__references_dashboard:active,
+.header__references_dashboard:focus,
+.header__references_dashboard:hover {
     text-decoration: none;
     color: #fff !important
 }
@@ -319,9 +319,9 @@ footer a:hover {
 .header__references_theme:active::after,
 .header__references_theme:focus::after,
 .header__references_theme:hover::after,
-.header__references_hire:active::after,
-.header__references_hire:focus::after,
-.header__references_hire:hover::after {
+.header__references_dashboard:active::after,
+.header__references_dashboard:focus::after,
+.header__references_dashboard:hover::after {
     position: absolute;
     top: 47px;
     left: 0;
@@ -460,7 +460,7 @@ footer a:hover {
 @media (max-width: 1280px) {
     header .header__references .header__references_home,
     header .header__references .header__references_theme,
-    header .header__references .header__references_hire {
+    header .header__references .header__references_dashboard {
         position:relative;
         font-size: 15px;
         color: #fff;
@@ -477,9 +477,9 @@ footer a:hover {
     header .header__references .header__references_theme:active,
     header .header__references .header__references_theme:focus,
     header .header__references .header__references_theme:hover,
-    header .header__references .header__references_hire:active,
-    header .header__references .header__references_hire:focus,
-    header .header__references .header__references_hire:hover {
+    header .header__references .header__references_dashboard:active,
+    header .header__references .header__references_dashboard:focus,
+    header .header__references .header__references_dashboard:hover {
         text-decoration: none;
         color: #fff !important
     }
@@ -490,9 +490,9 @@ footer a:hover {
     header .header__references .header__references_theme:active::after,
     header .header__references .header__references_theme:focus::after,
     header .header__references .header__references_theme:hover::after,
-    header .header__references .header__references_hire:active::after,
-    header .header__references .header__references_hire:focus::after,
-    header .header__references .header__references_hire:hover::after {
+    header .header__references .header__references_dashboard:active::after,
+    header .header__references .header__references_dashboard:focus::after,
+    header .header__references .header__references_dashboard:hover::after {
         position: absolute;
         top: 43px;
         left: 0;
@@ -519,4 +519,7 @@ footer a:hover {
         background-color: #E7F3FF;
         border-radius: 6px
     }
+}
+.bg-light.border.rounded-3.map-block.col-md-9 {
+    width: 100%;
 }

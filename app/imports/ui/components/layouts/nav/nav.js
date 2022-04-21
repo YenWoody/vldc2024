@@ -1,6 +1,12 @@
 import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
 
 import './nav.html';
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 6b5942adb40babaa998530e054ef8e78db4b7d91
 Template.nav.onCreated(function () {
 
 });
@@ -50,12 +56,23 @@ Template.nav.onRendered(() => {
     // Execute on load
     checkWidth();
 });
-
+const getUser = () => Meteor.user();
+const isUserLogged = () => !!getUser();
 Template.nav.helpers({
-
+    isUserLogged() {
+        return isUserLogged();
+    }
 });
 
 Template.nav.events({
+<<<<<<< HEAD
     'click #uploadfile': function(){
+=======
+    'click .header__references_logout'() {
+        Meteor.logout();
+>>>>>>> 6b5942adb40babaa998530e054ef8e78db4b7d91
     }
 });
+
+
+  
