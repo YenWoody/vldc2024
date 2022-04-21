@@ -7,13 +7,20 @@ const Files = new FilesCollection({
   allowClientCode: true,
   storagePath: () => {
     return `../../../../../.uploads/`;
-}
+  },
+  onBeforeUpload: file => {
+    // Giới hạn định dạng file
+    if (/zip|csv|txt/i.test(file.extension)) {
+      return true;
+    } else {
+      return 'Vui lòng chọn file có đuôi zip, csv hoặc txt';
+    }
+  },
 });
 
 if (Meteor.isServer) {
   Files.denyClient();
   Meteor.publish('files.all', function () {
-    // console.log('Files.all', Files);
     return Files.find().cursor;
   });
 } else {

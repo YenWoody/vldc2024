@@ -2,13 +2,11 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import Files from '/lib/files.collection.js';
 import './upload.html';
+import {fs} from 'fs';
 Template.uploadedFiles.helpers({
   uploadedFiles: function () {
     return Files.find();
   }
-});
-Template.uploadedFiles.events({
-
 });
 Template.uploadForm.onCreated(function () {
   this.currentUpload = new ReactiveVar(false);
@@ -26,6 +24,7 @@ Template.uploadForm.events({
       // We upload only one file, in case
       // there was multiple files selected
       var file = e.currentTarget.files[0];
+      console.log(file,"file");
       if (file) {
         var uploadInstance = Files.insert({
           file: file,
@@ -37,7 +36,7 @@ Template.uploadForm.events({
         });
         uploadInstance.on('end', function(error, fileObj) {
           if (error) {
-            window.alert('Error during upload: ' + error.reason);
+            window.alert('Lỗi trong quá trình tải lên: ' + error.reason);
           } else {
             window.alert('Tệp tin"' + fileObj.name + '" tải lên thành công');
           }
@@ -49,7 +48,6 @@ Template.uploadForm.events({
     }
   },
   'click .delete'(file) { 
-    console.log(file);
     Files.remove({_id: `${file.target.attributes[1].nodeValue}`}, (error) => {
       if (error) {
         window.alertr(`File wasn't removed, error:  ${error.reason}`);
