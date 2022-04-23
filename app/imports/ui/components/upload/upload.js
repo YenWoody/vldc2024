@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import Files from '/lib/files.collection.js';
 import './upload.html';
 import '../../pages/login/login';
-import {fs} from 'fs';
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.uploadedFiles.helpers({
@@ -26,7 +25,13 @@ Template.uploadForm.helpers({
       return getUser();
   }
 });
-
+// Template.uploadForm.onRendered(function () {
+//   this.autorun(() => {
+//     if (isUserLogged()) {
+//         FlowRouter.go('/upload');
+//     }
+//   }); 
+// });
 Template.uploadForm.events({
   'change #fileInput': function (e, template) {
     if (e.currentTarget.files && e.currentTarget.files[0]) {

@@ -19,7 +19,7 @@ Template.login.events({
             'Bạn đã đăng nhập thành công!',
             'success'
           )
-      }       
+      }      
     });
   },
 });
