@@ -753,7 +753,7 @@ Template.map.onRendered(() => {
             group: "bottom-right"
           });
         view.ui.add(ccWidget,"manual");  
-
+        ccWidget.multipleConversions = false;
         document.getElementById("infoDiv").style.display = "block";
         
     }).catch(err => {
