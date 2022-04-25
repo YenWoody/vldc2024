@@ -31,3 +31,7 @@ kadira:blaze-layout
 underscore
 ostrio:files
 fortawesome:fontawesome
+accounts-base
+accounts-password
+accounts-ui
+kadira:flow-router

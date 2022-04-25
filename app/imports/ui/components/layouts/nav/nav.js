@@ -1,6 +1,9 @@
 import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
 
 import './nav.html';
+
+
 Template.nav.onCreated(function () {
 
 });
@@ -50,12 +53,22 @@ Template.nav.onRendered(() => {
     // Execute on load
     checkWidth();
 });
-
+const getUser = () => Meteor.user();
+const isUserLogged = () => !!getUser();
 Template.nav.helpers({
-
+    isUserLogged() {
+        return isUserLogged();
+    }
 });
 
 Template.nav.events({
     'click #uploadfile': function(){
+        
+    },
+    'click .header__references_logout'() {
+        Meteor.logout();
     }
 });
+
+
+  

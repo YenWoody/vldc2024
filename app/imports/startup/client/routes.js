@@ -4,8 +4,12 @@ import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import '../../ui/layouts/body/body.js';
 import '../../ui/pages/home/home.js';
 import '../../ui/pages/not-found/not-found.js';
-// import '../../ui/pages/upload/upload.js';
+import '../../ui/components/dashboard/dashboard.js';
 import '../../ui/components/upload/upload.js';
+import '../../ui/pages/register/register.js';
+import '../../ui/pages/login/login.js';
+
+
 // Set up all routes in the app
 FlowRouter.route('/', {
   name: 'App.home',
@@ -22,6 +26,12 @@ FlowRouter.route('/upload', {
     this.render('BodyTemplate','uploadForm');
   },
 });
+FlowRouter.route('/dashboard', {
+  name: 'App.dashboard',
+  action() {
+    this.render('BodyTemplate','dashboard');
+  },
+});
 // 404 page
 FlowRouter.route('*', {
   action() {
@@ -29,3 +39,18 @@ FlowRouter.route('*', {
   );
   },
 });
+
+FlowRouter.route('/register', {
+  name: 'App.register',
+  action() {
+    this.render('BodyTemplate', 'register_form');
+  },
+});
+
+FlowRouter.route('/login', {
+  name: 'App.login',
+  action() {
+    this.render('BodyTemplate', 'login_form');
+  },
+});
+

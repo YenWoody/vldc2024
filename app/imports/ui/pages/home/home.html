@@ -1,5 +1,6 @@
 <template name="home">
-    <div class="content container--fluid">
+    <div class=" content container--fluid">
+        {{#if isUserLogged}}
         <div class="row">
             <div class="bg-light border rounded-3 col-md-9 p-0">
                 {{> map}}
@@ -19,6 +20,15 @@
                 </thead>
             </table>
         </div>
+            <!-- <div class="bg-light border rounded-3 col-md-3">
+                {{> filter}}
+                <div class="d-grid gap-2">
+                    <div class="btn btn-primary" type="button">Filter</div>
+                </div>
+            </div> -->
         </div>
+        {{else}}
+            {{> login_form }}
+        {{/if}}
     </div>
 </template>
