@@ -36,7 +36,8 @@ Template.map.onRendered(() => {
         'esri/widgets/Slider',
         'esri/widgets/BasemapToggle',
         'esri/widgets/CoordinateConversion',
-    ]).then(([
+        'esri/layers/WebTileLayer',
+    ]).then(([  
                  Map,
                  MapView,
                  VectorTileLayer,
@@ -53,7 +54,8 @@ Template.map.onRendered(() => {
                  Query,
                  Slider,
                  BasemapToggle,
-                 CoordinateConversion
+                 CoordinateConversion,
+                 WebTileLayer,
              ]) => {
         /**
          * init basemap
@@ -68,12 +70,23 @@ Template.map.onRendered(() => {
         const weMapVectorTile = new VectorTileLayer({
             url: 'https://vector.wemap.asia/styles/osm-bright/style.json',
         });
+        const satelliteLayer = new WebTileLayer({
+            urlTemplate: 'https://mts1.google.com/vt?lyrs=s&x={x}&y={y}&z={z}',
+        });
+        const satellite = new Basemap({
+            baseLayers: [satelliteLayer ,adminSea],
+            title: "Satellite",
+            id: "Satellite",
+            thumbnailUrl: "https://s3.amazonaws.com/digitaltrends-uploads-prod/2016/08/Google-Earth-Header.jpg"
+        });
         const weMap = new Basemap({
             // baseLayers: [tileLayer, adminBasemap, adminSea],
             baseLayers: [weMapVectorTile, adminSea],
             title: 'WeMap',
             id: 'WeMap',
+            thumbnailUrl: "https://stamen-tiles.a.ssl.fastly.net/terrain/10/177/409.png"
         });
+    
         // Define popup for Parks and Open Spaces
         const stationPopupTemplate = {
             "title": "Station",
@@ -696,21 +709,13 @@ Template.map.onRendered(() => {
             container: document.createElement("div")
         });
 
-        let basemapToggle = new BasemapToggle({
-            viewModel: {
-                view: view,
-                basemaps:
-                    {
-                    "weMap":{
-                        "title":"WeMap",
-                        "thumbnailUrl":"https://stamen-tiles.a.ssl.fastly.net/terrain/10/177/409.png"
-                    },
-                    "satellite":{
-                        "title":"satellite"
-                    }
-                }
+        const basemapToggle = new BasemapToggle({
+            view: view,
+            nextBasemap: satellite,
+            visibleElements: {
+              title: true
             },
-        });
+         });
         view.ui.add(basemapToggle, "bottom-right");
 
         // Create an Expand instance and set the content
