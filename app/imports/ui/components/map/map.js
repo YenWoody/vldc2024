@@ -12,6 +12,7 @@ Template.map.onCreated(() => {
     });
     loadCss('https://js.arcgis.com/4.22/esri/themes/light/main.css');
     loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
+    loadCss('https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css');
     datatables(window, $);
     datatables_bs(window, $);
 });
@@ -584,10 +585,15 @@ Template.map.onRendered(() => {
                       });
                       const table = $('#dulieu').DataTable({
                           data : dataSet,
-                        //   "bFilter": false,
                           "paging": false,
                           "destroy": true,
-                          "dom": '<"toolbar">frtip',
+                          'buttons': [
+                            {
+                                extend: 'excel',
+                                split: [ 'copy', 'csv' ],
+                            }
+                            ],
+                          'dom': 'Bfrtip',
                           "scrollX": 'true',
                           "scrollY": "250",
                           "language": {
@@ -637,10 +643,16 @@ Template.map.onRendered(() => {
               .then(function(response){
                const dataSet = response.features
               const table = $('#dulieu').DataTable({
-                  data : dataSet,
+                data : dataSet,
+                'buttons': [
+                      {
+                          extend: 'excel',
+                          split: [ 'copy', 'csv' ],
+                      }
+                  ],
+                'dom': 'Bfrtip',
                 "paging": false,
                 "destroy": true,
-                "dom": '<"toolbar">frtip',
                 "scrollX": 'true',
                 "scrollY": "250",
                 "language": {
@@ -659,17 +671,9 @@ Template.map.onRendered(() => {
                 ],
 
                 });  
-          
                 $('#dulieu tbody').off('click', 'tr');
                 $('#dulieu tbody').on('click', 'tr', function () {
                 const data = $('#dulieu').DataTable().row(this).data();
-                    // var fillSymbol = {
-                    //     type: "simple-marker", // autocasts as new SimpleFillSymbol
-                    //     color: [0, 191, 255,0.8],
-                    //     outline: {
-                    //     color: [0, 191, 255,0.8],
-                    //     },
-                    // };
                  console.log(data,"data");
                  view.whenLayerView(data.layer).then(function(layerView){
                         if (highlightSelect) {
@@ -680,18 +684,7 @@ Template.map.onRendered(() => {
                             geometry: data.geometry,
                             zoom: 6,
                         });
-                  });
-                    // var polygonGraphic = new Graphic({
-                    //         geometry: {
-                    //             type: "point",
-                    //             latitude: data.geometry.latitude,
-                    //             longitude: data.geometry.longitude,
-                    //         }, 
-                    //         symbol: fillSymbol,
-                    // });
-                    // view.graphics.add(polygonGraphic);
-                   
-                        
+                  });    
                  });
             }); 
         // End add Layer
@@ -726,12 +719,6 @@ Template.map.onRendered(() => {
             content: basemapGallery,
             group: "top-right"
         });
-
-        // view.ui.add(bgExpand, "top-right");
-        // view.ui.add(bgExpand, {
-        //     position: "top-right"
-        // });
-
         view.on("click", (event) => {
 
         });
@@ -765,29 +752,6 @@ Template.map.onRendered(() => {
         // handle any errors
         console.error(err);
     });
-
-    // function queryStation(extent) {
-
-    //     const parcelQuery = {
-    //      where: `station LIKE '%VCVB%'`,  // Set by select element
-    //      spatialRelationship: "intersects", // Relationship operation to apply
-    //      outFields: "*", // Attributes to return
-    //      returnGeometry: true
-    //     };
-
-    //     stationLayer.queryFeatures(parcelQuery)
-
-    //     .then((results) => {
-
-    //       console.log("Feature count: " + results.features.length)
-
-    //       displayResults(results);
-
-    //     }).catch((error) => {
-    //       console.log(error.error);
-    //     });
-    // };
-
 });
 
 Template.map.helpers({});
