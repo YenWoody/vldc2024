@@ -90,22 +90,23 @@
     -webkit-transition: all .1s;
     transition: all .1s
 }
-
-footer {
-    position: relative;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-bottom: 0 !important;
-    margin-top: 50px
+body {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
 }
+footer {
 
+    background-size: auto !important;
+}
 footer .content-bottom {
     // background-color: rgba(26,12,54,0.18);
     background-color: #202020;
     opacity: 0.8;
     border-top: 1px solid rgba(255,255,255,0.1);
     width: 100%;
-    height: 87px
+    height: 87px;
+    margin-top : 20px;
 }
 
 footer .content-bottom .footer-references a {
@@ -173,11 +174,15 @@ footer a:hover {
 }
 
 .content {
+    height: -webkit-fill-available;
     margin: 0 auto;
     padding: 0 20px;
     //width: 1200px
-}
 
+}
+.row {
+    height: -webkit-fill-available;
+}
 .content.content--fluid {
     width: auto;
     margin: 0 40px
@@ -379,7 +384,7 @@ footer a:hover {
     }
 
     .section--header {
-        padding-bottom: 100px
+        padding-bottom: 30px
     }
 
     .section--padding {

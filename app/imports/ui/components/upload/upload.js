@@ -38,7 +38,6 @@ Template.uploadForm.events({
       // We upload only one file, in case
       // there was multiple files selected
       var file = e.currentTarget.files[0];
-      console.log(file,"file");
       if (file) {
         var uploadInstance = Files.insert({
           file: file,
