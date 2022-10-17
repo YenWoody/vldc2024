@@ -464,23 +464,6 @@ Template.map.onRendered(() => {
             listMode: 'show',
             renderer: renderer,
         });
-
-
-        // const query = new Query();
-        // query.where = `depth >= 1`;
-        // // query.outSpatialReference = { wkid: 102100 };
-        // query.returnGeometry = true;
-        // // query.outFields = [ "year" ];
-
-        // eventsLayer.queryFeatures(query).then(function (results) {
-        //     const mydepth = results.features;
-        //     Session.set('depthslider', mydepth);
-        // });
-
-        // Tracker.autorun(function () {
-        //     var sessionData = Session.get('mydepth');
-        // });
-
         const depthSlider = new Slider({
             container: "depthSlider",
             min: 0,

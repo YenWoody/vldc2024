@@ -1,15 +1,14 @@
-const fs = require('fs')
-const pg = require('pg')
-
+const fs = require('fs');
+const pg = require('pg');
 // config db
 const PG_HOST = 'localhost'
 const PG_PORT = '5432'
 const PG_DATABASE = 'postgres'
 const PG_USER = 'postgres'
-const PG_PASSWORD = '0'
+const PG_PASSWORD = ''
 
 // config folder path
-const DIR_PATH = './Seismo/Seismo/REA/VIEBB'
+const DIR_PATH = 'Seismo/REA/VIEBB'
 
 const pool = new pg.Pool({
 	host: PG_HOST,
@@ -19,10 +18,11 @@ const pool = new pg.Pool({
 	password: PG_PASSWORD,
 })
 
-run()
+run();
 
 function run () {
 	let files = readDir()
+	console.log(files,"file nefdddddddddd")
 	let p = Promise.resolve()
 	files.forEach((file) => {
 		let { event, event_station } = readFile(file)
@@ -54,23 +54,29 @@ function readDir () {
 			})
 		})
 	})
+	console.log(result,"file nefdddddddddd")
 	return result
+
 }
 
 function readFile (path) {
 	let content = fs.readFileSync(path).toString()
 	let lines = content.split('\r\n')
 	let headerLine = lines.findIndex(e => e.match(/ STAT /))
-
+	console.log(path,"path ne");
 	let event = {}
 	let m = path.match(/\/([0-9]{2})-([0-9]{2})([0-9]{2})-([0-9]{2})(L|R)\.S([0-9]{4})([0-9]{2})$/)
 	event.datetime = new Date(Number(m[6]), Number(m[7]) - 1, Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]))
+	console.log(m,"m la gi")
+	console.log(Number(m[7]),"Number(m[6])")
+	console.log(event.datetime,"datetime")
 	let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
 	if (m1 != null) {
 		event.lat = m1[1]
 		event.long = m1[2]
 	}
 	let pathName = path.split(/\/(?=[^\/]+$)/g)
+	console.log(pathName,"pathName ne")
 	event.file_data_name = pathName[1]
 	event.file_data_path = pathName[0]
 	

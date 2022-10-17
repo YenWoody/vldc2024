@@ -20,6 +20,12 @@
     {{> login_form }}
     {{/if}}
   </div>
+  <!-- <div class = "read">
+    <h3>Nội dung thô của tệp:</h3>
+    <pre id="file-content">Vui lòng upload file.</pre>
+    <h3>Nội dung của tệp đã phân tích cú pháp:</h3>
+    <pre id="file-parsed">Vui lòng upload file.</pre>
+  </div> -->
 </template>
 <template name="uploadedFiles">
   {{#if uploadedFiles.count}}
@@ -34,14 +40,15 @@
           {{file.size}}<span> byte</span>
         </div>
         <span class="badge badge-primary badge-pill">
-            <a href="{{file.link}}?download=true" download="{{file.name}}"><i class="fa fa-download fa-lg" aria-hidden="true"></i></a>
+          <button style ="border: none; background-color: white;" ><a href="{{file.link}}?download=true" download="{{file.name}}"><i class="fa fa-download fa-lg" aria-hidden="true"></i></a></button>
+            <!-- <button class="import" style ="border: none; background-color: white;" ><i class="fa fa-database fa-lg" value ="{{file._id}}"       aria-hidden="true"></i></button> -->
               <button class="delete" style ="border: none; background-color: white;" ><i class="fa fa-trash fa-lg" value ="{{file._id}}" aria-hidden="true"></i></button>
         </span>
       </li>
       {{/each}}
     </ul>
+   
   {{else}}
     <div style =" margin-top: 10px;">Chưa có tài liệu được tải lên</div>
   {{/if}}
-
 </template>

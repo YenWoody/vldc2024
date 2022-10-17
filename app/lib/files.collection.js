@@ -9,12 +9,14 @@ const Files = new FilesCollection({
     return `../../../../../.uploads/`;
   },
   onBeforeUpload: file => {
+    console.log(file,"file222222222")
     // Giới hạn định dạng file
-    if (/zip|csv|txt/i.test(file.extension)) {
+    if (/zip/i.test(file.extension)) {
       return true;
     } else {
-      return 'Vui lòng chọn file có đuôi zip, csv hoặc txt';
+      return 'Vui lòng chọn file có đuôi zip';
     }
+
   },
 });
 

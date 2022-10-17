@@ -3,6 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import Files from '/lib/files.collection.js';
 import './upload.html';
 import '../../pages/login/login';
+import JSZip from 'jszip';
+
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.uploadedFiles.helpers({
@@ -41,32 +43,76 @@ Template.uploadForm.events({
       if (file) {
         var uploadInstance = Files.insert({
           file: file,
+          // fileId: file.name.slice(0, 11),
           chunkSize: 'dynamic'
         }, false);
-
-        uploadInstance.on('start', function() {
+        uploadInstance.on('start', function () {
           template.currentUpload.set(this);
         });
-        uploadInstance.on('end', function(error, fileObj) {
+        const contentFile = [];
+        const pathFile = []
+        // Read Zip File
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          JSZip.loadAsync(ev.target.result).then(function (zip) {
+            var zippedFiles = zip.files;
+            Object.keys(zippedFiles).forEach(function (key) {
+              if (key.match(/([0-9]{2})-([0-9]{2})([0-9]{2})-([0-9]{2})(L|R)\.S([0-9]{4})([0-9]{2})$/) != null) {
+                contentFile.push(zippedFiles[key].async("string"));
+                pathFile.push(key);
+              }
+            })
+            Promise.all(contentFile).then(function (data) {
+              if (data.length > 0) {
+                Meteor.call('importFile',data,pathFile, (error) => {
+                  if (error) {
+                    window.alert(`Không thể import data do lỗi:  ${error.reason}`);
+                  } else {
+                    window.alert("Cài dữ liệu vào database thành công! Tiến trình tải lên đang tiếp tục! ");
+                  }
+                })
+              }
+              else {
+                window.alert(`Không thể import data do tệp không đúng định dạng, tiến trình tải lên vẫn tiếp tục!`)
+              }
+             
+            });
+          })
+        };
+        reader.readAsBinaryString(file);
+        // End Read Zip File
+        uploadInstance.on('end', function (error, fileObj) {
           if (error) {
             window.alert('Lỗi trong quá trình tải lên: ' + error.reason);
           } else {
-            window.alert('Tệp tin"' + fileObj.name + '" tải lên thành công');
+            window.alert('Tệp tin"' + fileObj.name + '" tải lên thành công!');
           }
           template.currentUpload.set(false);
         });
-
         uploadInstance.start();
       }
     }
+
   },
   'click .delete'(file) { 
-    Files.remove({_id: `${file.target.attributes[1].nodeValue}`}, (error) => {
-      if (error) {
-        window.alertr(`File wasn't removed, error:  ${error.reason}`);
-      } else {
-        window.alert('Xóa thành công');
-      }
-    });
-  }
+    console.log(Files,"FIles")
+    var remove = file.target.attributes[1].nodeValue
+    Meteor.call('remove',remove,(error)=>{if (error) {
+      window.alert(`File wasn't removed, error:  ${error.reason}`);
+    } else {
+      window.alert('Xóa thành công');
+    }});
+   
+  },
+  // 'click .import'(file) { 
+  //   console.log(file.target.attributes,"file.target.attributes")
+  //   var files= Files.findOne({_id: `${file.target.attributes[1].nodeValue}`});
+  //   console.log(files,"files")
+  //   Meteor.call('importFile',files._storagePath,(error)=>{if (error) {
+  //     window.alert(`Can't Import File to Database:  ${error.reason}`);
+  //   } else {
+  //     window.alert("Import vào database thành công ");
+  //   }})
+    
+  // }
 });
