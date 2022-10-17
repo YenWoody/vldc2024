@@ -104,15 +104,5 @@ Template.uploadForm.events({
     }});
    
   },
-  // 'click .import'(file) { 
-  //   console.log(file.target.attributes,"file.target.attributes")
-  //   var files= Files.findOne({_id: `${file.target.attributes[1].nodeValue}`});
-  //   console.log(files,"files")
-  //   Meteor.call('importFile',files._storagePath,(error)=>{if (error) {
-  //     window.alert(`Can't Import File to Database:  ${error.reason}`);
-  //   } else {
-  //     window.alert("Import vào database thành công ");
-  //   }})
-    
-  // }
+
 });
