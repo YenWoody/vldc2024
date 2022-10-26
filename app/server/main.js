@@ -5,8 +5,143 @@ import { Meteor } from 'meteor/meteor';
 import Files from '/lib/files.collection.js';
 import fs from 'fs';
 import pg from 'pg';
+import { check } from 'meteor/check';
+import { Accounts } from 'meteor/accounts-base';
+import { Event } from '/imports/db/event';
+import '/imports/db/eventPublications';
+// async function main() {
+//     const PG_HOST = 'localhost'
+//     const PG_PORT = '5432'
+//     const PG_DATABASE = 'postgres'
+//     const PG_USER = 'postgres'
+//     const PG_PASSWORD = ''
+//     // const DIR_PATH = f
+//     const pool = new pg.Pool({
+//         host: PG_HOST,
+//         port: PG_PORT,
+//         database: PG_DATABASE,
+//         user: PG_USER,
+//         password: PG_PASSWORD,
+//     })
+// await pool.query(
+//     `SELECT *
+//       FROM event;`
+// ).then((data) => {
+//     return Event.insert(data)
+// })
+// }
+Meteor.startup(function () {
+    /// Start
+    // config db
+    const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'postgres'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
+    pool.query(
+        `SELECT *
+          FROM event;`
+    ).then((data) => {
+        return Event.insert(data)
+    })
+    pool.query(
+        `SELECT *
+          FROM event_station;`
+    ).then((data) => {
+        console.log(data, "event_station")
+        return data
+    })
+    // End
+    process.env.MAIL_URL = 'smtps://yenph@fimo.edu.vn:Giaothongvantai123@@smtp.gmail.com:465/';
+    Accounts.emailTemplates.siteName = 'Vật Lí Địa Cầu';
+    Accounts.emailTemplates.from = 'Vật Lí Địa Cầu Admin';
+    Accounts.emailTemplates.enrollAccount.subject = (user) => {
+        return `Chào mừng bạn đến với website Vật Lí Địa Cầu, ${user.profile.name}`;
+    };
+
+    Accounts.emailTemplates.enrollAccount.text = (user, url) => {
+        return 'You have been selected to participate in building a better future!'
+            + ' To activate your account, simply click the link below:\n\n'
+            + url;
+    };
+
+    Accounts.emailTemplates.resetPassword.from = () => {
+        // Overrides the value set in `Accounts.emailTemplates.from` when resetting
+        // passwords.
+        return 'Vật Lí Địa Cầu - Khôi phục mật khẩu <no-reply@example.com>';
+    };
+    Accounts.emailTemplates.resetPassword.html = (user, url) => {
+        // Overrides the value set in `Accounts.emailTemplates.from` when resetting
+        // passwords.
+        return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+        style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+        <tr>
+            <td style="height:40px;">&nbsp;</td>
+        </tr>
+        <tr>
+            <td style="padding:0 35px;">
+                <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Bạn đã yêu cầu đặt lại mật khẩu của mình</h1>
+                <span
+                    style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                Chúng tôi không thể chỉ gửi cho bạn mật khẩu cũ. Một liên kết duy nhất để đặt lại mật khẩu của bạn đã được tạo cho bạn. Để đặt lại mật khẩu của bạn, hãy nhấp vào liên kết sau và làm theo hướng dẫn.
+                </p>
+                <a href="${url}"
+                    style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Khôi phục mật khẩu</a>
+            </td>
+        </tr>
+        <tr>
+            <td style="height:40px;">&nbsp;</td>
+        </tr>
+    </table>`;
+    };
+    //   Accounts.emailTemplates.resetPassword.text = (user, url) =>{
+
+    //   return `Chào bạn ${user.username} Để khôi phục mật khẩu, bạn vui lòng click vào đường link phía dưới:  ${url}`
+    // }
+    Accounts.emailTemplates.resetPassword.subject = () => {
+        return `Khôi phục mật khẩu - Vật Lí Địa Cầu`
+    }
+    Accounts.emailTemplates.verifyEmail = {
+        subject() {
+            return "Kích hoạt tài khoản - Vật Lí Địa Cầu";
+        },
+        html(user, url) {
+            return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+          style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+          <tr>
+              <td style="height:40px;">&nbsp;</td>
+          </tr>
+          <tr>
+              <td style="padding:0 35px;">
+                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Chúc mừng bạn đã đăng kí thành công tài khoản tại Vật Lí Địa Cầu</h1>
+                  <span
+                      style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                  <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                  Trước khi bắt đầu, chúng tôi cần xác minh email của bạn.
+                  </p>
+                  <a href="${url}"
+                      style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Kích hoạt Email</a>
+              </td>
+          </tr>
+          <tr>
+              <td style="height:40px;">&nbsp;</td>
+          </tr>
+      </table>`
+        }
+    };
+
+});
 Meteor.methods({
-    'importFile': function (contentFile,pathFile) {
+    'importFile': function (contentFile, pathFile) {
         // config db
         const PG_HOST = 'localhost'
         const PG_PORT = '5432'
@@ -21,10 +156,10 @@ Meteor.methods({
             user: PG_USER,
             password: PG_PASSWORD,
         })
-        function run(contentFile,pathFile) {
+        function run(contentFile, pathFile) {
             let p = Promise.resolve();
-            for (i=0;i<contentFile.length;i++){
-                let { event, event_station } = readFile(contentFile[i],pathFile[i])
+            for (i = 0; i < contentFile.length; i++) {
+                let { event, event_station } = readFile(contentFile[i], pathFile[i])
                 p = p.then(() => {
                     return insertEvent(event)
                 }).then(({ rows: [{ id }] }) => {
@@ -39,55 +174,55 @@ Meteor.methods({
                 })
             }
         }
-        function readFile(contentFile,pathFile) {   
+        function readFile(contentFile, pathFile) {
             let content = contentFile
             let lines = content.split('\r\n')
             let headerLine = lines.findIndex(e => e.match(/ STAT /))
             let event = {}
             let m = pathFile.match(/([0-9]{2})-([0-9]{2})([0-9]{2})-([0-9]{2})(L|R)\.S([0-9]{4})([0-9]{2})$/);
-            if (m != null){
+            if (m != null) {
                 event.datetime = new Date(Number(m[6]), Number(m[7]) - 1, Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]))
-          
+
             }
-                let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
-                if (m1 != null) {
-                    event.lat = m1[1]
-                    event.long = m1[2]
+            let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
+            if (m1 != null) {
+                event.lat = m1[1]
+                event.long = m1[2]
+            }
+            let pathName = pathFile.split(/\/(?=[^\/]+$)/g)
+            event.file_data_name = pathName[1]
+            event.file_data_path = pathName[0]
+            let event_station = []
+            let keys = lines[headerLine].match(/[^ ]+/g)
+            keys = keys.filter((e, i) => keys.indexOf(e) === i)
+            keys = keys.map((key) => {
+                let start = lines[headerLine].search(new RegExp(`(?<=[ ])${key}(?=( |$))`))
+                let key1 = key.toLowerCase()
+                return { key, key1, start }
+            })
+            lines.slice(headerLine + 1).forEach((elem) => {
+                if (elem.match(/\S/)) {
+                    let o = keys.reduce((obj, { key, key1, start }, ind) => {
+                        let length = key.length
+                        /*
+                        Giá trị của cột key = elem.substr(start, length) mở rộng sang 2 phía =
+                        (-?[^ -]*(?![ ]))?
+                        + (?<=^.{${start}})(.{${length}}) = elem.substr(start, length)
+                        + ((?<![ ])[^ -]+)?
+                        */
+                        let temp = elem.match(new RegExp(`(-?[^ -]*(?![ ]))?(?<=^.{${start}})(.{${length}})((?<![ ])[^ -]+)?`))
+                        if (temp[1] && ind > 0 && temp.index < (keys[ind - 1].start + keys[ind - 1].key.length)) {
+                            // giá trị thuộc về cột trước
+                            obj[key1] = null
+                        } else {
+                            obj[key1] = temp[0].replace(/^[ ]+|[ ]+$/g, '') || null
+                        }
+                        return obj
+                    }, {})
+                    event_station.push(o)
                 }
-                let pathName = pathFile.split(/\/(?=[^\/]+$)/g)
-                event.file_data_name = pathName[1]
-                event.file_data_path = pathName[0]
-                let event_station = []
-                let keys = lines[headerLine].match(/[^ ]+/g)
-                keys = keys.filter((e, i) => keys.indexOf(e) === i)
-                keys = keys.map((key) => {
-                    let start = lines[headerLine].search(new RegExp(`(?<=[ ])${key}(?=( |$))`))
-                    let key1 = key.toLowerCase()
-                    return { key, key1, start }
-                })
-                lines.slice(headerLine + 1).forEach((elem) => {
-                    if (elem.match(/\S/)) {
-                        let o = keys.reduce((obj, { key, key1, start }, ind) => {
-                            let length = key.length
-                            /*
-                            Giá trị của cột key = elem.substr(start, length) mở rộng sang 2 phía =
-                            (-?[^ -]*(?![ ]))?
-                            + (?<=^.{${start}})(.{${length}}) = elem.substr(start, length)
-                            + ((?<![ ])[^ -]+)?
-                            */
-                            let temp = elem.match(new RegExp(`(-?[^ -]*(?![ ]))?(?<=^.{${start}})(.{${length}})((?<![ ])[^ -]+)?`))
-                            if (temp[1] && ind > 0 && temp.index < (keys[ind - 1].start + keys[ind - 1].key.length)) {
-                                // giá trị thuộc về cột trước
-                                obj[key1] = null
-                            } else {
-                                obj[key1] = temp[0].replace(/^[ ]+|[ ]+$/g, '') || null
-                            }
-                            return obj
-                        }, {})
-                        event_station.push(o)
-                    }
-                })            
-                return { event, event_station }
+            })
+            return { event, event_station }
         }
 
         function insertEvent(event) {
@@ -115,7 +250,16 @@ Meteor.methods({
                 values,
             )
         }
+        // function query() {
+        //     pool.query(
+        //         `SELECT *
+        //   FROM event;`
+        //     ).then((data) => {
+        //         console.log(data, "conákjkjkjkjkjsa")
+        //     })
 
+        // }
+        // query()
         function insertEvent_station(event_station) {
             let values = []
             let s1 = ''
@@ -141,12 +285,18 @@ Meteor.methods({
                 values,
             )
         }
-        return run(contentFile,pathFile);
+        return run(contentFile, pathFile);
     },
-
-
     'remove': function (file) {
         Files.remove({ _id: `${file}` });
-
     },
+    'verify': (username) => {
+        var info = Accounts.findUserByUsername(username);
+        Accounts.sendVerificationEmail(info._id)
+    },
+    'reset': (email) => {
+        check(email, String);
+        var info = Accounts.findUserByEmail(email);
+        Accounts.sendResetPasswordEmail(info._id)
+    }
 })

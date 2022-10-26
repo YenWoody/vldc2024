@@ -1,11 +1,20 @@
 import './dashboard.html';
 import { Template } from 'meteor/templating';
 import '../../pages/login/login';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
+import  Swal  from 'sweetalert2/dist/sweetalert2.js';
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.dashboard.helpers({
+    userVerified () {
+    // const user = Meteor.user();
+    // return user.emails[0].verified;
+    if ( Meteor.user() && Meteor.user().emails ) 
+    return Meteor.user().emails[0].verified; // look at the current user
+    else return false;
+  },
     isUserLogged() {
       return isUserLogged();
     },
@@ -52,7 +61,31 @@ Template.dashboard.onCreated(function() {
    
 
 });
-Template.dashboard.onRendered(function() {
+Template.dashboard.events({
+   'click #changepassword': function(){
+    document.getElementById('thongke').style = 'display:none';
+    document.getElementById('changepassword_form').style = 'display: grid;justify-items: center';
 
+   },
+   'submit .changepassword-form' (event){
+    event.preventDefault();
+    const { target } = event;
+    console.log("test")
+    const oldpassword = target.oldpassword.value;
+    const newpassword = target.newpassword.value;
+    Meteor.call('changePassword',oldpassword,newpassword,function(error){
+      if(error){
+        Swal.fire(error.reason); // Output error if registration fails
+      } else {
+        Swal.fire(
+            'Chúc mừng!',
+            'Bạn đã đổi mật khẩu thành công!',
+            'success'
+          );
+          FlowRouter.go('/login');
+      }      
+    })
+    
+   }
 
-})
+});

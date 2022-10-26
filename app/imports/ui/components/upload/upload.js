@@ -3,8 +3,9 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import Files from '/lib/files.collection.js';
 import './upload.html';
 import '../../pages/login/login';
+import { Event } from '../../../db/event';
 import JSZip from 'jszip';
-
+import  Swal  from 'sweetalert2/dist/sweetalert2.js';
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.uploadedFiles.helpers({
@@ -13,7 +14,13 @@ Template.uploadedFiles.helpers({
   }
 });
 Template.uploadForm.onCreated(function () {
+ 
   this.currentUpload = new ReactiveVar(false);
+  Meteor.subscribe('event_db');
+  // const handler = Meteor.subscribe('event_db');
+  // Tracker.autorun(() => {
+  //   Meteor.subscribe('event_db')
+  // });
 });
 
 Template.uploadForm.helpers({
@@ -27,13 +34,12 @@ Template.uploadForm.helpers({
       return getUser();
   }
 });
-// Template.uploadForm.onRendered(function () {
-//   this.autorun(() => {
-//     if (isUserLogged()) {
-//         FlowRouter.go('/upload');
-//     }
-//   }); 
-// });
+Template.uploadForm.onRendered(function () {
+  var hi = Event.find().fetch()[0].rows
+
+console.log(hi,"event")
+
+});
 Template.uploadForm.events({
   'change #fileInput': function (e, template) {
     if (e.currentTarget.files && e.currentTarget.files[0]) {
@@ -66,14 +72,20 @@ Template.uploadForm.events({
               if (data.length > 0) {
                 Meteor.call('importFile',data,pathFile, (error) => {
                   if (error) {
-                    window.alert(`Không thể import data do lỗi:  ${error.reason}`);
+                    Swal.fire(`Không thể import data do lỗi:  ${error.reason}`);
+                    
                   } else {
-                    window.alert("Cài dữ liệu vào database thành công! Tiến trình tải lên đang tiếp tục! ");
+                    Swal.fire(
+                      'Chúc mừng!',
+                      "Cài dữ liệu vào database thành công! Tiến trình tải lên đang tiếp tục! ",
+                      'success'
+                    )
+                    
                   }
                 })
               }
               else {
-                window.alert(`Không thể import data do tệp không đúng định dạng, tiến trình tải lên vẫn tiếp tục!`)
+                Swal.fire(`Không thể import data do tệp không đúng định dạng, tiến trình tải lên vẫn tiếp tục!`)
               }
              
             });
@@ -83,9 +95,9 @@ Template.uploadForm.events({
         // End Read Zip File
         uploadInstance.on('end', function (error, fileObj) {
           if (error) {
-            window.alert('Lỗi trong quá trình tải lên: ' + error.reason);
+            Swal.fire('Lỗi trong quá trình tải lên: ' + error.reason);
           } else {
-            window.alert('Tệp tin"' + fileObj.name + '" tải lên thành công!');
+            Swal.fire('Tệp tin"' + fileObj.name + '" tải lên thành công!');
           }
           template.currentUpload.set(false);
         });
@@ -95,12 +107,11 @@ Template.uploadForm.events({
 
   },
   'click .delete'(file) { 
-    console.log(Files,"FIles")
     var remove = file.target.attributes[1].nodeValue
     Meteor.call('remove',remove,(error)=>{if (error) {
-      window.alert(`File wasn't removed, error:  ${error.reason}`);
+      Swal.fire(`File wasn't removed, error:  ${error.reason}`);
     } else {
-      window.alert('Xóa thành công');
+      Swal.fire('Xóa thành công');
     }});
    
   },

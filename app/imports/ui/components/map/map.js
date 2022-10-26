@@ -3,6 +3,7 @@ import {loadModules, setDefaultOptions, loadCss} from 'esri-loader';
 import {Session} from 'meteor/session';
 import datatables from 'datatables.net';
 import datatables_bs from 'datatables.net-bs';
+import { $ } from 'meteor/jquery';
 import 'datatables.net-bs/css/dataTables.bootstrap.css';
 Template.map.onCreated(() => {
     setDefaultOptions({
@@ -15,8 +16,12 @@ Template.map.onCreated(() => {
     loadCss('https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css');
     datatables(window, $);
     datatables_bs(window, $);
-});
 
+});
+Meteor.startup( function () {   
+    $.getScript("/plugins/js/jquery.sparkline.min.js");
+    
+  });
 Template.map.onRendered(() => {
 
     loadModules([

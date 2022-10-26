@@ -8,9 +8,12 @@ Template.register.events({
         event.preventDefault();
         var username = $('[name=username]').val();
         var password = $('[name=password]').val();
+        var email= $('[name=email]').val();
         Accounts.createUser({
           username: username,
-          password: password},
+          password: password,
+          email: email
+          },
           function(error){
               if(error){
                 Swal.fire(error.reason); // Output error if registration fails
@@ -20,7 +23,7 @@ Template.register.events({
                     'Bạn đã đăng kí thành công!',
                     'success'
                   );
-                  FlowRouter.go('/login');  // Redirect user if registration succeeds
+                  FlowRouter.go('/verify');  // Redirect user if registration succeeds
               }           
       });   
     } 

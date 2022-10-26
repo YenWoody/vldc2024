@@ -1,5 +1,5 @@
 <template name ='dashboard'>
-    {{#if isUserLogged}}  
+    {{#if userVerified }}  
     <div class="preloader">
         <div class="lds-ripple">
             <div class="lds-pos"></div>
@@ -15,18 +15,18 @@
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
                         <!-- User Profile-->
-                        <li class="sidebar-item pt-2">
+                        <li class="sidebar-item">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{pathFor 'upload'}}"
                                 aria-expanded="false">
                                 <i class="fa fa-upload" aria-hidden="true"></i>
-                                <span class="hide-menu">Upload</span>
+                                <span class="hide-menu">Tải dữ liệu</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="profile.html"
-                                aria-expanded="false">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                aria-expanded="false" id ="changepassword">
                                 <i class="fa fa-user" aria-hidden="true"></i>
-                                <span class="hide-menu">Profile</span>
+                                <span class="hide-menu" >Đổi mật khẩu</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
@@ -34,13 +34,6 @@
                                 aria-expanded="false">
                                 <i class="fa fa-columns" aria-hidden="true"></i>
                                 <span class="hide-menu">Blank Page</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="*"
-                                aria-expanded="false">
-                                <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                <span class="hide-menu">Error 404</span>
                             </a>
                         </li>
                     </ul>
@@ -60,7 +53,7 @@
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-            <div class="container-fluid">
+            <div class="container-fluid" id ="thongke">
                 <div class="row justify-content-center">
                     <div class="col-lg-4 col-md-12">
                         <div class="white-box analytics-info">
@@ -112,12 +105,28 @@
                 </div>
                 
             </div>
+            <div class="container-fluid" id ="changepassword_form" >
+                <form class="changepassword-form">
+                    <h1 class="h3 mb-3 fw-normal">Đổi Mật Khẩu Mới</h1>
+                
+                    <div class="form-floating">
+                      <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="oldpassword">
+                      <label for="floatingInput">Nhập mật khẩu cũ</label>
+                    </div>
+                    <div class="form-floating">
+                      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="newpassword">
+                      <label for="floatingPassword">Nhập mật khẩu mới</label>
+                    </div>
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">Xác Nhận</button>
+              
+                  </form>
+            </div>
         </div>
     </div>
 
     <script src="plugins/js/custom.js"></script>
 
     {{else}}
-    {{> login_form }}
+    {{> verify_form }}
     {{/if}}
 </template>

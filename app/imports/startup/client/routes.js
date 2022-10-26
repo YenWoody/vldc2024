@@ -8,7 +8,8 @@ import '../../ui/components/dashboard/dashboard.js';
 import '../../ui/components/upload/upload.js';
 import '../../ui/pages/register/register.js';
 import '../../ui/pages/login/login.js';
-
+import '../../ui/pages/reset/reset';
+import '../../ui/pages/verify/verify';
 
 // Set up all routes in the app
 FlowRouter.route('/', {
@@ -54,3 +55,15 @@ FlowRouter.route('/login', {
   },
 });
 
+FlowRouter.route('/reset', {
+  name: 'App.reset',
+  action() {
+    this.render('BodyTemplate', 'reset_form');
+  },
+});
+FlowRouter.route('/verify', {
+  name: 'App.verify',
+  action() {
+    this.render('BodyTemplate', 'verify_form');
+  },
+});
