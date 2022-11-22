@@ -9,57 +9,30 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { Event } from '/imports/db/event';
 import '/imports/db/eventPublications';
-// async function main() {
-//     const PG_HOST = 'localhost'
-//     const PG_PORT = '5432'
-//     const PG_DATABASE = 'postgres'
-//     const PG_USER = 'postgres'
-//     const PG_PASSWORD = ''
-//     // const DIR_PATH = f
-//     const pool = new pg.Pool({
-//         host: PG_HOST,
-//         port: PG_PORT,
-//         database: PG_DATABASE,
-//         user: PG_USER,
-//         password: PG_PASSWORD,
-//     })
-// await pool.query(
-//     `SELECT *
-//       FROM event;`
-// ).then((data) => {
-//     return Event.insert(data)
-// })
-// }
 Meteor.startup(function () {
-    /// Start
-    // config db
-    const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'postgres'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-    pool.query(
-        `SELECT *
-          FROM event;`
-    ).then((data) => {
-        return Event.insert(data)
-    })
-    pool.query(
-        `SELECT *
-          FROM event_station;`
-    ).then((data) => {
-        console.log(data, "event_station")
-        return data
-    })
-    // End
+    // /// Start
+    // // config db
+    // const PG_HOST = 'localhost'
+    // const PG_PORT = '5432'
+    // const PG_DATABASE = 'postgres'
+    // const PG_USER = 'postgres'
+    // const PG_PASSWORD = ''
+    // // const DIR_PATH = f
+    // const pool = new pg.Pool({
+    //     host: PG_HOST,
+    //     port: PG_PORT,
+    //     database: PG_DATABASE,
+    //     user: PG_USER,
+    //     password: PG_PASSWORD,
+    // })
+
+    // pool.query(
+    //     `SELECT *
+    //       FROM event_station;`
+    // ).then((data) => {
+    //     return data
+    // })
+    // // End
     process.env.MAIL_URL = 'smtps://yenph@fimo.edu.vn:Giaothongvantai123@@smtp.gmail.com:465/';
     Accounts.emailTemplates.siteName = 'Vật Lí Địa Cầu';
     Accounts.emailTemplates.from = 'Vật Lí Địa Cầu Admin';
@@ -140,12 +113,62 @@ Meteor.startup(function () {
     };
 
 });
-Meteor.methods({
+Meteor.methods({ 
+    'layerEvent':  ()=>{
+        const PG_HOST = 'localhost'
+        const PG_PORT = '5432'
+        const PG_DATABASE = 'vldc'
+        const PG_USER = 'postgres'
+        const PG_PASSWORD = ''
+        // const DIR_PATH = f
+        const pool = new pg.Pool({
+            host: PG_HOST,
+            port: PG_PORT,
+            database: PG_DATABASE,
+            user: PG_USER,
+            password: PG_PASSWORD,
+        })
+        var result =  pool.query(
+            `SELECT *
+              FROM event;`
+        ).then((data) => {
+            // console.log("data",data)
+            return data
+        })
+    
+        return result
+        
+},
+'layerEventStation':  ()=>{
+    const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'vldc'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
+    var result = pool.query(
+        `SELECT *
+          FROM event_station;`
+    ).then((data) => {
+        // console.log("data",data)
+        return data
+    })
+
+    return result
+    
+},
     'importFile': function (contentFile, pathFile) {
         // config db
         const PG_HOST = 'localhost'
         const PG_PORT = '5432'
-        const PG_DATABASE = 'postgres'
+        const PG_DATABASE = 'vldc'
         const PG_USER = 'postgres'
         const PG_PASSWORD = ''
         // const DIR_PATH = f
@@ -184,41 +207,65 @@ Meteor.methods({
                 event.datetime = new Date(Number(m[6]), Number(m[7]) - 1, Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]))
 
             }
-            let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
+            let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+) + (HAN) +([0-9]+) +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
             if (m1 != null) {
                 event.lat = m1[1]
                 event.long = m1[2]
+                event.md = m1[3]
+                event.ml = m1[7]
             }
+
             let pathName = pathFile.split(/\/(?=[^\/]+$)/g)
             event.file_data_name = pathName[1]
             event.file_data_path = pathName[0]
             let event_station = []
             let keys = lines[headerLine].match(/[^ ]+/g)
             keys = keys.filter((e, i) => keys.indexOf(e) === i)
-            keys = keys.map((key) => {
-                let start = lines[headerLine].search(new RegExp(`(?<=[ ])${key}(?=( |$))`))
-                let key1 = key.toLowerCase()
-                return { key, key1, start }
+            const check = keys[2];
+            keys.splice(2, 1, "I", "PHAS", "W");
+            // add code
+            const noW = keys.filter((e) => {
+                if (e === 'W') { return false }
+                return true
             })
+            const giatriW = new RegExp('W', 'g');
+            let gtW = [...lines[headerLine].matchAll(giatriW)];
+            keyW = gtW.map((key) => {
+                // console.log(key, "keu")
+                const startW = key.index
+
+                return { key: 'W', key1: 'w', start: startW }
+            });
+            const keywithoutW = noW.map((key) => {
+                let regexp = new RegExp(`${key}`, 'g');
+                let array = [...lines[headerLine].matchAll(regexp)];
+                var start = array[0].index;
+                let key2 = key.toLowerCase()
+               return { key: key, key1: key2, start: start }
+            });
+            keyW[1].key1 = 'ws'
+            keywithoutW.splice(4, 0, keyW[0])
+
+            keywithoutW.splice(-2, 0, keyW[1])
+            keys = keywithoutW;
+            /// end code
             lines.slice(headerLine + 1).forEach((elem) => {
                 if (elem.match(/\S/)) {
                     let o = keys.reduce((obj, { key, key1, start }, ind) => {
                         let length = key.length
-                        /*
-                        Giá trị của cột key = elem.substr(start, length) mở rộng sang 2 phía =
-                        (-?[^ -]*(?![ ]))?
-                        + (?<=^.{${start}})(.{${length}}) = elem.substr(start, length)
-                        + ((?<![ ])[^ -]+)?
-                        */
                         let temp = elem.match(new RegExp(`(-?[^ -]*(?![ ]))?(?<=^.{${start}})(.{${length}})((?<![ ])[^ -]+)?`))
-                        if (temp[1] && ind > 0 && temp.index < (keys[ind - 1].start + keys[ind - 1].key.length)) {
-                            // giá trị thuộc về cột trước
-                            obj[key1] = null
-                        } else {
-                            obj[key1] = temp[0].replace(/^[ ]+|[ ]+$/g, '') || null
+                       if (temp != null && check === 'IPHASW') {
+                            if (temp[1] && ind > 0 && temp.index < (keys[ind - 1].start + keys[ind - 1].key.length)) {
+                                // giá trị thuộc về cột trước
+                                obj[key1] = null
+                            } else {
+                                obj[key1] = temp[0].replace(/^[ ]+|[ ]+$/g, '') || null
+                            }
                         }
+                        
                         return obj
                     }, {})
+                    // console.log(o,"gdfgdfgfgfg")
                     event_station.push(o)
                 }
             })
@@ -238,7 +285,7 @@ Meteor.methods({
                 s1 += `"${col}"`
                 if (col === 'geometry') {
                     s2 += `ST_SetSRID(ST_Point($${values.push(event.long)}, $${values.push(event.lat)}), 4326)`
-                } else {
+                 } else {
                     s2 += `$${values.push(event[col])}`
                 }
             })
@@ -250,21 +297,11 @@ Meteor.methods({
                 values,
             )
         }
-        // function query() {
-        //     pool.query(
-        //         `SELECT *
-        //   FROM event;`
-        //     ).then((data) => {
-        //         console.log(data, "conákjkjkjkjkjsa")
-        //     })
-
-        // }
-        // query()
         function insertEvent_station(event_station) {
             let values = []
             let s1 = ''
             let s2 = ''
-            let cols = ['event_id', 'station_id', 'sp', 'iphasw', 'd', 'hrmm', 'secon', 'code', 'amplit', 'peri', 'azimu', 'velo', 'ain', 'ar', 'tres', 'w', 'dis', 'caz7']
+            let cols = ['event_id', 'station_id', 'sp', 'i','phas','w','d', 'hrmm', 'secon', 'coda', 'amplit', 'peri', 'azimu', 'velo', 'ain', 'ar', 'tres', 'ws', 'dis', 'caz7']
             cols.forEach((col, ind) => {
                 if (ind > 0) {
                     s1 += ', '
@@ -277,13 +314,9 @@ Meteor.methods({
                     s2 += `$${values.push(event_station[col])}`
                 }
             })
-            return pool.query(
-                `INSERT INTO "event_station"
-		(${s1})
-  		SELECT ${s2}
-		`,
-                values,
-            )
+            if (values[2] !== undefined) {
+            return pool.query(`INSERT INTO "event_station" (${s1}) SELECT ${s2}`,values,)
+            }
         }
         return run(contentFile, pathFile);
     },
@@ -298,5 +331,6 @@ Meteor.methods({
         check(email, String);
         var info = Accounts.findUserByEmail(email);
         Accounts.sendResetPasswordEmail(info._id)
-    }
+    },
+   
 })

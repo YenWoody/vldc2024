@@ -1,6 +1,8 @@
 <template name="uploadForm">
   <div class ="upload">
-    {{#if isUserLogged}}
+    {{#if userUnVerified}}
+    {{> verify_form }}
+    {{else}}
     <div class="upload-progress">
       {{#with currentUpload}}
         Uploading <b>{{file.name}}</b>: 
@@ -16,8 +18,6 @@
     <div class="uploaded-files">
       {{> uploadedFiles}}
     </div>
-    {{else}}
-    {{> login_form }}
     {{/if}}
   </div>
   <!-- <div class = "read">

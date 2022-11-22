@@ -8,12 +8,15 @@ import '../../components/layouts/sidebar/sidebar';
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.home.helpers({
-    userVerified () {
+    userUnVerified () {
     // const user = Meteor.user();
     // return user.emails[0].verified;
-    if ( Meteor.user() && Meteor.user().emails ) 
-    return Meteor.user().emails[0].verified; // look at the current user
-    else return false;
+    if(Meteor.userId() === null || Meteor.user() && Meteor.user().emails[0].verified === false){
+      return true;
+    }
+    else if ( Meteor.user() && Meteor.user().emails[0].verified === true ) 
+    return false; // look at the current user
+  
   },
     isUserLogged() {
       return isUserLogged();
@@ -21,6 +24,6 @@ Template.home.helpers({
     getUser() {
         return getUser();
     },
-
-  });
+ 
+});
 

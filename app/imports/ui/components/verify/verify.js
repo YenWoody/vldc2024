@@ -8,6 +8,10 @@ Template.verify.onRendered(()=>{
 });
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
+Meteor.startup(function () {
+
+  
+})
 Template.verify.helpers({
     userVerified () {
     const user = Meteor.user();
@@ -20,6 +24,15 @@ Template.verify.helpers({
         return getUser();
     },
 
+    checkUser () {
+      if(Meteor.userId() === null){
+        return true;
+      }
+      else if ( Meteor.user() && Meteor.user().emails[0].verified === false ) 
+        {
+          return false
+        };
+    },
   });
 Template.verify.events({
     'submit .verify-form': function(event){

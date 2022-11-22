@@ -16,7 +16,7 @@ Template.uploadedFiles.helpers({
 Template.uploadForm.onCreated(function () {
  
   this.currentUpload = new ReactiveVar(false);
-  Meteor.subscribe('event_db');
+  // Meteor.subscribe('event_db');
   // const handler = Meteor.subscribe('event_db');
   // Tracker.autorun(() => {
   //   Meteor.subscribe('event_db')
@@ -32,14 +32,23 @@ Template.uploadForm.helpers({
   },
   getUser() {
       return getUser();
+  },
+  userUnVerified () {
+    // const user = Meteor.user();
+    // return user.emails[0].verified;
+    if(Meteor.userId() === null || Meteor.user() && Meteor.user().emails[0].verified === false){
+      return true;
+    }
+    else if ( Meteor.user() && Meteor.user().emails[0].verified === true ) 
+    return false; // look at the current user
+  
   }
 });
 Template.uploadForm.onRendered(function () {
-  var hi = Event.find().fetch()[0].rows
+  // var hi = Event.find().fetch()[0].rows
+  // console.log(hi,"event")
 
-console.log(hi,"event")
-
-});
+})
 Template.uploadForm.events({
   'change #fileInput': function (e, template) {
     if (e.currentTarget.files && e.currentTarget.files[0]) {

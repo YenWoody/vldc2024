@@ -1,5 +1,8 @@
 <template name ='dashboard'>
-    {{#if userVerified }}  
+    {{#if userUnVerified }}  
+    {{> verify_form }}
+    {{else}}
+   
     <div class="preloader">
         <div class="lds-ripple">
             <div class="lds-pos"></div>
@@ -126,7 +129,5 @@
 
     <script src="plugins/js/custom.js"></script>
 
-    {{else}}
-    {{> verify_form }}
     {{/if}}
 </template>

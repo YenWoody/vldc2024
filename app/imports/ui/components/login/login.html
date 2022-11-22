@@ -4,22 +4,24 @@
           <div class="form-content">
             <div class="form-signin">
               <form class="login-form">
-                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+                <h1 class="h3 mb-3 fw-normal">Vui lòng đăng nhập</h1>
             
                 <div class="form-floating">
                   <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="username">
-                  <label for="floatingInput">Username/Email</label>
+                  <label for="floatingInput"><i aria-hidden="true" style="margin-right: 5px" class="fa fa-user"></i>Tài khoản/Email</label>
                 </div>
                 <div class="form-floating">
                   <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
-                  <label for="floatingPassword">Password</label>
+                  <label for="floatingPassword"><i aria-hidden="true" style="margin-right: 5px" class="fa fa-lock"></i>Mật khẩu</label><span id="show-pass" class = "show-pass">
+                    <i class="fa fa-eye" id = "eye" ></i>
+                </span>
                 </div>
                   <!-- <div class="checkbox mb-3">
                     <label>
                       <input type="checkbox" value="remember-me"> Remember me
                     </label>
                   </div> -->
-                <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Đăng nhập</button>
                 <p>Bạn chưa có tài khoản ?</p><a href="http://localhost:3000/register">Đăng kí ngay</a><a href="http://localhost:3000/reset" style="margin-left: 10px;">Quên mật khẩu?</a>
               </form>
             </div>

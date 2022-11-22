@@ -3,8 +3,26 @@ import { Template } from 'meteor/templating';
 import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import  Swal  from 'sweetalert2/dist/sweetalert2.js';
 import './login.html';
-
+let state = false;
 Template.login.events({
+  'click #show-pass' : function (){
+   
+    if(state){
+        document.getElementById("floatingPassword").setAttribute("type","password");
+        state = false;
+      
+    }
+    else
+    {
+        document.getElementById("floatingPassword").setAttribute("type","text")
+        state = true;
+       
+    }
+
+},
+'click #eye': function(){
+  document.getElementById('eye').classList.toggle("fa-eye-slash");
+},
   'submit .login-form'(event) {
     event.preventDefault();
     const { target } = event;

@@ -58,9 +58,9 @@ input.form-control.input-sm {
 td.dataTables_empty {
   text-align: left!important;
 }
-.dataTables_scrollBody {
-  height: 440px!important;
-}
+// .dataTables_scrollBody {
+//   height: 440px!important;
+// }
 div#dulieu_wrapper {
 display: inline;
   margin: 10px;
@@ -85,19 +85,21 @@ div#stationtable_wrapper {
   border-width: 1px;
   border-image: none;
 }
-
+.slide_class {
+  height: 60px;
+}
 .geometry-button-selected {
   background: #4c4c4c;
   color: #fff;
 }
 
 .options {
-  max-width: 265px;
+  max-width: 150px;
     width: 100%;
     height: 25px;
     // display: block;
-    margin-left: -12px;
-    margin-top: 20px;
+    // margin-left: -12px;
+    // margin-top: 20px;
 }
 
 
@@ -164,6 +166,11 @@ section.section.section--content {
   margin: -5px;
 }
 li.esri-layer-list__item {
+  display: flex;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
   background-color: #fff;
   border-bottom: 1px solid rgba(110,110,110,.3);
   // position: relative;

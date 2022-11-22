@@ -1,10 +1,28 @@
 .form-signin {
     width: 100%;
-    max-width: 330px;
+    max-width: 400px;
     padding: 15px;
     margin: auto;
+    border-radius: 4px;
+    border: 1px solid #ebeef5;
+    background-color: #fff;
+    overflow: hidden;
+    color: #303133;
+    transition: .3s;
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    margin: auto;
+    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
 }
-  
+.result-pass{
+    margin : 0px!important;
+}
+.show-pass{
+    position: absolute;
+    right: 8%;
+    cursor: pointer;
+}
 .form-signin .checkbox {
     font-weight: 400;
 }
@@ -20,16 +38,26 @@
 }
   
 .form-signin input[type="password"] {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
 .form-signin p {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 form.accounts-dialog.accounts-centered-dialog {
     transform: translate(-50%, -50%);
 }
 .form-signin button {
     margin-top: 10px;
+}
+#swal2-title {
+    font-size: 1.4em;
+}
+.swal2-popup.swal2-modal.swal2-show {
+    top: 5rem;
+}
+.swal2-container {
+    display: flex!important;
+    flex-direction: column;
 }

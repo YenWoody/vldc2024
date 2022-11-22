@@ -8,12 +8,13 @@ import  Swal  from 'sweetalert2/dist/sweetalert2.js';
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.dashboard.helpers({
-    userVerified () {
-    // const user = Meteor.user();
-    // return user.emails[0].verified;
-    if ( Meteor.user() && Meteor.user().emails ) 
-    return Meteor.user().emails[0].verified; // look at the current user
-    else return false;
+  userUnVerified () {
+    if(Meteor.userId() === null || Meteor.user() && Meteor.user().emails[0].verified === false){
+      return true;
+    }
+    else if ( Meteor.user() && Meteor.user().emails[0].verified === true ) 
+    return false; // look at the current user
+  
   },
     isUserLogged() {
       return isUserLogged();
