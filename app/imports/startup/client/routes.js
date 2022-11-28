@@ -1,8 +1,8 @@
 import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
-
 // Import needed templates
 import '../../ui/layouts/body/body.js';
 import '../../ui/pages/home/home.js';
+import '../../ui/pages/station/station.js';
 import '../../ui/pages/not-found/not-found.js';
 import '../../ui/components/dashboard/dashboard.js';
 import '../../ui/components/upload/upload.js';
@@ -19,7 +19,12 @@ FlowRouter.route('/', {
   },
 });
 /// Reload the page when the route changes
-
+FlowRouter.route('/station', {
+  name: 'App.station',
+  action() {
+    this.render('BodyTemplate', 'station');
+  },
+});
  
 FlowRouter.route('/upload', {
   name: 'App.upload',

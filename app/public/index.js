@@ -1,14 +1,16 @@
+
 const fs = require('fs');
 const pg = require('pg');
+const XLSX = require('xlsx');
 // config db
 const PG_HOST = 'localhost'
 const PG_PORT = '5432'
-const PG_DATABASE = 'postgres'
+const PG_DATABASE = 'data'
 const PG_USER = 'postgres'
 const PG_PASSWORD = ''
 
 // config folder path
-const DIR_PATH = 'Seismo/REA/VIEBB'
+const DIR_PATH = 'data'
 
 const pool = new pg.Pool({
 	host: PG_HOST,
@@ -20,105 +22,120 @@ const pool = new pg.Pool({
 
 run();
 
-function run () {
+function run() {
 	let files = readDir()
-	console.log(files,"file nefdddddddddd")
+	console.log(files, "file nefdddddddddd")
 	let p = Promise.resolve()
-	files.forEach((file) => {
-		let { event, event_station } = readFile(file)
+	for (i = 0; i < files.length; i++) {
+		let { station, baler, employee, dataloger, sensor } = readFile(files[i]);
+
 		p = p.then(() => {
-			console.log(file)
-			return insertEvent(event)
-		}).then(({ rows: [{ id }] }) => {
-			console.log('insert event')
-			let arr = event_station.map((elem) => {
-				elem.event_id = id
-				return insertEvent_station(elem)
+			let arr = station.map((elem) => {
+
+				console.log(elem, "dongf 193")
+				return insertstation(elem)
 			})
 			return Promise.all(arr)
 		}).then(() => {
-			console.log('insert event_station')
-		})
-	})
-}
+			let arr = baler.map((e) => {
+				return insertbaler(e)
 
-function readDir () {
-	let result = []
-	let years = fs.readdirSync(DIR_PATH).filter(e => e.match(/^[0-9]{4}$/))
-	years.forEach((year) => {
-		let months = fs.readdirSync(`${DIR_PATH}/${year}`).filter(e => e.match(/^[0-9]{2}$/))
-		months.forEach((month) => {
-			let files = fs.readdirSync(`${DIR_PATH}/${year}/${month}`)
-			files.forEach((file) => {
-				result.push(`${DIR_PATH}/${year}/${month}/${file}`)
 			})
+			return Promise.all(arr)
+		})
+		.then(() => {
+				let arr = employee.map((e) => {
+					return insertemployee(e)
+
+				})
+				return Promise.all(arr)
+			}).then(() => {
+				let arr = dataloger.map((e) => {
+					return insertdataloger(e)
+
+				})
+				return Promise.all(arr)
+			}).then(() => {
+				let arr = sensor.map((e) => {
+					return insertsensor(e)
+
+				})
+				return Promise.all(arr)
+			})
+	}
+}
+
+function readDir() {
+	let result = []
+	let files = fs.readdirSync(DIR_PATH)
+	files.forEach((file) => {
+		result.push(`${DIR_PATH}/${file}`)
+	})
+
+	return result
+}
+
+function readFile(path) {
+	var workbook = XLSX.readFile(`${path}`);
+	var sheet_name_list = workbook.SheetNames;
+	var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+	console.log(xlData, "xlfa")
+	let station = []
+	let baler = [];
+	let employee = [];
+	let dataloger = [];
+	let sensor = [];
+	xlData.map(e => {
+		station.push({
+			id: e.Station,
+			key: e.Key,
+			name: e.tentram,
+			lat: e.Lat,
+			long: e.Long,
+			height: e.Height,
+			network: e.Network,
+			address: e.diachi
+		});
+		baler.push({
+			key: e.Key,
+			code: e.Baler,
+			serial: e.Serial_3,
+			station_id: e.Station,
+		});
+		employee.push({
+			key: e.Key,
+			name: e.baove1,
+			phone: e.phone1,
+			start_date: e.Startdate,
+			end_date: e.Enddate,
+			station_id: e.Station,
+		})
+		dataloger.push({
+			key: e.Key,
+			serial: e.Serial,
+			dataloger: e.Dataloger,
+			start_date: e.Startdate,
+			end_date: e.Enddate,
+			station_id: e.Station,
+		});
+		sensor.push({
+			key: e.Key,
+			code: e.Sensor1,
+			serial: e.Serial_1,
+			start_date: e.Startdate,
+			end_date: e.Enddate,
+			dataloger_id: e.Serial
 		})
 	})
-	console.log(result,"file nefdddddddddd")
-	return result
 
+	return { station, baler, employee, dataloger, sensor }
 }
 
-function readFile (path) {
-	let content = fs.readFileSync(path).toString()
-	let lines = content.split('\r\n')
-	let headerLine = lines.findIndex(e => e.match(/ STAT /))
-	console.log(path,"path ne");
-	let event = {}
-	let m = path.match(/\/([0-9]{2})-([0-9]{2})([0-9]{2})-([0-9]{2})(L|R)\.S([0-9]{4})([0-9]{2})$/)
-	event.datetime = new Date(Number(m[6]), Number(m[7]) - 1, Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]))
-	console.log(m,"m la gi")
-	console.log(Number(m[7]),"Number(m[6])")
-	console.log(event.datetime,"datetime")
-	let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
-	if (m1 != null) {
-		event.lat = m1[1]
-		event.long = m1[2]
-	}
-	let pathName = path.split(/\/(?=[^\/]+$)/g)
-	console.log(pathName,"pathName ne")
-	event.file_data_name = pathName[1]
-	event.file_data_path = pathName[0]
-	
-	let event_station = []
-	let keys = lines[headerLine].match(/[^ ]+/g)
-	keys = keys.filter((e, i) => keys.indexOf(e) === i)
-	keys = keys.map((key) => {
-		let start = lines[headerLine].search(new RegExp(`(?<=[ ])${key}(?=( |$))`))
-		let key1 = key.toLowerCase()
-		return { key, key1, start }
-	})
-	lines.slice(headerLine + 1).forEach((elem) => {
-		if (elem.match(/\S/)) {
-			let o = keys.reduce((obj, { key, key1, start }, ind) => {
-				let length = key.length
-				/*
-				Giá trị của cột key = elem.substr(start, length) mở rộng sang 2 phía =
-				(-?[^ -]*(?![ ]))?
-				+ (?<=^.{${start}})(.{${length}}) = elem.substr(start, length)
-				+ ((?<![ ])[^ -]+)?
-				*/
-				let temp = elem.match(new RegExp(`(-?[^ -]*(?![ ]))?(?<=^.{${start}})(.{${length}})((?<![ ])[^ -]+)?`))
-				if (temp[1] && ind > 0 && temp.index < (keys[ind - 1].start + keys[ind - 1].key.length)) {
-					// giá trị thuộc về cột trước
-					obj[key1] = null
-				} else {
-					obj[key1] = temp[0].replace(/^[ ]+|[ ]+$/g, '') || null
-				}
-				return obj
-			}, {})
-			event_station.push(o)
-		}
-	})
-
-	return { event, event_station }
-}
-
-function insertEvent (event) {
+function insertstation(station) {
 	let values = []
 	let s1 = ''
 	let s2 = ''
-	let cols = ['datetime', 'lat', 'long', 'ml', 'md', 'ms', 'mw', 'geometry', 'source', 'file_data_name', 'file_data_path', 'mseed_name', 'mseed_path']
+	let cols = ['id','key', 'name', 'lat', 'long', 'height', 'geometry', 'network', 'address']
 	cols.forEach((col, ind) => {
 		if (ind > 0) {
 			s1 += ', '
@@ -126,13 +143,111 @@ function insertEvent (event) {
 		}
 		s1 += `"${col}"`
 		if (col === 'geometry') {
-			s2 += `ST_SetSRID(ST_Point($${values.push(event.long)}, $${values.push(event.lat)}), 4326)`
+			s2 += `ST_SetSRID(ST_Point($${values.push(station.long)}, $${values.push(station.lat)}), 4326)`
 		} else {
-			s2 += `$${values.push(event[col])}`
+			s2 += `$${values.push(station[col])}`
+
 		}
 	})
+	console.log(values, "giá trị")
 	return pool.query(
-		`INSERT INTO "event"
+		`INSERT INTO "station"
+		(${s1})
+  		SELECT ${s2}
+		RETURNING "id"`,
+		values,
+	)
+}
+function insertbaler(baler) {
+	let values = []
+	let s1 = ''
+	let s2 = ''
+	let cols = ['key','code', 'serial', 'station_id']
+	cols.forEach((col, ind) => {
+		if (ind > 0) {
+			s1 += ', '
+			s2 += ', '
+		}
+		s1 += `"${col}"`
+		s2 += `$${values.push(baler[col])}`
+
+
+	})
+	console.log(values, "giá trị")
+	return pool.query(
+		`INSERT INTO "baler"
+		(${s1})
+  		SELECT ${s2}
+		RETURNING "id"`,
+		values,
+	)
+}
+function insertemployee(employee) {
+	let values = []
+	let s1 = ''
+	let s2 = ''
+	let cols = ['key','name', 'phone', 'start_date', 'end_date', 'station_id']
+	cols.forEach((col, ind) => {
+		if (ind > 0) {
+			s1 += ', '
+			s2 += ', '
+		}
+		s1 += `"${col}"`
+		s2 += `$${values.push(employee[col])}`
+
+
+	})
+	console.log(values, "giá trị")
+	return pool.query(
+		`INSERT INTO "employee"
+		(${s1})
+  		SELECT ${s2}
+		RETURNING "id"`,
+		values,
+	)
+}
+function insertdataloger(dataloger) {
+	let values = []
+	let s1 = ''
+	let s2 = ''
+	let cols = ['key','serial', 'dataloger', 'start_date', 'end_date', 'station_id']
+	cols.forEach((col, ind) => {
+		if (ind > 0) {
+			s1 += ', '
+			s2 += ', '
+		}
+		s1 += `"${col}"`
+		s2 += `$${values.push(dataloger[col])}`
+
+
+	})
+	console.log(values, "giá trị")
+	return pool.query(
+		`INSERT INTO "dataloger"
+		(${s1})
+  		SELECT ${s2}
+		RETURNING "id"`,
+		values,
+	)
+}
+function insertsensor(sensor) {
+	let values = []
+	let s1 = ''
+	let s2 = ''
+	let cols = ['key','code', 'serial', 'start_date', 'end_date', 'dataloger_id']
+	cols.forEach((col, ind) => {
+		if (ind > 0) {
+			s1 += ', '
+			s2 += ', '
+		}
+		s1 += `"${col}"`
+		s2 += `$${values.push(sensor[col])}`
+
+
+	})
+	console.log(values, "giá trị")
+	return pool.query(
+		`INSERT INTO "sensor"
 		(${s1})
   		SELECT ${s2}
 		RETURNING "id"`,
@@ -140,28 +255,3 @@ function insertEvent (event) {
 	)
 }
 
-function insertEvent_station (event_station) {
-	let values = []
-	let s1 = ''
-	let s2 = ''
-	let cols = ['event_id', 'station_id', 'sp', 'iphasw', 'd', 'hrmm', 'secon', 'code', 'amplit', 'peri', 'azimu', 'velo', 'ain', 'ar', 'tres', 'w', 'dis', 'caz7']
-	cols.forEach((col, ind) => {
-		if (ind > 0) {
-			s1 += ', '
-			s2 += ', '
-		}
-		s1 += `"${col}"`
-		if (col === 'station_id') {
-			s2 += `(SELECT "id" FROM "station" WHERE "name" = $${values.push(event_station.stat)} LIMIT 1)`
-		} else {
-			s2 += `$${values.push(event_station[col])}`
-		}
-	})
-	return pool.query(
-		`INSERT INTO "event_station"
-		(${s1})
-  		SELECT ${s2}
-		`,
-		values,
-	)
-}

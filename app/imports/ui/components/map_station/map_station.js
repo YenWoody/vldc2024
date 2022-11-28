@@ -1,4 +1,4 @@
-import './map.html';
+import './map_station.html';
 import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
 import { Session } from 'meteor/session';
 import datatables from 'datatables.net';
@@ -6,7 +6,7 @@ import datatables_bs from 'datatables.net-bs';
 import { $ } from 'meteor/jquery';
 import 'datatables.net-bs/css/dataTables.bootstrap.css';
 import * as turf from '@turf/turf'
-Template.map.onCreated(() => {
+Template.map_station.onCreated(() => {
     setDefaultOptions({
         version: '4.22',
         css: true,
@@ -23,7 +23,7 @@ Meteor.startup(function () {
     $.getScript("/plugins/js/jquery.sparkline.min.js");
 
 });
-Template.map.onRendered(() => {
+Template.map_station.onRendered(() => {
 
     loadModules([
         'esri/Map',
@@ -843,27 +843,27 @@ Template.map.onRendered(() => {
         console.log(layerEventStaions,"layerSSakjaks")
 
         //End
-        const eventsLayer = new FeatureLayer({
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
-            id: 'poi',
-            title: 'Events',
-            visible: true,
-            labelsVisible: false,
-            popupEnabled: true,
-            outFields: ['*'],
-            timeInfo: {
-                startField: "timestamp", // name of the date field
-                interval: {
-                    // set time interval to one day
-                    unit: "years",
-                    value: 5
-                }
-            },
-            popupTemplate: eventPopupTemplate,
-            listMode: 'show',
-            renderer: renderer,
-        });
-        console.log(eventsLayer, "eventLayer")
+        // const eventsLayer = new FeatureLayer({
+        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
+        //     id: 'poi',
+        //     title: 'Events',
+        //     visible: true,
+        //     labelsVisible: false,
+        //     popupEnabled: true,
+        //     outFields: ['*'],
+        //     timeInfo: {
+        //         startField: "timestamp", // name of the date field
+        //         interval: {
+        //             // set time interval to one day
+        //             unit: "years",
+        //             value: 5
+        //         }
+        //     },
+        //     popupTemplate: eventPopupTemplate,
+        //     listMode: 'show',
+        //     renderer: renderer,
+        // });
+   
         const depthSlider = new Slider({
             container: "depthSlider",
             min: 0,
@@ -913,10 +913,10 @@ Template.map.onRendered(() => {
         // wait till the layer view is loaded
         let layerView;
         view.when(function () {
-            map.addMany([eventsLayer, layerEvent,layerEventStaions,layerStations]);
+            map.addMany([ layerEvent,layerEventStaions,layerStations]);
             view.whenLayerView(layerEvent).then(function (lv) {
                 // start time of the time slider - 13/02/1918
-                const start = eventsLayer.timeInfo.fullTimeExtent.start;
+                const start = layerEvent.timeInfo.fullTimeExtent.start;
                 console.log(start,"start")
                 const end = layerEvent.timeInfo.fullTimeExtent.end;
                 // set time slider's full extent to
@@ -976,13 +976,9 @@ Template.map.onRendered(() => {
                             const dataSet = response.features.filter((item) => {
                                 return (item.attributes.datetime >= timeSlider.timeExtent.start.getTime() && item.attributes.datetime <= timeSlider.timeExtent.end.getTime()) && (item.attributes.md >= depthMin && item.attributes.md <= depthMax) && (item.attributes.ml >= magnitudeMin && item.attributes.ml <= magnitudeMax);
                             });
-                            
-                            const data = dataSet.map(e=>{
-                                e.attributes.datetime = new Date (e.attributes.datetime)
-                                return e
-                            })
+                            console.log(dataSet,"dataSert")
                             const table = $('#dulieu').DataTable({
-                                data: data,
+                                data: dataSet,
                                 "paging": false,
                                 "destroy": true,
                                 'buttons': [
@@ -1016,7 +1012,7 @@ Template.map.onRendered(() => {
 
                 document.getElementById("clearFilter").addEventListener("click", clearFilter);
                 function clearFilter() {
-                    const start = eventsLayer.timeInfo.fullTimeExtent.start;
+                    const start = layerEvent.timeInfo.fullTimeExtent.start;
                     const end = layerEvent.timeInfo.fullTimeExtent.end;
                     //  depthSlider.filter = null;
                     //  magnitudeSlider.filter = null;
@@ -1029,7 +1025,7 @@ Template.map.onRendered(() => {
                 // Datatable Event
 
             });
-            view.whenLayerView(eventsLayer).then((layerView) => {
+            view.whenLayerView(layerEvent).then((layerView) => {
                 flView = layerView;
                             // watch for time slider timeExtent change
                 timeSlider.watch("timeExtent", function () {
@@ -1107,19 +1103,15 @@ Template.map.onRendered(() => {
             });
         });
         // Datatable 
-        let query = layerEvent.createQuery();
-        query.where = `md >= 0 and md <= 100`;
+        let query = layerStations.createQuery();
+        query.where = `key >= 0 and key <= 1000`;
         query.outFields = "*";
-        layerEvent.queryFeatures(query)
+        layerStations.queryFeatures(query)
             .then(function (response) {
                 const dataSet = response.features
-                const data = dataSet.map(e=>{
-                    e.attributes.datetime = new Date (e.attributes.datetime)
-                    return e
-                })
-                console.log(data,"test")
+                console.log(dataSet,"dataSet")
                 const table = $('#dulieu').DataTable({
-                    data: data,
+                    data: dataSet,
                     'buttons': [
                         {
                             extend: 'excel',
@@ -1139,11 +1131,16 @@ Template.map.onRendered(() => {
                     "columns": [
                         // { data: 'attributes.year' },
                         // { data: 'attributes.month' },
-                        { data: 'attributes.datetime' },
-                        { data: 'attributes.ml' },
+                        { data: 'attributes.id',
+                            "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html(`<div id = "id_station"><b><a href =>${sData}</a></b></div>`);
+                        }},
+                        { data: 'attributes.name' },
                         { data: 'attributes.lat' },
                         { data: 'attributes.long' },
-                        { data: 'attributes.md' },
+                        { data: 'attributes.height' },  
+                        { data: 'attributes.network' },
+                        { data: 'attributes.address' },
 
                     ],
 
@@ -1152,6 +1149,7 @@ Template.map.onRendered(() => {
                 $('#dulieu tbody').on('click', 'tr', function () {
                     const data = $('#dulieu').DataTable().row(this).data();
                     console.log(data, "data");
+
                     view.whenLayerView(data.layer).then(function (layerView) {
                         if (highlightSelect) {
                             highlightSelect.remove();
@@ -1164,6 +1162,7 @@ Template.map.onRendered(() => {
                     });
                 });
             });
+
         // End add Layer
         // Start add Legend
         // view.ui.add(new Legend({view: view}), "bottom-left");
@@ -1231,10 +1230,16 @@ Template.map.onRendered(() => {
     });
 });
 
-Template.map.helpers({
+Template.map_station.helpers({
 
 });
 
-Template.map.events({
+Template.map_station.events({
+    'click #close-modal' : function () {
+        console.log("check")
+       document.getElementById("_modal").style.display = "none"
+        
+    },
+
 
 });

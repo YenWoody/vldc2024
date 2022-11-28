@@ -9,8 +9,23 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { Event } from '/imports/db/event';
 import '/imports/db/eventPublications';
+import { initializeApp } from 'firebase/app';
+// import { getAnalytics } from "firebase/analytics";
 Meteor.startup(function () {
-    // /// Start
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+    apiKey: "AIzaSyD2FetkQEW8Wfs-AYP17R89kzIvGP1y5LI",
+    authDomain: "vldc-d0894.firebaseapp.com",
+    projectId: "vldc-d0894",
+    storageBucket: "vldc-d0894.appspot.com",
+    messagingSenderId: "843779421106",
+    appId: "1:843779421106:web:917503be2e879139fdeaab",
+    measurementId: "G-C496VJ8KB5"
+  };
+  
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+    // /// Star
     // // config db
     // const PG_HOST = 'localhost'
     // const PG_PORT = '5432'
@@ -117,7 +132,7 @@ Meteor.methods({
     'layerEvent':  ()=>{
         const PG_HOST = 'localhost'
         const PG_PORT = '5432'
-        const PG_DATABASE = 'vldc'
+        const PG_DATABASE = 'data'
         const PG_USER = 'postgres'
         const PG_PASSWORD = ''
         // const DIR_PATH = f
@@ -142,7 +157,7 @@ Meteor.methods({
 'layerEventStation':  ()=>{
     const PG_HOST = 'localhost'
     const PG_PORT = '5432'
-    const PG_DATABASE = 'vldc'
+    const PG_DATABASE = 'data'
     const PG_USER = 'postgres'
     const PG_PASSWORD = ''
     // const DIR_PATH = f
@@ -164,11 +179,132 @@ Meteor.methods({
     return result
     
 },
+'dataEmployee':  ()=>{
+    const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'data'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
+    var result = pool.query(
+        `SELECT *
+          FROM employee;`
+    ).then((data) => {
+        return data
+    })
+
+    return result
+    
+},
+'dataBaler':  ()=>{
+    const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'data'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
+    var result = pool.query(
+        `SELECT *
+          FROM baler;`
+    ).then((data) => {
+        return data
+    })
+
+    return result
+    
+},
+'dataDataloger':  ()=>{
+    const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'data'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
+    var result = pool.query(
+        `SELECT *
+          FROM dataloger;`
+    ).then((data) => {
+        return data
+    })
+
+    return result
+    
+},
+'dataSensor':  ()=>{
+    const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'data'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
+    var result = pool.query(
+        `SELECT *
+          FROM sensor;`
+    ).then((data) => {
+        return data
+    })
+
+    return result
+    
+},
+'dataStation':  ()=>{
+    const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'data'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
+    var result = pool.query(
+        `SELECT *
+          FROM station;`
+    ).then((data) => {
+        // console.log("data",data)
+        return data
+    })
+
+    return result
+    
+},
     'importFile': function (contentFile, pathFile) {
         // config db
         const PG_HOST = 'localhost'
         const PG_PORT = '5432'
-        const PG_DATABASE = 'vldc'
+        const PG_DATABASE = 'data'
         const PG_USER = 'postgres'
         const PG_PASSWORD = ''
         // const DIR_PATH = f
@@ -184,11 +320,13 @@ Meteor.methods({
             for (i = 0; i < contentFile.length; i++) {
                 let { event, event_station } = readFile(contentFile[i], pathFile[i])
                 p = p.then(() => {
+          
                     return insertEvent(event)
                 }).then(({ rows: [{ id }] }) => {
                     console.log('insert event')
                     let arr = event_station.map((elem) => {
                         elem.event_id = id
+                       
                         return insertEvent_station(elem)
                     })
                     return Promise.all(arr)
@@ -252,11 +390,13 @@ Meteor.methods({
             lines.slice(headerLine + 1).forEach((elem) => {
                 if (elem.match(/\S/)) {
                     let o = keys.reduce((obj, { key, key1, start }, ind) => {
+                       
                         let length = key.length
                         let temp = elem.match(new RegExp(`(-?[^ -]*(?![ ]))?(?<=^.{${start}})(.{${length}})((?<![ ])[^ -]+)?`))
                        if (temp != null && check === 'IPHASW') {
                             if (temp[1] && ind > 0 && temp.index < (keys[ind - 1].start + keys[ind - 1].key.length)) {
                                 // giá trị thuộc về cột trước
+                             
                                 obj[key1] = null
                             } else {
                                 obj[key1] = temp[0].replace(/^[ ]+|[ ]+$/g, '') || null
@@ -309,7 +449,7 @@ Meteor.methods({
                 }
                 s1 += `"${col}"`
                 if (col === 'station_id') {
-                    s2 += `(SELECT "id" FROM "station" WHERE "name" = $${values.push(event_station.stat)} LIMIT 1)`
+                    s2 += `(SELECT "id" FROM "station" WHERE "id" = $${values.push(event_station.stat)} LIMIT 1)`
                 } else {
                     s2 += `$${values.push(event_station[col])}`
                 }
