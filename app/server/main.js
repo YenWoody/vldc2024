@@ -7,25 +7,9 @@ import fs from 'fs';
 import pg from 'pg';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { Event } from '/imports/db/event';
-import '/imports/db/eventPublications';
-import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 Meteor.startup(function () {
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-    apiKey: "AIzaSyD2FetkQEW8Wfs-AYP17R89kzIvGP1y5LI",
-    authDomain: "vldc-d0894.firebaseapp.com",
-    projectId: "vldc-d0894",
-    storageBucket: "vldc-d0894.appspot.com",
-    messagingSenderId: "843779421106",
-    appId: "1:843779421106:web:917503be2e879139fdeaab",
-    measurementId: "G-C496VJ8KB5"
-  };
-  
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-    // /// Star
+
     // // config db
     // const PG_HOST = 'localhost'
     // const PG_PORT = '5432'
@@ -48,7 +32,7 @@ const firebaseConfig = {
     //     return data
     // })
     // // End
-    process.env.MAIL_URL = 'smtps://yenph@fimo.edu.vn:Giaothongvantai123@@smtp.gmail.com:465/';
+    process.env.MAIL_URL = 'smtps://email:pass@@smtp.gmail.com:465/';
     Accounts.emailTemplates.siteName = 'Vật Lí Địa Cầu';
     Accounts.emailTemplates.from = 'Vật Lí Địa Cầu Admin';
     Accounts.emailTemplates.enrollAccount.subject = (user) => {
