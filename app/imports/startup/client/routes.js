@@ -2,6 +2,7 @@ import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 // Import needed templates
 import '../../ui/layouts/body/body.js';
 import '../../ui/pages/home/home.js';
+import '../../ui/pages/event/event.js';
 import '../../ui/pages/station/station.js';
 import '../../ui/pages/not-found/not-found.js';
 import '../../ui/components/dashboard/dashboard.js';
@@ -12,6 +13,12 @@ import '../../ui/pages/reset/reset';
 import '../../ui/pages/verify/verify';
 
 // Set up all routes in the app
+FlowRouter.route('/event', {
+  name: 'App.event',
+  action() {
+    this.render('BodyTemplate', 'event');
+  },
+});
 FlowRouter.route('/', {
   name: 'App.home',
   action() {

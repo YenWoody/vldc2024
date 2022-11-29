@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import './station.html';
-import '../../components/map_station/map_station';
+import './event.html';
+import '../../components/map/map';
 import '../../components/filter/filter';
 import '../login/login';
 import '../../components/layouts/sidebar/sidebar';
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
-Template.station.helpers({
+Template.event.helpers({
     userUnVerified () {
     // const user = Meteor.user();
     // return user.emails[0].verified;
@@ -26,12 +26,4 @@ Template.station.helpers({
     },
  
 });
-Template.station.events ({
-  'click #id_station' : function () {
-    document.getElementById("_modal").style.display = "block";
-
-}
-
-
-})
 

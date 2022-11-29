@@ -496,29 +496,28 @@ Template.map.onRendered(() => {
             outFields: ["*"],
             creator: (event) => {
                 const date = new Date(event.graphic.attributes.datetime)
-                return `<table style ="border: groove">
-              <tr>
-              <td>Thời gian</td>
-              <td> ${date}</td>
-              </tr>
-              <tr>
-              <td>Độ sâu</td>
-              <td> ${event.graphic.attributes.md}</td>
-              </tr>
-              <tr>
-              <td>Cường độ</td>
-              <td>${event.graphic.attributes.ml}</td>
-              </tr>
-              <tr>
-              <td>Lat</td>
-              <td> ${event.graphic.attributes.lat}</td>
-              </tr>
-              <tr>
-              <td>Long</td>
-              <td>${event.graphic.attributes.long}</td>
-              </tr>
-              </tr>
-              </table>`
+                return `
+                <table class="display" style="border-style: double">
+                    <thead>
+                        <tr style="border-bottom: groove">
+                            <th class="content_popup">Thời gian</th>
+                            <th class="content_popup">Độ sâu</th>
+                            <th class="content_popup">Cường độ</th>
+                            <th class="content_popup">Lat</th>
+                            <th class="content_popup">Long</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    <td>${date}</td>
+                    <td>${event.graphic.attributes.md}</td>
+                    <td>${event.graphic.attributes.ml}</td>              
+                    <td>${event.graphic.attributes.lat}</td>
+                    <td>${event.graphic.attributes.long}</td>
+                    </tr>
+                    </tbody>
+                </table>`
+                
             }
         })
         const contentEventStation = new CustomContent({
@@ -843,27 +842,27 @@ Template.map.onRendered(() => {
         console.log(layerEventStaions,"layerSSakjaks")
 
         //End
-        const eventsLayer = new FeatureLayer({
-            url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
-            id: 'poi',
-            title: 'Events',
-            visible: true,
-            labelsVisible: false,
-            popupEnabled: true,
-            outFields: ['*'],
-            timeInfo: {
-                startField: "timestamp", // name of the date field
-                interval: {
-                    // set time interval to one day
-                    unit: "years",
-                    value: 5
-                }
-            },
-            popupTemplate: eventPopupTemplate,
-            listMode: 'show',
-            renderer: renderer,
-        });
-        console.log(eventsLayer, "eventLayer")
+        // const eventsLayer = new FeatureLayer({
+        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
+        //     id: 'poi',
+        //     title: 'Events',
+        //     visible: true,
+        //     labelsVisible: false,
+        //     popupEnabled: true,
+        //     outFields: ['*'],
+        //     timeInfo: {
+        //         startField: "timestamp", // name of the date field
+        //         interval: {
+        //             // set time interval to one day
+        //             unit: "years",
+        //             value: 5
+        //         }
+        //     },
+        //     popupTemplate: eventPopupTemplate,
+        //     listMode: 'show',
+        //     renderer: renderer,
+        // });
+        // console.log(eventsLayer, "eventLayer")
         const depthSlider = new Slider({
             container: "depthSlider",
             min: 0,
@@ -913,10 +912,10 @@ Template.map.onRendered(() => {
         // wait till the layer view is loaded
         let layerView;
         view.when(function () {
-            map.addMany([eventsLayer, layerEvent,layerEventStaions,layerStations]);
+            map.addMany([layerEvent,layerEventStaions,layerStations]);
             view.whenLayerView(layerEvent).then(function (lv) {
                 // start time of the time slider - 13/02/1918
-                const start = eventsLayer.timeInfo.fullTimeExtent.start;
+                const start = layerEvent.timeInfo.fullTimeExtent.start;
                 console.log(start,"start")
                 const end = layerEvent.timeInfo.fullTimeExtent.end;
                 // set time slider's full extent to
@@ -1016,7 +1015,7 @@ Template.map.onRendered(() => {
 
                 document.getElementById("clearFilter").addEventListener("click", clearFilter);
                 function clearFilter() {
-                    const start = eventsLayer.timeInfo.fullTimeExtent.start;
+                    const start = layerEvent.timeInfo.fullTimeExtent.start;
                     const end = layerEvent.timeInfo.fullTimeExtent.end;
                     //  depthSlider.filter = null;
                     //  magnitudeSlider.filter = null;
@@ -1029,79 +1028,39 @@ Template.map.onRendered(() => {
                 // Datatable Event
 
             });
-            view.whenLayerView(eventsLayer).then((layerView) => {
-                flView = layerView;
-                            // watch for time slider timeExtent change
-                timeSlider.watch("timeExtent", function () {
-                   updateFilter();
-                });
+            // view.whenLayerView(eventsLayer).then((layerView) => {
+            //     flView = layerView;
+            //                 // watch for time slider timeExtent change
+            //     timeSlider.watch("timeExtent", function () {
+            //        updateFilter();
+            //     });
 
-                depthSlider.on("thumb-drag", function() {
-                    updateFilter();
-                });
-                magnitudeSlider.on("thumb-drag", function() {
-                    updateFilter();
-                });
+            //     depthSlider.on("thumb-drag", function() {
+            //         updateFilter();
+            //     });
+            //     magnitudeSlider.on("thumb-drag", function() {
+            //         updateFilter();
+            //     });
 
-                const updateFilter = function() {
-                    depthMin = depthSlider.values[0];
-                    depthMax = depthSlider.values[1];
-                    magnitudeMin = magnitudeSlider.values[0];
-                    magnitudeMax = magnitudeSlider.values[1];
-                    let conditions = [];
-                    if (depthSlider) {
-                      conditions.push(`(depth >= ${depthMin} and depth <= ${depthMax})`);
-                    }
-                    if (magnitudeSlider) {
-                      conditions.push(`(ms >= ${magnitudeMin} and ms <= ${ magnitudeMax})`);
-                    }
-                    if(timeSlider){
-                        conditions.push(`(time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()})`);
-                    }
-                    flView.filter = conditions.length > 0 ? {where: conditions.join("AND")} : null;
-                    // // Datatable 
-                    // let query = eventsLayer.createQuery();
-                    // query.where = `depth >= 0 and depth <= 100`;
-                    // query.outFields = "*";
-                    // eventsLayer.queryFeatures(query)
-                    //   .then(function(response){
-                    //    const dataSet = response.features.filter( (item) => {
-                    //      return (item.attributes.time >= timeSlider.timeExtent.start.getTime() && item.attributes.time <= timeSlider.timeExtent.end.getTime()) && (item.attributes.depth >= depthMin && item.attributes.depth <= depthMax) && (item.attributes.ms >= magnitudeMin && item.attributes.ms <= magnitudeMax);
-                    //   });
-                    //   const table = $('#dulieu').DataTable({
-                    //       data : dataSet,
-                    //       "paging": false,
-                    //       "destroy": true,
-                    //       'buttons': [
-                    //         {
-                    //             extend: 'excel',
-                    //             split: [ 'copy', 'csv' ],
-                    //         }
-                    //         ],
-                    //       'dom': 'Bfrtip',
-                    //       "scrollX": 'true',
-                    //       "scrollY": "250",
-                    //       "language": {
-                    //         "info": "Hiển thị từ _START_ đến _END_ Events",
-                    //         "infoFiltered": " ",
-                    //       },
-                    //       "columns": [
-                    //           { data: 'attributes.year'},
-                    //           { data: 'attributes.month' },
-                    //           { data: 'attributes.day' },
-                    //           { data: 'attributes.ms' },
-                    //           { data: 'attributes.lat' },
-                    //           { data: 'attributes.lon' },
-                    //           { data: 'attributes.depth' },
-                    //       ],
-                    //     });  
-                      
-                    // });
-                    
-                    // // End Datatable Event
-                  };
+            //     const updateFilter = function() {
+            //         depthMin = depthSlider.values[0];
+            //         depthMax = depthSlider.values[1];
+            //         magnitudeMin = magnitudeSlider.values[0];
+            //         magnitudeMax = magnitudeSlider.values[1];
+            //         let conditions = [];
+            //         if (depthSlider) {
+            //           conditions.push(`(depth >= ${depthMin} and depth <= ${depthMax})`);
+            //         }
+            //         if (magnitudeSlider) {
+            //           conditions.push(`(ms >= ${magnitudeMin} and ms <= ${ magnitudeMax})`);
+            //         }
+            //         if(timeSlider){
+            //             conditions.push(`(time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()})`);
+            //         }
+            //         flView.filter = conditions.length > 0 ? {where: conditions.join("AND")} : null;
+            //       };
     
-            });
+            // });
             view.whenLayerView(layerStations).then((layerView) => {
                 floodLayerView = layerView;
             });

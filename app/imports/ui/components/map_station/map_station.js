@@ -203,7 +203,7 @@ Template.map_station.onRendered(() => {
                 },
             },
         });
-        
+
         // end init view
         // Filter by Attributes
         const networkElement = document.getElementById("relationship-select");
@@ -231,12 +231,12 @@ Template.map_station.onRendered(() => {
                 width: 1,
             }
         };
-        const iconstation ={
+        const iconstation = {
             type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
             url: "/img/broadcast1.png",
             width: "16px",
             height: "16px"
-          };
+        };
         const renderer = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: defaultSym,
@@ -282,7 +282,7 @@ Template.map_station.onRendered(() => {
 
                     ]
                 },
-               
+
             ]
         };
         const renderer1 = {
@@ -405,11 +405,11 @@ Template.map_station.onRendered(() => {
         });
         dataEventStations.map(e => {
             dataGeojsonEventStations.push(turf.point([0, 0], e))
-           
+
         })
         stationsGeojson.map(e => {
             dataGeojsonStations.push(turf.point([e.long, e.lat], e))
-            
+
         })
 
         // Tạo Turf featurecollection
@@ -496,29 +496,28 @@ Template.map_station.onRendered(() => {
             outFields: ["*"],
             creator: (event) => {
                 const date = new Date(event.graphic.attributes.datetime)
-                return `<table style ="border: groove">
-              <tr>
-              <td>Thời gian</td>
-              <td> ${date}</td>
-              </tr>
-              <tr>
-              <td>Độ sâu</td>
-              <td> ${event.graphic.attributes.md}</td>
-              </tr>
-              <tr>
-              <td>Cường độ</td>
-              <td>${event.graphic.attributes.ml}</td>
-              </tr>
-              <tr>
-              <td>Lat</td>
-              <td> ${event.graphic.attributes.lat}</td>
-              </tr>
-              <tr>
-              <td>Long</td>
-              <td>${event.graphic.attributes.long}</td>
-              </tr>
-              </tr>
-              </table>`
+                return `
+                <table class="display" style="border-style: double">
+                    <thead>
+                        <tr style="border-bottom: groove">
+                            <th class="content_popup">Thời gian</th>
+                            <th class="content_popup">Độ sâu</th>
+                            <th class="content_popup">Cường độ</th>
+                            <th class="content_popup">Lat</th>
+                            <th class="content_popup">Long</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    <td>${date}</td>
+                    <td>${event.graphic.attributes.md}</td>
+                    <td>${event.graphic.attributes.ml}</td>              
+                    <td>${event.graphic.attributes.lat}</td>
+                    <td>${event.graphic.attributes.long}</td>
+                    </tr>
+                    </tbody>
+                </table>`
+                
             }
         })
         const contentEventStation = new CustomContent({
@@ -667,6 +666,41 @@ Template.map_station.onRendered(() => {
                 let query_Station = layerDataloger.createQuery();
                 query_Station.where = where;
                 query_Station.outFields = "*";
+                //
+
+                async function id() {
+                    let query = layerEventStaions.createQuery();
+                    console.log(event.graphic.attributes,"event.graphic.attributes.station_id")
+                    query.where = `station_id LIKE '%${event.graphic.attributes.id}%'`;
+                    query.outFields = "*";
+                    const id = [];
+                    const f = await layerEventStaions.queryFeatures(query)
+                    f.features.map(e => {
+                        id.push(e.attributes.event_id)
+
+                    })
+                    function check(arr) {
+                        var newArr = []
+                        for (var i = 0; i < arr.length; i++) {
+                            if (newArr.indexOf(arr[i]) === -1) {
+                                newArr.push(arr[i])
+                            }
+                        }
+                        return newArr
+                    }
+                    const id_event = check(id);
+                    const id_query = []
+                    id_event.map(e => {
+                        id_query.push(`(id = ${e})`)
+                    });
+                    console.log(id_query.length)
+                    view.whenLayerView(layerEvent).then((layerView) => {
+                        eventview = layerView;
+                        eventview.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
+                    })
+                }
+                id();
+                //
                 return layerDataloger.queryFeatures(query_Station)
                     .then(function (response) {
                         const dataSet = response.features
@@ -809,13 +843,13 @@ Template.map_station.onRendered(() => {
             content: [contentEventStation, contentEvent],
         }
         // create new geojson layer using the blob url
-        
+
         const layerEvent = new GeoJSONLayer({
             url: url,
             popupTemplate: eventPopupTemplate,
             listMode: 'show',
             renderer: renderer1,
-            title: 'Events',
+            title: 'Sự kiện động đất',
             visible: true,
             labelsVisible: false,
             popupEnabled: true,
@@ -839,66 +873,7 @@ Template.map_station.onRendered(() => {
             popupEnabled: true,
 
         });
-        
-        console.log(layerEventStaions,"layerSSakjaks")
 
-        //End
-        // const eventsLayer = new FeatureLayer({
-        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
-        //     id: 'poi',
-        //     title: 'Events',
-        //     visible: true,
-        //     labelsVisible: false,
-        //     popupEnabled: true,
-        //     outFields: ['*'],
-        //     timeInfo: {
-        //         startField: "timestamp", // name of the date field
-        //         interval: {
-        //             // set time interval to one day
-        //             unit: "years",
-        //             value: 5
-        //         }
-        //     },
-        //     popupTemplate: eventPopupTemplate,
-        //     listMode: 'show',
-        //     renderer: renderer,
-        // });
-   
-        const depthSlider = new Slider({
-            container: "depthSlider",
-            min: 0,
-            max: 100,
-            values: [0, 100],
-            step: 1,
-            visibleElements: {
-                rangeLabels: true,
-                labels: true
-            },
-        });
-
-        const magnitudeSlider = new Slider({
-            container: "magnitudeSlider",
-            min: 0,
-            max: 8,
-            values: [0, 8],
-            step: 1,
-            visibleElements: {
-                rangeLabels: true,
-                labels: true
-            },
-        });
-
-        const timeSlider = new TimeSlider({
-            container: "timeSlider",
-            playRate: 50,
-            stops: {
-                interval: {
-                    value: 1,
-                    unit: "days"
-                }
-            }
-        });
-        // view.ui.add(timeSlider, "bottom-right");
         // LayerList
         const layerList = new LayerList({
             container: document.createElement("div"),
@@ -912,196 +887,26 @@ Template.map_station.onRendered(() => {
         view.ui.add(layerListExpand, "top-right");
         // wait till the layer view is loaded
         let layerView;
+        var layer
         view.when(function () {
-            map.addMany([ layerEvent,layerEventStaions,layerStations]);
-            view.whenLayerView(layerEvent).then(function (lv) {
-                // start time of the time slider - 13/02/1918
-                const start = layerEvent.timeInfo.fullTimeExtent.start;
-                console.log(start,"start")
-                const end = layerEvent.timeInfo.fullTimeExtent.end;
-                // set time slider's full extent to
-                timeSlider.fullTimeExtent = {
-                    start: start,
-                    end: end
-                };
-                // showing earthquakes with one day interval
-                end.setDate(end.getDate() + 1);
-                // Values property is set so that timeslider
-                // widget show the first day. We are setting
-                // the thumbs positions.
-                timeSlider.values = [start, end];
-                  
-            });
-   
+            map.addMany([layerEvent, layerEventStaions, layerStations]);
+
+
             let flView = null;
-            view.whenLayerView(layerEvent).then((layerView) => {
-                flView = layerView;
-                // watch for time slider timeExtent change
-                timeSlider.watch("timeExtent", function () {
-                    updateFilter();
-                });
-
-                depthSlider.on("thumb-drag", function () {
-                    updateFilter();
-                });
-                magnitudeSlider.on("thumb-drag", function () {
-                    updateFilter();
-                });
-
-                const updateFilter = function () {
-                    depthMin = depthSlider.values[0];
-                    depthMax = depthSlider.values[1];
-                    magnitudeMin = magnitudeSlider.values[0];
-                    magnitudeMax = magnitudeSlider.values[1];
-                    let conditions = [];
-                    if (depthSlider) {
-                        conditions.push(`(md >= ${depthMin} and md <= ${depthMax})`);
-                    }
-                    if (magnitudeSlider) {
-                        conditions.push(`(ml >= ${magnitudeMin} and ml <= ${magnitudeMax})`);
-                    }
-                    if (timeSlider) {
-                        conditions.push(`(datetime > ${timeSlider.timeExtent.start.getTime()} AND datetime < ${timeSlider.timeExtent.end.getTime()})`);
-                    }
-                    flView.filter = conditions.length > 0 ? { where: conditions.join("AND") } : null;
-                    console.log(flView.filter,"flView.filter")
-                    // Datatable 
-                    let query = layerEvent.createQuery();
-                    query.where = `md >= 0 and md <= 100`;
-                    query.outFields = "*";
-                    console.log(query,"query")
-                    layerEvent.queryFeatures(query)
-                        .then(function (response) {
-                            console.log(response,"response")
-                            const dataSet = response.features.filter((item) => {
-                                return (item.attributes.datetime >= timeSlider.timeExtent.start.getTime() && item.attributes.datetime <= timeSlider.timeExtent.end.getTime()) && (item.attributes.md >= depthMin && item.attributes.md <= depthMax) && (item.attributes.ml >= magnitudeMin && item.attributes.ml <= magnitudeMax);
-                            });
-                            console.log(dataSet,"dataSert")
-                            const table = $('#dulieu').DataTable({
-                                data: dataSet,
-                                "paging": false,
-                                "destroy": true,
-                                'buttons': [
-                                    {
-                                        extend: 'excel',
-                                        split: ['copy', 'csv'],
-                                    }
-                                ],
-                                'dom': 'Bfrtip',
-                                "scrollX": 'true',
-                                "scrollY": "250",
-                                "language": {
-                                    "info": "Hiển thị từ _START_ đến _END_ Events",
-                                    "infoFiltered": " ",
-                                },
-                                "columns": [
-                                    // { data: 'attributes.year' },
-                                    // { data: 'attributes.month' },
-                                    { data: 'attributes.datetime' },
-                                    { data: 'attributes.ml' },
-                                    { data: 'attributes.lat' },
-                                    { data: 'attributes.long' },
-                                    { data: 'attributes.md' },
-                                ],
-                            });
-
-                        });
-
-                    // End Datatable Event
-                };
-
-                document.getElementById("clearFilter").addEventListener("click", clearFilter);
-                function clearFilter() {
-                    const start = layerEvent.timeInfo.fullTimeExtent.start;
-                    const end = layerEvent.timeInfo.fullTimeExtent.end;
-                    //  depthSlider.filter = null;
-                    //  magnitudeSlider.filter = null;
-                    flView.filter = null;
-                    depthSlider.values = [0, 100];
-                    magnitudeSlider.values = [0, 8];
-                    timeSlider.values = [start, end];
-                    highlightSelect.remove();
-                }
-                // Datatable Event
-
-            });
-            view.whenLayerView(layerEvent).then((layerView) => {
-                flView = layerView;
-                            // watch for time slider timeExtent change
-                timeSlider.watch("timeExtent", function () {
-                   updateFilter();
-                });
-
-                depthSlider.on("thumb-drag", function() {
-                    updateFilter();
-                });
-                magnitudeSlider.on("thumb-drag", function() {
-                    updateFilter();
-                });
-
-                const updateFilter = function() {
-                    depthMin = depthSlider.values[0];
-                    depthMax = depthSlider.values[1];
-                    magnitudeMin = magnitudeSlider.values[0];
-                    magnitudeMax = magnitudeSlider.values[1];
-                    let conditions = [];
-                    if (depthSlider) {
-                      conditions.push(`(depth >= ${depthMin} and depth <= ${depthMax})`);
-                    }
-                    if (magnitudeSlider) {
-                      conditions.push(`(ms >= ${magnitudeMin} and ms <= ${ magnitudeMax})`);
-                    }
-                    if(timeSlider){
-                        conditions.push(`(time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()})`);
-                    }
-                    flView.filter = conditions.length > 0 ? {where: conditions.join("AND")} : null;
-                    // // Datatable 
-                    // let query = eventsLayer.createQuery();
-                    // query.where = `depth >= 0 and depth <= 100`;
-                    // query.outFields = "*";
-                    // eventsLayer.queryFeatures(query)
-                    //   .then(function(response){
-                    //    const dataSet = response.features.filter( (item) => {
-                    //      return (item.attributes.time >= timeSlider.timeExtent.start.getTime() && item.attributes.time <= timeSlider.timeExtent.end.getTime()) && (item.attributes.depth >= depthMin && item.attributes.depth <= depthMax) && (item.attributes.ms >= magnitudeMin && item.attributes.ms <= magnitudeMax);
-                    //   });
-                    //   const table = $('#dulieu').DataTable({
-                    //       data : dataSet,
-                    //       "paging": false,
-                    //       "destroy": true,
-                    //       'buttons': [
-                    //         {
-                    //             extend: 'excel',
-                    //             split: [ 'copy', 'csv' ],
-                    //         }
-                    //         ],
-                    //       'dom': 'Bfrtip',
-                    //       "scrollX": 'true',
-                    //       "scrollY": "250",
-                    //       "language": {
-                    //         "info": "Hiển thị từ _START_ đến _END_ Events",
-                    //         "infoFiltered": " ",
-                    //       },
-                    //       "columns": [
-                    //           { data: 'attributes.year'},
-                    //           { data: 'attributes.month' },
-                    //           { data: 'attributes.day' },
-                    //           { data: 'attributes.ms' },
-                    //           { data: 'attributes.lat' },
-                    //           { data: 'attributes.lon' },
-                    //           { data: 'attributes.depth' },
-                    //       ],
-                    //     });  
-                      
-                    // });
-                    
-                    // // End Datatable Event
-                  };
-    
-            });
             view.whenLayerView(layerStations).then((layerView) => {
                 floodLayerView = layerView;
             });
+            view.whenLayerView(layerEvent).then((layerView) => {
+                layer = layerView;
+                layer.filter = { where: "id = -1" }
+            });
         });
+
+        document.getElementById("clearFilter").addEventListener("click", clearFilter);
+        function clearFilter() {
+            layer.filter = { where: "id = -1" };
+            highlightSelect.remove();
+        }
         // Datatable 
         let query = layerStations.createQuery();
         query.where = `key >= 0 and key <= 1000`;
@@ -1109,7 +914,7 @@ Template.map_station.onRendered(() => {
         layerStations.queryFeatures(query)
             .then(function (response) {
                 const dataSet = response.features
-                console.log(dataSet,"dataSet")
+                console.log(dataSet, "dataSet")
                 const table = $('#dulieu').DataTable({
                     data: dataSet,
                     'buttons': [
@@ -1125,20 +930,22 @@ Template.map_station.onRendered(() => {
                     "scrollY": "250",
                     "language": {
                         "emptyTable": "Sử dụng bộ lọc để hiển thị dữ liệu",
-                        "info": "Hiển thị từ _START_ đến _END_ Events",
+                        "info": "Hiển thị từ _START_ đến _END_ Trạm",
                         "infoEmpty": "Hiển thị 0 Events",
                     },
                     "columns": [
                         // { data: 'attributes.year' },
                         // { data: 'attributes.month' },
-                        { data: 'attributes.id',
+                        {
+                            data: 'attributes.id',
                             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                            $(nTd).html(`<div id = "id_station"><b><a href =>${sData}</a></b></div>`);
-                        }},
+                                $(nTd).html(`<div id = "id_station"><b><a href =>${sData}</a></b></div>`);
+                            }
+                        },
                         { data: 'attributes.name' },
                         { data: 'attributes.lat' },
                         { data: 'attributes.long' },
-                        { data: 'attributes.height' },  
+                        { data: 'attributes.height' },
                         { data: 'attributes.network' },
                         { data: 'attributes.address' },
 
@@ -1150,7 +957,62 @@ Template.map_station.onRendered(() => {
                     const data = $('#dulieu').DataTable().row(this).data();
                     console.log(data, "data");
 
-                    view.whenLayerView(data.layer).then(function (layerView) {
+                    async function id() {
+                        let query = layerEventStaions.createQuery();
+                        query.where = `station_id LIKE '%${data.attributes.id}%'`;
+                        query.outFields = "*";
+                        const id = [];
+                        const f = await layerEventStaions.queryFeatures(query)
+                        f.features.map(e => {
+                            id.push(e.attributes.event_id)
+
+                        })
+                        function check(arr) {
+                            var newArr = []
+                            for (var i = 0; i < arr.length; i++) {
+                                if (newArr.indexOf(arr[i]) === -1) {
+                                    newArr.push(arr[i])
+                                }
+                            }
+                            return newArr
+                        }
+                        const id_event = check(id);
+                        const id_query = []
+                        const infoEvent = []
+
+                        id_event.map(e => {
+                            id_query.push(`(id = ${e})`)
+                        })
+                        let query1 = layerEvent.createQuery();
+                            query1.where = `${id_query.join("OR")}`;
+                            query1.outFields = "*";
+                          const cont = await  layerEvent.queryFeatures(query1)
+                   
+                      cont.features.map(e=>{
+                       infoEvent.push(`<tr><td>${new Date (e.attributes.datetime)}</td><td>${e.attributes.lat}</td><td>${e.attributes.long}</td><td>${e.attributes.md}</td><td>${e.attributes.ml}</td></tr>`)
+                      })
+                 
+                        view.whenLayerView(layerEvent).then((layerView) => {
+                            eventview = layerView;
+                            eventview.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
+                        })
+                        document.getElementById('_content').innerHTML = `<table class="display" style="border-style: double">
+                        <thead>
+                            <tr style="border-bottom: groove">
+                                <th class="content_popup">Thời gian</th>
+                                <th class="content_popup">Lat</th>
+                                <th class="content_popup">Long</th>
+                                <th class="content_popup">Độ sâu</th>
+                                <th class="content_popup">Cường độ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           ${infoEvent.join("")}
+                        </tbody>
+                    </table>`;
+                    }
+                    id();
+                    view.whenLayerView(data.layer).then(async function (layerView) {
                         if (highlightSelect) {
                             highlightSelect.remove();
                         }
@@ -1159,6 +1021,7 @@ Template.map_station.onRendered(() => {
                             geometry: data.geometry,
                             zoom: 6,
                         });
+
                     });
                 });
             });
@@ -1235,10 +1098,10 @@ Template.map_station.helpers({
 });
 
 Template.map_station.events({
-    'click #close-modal' : function () {
+    'click #close-modal': function () {
         console.log("check")
-       document.getElementById("_modal").style.display = "none"
-        
+        document.getElementById("_modal").style.display = "none"
+
     },
 
 
