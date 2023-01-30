@@ -11,12 +11,18 @@ import '../../ui/pages/register/register.js';
 import '../../ui/pages/login/login.js';
 import '../../ui/pages/reset/reset';
 import '../../ui/pages/verify/verify';
-
+import '../../ui/pages/manage-user/manage-user';
 // Set up all routes in the app
 FlowRouter.route('/event', {
   name: 'App.event',
   action() {
     this.render('BodyTemplate', 'event');
+  },
+});
+FlowRouter.route('/manager-user', {
+  name: 'App.event',
+  action() {
+    this.render('BodyTemplate', 'manager');
   },
 });
 FlowRouter.route('/', {

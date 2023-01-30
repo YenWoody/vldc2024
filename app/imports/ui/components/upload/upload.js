@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import Files from '/lib/files.collection.js';
 import './upload.html';
 import '../../pages/login/login';
+import '../not_access/not_access'
 import { Event } from '../../../db/event';
 import JSZip from 'jszip';
 import  Swal  from 'sweetalert2/dist/sweetalert2.js';
@@ -40,6 +41,16 @@ Template.uploadForm.helpers({
       return true;
     }
     else if ( Meteor.user() && Meteor.user().emails[0].verified === true ) 
+    return false; // look at the current user
+  
+  },
+  rolesCheck () {
+    // const user = Meteor.user();
+    // return user.emails[0].verified;
+    if(Meteor.user() && Meteor.user().roles === 'user'){
+      return true;
+    }
+    else if ( Meteor.user() && Meteor.user().roles === 'admin' ) 
     return false; // look at the current user
   
   }

@@ -67,11 +67,11 @@
                 <h1 class="h3 mb-3 fw-normal">Thân chào bạn, để sử dụng VLDC bạn vui lòng đăng kí tài khoản phía bên dưới nhé!</h1>
             
                 <div class="form-floating">
-                  <input type="text" class="form-control" id="floatingInput" placeholder="text" name="username" style ="margin-bottom: 10px" required>
+                  <input type="text" class="form-control" id="floatingUsername" placeholder="text" name="username" style ="margin-bottom: 10px" required>
                   <label for="floatingInput"><i aria-hidden="true" style="margin-right: 5px" class="fa fa-user"></i>Tài khoản</label>
                 </div>
                 <div class="form-floating">
-                  <input type="password" class="form-control" id="floatingPassword" placeholder="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                  <input type="password" class="form-control" id="floatingPassword" placeholder="password" autocomplete="on" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
                   title="Phải chứa ít nhất một số và một chữ hoa và chữ thường và ít nhất 6 ký tự trở lên" required >
                   <label for="floatingPassword" ><i aria-hidden="true" style="margin-right: 5px" class="fa fa-lock"></i>Mật khẩu</label><span id="show-pass" class = "show-pass">
                     <i class="fa fa-eye" id = "eye" ></i>
@@ -112,7 +112,7 @@
                     </ul>
                 </div>
                 <div class="form-floating">
-                  <input type="password" class="form-control" id="checkPassword" placeholder="password" name="checkpassword"
+                  <input type="password" class="form-control" id="checkPassword" placeholder="password" name="checkpassword" autocomplete="on"
                   required >
                   <label for="floatingPassword" > <i aria-hidden="true" style="margin-right: 5px" class="fa fa-lock" ></i>Nhập lại Mật khẩu</label><span id="show-pass2" class = "show-pass">
                     <i class="fa fa-eye" id = "eye2" ></i>
@@ -134,7 +134,7 @@
                 </div>
                   <span id="alertPassword"></span>
                 <div class="form-floating">
-                  <input type="email" class="form-control" id="floatingInput" placeholder="email" name="email" required>
+                  <input type="email" class="form-control" id="floatingEmail" placeholder="email" name="email" required>
                   <label for="floatingInput"><i aria-hidden="true" style="margin-right: 5px" class="fa fa-envelope"></i>Email</label>
                 </div>
                 <button class="w-100 btn btn-lg btn-primary" type="submit">Đăng kí</button>

@@ -1,16 +1,19 @@
 <template name="uploadForm">
-  <div class ="upload">
+  {{#if rolesCheck}}
+  {{> not_access}}
+  {{else}}
+  <div class="upload">
     {{#if userUnVerified}}
     {{> verify_form }}
     {{else}}
     <div class="upload-progress">
       {{#with currentUpload}}
-        Uploading <b>{{file.name}}</b>: 
-        <span id="progress">{{progress.get}}%</span>
+      Uploading <b>{{file.name}}</b>:
+      <span id="progress">{{progress.get}}%</span>
       {{else}}
       <label class="btn btn-outline-info btn-lg">
-       Tải lên tệp tin
-        <input id="fileInput" type="file" hidden/> 
+        Tải lên tệp tin
+        <input id="fileInput" type="file" hidden />
         <i class="fa fa-cloud-upload fa-lg" aria-hidden="true"></i>
       </label>
       {{/with}}
@@ -20,6 +23,7 @@
     </div>
     {{/if}}
   </div>
+  {{/if}}
   <!-- <div class = "read">
     <h3>Nội dung thô của tệp:</h3>
     <pre id="file-content">Vui lòng upload file.</pre>

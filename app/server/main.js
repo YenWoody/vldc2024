@@ -8,30 +8,22 @@ import pg from 'pg';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 // import { getAnalytics } from "firebase/analytics";
+import { Roles } from 'meteor/alanning:roles'
+// server.js
+Accounts.onCreateUser(function(options, user){
+    user.roles = 'user'
+    return user;
+  });
 Meteor.startup(function () {
+    Meteor.publish('allUsers', function(){
+        return Meteor.users.find({},{
+            fields:{
+                _id:1,
+                username:1
+            }
+        });
 
-    // // config db
-    // const PG_HOST = 'localhost'
-    // const PG_PORT = '5432'
-    // const PG_DATABASE = 'postgres'
-    // const PG_USER = 'postgres'
-    // const PG_PASSWORD = ''
-    // // const DIR_PATH = f
-    // const pool = new pg.Pool({
-    //     host: PG_HOST,
-    //     port: PG_PORT,
-    //     database: PG_DATABASE,
-    //     user: PG_USER,
-    //     password: PG_PASSWORD,
-    // })
-
-    // pool.query(
-    //     `SELECT *
-    //       FROM event_station;`
-    // ).then((data) => {
-    //     return data
-    // })
-    // // End
+    });  
     process.env.MAIL_URL = 'smtps://email:pass@@smtp.gmail.com:465/';
     Accounts.emailTemplates.siteName = 'Vật Lí Địa Cầu';
     Accounts.emailTemplates.from = 'Vật Lí Địa Cầu Admin';
@@ -113,6 +105,21 @@ Meteor.startup(function () {
 
 });
 Meteor.methods({ 
+    'updateRoles': function (targetUserId, roles, scope) {
+        check(targetUserId, String);
+        check(roles, [String]);
+        check(scope, String);
+    
+        var loggedInUser = Meteor.user();
+    
+        if (!loggedInUser ||
+            !Roles.userIsInRole(loggedInUser, 
+                                ['manage-users', 'support-staff'], scope)) {
+          throw new Meteor.Error('access-denied', "Access denied");
+        }
+    
+        Roles.setUserRoles(targetUserId, roles, scope);
+      },
     'layerEvent':  ()=>{
         const PG_HOST = 'localhost'
         const PG_PORT = '5432'
@@ -372,6 +379,7 @@ Meteor.methods({
             keys = keywithoutW;
             /// end code
             lines.slice(headerLine + 1).forEach((elem) => {
+          
                 if (elem.match(/\S/)) {
                     let o = keys.reduce((obj, { key, key1, start }, ind) => {
                        
@@ -456,5 +464,26 @@ Meteor.methods({
         var info = Accounts.findUserByEmail(email);
         Accounts.sendResetPasswordEmail(info._id)
     },
+    'update-role' : (id,role)=>{
+        Accounts.onLogin(function(user) {
+            if (!user.user.publications) {
+                Meteor.users.update(id,{
+                    $set:{
+                        roles: role
+                    }
+                });
+            }
+        })
+        // Meteor.users.update({_id: id}, {$addToSet:{"profile":{role : roles}}});
+    },
+    'delete-user' : (id)=>{
+        Meteor.users.remove(id);
+        // Meteor.users.update({_id: id}, {$addToSet:{"profile":{role : roles}}});
+    },
+    'serverCreateUser' (username,password,email) {
+        const userId = Accounts.createUser({ username, password, email })
+        // return new user id
+        return userId
+      }
    
 })

@@ -122,7 +122,56 @@ width: 80%;
   transform: translateY(-50%);
   animation: moonRotate 6s infinite linear;
 }
+.manage-users.row {
+  display: grid;
+  width: 100%;
+  margin: 0px;
+  padding: 15px 45px 45px 45px;
+  justify-items: center;
+}
+button#add-user {
+  float: right;
+  margin-right: 70px;
+}
+.offset4.span8 {
+  border-color: gainsboro;
+  border-style: solid;
+  border-width: thin;
+  border-radius: 10px;
+  padding: 10px;
+  width: 60%;
+}
+.tooltiptext {
+  visibility: hidden;
+  background-color: #03a9f4;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
 
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+#delete-user:hover .tooltiptext {
+  visibility: visible;
+}
+#role_user:hover .tooltiptext {
+  visibility: visible;
+}
+form.changepassword-form{
+  border-color: white;
+    background: #fff;
+    padding: 36px 0;
+    border-radius: 4px;
+    margin: 30px 0;
+    box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .give-flex {
   display: flex;
   height: 88%;

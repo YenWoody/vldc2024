@@ -19,6 +19,15 @@
                     <ul id="sidebarnav">
                         <!-- User Profile-->
                         <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                aria-expanded="false" id ="changepassword">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                                <span class="hide-menu" >Đổi mật khẩu</span>
+                            </a>
+                        </li>
+                        {{#if rolesCheck}}
+                        {{else}}
+                        <li class="sidebar-item">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{pathFor 'upload'}}"
                                 aria-expanded="false">
                                 <i class="fa fa-upload" aria-hidden="true"></i>
@@ -26,19 +35,13 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                aria-expanded="false" id ="changepassword">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                                <span class="hide-menu" >Đổi mật khẩu</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.html"
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/manager-user"
                                 aria-expanded="false">
-                                <i class="fa fa-columns" aria-hidden="true"></i>
-                                <span class="hide-menu">Blank Page</span>
+                                <i class="fa fa-users" aria-hidden="true"></i>
+                                <span class="hide-menu">Quản lí người dùng</span>
                             </a>
                         </li>
+                        {{/if}}
                     </ul>
 
                 </nav>
@@ -97,30 +100,22 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12 col-lg-12 col-sm-12">
-                        <div class="white-box">
-                            <div class="d-md-flex mb-3">
-                                <h3 class="box-title mb-0">Recent sales</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+             
                 
             </div>
             <div class="container-fluid" id ="changepassword_form" >
                 <form class="changepassword-form">
                     <h1 class="h3 mb-3 fw-normal">Đổi Mật Khẩu Mới</h1>
                 
-                    <div class="form-floating">
+                    <div class="form-floating" style="width:80%">
                       <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="oldpassword">
                       <label for="floatingInput">Nhập mật khẩu cũ</label>
                     </div>
-                    <div class="form-floating">
+                    <div class="form-floating" style="width:80%">
                       <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="newpassword">
                       <label for="floatingPassword">Nhập mật khẩu mới</label>
                     </div>
-                    <button class="w-100 btn btn-lg btn-primary" type="submit">Xác Nhận</button>
+                    <button class="w-100 btn btn-lg btn-primary" style="margin-top: 30px;width: 32%!important;" type="submit">Xác Nhận</button>
               
                   </form>
             </div>
