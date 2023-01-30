@@ -1,0 +1,33 @@
+<template name="changepass">
+  <style>
+    #changepass {
+        display: grid;
+        justify-items: center;
+    }
+  </style>
+    {{#if rolesCheck}}
+    {{> not_access}}
+    {{else}}
+       <div class="container" id = "changepass" >
+        {{#if userUnVerified}}
+    {{> verify_form }}
+    {{else}}
+        <form class="changepassword-form">
+            <h1 class="h3 mb-3 fw-normal">Đổi Mật Khẩu Mới</h1>
+        
+            <div class="form-floating" style="width:80%">
+              <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="oldpassword">
+              <label for="floatingInput">Nhập mật khẩu cũ</label>
+            </div>
+            <div class="form-floating" style="width:80%">
+              <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="newpassword">
+              <label for="floatingPassword">Nhập mật khẩu mới</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" style="margin-top: 30px;width: 32%!important;" type="submit">Xác Nhận</button>
+      
+          </form>
+          {{/if}}
+    </div>
+   
+    {{/if}}
+  </template>

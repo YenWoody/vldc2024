@@ -8,6 +8,7 @@ import '../../ui/pages/not-found/not-found.js';
 import '../../ui/components/dashboard/dashboard.js';
 import '../../ui/components/upload/upload.js';
 import '../../ui/pages/register/register.js';
+import '../../ui/pages/changepass/changepass.js';
 import '../../ui/pages/login/login.js';
 import '../../ui/pages/reset/reset';
 import '../../ui/pages/verify/verify';
@@ -65,7 +66,12 @@ FlowRouter.route('/register', {
     this.render('BodyTemplate', 'register_form');
   },
 });
-
+FlowRouter.route('/changepass', {
+  name: 'App.changepass',
+  action() {
+    this.render('BodyTemplate', 'changepass_form');
+  },
+});
 FlowRouter.route('/login', {
   name: 'App.login',
   action() {
