@@ -7,7 +7,6 @@ import fs from 'fs';
 import pg from 'pg';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-// import { getAnalytics } from "firebase/analytics";
 import { Roles } from 'meteor/alanning:roles'
 // server.js
 Accounts.onCreateUser(function(options, user){

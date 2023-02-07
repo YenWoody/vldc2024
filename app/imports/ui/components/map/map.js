@@ -1,6 +1,5 @@
 import './map.html';
 import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
-import { Session } from 'meteor/session';
 import datatables from 'datatables.net';
 import datatables_bs from 'datatables.net-bs';
 import { $ } from 'meteor/jquery';
@@ -47,7 +46,8 @@ Template.map.onRendered(() => {
         'esri/widgets/LayerList',
         'esri/popup/content/CustomContent',
         "esri/symbols/IconSymbol3DLayer",
-        "esri/layers/support/LabelClass"
+        "esri/layers/support/LabelClass",
+        
     ]).then(async ([
         Map,
         MapView,
@@ -145,7 +145,7 @@ Template.map.onRendered(() => {
                 // Fetch Data From Iris
         function getData() {
             return new Promise(function (resolve,reject){
-                fetch("https://service.iris.edu/fdsnws/event/1/query?starttime=2022-12-05&minmagnitude=1&limit=10000&output=text")
+                fetch("https://service.iris.edu/fdsnws/event/1/query?starttime=2023-02-02&minmagnitude=1&limit=10000&output=text")
                 .then(res => {
                   resolve(res.text())
                 })
@@ -267,7 +267,7 @@ Template.map.onRendered(() => {
             width: "16px",
             height: "16px"
           };
-          const renderer = {
+        const renderer = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: defaultSym,
             visualVariables: [
@@ -427,16 +427,11 @@ Template.map.onRendered(() => {
         const dataGeojsonSensor = [];
         const dataGeojsonIris = [];
         const eventGeojson = dataEvents.filter(e => {
-            if (e.geometry === null) {
-                return false
-            }
-            return true
+            return !(e.geometry === null);
         })
+
         const stationsGeojson = dataStations.filter(e => {
-            if (e.geometry === null) {
-                return false
-            }
-            return true
+            return !(e.geometry === null);
         })
         dataEmployee.map(e => {
             dataGeojsonEmployee.push(turf.point([1, 1], e))
@@ -473,14 +468,14 @@ Template.map.onRendered(() => {
         })
         
         // Tạo Turf featurecollection
-        var collection = turf.featureCollection(dataGeojsonEvents);
-        var collection_events_station = turf.featureCollection(dataGeojsonEventStations);
-        var collection_station = turf.featureCollection(dataGeojsonStations);
-        var collection_employee = turf.featureCollection(dataGeojsonEmployee);
-        var collection_baler = turf.featureCollection(dataGeojsonBaler);
-        var collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
-        var collection_sensor = turf.featureCollection(dataGeojsonSensor);
-        var collection_dataIris = turf.featureCollection(dataGeojsonIris);
+        let collection = turf.featureCollection(dataGeojsonEvents);
+        let collection_events_station = turf.featureCollection(dataGeojsonEventStations);
+        let collection_station = turf.featureCollection(dataGeojsonStations);
+        let collection_employee = turf.featureCollection(dataGeojsonEmployee);
+        let collection_baler = turf.featureCollection(dataGeojsonBaler);
+        let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
+        let collection_sensor = turf.featureCollection(dataGeojsonSensor);
+        let collection_dataIris = turf.featureCollection(dataGeojsonIris);
         // create a new blob from geojson featurecollection
         const blob = new Blob([JSON.stringify(collection)], {
             type: "application/json"
@@ -947,27 +942,7 @@ Template.map.onRendered(() => {
         });
         
         //End
-        // const eventsLayer = new FeatureLayer({
-        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
-        //     id: 'poi',
-        //     title: 'Events',
-        //     visible: true,
-        //     labelsVisible: false,
-        //     popupEnabled: true,
-        //     outFields: ['*'],
-        //     timeInfo: {
-        //         startField: "timestamp", // name of the date field
-        //         interval: {
-        //             // set time interval to one day
-        //             unit: "years",
-        //             value: 5
-        //         }
-        //     },
-        //     popupTemplate: eventPopupTemplate,
-        //     listMode: 'show',
-        //     renderer: renderer,
-        // });
-        // console.log(eventsLayer, "eventLayer")
+     
         const depthSlider = new Slider({
             container: "depthSlider",
             min: 0,
@@ -984,7 +959,7 @@ Template.map.onRendered(() => {
             container: "magnitudeSlider",
             min: 0,
             max: 8,
-            values: [0, 8],
+            values: [0, 10],
             step: 1,
             visibleElements: {
                 rangeLabels: true,
@@ -1002,7 +977,6 @@ Template.map.onRendered(() => {
                 }
             }
         });
-        // view.ui.add(timeSlider, "bottom-right");
         // LayerList
         const layerList = new LayerList({
             container: document.createElement("div"),

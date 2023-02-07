@@ -36,9 +36,7 @@ Template.home.onRendered(()=>{
   
 })
 Template.home.helpers({
-    userUnVerified () {
-    // const user = Meteor.user();
-    // return user.emails[0].verified;
+  userUnVerified () {
     if(Meteor.userId() === null || Meteor.user() && Meteor.user().emails[0].verified === false){
       return true;
     }
@@ -52,6 +50,15 @@ Template.home.helpers({
     getUser() {
         return getUser();
     },
- 
+    rolesCheck () {
+      // const user = Meteor.user();
+      // return user.emails[0].verified;
+      if(Meteor.user() && Meteor.user().roles === 'user'){
+        return true;
+      }
+      else if ( Meteor.user() && Meteor.user().roles === 'admin' ) 
+      return false; // look at the current user
+    
+    }
 });
 

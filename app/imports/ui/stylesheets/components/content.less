@@ -21,6 +21,7 @@ input.form-control.input-sm {
   display: none;
 }
 .currentUser_div {
+  padding-left: 10px;
   display: flex;
 }
 span.text-white.font-medium:hover {
@@ -80,12 +81,13 @@ width: 80%;
 
 /*# sourceMappingURL=chartist-plugin-tooltip.css.map */
 .star-wrap{
-  background: white;
-  overflow: hidden;
-  max-width: 1900px;
-  height: 100vh;
-  margin: auto;
-  position: relative;
+    
+    background: white;
+    overflow: hidden;
+    max-width: 1900px;
+    height: 100vh;
+    margin: auto;
+    position: relative;
 }
 
 .star{
@@ -166,7 +168,8 @@ form.changepassword-form{
     border-radius: 4px;
     margin: 30px 0;
     box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
-    width: 40%;
+    width: 100%;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -228,6 +231,8 @@ form.changepassword-form{
 
 
 a.button_event {
+  background-color: white;
+  z-index: 1;
 	transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
 	font-size: 20px;
 	margin: 20px auto;
@@ -245,6 +250,8 @@ a.button_event:hover {
 }
 
 a.button_station {
+  background-color: white;
+  z-index: 1;
 	transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
 	margin: 20px auto;
   font-size: 20px;
@@ -259,4 +266,18 @@ a.button_station {
 a.button_station:hover {
 	color: rgba(255, 255, 255, 0.85);
 	box-shadow: rgb(132 180 228) 0 30px 0px 49px inset
+}
+@media only screen and (max-width: 500px) {
+  form.changepassword-form{
+    border-color: white;
+      background: #fff;
+      padding: 36px 0;
+      border-radius: 4px;
+      margin: 30px 0;
+      box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
 }

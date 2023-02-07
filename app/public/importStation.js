@@ -149,7 +149,6 @@ function insertstation(station) {
 
 		}
 	})
-	console.log(values, "giá trị")
 	return pool.query(
 		`INSERT INTO "station"
 		(${s1})
@@ -173,7 +172,7 @@ function insertbaler(baler) {
 
 
 	})
-	console.log(values, "giá trị")
+
 	return pool.query(
 		`INSERT INTO "baler"
 		(${s1})
@@ -221,7 +220,7 @@ function insertdataloger(dataloger) {
 
 
 	})
-	console.log(values, "giá trị")
+
 	return pool.query(
 		`INSERT INTO "dataloger"
 		(${s1})
