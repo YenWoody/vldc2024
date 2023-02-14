@@ -887,7 +887,7 @@ Template.map_station.onRendered(() => {
         view.ui.add(layerListExpand, "top-right");
         // wait till the layer view is loaded
         let layerView;
-        var layer
+        let layer
         view.when(function () {
             map.addMany([layerEvent, layerEventStaions, layerStations]);
 
@@ -915,7 +915,7 @@ Template.map_station.onRendered(() => {
             .then(function (response) {
                 const dataSet = response.features
                 console.log(dataSet, "dataSet")
-                const table = $('#dulieu').DataTable({
+                $('#dulieu').DataTable({
                     data: dataSet,
                     'buttons': [
                         {

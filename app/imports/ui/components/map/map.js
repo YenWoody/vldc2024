@@ -1,6 +1,5 @@
 import './map.html';
 import { loadModules, setDefaultOptions, loadCss } from 'esri-loader';
-import { Session } from 'meteor/session';
 import datatables from 'datatables.net';
 import datatables_bs from 'datatables.net-bs';
 import { $ } from 'meteor/jquery';
@@ -47,7 +46,8 @@ Template.map.onRendered(() => {
         'esri/widgets/LayerList',
         'esri/popup/content/CustomContent',
         "esri/symbols/IconSymbol3DLayer",
-        "esri/layers/support/LabelClass"
+        "esri/layers/support/LabelClass",
+        
     ]).then(async ([
         Map,
         MapView,
@@ -142,6 +142,36 @@ Template.map.onRendered(() => {
                 })
             })
         }
+                // Fetch Data From Iris
+        function getData() {
+            return new Promise(function (resolve,reject){
+                fetch("https://service.iris.edu/fdsnws/event/1/query?starttime=2023-02-02&minmagnitude=1&limit=10000&output=text")
+                .then(res => {
+                  resolve(res.text())
+                })
+            })
+
+          }
+        const dataIris = await getData();
+        
+        const dtIris = []
+        dataIris.split(/\r?\n/).forEach(lines => {
+            const line = lines.split(/[|]+/g)
+            dtIris.push({
+
+                "time" : line[1],
+                "lat" : Number(line[2]),
+                "long" : Number(line[3]),
+                "depth": line[4],
+                "catalog" : line[6],
+                "magtype" : line[9],
+                "magnitude": line[10],
+                "location" : line[12]
+            }) 
+        });
+        const waitDataIris = await Promise.all(dtIris)
+
+          // End
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
         const dataStations = await dataStation();
@@ -212,6 +242,7 @@ Template.map.onRendered(() => {
         function filterByNetwork(event) {
 
             let selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
+         
             if (selectedNetWork === "all") {
                 return floodLayerView.filter = null;
             }
@@ -243,46 +274,71 @@ Template.map.onRendered(() => {
             visualVariables: [
                 {
                     type: "size",
-                    field: "ms",
+                    field: "magnitude",
                     legendOptions: {
-                        title: "Mức độ động đất"
+                        title: "Mức độ động đất",
+                       
                     },
                     stops: [
                         {
-                            value: 1.9,
-                            size: 2,
-                            label: "0-1.9",
+                            value: 1,
+                            size: 3,
+                            label: "0-1",
                             color: "black"
                         },
                         {
-                            value: 2.9,
-                            size: 4,
-                            label: "2-2.9"
+                            value: 1.5,
+                            size: 5,
+                            label: "1.1-1.5"
                         },
                         {
-                            value: 3.9,
-                            size: 6,
-                            label: "3-3.9"
+                            value: 2,
+                            size: 7,
+                            label: "1.6-2"
                         },
                         {
-                            value: 4.9,
-                            size: 8,
-                            label: "4-4.9"
+                            value: 2.5,
+                            size: 10,
+                            label: "2.1-2.5"
                         },
                         {
-                            value: 5.9,
+                            value: 3,
                             size: 12,
-                            label: "5-5.9"
+                            label: "2.6-3"
                         },
                         {
-                            value: 6.9,
-                            size: 16,
-                            label: "6-6.9"
+                            value: 3.5,
+                            size: 13,
+                            label: "3.1-3.5"
                         },
-
+                        {
+                            value: 4,
+                            size: 15,
+                            label: "3.6-4"
+                        },
+                        {
+                            value: 4.5,
+                            size: 17,
+                            label: "4.1-4.5"
+                        },
+                        {
+                            value: 5,
+                            size: 19,
+                            label: "4.6-5"
+                        },
+                        {
+                            value: 6,
+                            size: 22,
+                            label: "5.1-6"
+                        },
+                        {
+                            value: 7,
+                            size: 25,
+                            label: "6.1-7"
+                        },
                     ]
                 },
-               
+
             ]
         };
         const renderer1 = {
@@ -370,17 +426,13 @@ Template.map.onRendered(() => {
         const dataGeojsonBaler = [];
         const dataGeojsonDataloger = [];
         const dataGeojsonSensor = [];
+        const dataGeojsonIris = [];
         const eventGeojson = dataEvents.filter(e => {
-            if (e.geometry === null) {
-                return false
-            }
-            return true
+            return !(e.geometry === null);
         })
+
         const stationsGeojson = dataStations.filter(e => {
-            if (e.geometry === null) {
-                return false
-            }
-            return true
+            return !(e.geometry === null);
         })
         dataEmployee.map(e => {
             dataGeojsonEmployee.push(turf.point([1, 1], e))
@@ -411,17 +463,25 @@ Template.map.onRendered(() => {
             dataGeojsonStations.push(turf.point([e.long, e.lat], e))
             
         })
-
+        waitDataIris.map(e=>{
+            if (isNaN(e.long) === false ){
+            dataGeojsonIris.push(turf.point([e.long, e.lat], e))}
+        })
+        
         // Tạo Turf featurecollection
-        var collection = turf.featureCollection(dataGeojsonEvents);
-        var collection_events_station = turf.featureCollection(dataGeojsonEventStations);
-        var collection_station = turf.featureCollection(dataGeojsonStations);
-        var collection_employee = turf.featureCollection(dataGeojsonEmployee);
-        var collection_baler = turf.featureCollection(dataGeojsonBaler);
-        var collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
-        var collection_sensor = turf.featureCollection(dataGeojsonSensor);
+        let collection = turf.featureCollection(dataGeojsonEvents);
+        let collection_events_station = turf.featureCollection(dataGeojsonEventStations);
+        let collection_station = turf.featureCollection(dataGeojsonStations);
+        let collection_employee = turf.featureCollection(dataGeojsonEmployee);
+        let collection_baler = turf.featureCollection(dataGeojsonBaler);
+        let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
+        let collection_sensor = turf.featureCollection(dataGeojsonSensor);
+        let collection_dataIris = turf.featureCollection(dataGeojsonIris);
         // create a new blob from geojson featurecollection
         const blob = new Blob([JSON.stringify(collection)], {
+            type: "application/json"
+        });
+        const blob_dataIris = new Blob([JSON.stringify(collection_dataIris)], {
             type: "application/json"
         });
         const blob_event_station = new Blob([JSON.stringify(collection_events_station)], {
@@ -450,11 +510,12 @@ Template.map.onRendered(() => {
         const url_baler = URL.createObjectURL(blob_baler);
         const url_dataloger = URL.createObjectURL(blob_dataloger);
         const url_sensor = URL.createObjectURL(blob_sensor);
+        const url_dataIris = URL.createObjectURL(blob_dataIris);
         // Khởi tạo layer
         const layerEventStaions = new GeoJSONLayer({
             url: url_event_station,
             title: 'Events_Station',
-            visible: true,
+            visible: false,
             labelsVisible: false,
             listMode: "hide"
 
@@ -462,7 +523,7 @@ Template.map.onRendered(() => {
         const layerEmployee = new GeoJSONLayer({
             url: url_employee,
             title: 'Employee',
-            visible: true,
+            visible: false,
             labelsVisible: false,
             listMode: "hide"
 
@@ -470,7 +531,7 @@ Template.map.onRendered(() => {
         const layerBaler = new GeoJSONLayer({
             url: url_baler,
             title: 'Baler',
-            visible: true,
+            visible: false,
             labelsVisible: false,
             listMode: "hide"
 
@@ -478,7 +539,7 @@ Template.map.onRendered(() => {
         const layerDataloger = new GeoJSONLayer({
             url: url_dataloger,
             title: 'Dataloger',
-            visible: true,
+            visible: false,
             labelsVisible: false,
             listMode: "hide"
 
@@ -486,7 +547,7 @@ Template.map.onRendered(() => {
         const layerSensor = new GeoJSONLayer({
             url: url_sensor,
             title: 'Sensor',
-            visible: true,
+            visible: false,
             labelsVisible: false,
             listMode: "hide"
 
@@ -731,6 +792,38 @@ Template.map.onRendered(() => {
                     })
             }
         })
+        const contentIris = new CustomContent({
+            outFields: ["*"],
+            creator: (event) => {
+                const date = new Date(event.graphic.attributes.time)
+                return `
+                <table class="display" style="border-style: double">
+                    <thead>
+                        <tr style="border-bottom: groove">
+                            <th class="content_popup">Thời gian</th>
+                            <th class="content_popup">Loại cường độ</th>
+                            <th class="content_popup">Cường độ</th>
+                            <th class="content_popup">Lat</th>
+                            <th class="content_popup">Long</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    <td>${date}</td>
+                    <td>${event.graphic.attributes.magtype}</td>
+                    <td>${event.graphic.attributes.magnitude}</td>              
+                    <td>${event.graphic.attributes.lat}</td>
+                    <td>${event.graphic.attributes.long}</td>
+                    </tr>
+                    </tbody>
+                </table>`
+
+            }
+        })
+        const popupIris = {
+            "title": "Sự kiện động đất trên thế giới",
+            content: [contentIris],
+        }
         const stationPopupTemplate = {
             "title": "Station",
             content: [{
@@ -804,11 +897,21 @@ Template.map.onRendered(() => {
             }, contentEmployee, contentDataloger, contentBaler, contentSensor]
         }
         const eventPopupTemplate = {
-            "title": "Event",
+            "title": "Sự kiện động đất tại VN",
             content: [contentEventStation, contentEvent],
         }
         // create new geojson layer using the blob url
-        
+        const layerIris = new GeoJSONLayer({
+            url: url_dataIris,
+            popupTemplate: popupIris,
+            listMode: 'show',
+            renderer: renderer,
+            title: 'Events Global',
+            visible: true,
+            labelsVisible: false,
+            popupEnabled: true,
+           
+        });
         const layerEvent = new GeoJSONLayer({
             url: url,
             popupTemplate: eventPopupTemplate,
@@ -839,30 +942,8 @@ Template.map.onRendered(() => {
 
         });
         
-        console.log(layerEventStaions,"layerSSakjaks")
-
         //End
-        // const eventsLayer = new FeatureLayer({
-        //     url: 'https://gis.fimo.com.vn/arcgis/rest/services/vldc/event_time/MapServer',
-        //     id: 'poi',
-        //     title: 'Events',
-        //     visible: true,
-        //     labelsVisible: false,
-        //     popupEnabled: true,
-        //     outFields: ['*'],
-        //     timeInfo: {
-        //         startField: "timestamp", // name of the date field
-        //         interval: {
-        //             // set time interval to one day
-        //             unit: "years",
-        //             value: 5
-        //         }
-        //     },
-        //     popupTemplate: eventPopupTemplate,
-        //     listMode: 'show',
-        //     renderer: renderer,
-        // });
-        // console.log(eventsLayer, "eventLayer")
+     
         const depthSlider = new Slider({
             container: "depthSlider",
             min: 0,
@@ -879,7 +960,7 @@ Template.map.onRendered(() => {
             container: "magnitudeSlider",
             min: 0,
             max: 8,
-            values: [0, 8],
+            values: [0, 10],
             step: 1,
             visibleElements: {
                 rangeLabels: true,
@@ -897,7 +978,6 @@ Template.map.onRendered(() => {
                 }
             }
         });
-        // view.ui.add(timeSlider, "bottom-right");
         // LayerList
         const layerList = new LayerList({
             container: document.createElement("div"),
@@ -912,7 +992,7 @@ Template.map.onRendered(() => {
         // wait till the layer view is loaded
         let layerView;
         view.when(function () {
-            map.addMany([layerEvent,layerEventStaions,layerStations]);
+            map.addMany([layerEvent,layerEventStaions,layerStations,layerIris]);
             view.whenLayerView(layerEvent).then(function (lv) {
                 // start time of the time slider - 13/02/1918
                 const start = layerEvent.timeInfo.fullTimeExtent.start;

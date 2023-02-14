@@ -2,6 +2,7 @@ accounts-base@2.2.1
 accounts-password@2.2.0
 accounts-ui@1.4.2
 accounts-ui-unstyled@1.6.0
+alanning:roles@3.4.0
 allow-deny@1.1.1
 autoupdate@1.8.0
 babel-compiler@7.8.1

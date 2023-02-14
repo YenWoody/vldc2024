@@ -1,0 +1,267 @@
+<template name="manageUsers">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+    input[type=email]:focus,
+    input[type=password]:focus,
+    input[type=text]:focus {
+      box-shadow: 0 0 5px rgba(3, 221, 255, 0.8);
+      border: 1px solid rgba(3, 221, 255, 0.8);
+    }
+
+    .form-horizontal {
+      width: 320px;
+      background-color: #ffffff;
+      padding: 25px 38px;
+      border-radius: 12px;
+      box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .control-label {
+      text-align: left !important;
+      padding-bottom: 4px;
+    }
+
+    .progress {
+      height: 3px !important;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-danger {
+      background-color: #e90f10;
+    }
+
+    .progress-bar-warning {
+      background-color: #ffad00;
+    }
+
+    .progress-bar-success {
+      background-color: #02b502;
+    }
+
+    .login-btn {
+      width: 180px !important;
+      background-image: linear-gradient(to right, #f6086e, #ff133a) !important;
+      font-size: 18px;
+      color: #fff;
+      margin: 0 auto 5px;
+      padding: 8px 0;
+    }
+
+    .login-btn:hover {
+      background-image: linear-gradient(to right, rgba(255, 0, 111, 0.8), rgba(247, 2, 43, 0.8)) !important;
+      color: #fff !important;
+    }
+
+    .fa-eye {
+      color: #022255;
+      cursor: pointer;
+    }
+
+    .ex-account p a {
+      color: #18a2ed;
+      text-decoration: underline;
+    }
+
+    .fa-circle {
+      font-size: 6px;
+    }
+
+    .fa-check {
+      color: #02b502;
+    }
+  </style>
+  {{#if rolesCheck}}
+  {{> not_access}}
+  {{else}}
+  {{#if userUnVerified}}
+  {{> verify_form }}
+  {{else}}
+  <div class="col-md-3 pull-right">
+    <button type="submit" class="btn btn-success" id="add-user">Thêm thành viên mới</button>
+  </div>
+  <div class="manage-users row">
+
+    <div class="offset4 span8">
+
+      <ul class="list-group">
+
+        {{#each users}}
+        <li class="list-group-item d-flex justify-content-between align-items-center" style="padding: 15px;">
+          <div class="ms-2">
+            <i class="fa fa-user fa-lg" aria-hidden="true"></i>
+          </div>
+          <div class="ms-2 me-auto">
+            <div class="fw-bold">{{username}}</div>
+            <span></span>
+          </div>
+          <span class="badge badge-primary badge-pill">
+            <button style="border: none; background-color: white;" id="role_user" value="{{_id}}"><i
+                class="fa fa-pencil-square-o fa-lg" aria-hidden="true"><span class="tooltiptext">Thay đổi quyền truy cập</span></i></button>
+            <!-- <button class="import" style ="border: none; background-color: white;" ><i class="fa fa-database fa-lg" value ="{{file._id}}"       aria-hidden="true"></i></button> -->
+            <button class="delete" id="delete-user" value="{{_id}}" style="border: none; background-color: white;"><i
+                class="fa fa-trash fa-lg" aria-hidden="true"><span class="tooltiptext">Xóa người dùng</span></i></button>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+
+
+    </div>
+  </div>
+  <div id="_modal" class="_modal">
+    <div class="_main" style="
+      display: grid;
+      height: 35%;
+      width: 30%;
+      /* justify-items: center; */
+      /* align-content: stretch; */">
+      <div class="_container">
+        <div class="_title">
+          <h3>Phân quyền người dùng</h3>
+        </div>
+        <hr />
+        <div class="_content" id="_content">
+          <form id="_role" style="display: grid;
+          justify-items: center;">
+            <select name="role" id="role" style="height: 2em;border-style: groove;">
+              <option value="user">Người dùng thường</option>
+              <option value="admin">Quản trị viên</option>
+
+            </select>
+            <br><br>
+            <input type="submit" value="Xác nhận" class="w-100 btn btn-lg btn-primary" id="submit-role"
+              style="width:50%">
+          </form>
+        </div>
+        <div class="_footer">
+          <hr />
+          <button id="close-modal" class="close-modal">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div id="_delete_user" class="_modal">
+    <div class="_main" style="
+      display: grid;
+      height: 40%;
+      width: 35%;
+      /* justify-items: center; */
+      /* align-content: stretch; */">
+      <div class="_container">
+        <div class="_title">
+          <h2 id='confirm_username'></h2>
+
+        </div>
+        <hr />
+        <div class="_content" id="_content">
+          <h4>Sau khi xóa sẽ không thể khôi phục được tài khoản!</h4>
+          <button class="w-100 btn btn-lg btn-primary" style="margin-top: 20px;" id="delete_user">Xác nhận</button>
+        </div>
+        <div class="_footer">
+          <hr />
+          <button id="close-modal" class="close-modal">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div id="_add-user" class="_modal">
+    <div class="_main" style="
+      display: grid;
+      height: 70%;
+      width: 40%;
+      overflow: auto;
+      ">
+      <div class="_container">
+        <div class="_title">
+          <h3>Thêm người dùng mới</h3>
+        </div>
+        <hr />
+        <div class="_content" id="_content">
+          <form>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingUsername" placeholder="text" name="username"
+                style="margin-bottom: 10px" required>
+              <label for="floatingInput"><i aria-hidden="true" style="margin-right: 5px" class="fa fa-user"></i>Tài
+                khoản</label>
+            </div>
+            <div class="form-floating">
+              <input type="password" class="form-control" id="floatingPassword" placeholder="password" autocomplete="on"
+                name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                title="Phải chứa ít nhất một số và một chữ hoa và chữ thường và ít nhất 6 ký tự trở lên" required>
+              <label for="floatingPassword"><i aria-hidden="true" style="margin-right: 5px" class="fa fa-lock"></i>Mật
+                khẩu</label><span id="show-pass" class="show-pass">
+                <i class="fa fa-eye" id="eye"></i>
+              </span>
+
+            </div>
+            <div id="popover-password">
+              <p class="result-pass"><span id="result"></span></p>
+              <div class="progress">
+                <div id="password-strength" class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
+                  aria-valuemax="100" style="width:0%">
+                </div>
+              </div>
+              <ul class="list-unstyled">
+                <li class="">
+                  <span class="low-upper-case" style="display: flex;align-items: center">
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    &nbsp;Chữ thường &amp; Chữ in hoa
+                  </span>
+                </li>
+                <li class="">
+                  <span class="one-number" style="display: flex;align-items: center">
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    &nbsp;Số (0-9)
+                  </span>
+                </li>
+                <li class="">
+                  <span class="six-character" style="display: flex;align-items: center">
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    &nbsp;Ít nhất 6 kí tự
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div class="form-floating">
+              <input type="password" class="form-control" id="checkPassword" autocomplete="on" placeholder="password"
+                name="checkpassword" required>
+              <label for="floatingPassword"> <i aria-hidden="true" style="margin-right: 5px"
+                  class="fa fa-lock"></i>Nhập lại Mật khẩu</label><span id="show-pass2" class="show-pass">
+                <i class="fa fa-eye" id="eye2"></i>
+              </span>
+
+            </div>
+            <div id="popover-password">
+              <p class="result-pass"><span id="result"></span></p>
+              <div class="progress">
+                <div id="check-password" class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0"
+                  aria-valuemax="100" style="width:0%">
+                </div>
+              </div>
+            </div>
+            <span id="alertPassword"></span>
+            <div class="form-floating">
+              <input type="email" class="form-control" id="floatingEmail" placeholder="email" name="email" required>
+              <label for="floatingInput"><i aria-hidden="true" style="margin-right: 5px"
+                  class="fa fa-envelope"></i>Email</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" style="margin-top: 20px;" type="submit">Xác nhận</button>
+          </form>
+        </div>
+        <div class="_footer">
+          <hr />
+          <button id="close-modal" class="close-modal">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {{/if}}
+  {{/if}}
+</template>

@@ -1,8 +1,11 @@
 <template name="home">
-    {{#if userUnVerified}}
-    {{> verify_form }}
-    {{else}}
+  {{#if rolesCheck}}
+  {{> not_access}}
+  {{else}}
     <div class=" content container--fluid" id ="home_background">
+      {{#if userUnVerified}}
+      {{> verify_form }}
+      {{else}}
         <div class="star-wrap" id="starWrap">
             <div class="give-padding give-center">
               <h1>Tra cứu thông tin</h1>
@@ -22,6 +25,7 @@
        
         <script type="text/javascript"
             src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.js"></script>
-    </div>
+            {{/if}}
+          </div>
     {{/if}}
 </template>

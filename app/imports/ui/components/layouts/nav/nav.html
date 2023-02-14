@@ -1,62 +1,86 @@
 <template name="nav">
-    <header>
-        <div class="content">
-            <div class="header__handler">
-                <div class="sidebar">
-                    <!-- <span class="hamburger">
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 129 129"
-                             enable-background="new 0 0 129 129" width="40px" height="40px">
-							<g>
-								<path d="m91.4,33.5h-53.8c-2.3,0-4.1,1.8-4.1,4.1 0,2.3 1.8,4.1 4.1,4.1h53.9c2.3,0 4.1-1.8 4.1-4.1-0.1-2.3-1.9-4.1-4.2-4.1z"
-                                      fill="#FFFFFF"></path>
-								<path d="m91.4,87.4h-53.8c-2.3,0-4.1,1.8-4.1,4.1 0,2.3 1.8,4.1 4.1,4.1h53.9c2.3,0 4.1-1.8 4.1-4.1-0.1-2.3-1.9-4.1-4.2-4.1z"
-                                      fill="#FFFFFF"></path>
-								<path d="m91.4,60.4h-53.8c-2.3,0-4.1,1.8-4.1,4.1 0,2.3 1.8,4.1 4.1,4.1h53.9c2.3,0 4.1-1.8 4.1-4.1-0.1-2.3-1.9-4.1-4.2-4.1z"
-                                      fill="#FFFFFF"></path>
-							</g>
-						</svg>
-					</span>
-                    <div class="sidebar__menu_wrap">
-                        <span class="sidebar__menu_close">x</span>
-                        <ul class="sidebar__menu">
-                            <li class="sidebar__menu__item active"><a href="/keen?page=index" target="" title="Preview"><span>Preview</span></a>
-                            </li>
-                            <li class="sidebar__menu__item"><a href="/keen?page=faq" target=""
-                                                               title="Faq"><span>Faq</span></a></li>
-                            <li class="sidebar__menu__item"><a href="/keen?page=docs" target=""
-                                                               title="Docs"><span>Docs</span></a></li>
-                        </ul>
-                    </div> -->
-                </div>
-                <a href="/" class="logo"><img src="./assets/img/logo.png" alt="logo"></a>
+
+    <style>
+        .navbar-light .navbar-nav .nav-link {
+            color: rgb(255 255 255);
+        }
+
+        .navbar-light .navbar-toggler {
+            background-color: rgb(255 255 255);
+            border-color: rgb(255 255 255);
+        }
+    </style>
+    {{#if userVerified }}
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #202020;
+            opacity: 0.8;">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                <a href="/" class="logo"><img style="height: 60px" src="./assets/img/logo.png" alt="logo"></a>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" style=" padding-left: 10px;">
+                    <a href="/" class="nav-link">Trang chủ</a>
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
+                </ul>
+                <form class="d-flex">
+                    <div class="currentUser_div" id="currentUser_div">
+                        <div style="display: grid; justify-items: center;"><b
+                                style="margin-top: 5px;color :rgb(30, 132, 221); font-size: 1.3em;">{{currentUser.username}}</b>
+                            <a class="header__references_logout" href="#">
+                                <span class="text-white font-medium">Đăng xuất</span></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+   
+
+    {{else}}
+    {{#if isUserLogged}}
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #202020;
+            opacity: 0.8;">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                <a href="/" class="logo"><img style="height: 60px" src="./assets/img/logo.png" alt="logo"></a>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <form class="d-flex">
+                    <div class="currentUser_div" id="currentUser_div">
+                        <div style="display: grid; justify-items: center;"><b
+                                style="margin-top: 5px;color :rgb(30, 132, 221); font-size: 1.3em;">{{currentUser.username}}</b>
+                            <a class="header__references_logout" href="#">
+                                <span class="text-white font-medium">Đăng xuất</span></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <!-- hello-->
+    
+    {{else}}
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #202020;
+            opacity: 0.8;">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                <a href="/" class="logo"><img style="height: 60px" src="./assets/img/logo.png" alt="logo"></a>
             </div>
             
-            {{#if userVerified }}
-            <div class="header__references d-none d-md-block">
-                <a href="/" class="header__references_home">Home</a>
-                <a href="/dashboard" class="header__references_dashboard">Dashboard</a>
-                <div class="currentUser_div" id= "currentUser_div">
-                    <img src="img/1.jpg" alt="user-img" width="36" class="img-circle">
-                    <div style="display: grid;"><b style="color :rgb(30, 132, 221)">{{currentUser.username}}</b>
-                        <a class="header__references_logout" href="#">
-                            <span class="text-white font-medium">Log Out</span></a>
-                    </div>
-                </div>
-            </div>
-            {{else}}
-            {{#if isUserLogged}}
-            <div class="header__references d-none d-md-block">
-                <div class="currentUser_div" id= "currentUser_div">
-                    <img src="img/1.jpg" alt="user-img" width="36" class="img-circle">
-                    <div style="display: grid;"><b style="color :rgb(30, 132, 221)">{{currentUser.username}}</b>
-                        <a class="header__references_logout" href="#">
-                            <span class="text-white font-medium">Log Out</span></a>
-                    </div>
-                </div>
-            </div>
-            {{/if}}
-            {{/if}} 
-         
         </div>
-    </header>
+    </nav>
+    {{/if}}
+    {{/if}}
+
+
 </template>
