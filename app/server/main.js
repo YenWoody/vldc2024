@@ -9,6 +9,19 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { Roles } from 'meteor/alanning:roles'
 // server.js
+const PG_HOST = 'localhost'
+    const PG_PORT = '5432'
+    const PG_DATABASE = 'data'
+    const PG_USER = 'postgres'
+    const PG_PASSWORD = ''
+    // const DIR_PATH = f
+    const pool = new pg.Pool({
+        host: PG_HOST,
+        port: PG_PORT,
+        database: PG_DATABASE,
+        user: PG_USER,
+        password: PG_PASSWORD,
+    })
 Accounts.onCreateUser(function(options, user){
     user.roles = 'user'
     return user;
@@ -109,7 +122,7 @@ Meteor.methods({
         check(roles, [String]);
         check(scope, String);
     
-        var loggedInUser = Meteor.user();
+        const loggedInUser = Meteor.user();
     
         if (!loggedInUser ||
             !Roles.userIsInRole(loggedInUser, 
@@ -120,20 +133,8 @@ Meteor.methods({
         Roles.setUserRoles(targetUserId, roles, scope);
       },
     'layerEvent':  ()=>{
-        const PG_HOST = 'localhost'
-        const PG_PORT = '5432'
-        const PG_DATABASE = 'data'
-        const PG_USER = 'postgres'
-        const PG_PASSWORD = ''
-        // const DIR_PATH = f
-        const pool = new pg.Pool({
-            host: PG_HOST,
-            port: PG_PORT,
-            database: PG_DATABASE,
-            user: PG_USER,
-            password: PG_PASSWORD,
-        })
-        var result =  pool.query(
+      
+        const result =  pool.query(
             `SELECT *
               FROM event;`
         ).then((data) => {
@@ -145,20 +146,8 @@ Meteor.methods({
         
 },
 'layerEventStation':  ()=>{
-    const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'data'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-    var result = pool.query(
+   
+    const result = pool.query(
         `SELECT *
           FROM event_station;`
     ).then((data) => {
@@ -170,20 +159,8 @@ Meteor.methods({
     
 },
 'dataEmployee':  ()=>{
-    const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'data'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-    var result = pool.query(
+    
+    const result = pool.query(
         `SELECT *
           FROM employee;`
     ).then((data) => {
@@ -194,20 +171,8 @@ Meteor.methods({
     
 },
 'dataBaler':  ()=>{
-    const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'data'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-    var result = pool.query(
+    
+    const result = pool.query(
         `SELECT *
           FROM baler;`
     ).then((data) => {
@@ -218,20 +183,8 @@ Meteor.methods({
     
 },
 'dataDataloger':  ()=>{
-    const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'data'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-    var result = pool.query(
+   
+    const result = pool.query(
         `SELECT *
           FROM dataloger;`
     ).then((data) => {
@@ -242,20 +195,8 @@ Meteor.methods({
     
 },
 'dataSensor':  ()=>{
-    const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'data'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-    var result = pool.query(
+  
+    const result = pool.query(
         `SELECT *
           FROM sensor;`
     ).then((data) => {
@@ -266,20 +207,8 @@ Meteor.methods({
     
 },
 'dataStation':  ()=>{
-    const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'data'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-    var result = pool.query(
+   
+    const result = pool.query(
         `SELECT *
           FROM station;`
     ).then((data) => {
@@ -291,23 +220,10 @@ Meteor.methods({
     
 },
     'importFile': function (contentFile, pathFile) {
-        // config db
-        const PG_HOST = 'localhost'
-        const PG_PORT = '5432'
-        const PG_DATABASE = 'data'
-        const PG_USER = 'postgres'
-        const PG_PASSWORD = ''
-        // const DIR_PATH = f
-        const pool = new pg.Pool({
-            host: PG_HOST,
-            port: PG_PORT,
-            database: PG_DATABASE,
-            user: PG_USER,
-            password: PG_PASSWORD,
-        })
+       
         function run(contentFile, pathFile) {
             let p = Promise.resolve();
-            for (i = 0; i < contentFile.length; i++) {
+            for (let i = 0; i < contentFile.length; i++) {
                 let { event, event_station } = readFile(contentFile[i], pathFile[i])
                 p = p.then(() => {
           
@@ -358,7 +274,7 @@ Meteor.methods({
             })
             const giatriW = new RegExp('W', 'g');
             let gtW = [...lines[headerLine].matchAll(giatriW)];
-            keyW = gtW.map((key) => {
+            const keyW = gtW.map((key) => {
                 // console.log(key, "keu")
                 const startW = key.index
 
@@ -367,7 +283,7 @@ Meteor.methods({
             const keywithoutW = noW.map((key) => {
                 let regexp = new RegExp(`${key}`, 'g');
                 let array = [...lines[headerLine].matchAll(regexp)];
-                var start = array[0].index;
+                const start = array[0].index;
                 let key2 = key.toLowerCase()
                return { key: key, key1: key2, start: start }
             });
@@ -455,12 +371,12 @@ Meteor.methods({
         Files.remove({ _id: `${file}` });
     },
     'verify': (username) => {
-        var info = Accounts.findUserByUsername(username);
+        let info = Accounts.findUserByUsername(username);
         Accounts.sendVerificationEmail(info._id)
     },
     'reset': (email) => {
         check(email, String);
-        var info = Accounts.findUserByEmail(email);
+        let info = Accounts.findUserByEmail(email);
         Accounts.sendResetPasswordEmail(info._id)
     },
     'update-role' : (id,role)=>{

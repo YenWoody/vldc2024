@@ -58,7 +58,6 @@ Template.uploadForm.helpers({
 Template.uploadForm.onRendered(function () {
   // var hi = Event.find().fetch()[0].rows
   // console.log(hi,"event")
-
 })
 Template.uploadForm.events({
   'change #fileInput': function (e, template) {

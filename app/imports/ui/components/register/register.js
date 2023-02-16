@@ -43,9 +43,9 @@ Template.register.events({
   },
     'submit form': function(event){
         event.preventDefault();
-        var username = $('[name=username]').val();
-        var password = $('[name=password]').val();
-        var email= $('[name=email]').val();
+        let username = $('[name=username]').val();
+        let password = $('[name=password]').val();
+        let email= $('[name=email]').val();
         console.log(username,"username")
    
           if ( $('[name=password]').val() === $('[name=checkpassword]').val()) {

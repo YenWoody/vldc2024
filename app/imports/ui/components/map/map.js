@@ -179,6 +179,7 @@ Template.map.onRendered(() => {
         const dataBaler = await dataBalers();
         const dataDataloger = await dataDatalogers();
         const dataSensor = await dataSensors();
+        console.log(dataEvents)
         /**
          * init basemap
          */
@@ -801,6 +802,7 @@ Template.map.onRendered(() => {
                     <thead>
                         <tr style="border-bottom: groove">
                             <th class="content_popup">Thời gian</th>
+                            <th class="content_popup">Địa điểm</th>
                             <th class="content_popup">Loại cường độ</th>
                             <th class="content_popup">Cường độ</th>
                             <th class="content_popup">Lat</th>
@@ -810,6 +812,7 @@ Template.map.onRendered(() => {
                     <tbody>
                     <tr>
                     <td>${date}</td>
+                    <td>${event.graphic.attributes.location}</td>
                     <td>${event.graphic.attributes.magtype}</td>
                     <td>${event.graphic.attributes.magnitude}</td>              
                     <td>${event.graphic.attributes.lat}</td>

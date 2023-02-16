@@ -12,9 +12,7 @@ Template.manageUsers.onCreated(function () {
       let allUsersDate = Meteor.subscribe('allUsers');
     
         let allUsersD = Meteor.users.find({}).fetch(); // will return all users
-        console.log(allUsersD,"allUsersD")
     
-    console.log(allUsersDate,"allUsersD")
   })
   Template.manageUsers.onRendered(()=>{
     let password = document.getElementById("floatingPassword");
@@ -126,8 +124,7 @@ function checkPassword(checkpass){
         return getUser();
     },
     userUnVerified () {
-      // const user = Meteor.user();
-      // return user.emails[0].verified;
+
       if(Meteor.userId() === null || Meteor.user() && Meteor.user().emails[0].verified === false){
         return true;
       }
@@ -136,8 +133,7 @@ function checkPassword(checkpass){
     
     },
     rolesCheck () {
-      // const user = Meteor.user();
-      // return user.emails[0].verified;
+
       if(Meteor.user() && Meteor.user().roles === 'user'){
         return true;
       }
@@ -231,40 +227,6 @@ Template.manageUsers.events({
   'click #eye2': function(){
     document.getElementById('eye2').classList.toggle("fa-eye-slash");
   },
-  'submit form': function (event) {
-    event.preventDefault();
-    var username = $('[name=username]').val();
-    var password = $('[name=password]').val();
-    var email = $('[name=email]').val();
-    if ($('[name=password]').val() === $('[name=checkpassword]').val()) {
-
-      Meteor.call('serverCreateUser',username,password,email,
-        function (error) {
-          if (error) {
-            if (error.reason === "Username already exists.") {
-              Session.set("errorMessage", "Please log in to post a comment.");
-              Swal.fire("Tên tài khoản đã có người đăng kí, vui lòng chọn tên tài khoản khác!")
-            }
-
-            else {
-              Swal.fire(error.reason)
-            }; // Output error if registration fails
-          } else {
-            document.getElementById("_add-user").style.display ='none';
-            Swal.fire(
-              'Chúc mừng!',
-              'Bạn đã tạo tài khoản thành công!',
-              'success'
-            );
-            
-          }
-        });
-    } else {
-      document.getElementById('alertPassword').style = 'display:block'
-      document.getElementById('alertPassword').style.color = '#EE2B39';
-      document.getElementById('alertPassword').innerHTML = '<span><i aria-hidden="true" style="margin-right: 2px" class="fa fa-exclamation-triangle"></i>Sai mật khẩu, vui lòng nhập lại!</span>';
-    }
-
-  }
+  
 
 })
