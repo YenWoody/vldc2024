@@ -21,8 +21,8 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link"
                                 aria-expanded="false" href="/changepass">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                                <span class="hide-menu" >Đổi mật khẩu</span>
+                                <i class="col-3 fa fa-user" aria-hidden="true"></i>
+                                <span class=" col-9 hide-menu" >Đổi mật khẩu</span>
                             </a>
                         </li>
                         {{#if rolesCheck}}
@@ -34,11 +34,25 @@
                                 <span class="hide-menu">Tải dữ liệu</span>
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/manager-user"
+                        <li class="sidebar-item" id="manage_user_">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link"
                                 aria-expanded="false">
                                 <i class="fa fa-users" aria-hidden="true"></i>
                                 <span class="hide-menu">Quản lí người dùng</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item" id="manage_station_">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" 
+                                aria-expanded="false">
+                                <i class="fa fa-podcast" aria-hidden="true"></i>
+                                <span class="hide-menu">Quản lí trạm đo</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item" id="manage_event_">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" 
+                                aria-expanded="false">
+                                <i class="fa fa-object-ungroup" aria-hidden="true"></i>
+                                <span class="hide-menu">Quản lí sự kiện động đất</span>
                             </a>
                         </li>
                         {{/if}}
@@ -59,65 +73,18 @@
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-            <div class="container-fluid" id ="thongke">
-                <div class="row justify-content-center">
-                    
-   <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Total Visit</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash">                                    
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-success">659</span></li>
-                            </ul>
-                        </div>
-                    </div>
-             
-                    <!-- <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Total Visit</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash">                                    
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-success">659</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Total Page Views</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash1">                                    
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-purple">869</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-12">
-                        <div class="white-box analytics-info">
-                            <h3 class="box-title">Unique Visitor</h3>
-                            <ul class="list-inline two-part d-flex align-items-center mb-0">
-                                <li>
-                                    <div id="sparklinedash2">                                    
-                                    </div>
-                                </li>
-                                <li class="ms-auto"><span class="counter text-info">911</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div> -->
-                </div>
-
-             
-                
-            </div>
-         
+            <div class="container-fluid" id ="thongke" style="background-color: whitesmoke;">
+                <!-- <div class="row justify-content-center" id ="_manage_station" style="display: none;" >
+                    {{> manageStation}}       
+                </div>           
+                <div class="row justify-content-center" id ="_manage_event" style = "display: none">
+                    {{> manageEvent}}       
+                </div> 
+                <div class="row justify-content-center" id ="_manage_users" >
+                    {{> manageUsers}}       
+                </div>  -->
+               
+            </div>     
         </div>
     </div>
 

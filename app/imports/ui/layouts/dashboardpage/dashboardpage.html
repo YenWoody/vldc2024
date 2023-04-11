@@ -1,0 +1,95 @@
+<template name="dashboardTemplate">
+    <div class="wrapper">
+        <section class="section section--header">
+            {{> nav}}
+        </section>
+        <section class="section section--content">
+            {{#if userUnVerified }}  
+            {{> verify_form }}
+            {{else}}
+           
+            <div class="preloader">
+                <div class="lds-ripple">
+                    <div class="lds-pos"></div>
+                    <div class="lds-pos"></div>
+                </div>
+            </div>
+            <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+                data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+                <aside class="left-sidebar" data-sidebarbg="skin6">
+                    <!-- Sidebar scroll-->
+                    <div class="scroll-sidebar">
+                        <!-- Sidebar navigation-->
+                        <nav class="sidebar-nav">
+                            <ul id="sidebarnav">
+                                <!-- User Profile-->
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                        aria-expanded="false" href="/changepass">
+                                        <i class="col-3 fa fa-user" aria-hidden="true"></i>
+                                        <span class=" col-9 hide-menu" >Đổi mật khẩu</span>
+                                    </a>
+                                </li>
+                                {{#if rolesCheck}}
+                                {{else}}
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{pathFor 'upload'}}"
+                                        aria-expanded="false">
+                                        <i class="fa fa-upload" aria-hidden="true"></i>
+                                        <span class="hide-menu">Tải dữ liệu</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item" id="manage_user_">
+                                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-user'}}"
+                                        aria-expanded="false">
+                                        <i class="fa fa-users" aria-hidden="true"></i>
+                                        <span class="hide-menu">Quản lí người dùng</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item" id="manage_station_">
+                                    <a class="sidebar-link waves-effect waves-dark sidebar-link"  href = "{{pathFor 'manager-station'}}"
+                                        aria-expanded="false">
+                                        <i class="fa fa-podcast" aria-hidden="true"></i>
+                                        <span class="hide-menu">Quản lí trạm đo</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item" id="manage_event_">
+                                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-event'}}"
+                                        aria-expanded="false">
+                                        <i class="fa fa-object-ungroup" aria-hidden="true"></i>
+                                        <span class="hide-menu">Quản lí sự kiện động đất</span>
+                                    </a>
+                                </li>
+                                {{/if}}
+                            </ul>
+        
+                        </nav>
+                        <!-- End Sidebar navigation -->
+                    </div>
+                    <!-- End Sidebar scroll-->
+                </aside>
+                <div class="page-wrapper">
+                    <div class="page-breadcrumb bg-white">
+                        <div class="row align-items-center">
+                            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                                <h4 class="page-title">Công cụ quản lí</h4>
+                            </div>
+                            
+                        </div>
+                        <!-- /.col-lg-12 -->
+                    </div>
+                    <div class="container-fluid" id ="thongke" style="background-color: whitesmoke;">
+                        {{> yield}}
+                    </div>     
+                </div>
+            </div>
+        
+            <script src="plugins/js/custom.js"></script>
+        
+            {{/if}}
+        </section>
+    
+    </div>
+    {{> footer}}
+ 
+</template>

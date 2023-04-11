@@ -10,32 +10,33 @@ import { Accounts } from 'meteor/accounts-base';
 import { Roles } from 'meteor/alanning:roles'
 // server.js
 const PG_HOST = 'localhost'
-    const PG_PORT = '5432'
-    const PG_DATABASE = 'data'
-    const PG_USER = 'postgres'
-    const PG_PASSWORD = ''
-    // const DIR_PATH = f
-    const pool = new pg.Pool({
-        host: PG_HOST,
-        port: PG_PORT,
-        database: PG_DATABASE,
-        user: PG_USER,
-        password: PG_PASSWORD,
-    })
-Accounts.onCreateUser(function(options, user){
+const PG_PORT = '5432'
+const PG_DATABASE = 'data'
+const PG_USER = 'postgres'
+const PG_PASSWORD = ''
+// const DIR_PATH = f
+const pool = new pg.Pool({
+    host: PG_HOST,
+    port: PG_PORT,
+    database: PG_DATABASE,
+    user: PG_USER,
+    password: PG_PASSWORD,
+})
+Accounts.onCreateUser(function (options, user) {
     user.roles = 'user'
     return user;
-  });
+});
 Meteor.startup(function () {
-    Meteor.publish('allUsers', function(){
-        return Meteor.users.find({},{
-            fields:{
-                _id:1,
-                username:1
+    Meteor.publish('allUsers', function () {
+        return Meteor.users.find({}, {
+            fields: {
+                _id: 1,
+                username: 1
             }
         });
 
-    });  
+    });
+
     process.env.MAIL_URL = 'smtps://email:pass@@smtp.gmail.com:465/';
     Accounts.emailTemplates.siteName = 'Vật Lí Địa Cầu';
     Accounts.emailTemplates.from = 'Vật Lí Địa Cầu Admin';
@@ -116,123 +117,233 @@ Meteor.startup(function () {
     };
 
 });
-Meteor.methods({ 
+Meteor.methods({
+    'findUsers': function () {
+       return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch()
+ 
+     },
+    'deleteEvent': function (id) {
+       pool.query(
+            `DELETE FROM event
+                  WHERE id = ${id};`
+        )
+
+    },
+    'editEvent': function (data) {
+        if (isNaN(data.lat)){
+            data.lat = null
+           }
+           if (isNaN(data.long)){
+            data.long = null
+           }
+           if (isNaN(data.ml)){
+             data.ml = null
+            }
+            if (isNaN(data.md)){
+             data.md = null
+            }
+        pool.query(
+            `UPDATE "event"
+            SET "datetime" = '${data.datetime}',"lat" = ${data.lat}, "long" = ${data.long},"ml" = ${data.ml}, "md" = ${data.md}, "geometry" = ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326)
+            WHERE "id" = ${data.id};`
+        )
+
+    },
+    'insertEvent': function (data){
+
+           if (isNaN(data.lat)){
+               data.lat = null
+              }
+              if (isNaN(data.long)){
+               data.long = null
+              }
+              if (isNaN(data.ml)){
+                data.ml = null
+               }
+               if (isNaN(data.md)){
+                data.md = null
+               }
+        pool.query(
+                  `INSERT INTO "event" ("id","datetime","lat","long","ml","md","geometry") VALUES ('${data.id}','${data.datetime}',${data.lat},${data.long},${data.ml},${data.md},ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326))`
+              )
+          },
+    'deleteStation': function (key) {
+        pool.query(
+            `DELETE FROM station
+                  WHERE key = ${key};`
+        )
+
+    },
+    'insertStation': function (data) {
+        if (isNaN(data.height) ){
+            data.height = null
+           }
+           if (isNaN(data.lat)){
+               data.lat = null
+              }
+              if (isNaN(data.long)){
+               data.long = null
+              }
+        pool.query(
+            `INSERT INTO "station" ("id","key","name","lat","long","height","geometry","network","address") VALUES ('${data.id}',${data.key},'${data.name}',${data.lat},${data.long},${data.height},ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326),'${data.network}','${data.address}' )`
+        )
+
+    },
+    'getMaxEventId': function () {
+        const result = pool.query(
+            `SELECT MAX(id)
+                      FROM event`
+        ).then((data) => {
+            // console.log("data",data)
+            return data
+        })
+        return result
+
+    },
+    'getMaxStationId': function () {
+        const result = pool.query(
+            `SELECT MAX(key)
+                FROM station`
+        ).then((data) => {
+            // console.log("data",data)
+            return data
+        })
+        return result
+
+    },
+    'editStation': function (data) {
+        if (isNaN(data.height) ){
+         data.height = null
+        }
+        if (isNaN(data.lat)){
+            data.lat = null
+           }
+           if (isNaN(data.long)){
+            data.long = null
+           }
+        pool.query(
+            `UPDATE "station"
+            SET "id" = '${data.id}', "network" = '${data.network}',"address" = '${data.address}',"name" = '${data.name}',"height" = ${data.height},"lat" = ${data.lat}, "long" = ${data.long}, "geometry" = ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326)
+            WHERE "key" = ${data.key};`
+        )
+
+    },
     'updateRoles': function (targetUserId, roles, scope) {
         check(targetUserId, String);
         check(roles, [String]);
         check(scope, String);
-    
+
         const loggedInUser = Meteor.user();
-    
+
         if (!loggedInUser ||
-            !Roles.userIsInRole(loggedInUser, 
-                                ['manage-users', 'support-staff'], scope)) {
-          throw new Meteor.Error('access-denied', "Access denied");
+            !Roles.userIsInRole(loggedInUser,
+                ['manage-users', 'support-staff'], scope)) {
+            throw new Meteor.Error('access-denied', "Access denied");
         }
-    
+
         Roles.setUserRoles(targetUserId, roles, scope);
-      },
-    'layerEvent':  ()=>{
-      
-        const result =  pool.query(
+    },
+    'layerEvent': () => {
+
+        const result = pool.query(
             `SELECT *
               FROM event;`
         ).then((data) => {
             // console.log("data",data)
             return data
         })
-    
+
         return result
-        
-},
-'layerEventStation':  ()=>{
-   
-    const result = pool.query(
-        `SELECT *
+
+    },
+    'layerEventStation': () => {
+
+        const result = pool.query(
+            `SELECT *
           FROM event_station;`
-    ).then((data) => {
-        // console.log("data",data)
-        return data
-    })
+        ).then((data) => {
+            // console.log("data",data)
+            return data
+        })
 
-    return result
-    
-},
-'dataEmployee':  ()=>{
-    
-    const result = pool.query(
-        `SELECT *
+        return result
+
+    },
+    'dataEmployee': () => {
+
+        const result = pool.query(
+            `SELECT *
           FROM employee;`
-    ).then((data) => {
-        return data
-    })
+        ).then((data) => {
+            return data
+        })
 
-    return result
-    
-},
-'dataBaler':  ()=>{
-    
-    const result = pool.query(
-        `SELECT *
+        return result
+
+    },
+    'dataBaler': () => {
+
+        const result = pool.query(
+            `SELECT *
           FROM baler;`
-    ).then((data) => {
-        return data
-    })
+        ).then((data) => {
+            return data
+        })
 
-    return result
-    
-},
-'dataDataloger':  ()=>{
-   
-    const result = pool.query(
-        `SELECT *
+        return result
+
+    },
+    'dataDataloger': () => {
+
+        const result = pool.query(
+            `SELECT *
           FROM dataloger;`
-    ).then((data) => {
-        return data
-    })
+        ).then((data) => {
+            return data
+        })
 
-    return result
-    
-},
-'dataSensor':  ()=>{
-  
-    const result = pool.query(
-        `SELECT *
+        return result
+
+    },
+    'dataSensor': () => {
+
+        const result = pool.query(
+            `SELECT *
           FROM sensor;`
-    ).then((data) => {
-        return data
-    })
+        ).then((data) => {
+            return data
+        })
 
-    return result
-    
-},
-'dataStation':  ()=>{
-   
-    const result = pool.query(
-        `SELECT *
+        return result
+
+    },
+    'dataStation': () => {
+
+        const result = pool.query(
+            `SELECT *
           FROM station;`
-    ).then((data) => {
-        // console.log("data",data)
-        return data
-    })
+        ).then((data) => {
+            // console.log("data",data)
+            return data
+        })
 
-    return result
-    
-},
+        return result
+
+    },
     'importFile': function (contentFile, pathFile) {
-       
+
         function run(contentFile, pathFile) {
             let p = Promise.resolve();
             for (let i = 0; i < contentFile.length; i++) {
                 let { event, event_station } = readFile(contentFile[i], pathFile[i])
                 p = p.then(() => {
-          
+
                     return insertEvent(event)
                 }).then(({ rows: [{ id }] }) => {
                     console.log('insert event')
                     let arr = event_station.map((elem) => {
                         elem.event_id = id
-                       
+
                         return insertEvent_station(elem)
                     })
                     return Promise.all(arr)
@@ -249,7 +360,6 @@ Meteor.methods({
             let m = pathFile.match(/([0-9]{2})-([0-9]{2})([0-9]{2})-([0-9]{2})(L|R)\.S([0-9]{4})([0-9]{2})$/);
             if (m != null) {
                 event.datetime = new Date(Number(m[6]), Number(m[7]) - 1, Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]))
-
             }
             let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+) + (HAN) +([0-9]+) +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
             if (m1 != null) {
@@ -285,7 +395,7 @@ Meteor.methods({
                 let array = [...lines[headerLine].matchAll(regexp)];
                 const start = array[0].index;
                 let key2 = key.toLowerCase()
-               return { key: key, key1: key2, start: start }
+                return { key: key, key1: key2, start: start }
             });
             keyW[1].key1 = 'ws'
             keywithoutW.splice(4, 0, keyW[0])
@@ -294,22 +404,22 @@ Meteor.methods({
             keys = keywithoutW;
             /// end code
             lines.slice(headerLine + 1).forEach((elem) => {
-          
+
                 if (elem.match(/\S/)) {
                     let o = keys.reduce((obj, { key, key1, start }, ind) => {
-                       
+
                         let length = key.length
                         let temp = elem.match(new RegExp(`(-?[^ -]*(?![ ]))?(?<=^.{${start}})(.{${length}})((?<![ ])[^ -]+)?`))
-                       if (temp != null && check === 'IPHASW') {
+                        if (temp != null && check === 'IPHASW') {
                             if (temp[1] && ind > 0 && temp.index < (keys[ind - 1].start + keys[ind - 1].key.length)) {
                                 // giá trị thuộc về cột trước
-                             
+
                                 obj[key1] = null
                             } else {
                                 obj[key1] = temp[0].replace(/^[ ]+|[ ]+$/g, '') || null
                             }
                         }
-                        
+
                         return obj
                     }, {})
                     // console.log(o,"gdfgdfgfgfg")
@@ -332,15 +442,15 @@ Meteor.methods({
                 s1 += `"${col}"`
                 if (col === 'geometry') {
                     s2 += `ST_SetSRID(ST_Point($${values.push(event.long)}, $${values.push(event.lat)}), 4326)`
-                 } else {
+                } else {
                     s2 += `$${values.push(event[col])}`
                 }
             })
             return pool.query(
                 `INSERT INTO "event"
-		(${s1})
-  		SELECT ${s2}
-		RETURNING "id"`,
+                (${s1})
+                SELECT ${s2}
+                RETURNING "id"`,
                 values,
             )
         }
@@ -348,7 +458,7 @@ Meteor.methods({
             let values = []
             let s1 = ''
             let s2 = ''
-            let cols = ['event_id', 'station_id', 'sp', 'i','phas','w','d', 'hrmm', 'secon', 'coda', 'amplit', 'peri', 'azimu', 'velo', 'ain', 'ar', 'tres', 'ws', 'dis', 'caz7']
+            let cols = ['event_id', 'station_id', 'sp', 'i', 'phas', 'w', 'd', 'hrmm', 'secon', 'coda', 'amplit', 'peri', 'azimu', 'velo', 'ain', 'ar', 'tres', 'ws', 'dis', 'caz7']
             cols.forEach((col, ind) => {
                 if (ind > 0) {
                     s1 += ', '
@@ -362,7 +472,7 @@ Meteor.methods({
                 }
             })
             if (values[2] !== undefined) {
-            return pool.query(`INSERT INTO "event_station" (${s1}) SELECT ${s2}`,values,)
+                return pool.query(`INSERT INTO "event_station" (${s1}) SELECT ${s2}`, values,)
             }
         }
         return run(contentFile, pathFile);
@@ -379,26 +489,33 @@ Meteor.methods({
         let info = Accounts.findUserByEmail(email);
         Accounts.sendResetPasswordEmail(info._id)
     },
-    'update-role' : (id,role)=>{
-        Accounts.onLogin(function(user) {
-            if (!user.user.publications) {
-                Meteor.users.update(id,{
-                    $set:{
-                        roles: role
-                    }
-                });
+    'update-role': (id, role) => {
+        Meteor.users.update(id, {
+            $set: {
+                roles: role
             }
-        })
-        // Meteor.users.update({_id: id}, {$addToSet:{"profile":{role : roles}}});
+            
+        });
+        // Accounts.onLogin(function (user) {
+        //     if (!user.user.publications) {
+        //         Meteor.users.update(id, {
+        //             $set: {
+        //                 roles: role
+        //             }
+                    
+        //         });
+                
+        //     }
+        // })
+       
     },
-    'delete-user' : (id)=>{
+    'delete-user': (id) => {
         Meteor.users.remove(id);
-        // Meteor.users.update({_id: id}, {$addToSet:{"profile":{role : roles}}});
     },
-    'serverCreateUser' (username,password,email) {
-        const userId = Accounts.createUser({ username, password, email })
+    'serverCreateUser'(username, password, email) {
+        const userId = Accounts.createUser({ username, password, email})
         // return new user id
         return userId
-      }
-   
+    }
+
 })

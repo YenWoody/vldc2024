@@ -170,8 +170,36 @@ Template.map.onRendered(() => {
             }) 
         });
         const waitDataIris = await Promise.all(dtIris)
-
-          // End
+        // End
+                        // Fetch Data From Iris
+                        function getDataUSGS() {
+                            return new Promise(function (resolve,reject){
+                                fetch("https://service.iris.edu/fdsnws/event/1/query?starttime=2023-02-02&minmagnitude=1&limit=10000&output=text")
+                                .then(res => {
+                                  resolve(res.text())
+                                })
+                            })
+                
+                          }
+                        const dataUSGS = await getDataUSGS();
+                        
+                        const dtUSGS = []
+                        dataUSGS.split(/\r?\n/).forEach(lines => {
+                            const line = lines.split(/[|]+/g)
+                            dtUSGS.push({
+                
+                                "time" : line[1],
+                                "lat" : Number(line[2]),
+                                "long" : Number(line[3]),
+                                "depth": line[4],
+                                "catalog" : line[6],
+                                "magtype" : line[9],
+                                "magnitude": line[10],
+                                "location" : line[12]
+                            }) 
+                        });
+        const waitDataUSGS = await Promise.all(dtUSGS)
+                        // End
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
         const dataStations = await dataStation();
@@ -179,7 +207,7 @@ Template.map.onRendered(() => {
         const dataBaler = await dataBalers();
         const dataDataloger = await dataDatalogers();
         const dataSensor = await dataSensors();
-        console.log(dataEvents)
+     
         /**
          * init basemap
          */
@@ -1063,6 +1091,7 @@ Template.map.onRendered(() => {
                                 e.attributes.datetime = new Date (e.attributes.datetime)
                                 return e
                             })
+                            console.log(data,"dòng 1094")
                             const table = $('#dulieu').DataTable({
                                 data: data,
                                 "paging": false,

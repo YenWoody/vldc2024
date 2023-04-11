@@ -371,16 +371,10 @@ Template.map_station.onRendered(() => {
         const dataGeojsonDataloger = [];
         const dataGeojsonSensor = [];
         const eventGeojson = dataEvents.filter(e => {
-            if (e.geometry === null) {
-                return false
-            }
-            return true
+            return !(e.geometry === null);
         })
         const stationsGeojson = dataStations.filter(e => {
-            if (e.geometry === null) {
-                return false
-            }
-            return true
+            return !(e.geometry === null);
         })
         dataEmployee.map(e => {
             dataGeojsonEmployee.push(turf.point([1, 1], e))
@@ -413,13 +407,13 @@ Template.map_station.onRendered(() => {
         })
 
         // Tạo Turf featurecollection
-        var collection = turf.featureCollection(dataGeojsonEvents);
-        var collection_events_station = turf.featureCollection(dataGeojsonEventStations);
-        var collection_station = turf.featureCollection(dataGeojsonStations);
-        var collection_employee = turf.featureCollection(dataGeojsonEmployee);
-        var collection_baler = turf.featureCollection(dataGeojsonBaler);
-        var collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
-        var collection_sensor = turf.featureCollection(dataGeojsonSensor);
+        let collection = turf.featureCollection(dataGeojsonEvents);
+        let collection_events_station = turf.featureCollection(dataGeojsonEventStations);
+        let collection_station = turf.featureCollection(dataGeojsonStations);
+        let collection_employee = turf.featureCollection(dataGeojsonEmployee);
+        let collection_baler = turf.featureCollection(dataGeojsonBaler);
+        let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
+        let collection_sensor = turf.featureCollection(dataGeojsonSensor);
         // create a new blob from geojson featurecollection
         const blob = new Blob([JSON.stringify(collection)], {
             type: "application/json"
@@ -968,7 +962,7 @@ Template.map_station.onRendered(() => {
 
                         })
                         function check(arr) {
-                            var newArr = []
+                            let newArr = []
                             for (var i = 0; i < arr.length; i++) {
                                 if (newArr.indexOf(arr[i]) === -1) {
                                     newArr.push(arr[i])
