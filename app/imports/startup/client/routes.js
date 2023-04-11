@@ -1,18 +1,20 @@
 import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 // Import needed templates
 import '../../ui/layouts/body/body.js';
+import '../../ui/layouts/dashboardpage/dashboardpage.js';
 import '../../ui/pages/home/home.js';
 import '../../ui/pages/event/event.js';
 import '../../ui/pages/station/station.js';
 import '../../ui/pages/not-found/not-found.js';
-import '../../ui/components/dashboard/dashboard.js';
 import '../../ui/components/upload/upload.js';
 import '../../ui/pages/register/register.js';
 import '../../ui/pages/changepass/changepass.js';
 import '../../ui/pages/login/login.js';
 import '../../ui/pages/reset/reset';
 import '../../ui/pages/verify/verify';
-import '../../ui/pages/manage-user/manage-user';
+import '../../ui/components/manage-user/manage-users';
+import '../../ui/components/manage-station/manage-station';
+import '../../ui/components/manage-event/manage-event';
 // Set up all routes in the app
 FlowRouter.route('/event', {
   name: 'App.event',
@@ -20,10 +22,29 @@ FlowRouter.route('/event', {
     this.render('BodyTemplate', 'event');
   },
 });
+FlowRouter.route('/dashboard', {
+  name: 'App.dashboard',
+  action() {
+    this.render('dashboardTemplate','');
+  },
+});
 FlowRouter.route('/manager-user', {
+  name: 'App.manageUsers',
+  action() {
+    this.render('dashboardTemplate', 'manageUsers');
+  },
+});
+
+FlowRouter.route('/manager-station', {
   name: 'App.event',
   action() {
-    this.render('BodyTemplate', 'manager');
+    this.render('dashboardTemplate', 'manageStation');
+  },
+});
+FlowRouter.route('/manager-event', {
+  name: 'App.event',
+  action() {
+    this.render('dashboardTemplate', 'manageEvent');
   },
 });
 FlowRouter.route('/', {
@@ -43,13 +64,7 @@ FlowRouter.route('/station', {
 FlowRouter.route('/upload', {
   name: 'App.upload',
   action() {
-    this.render('BodyTemplate','uploadForm');
-  },
-});
-FlowRouter.route('/dashboard', {
-  name: 'App.dashboard',
-  action() {
-    this.render('BodyTemplate','dashboard');
+    this.render('dashboardTemplate','uploadForm');
   },
 });
 // 404 page
@@ -69,7 +84,7 @@ FlowRouter.route('/register', {
 FlowRouter.route('/changepass', {
   name: 'App.changepass',
   action() {
-    this.render('BodyTemplate', 'changepass_form');
+    this.render('dashboardTemplate', 'changepass_form');
   },
 });
 FlowRouter.route('/login', {
