@@ -16,6 +16,7 @@ Template.manageUsers.onCreated(function () {
 
 })
 Template.manageUsers.onRendered(async () => {
+  $("#dashboard-title").html("Quản lí người dùng")
  function dataUsers() {
   return new Promise(function (resolve, reject) {
     Meteor.call('findUsers', function (error, resultdata) {
@@ -27,7 +28,6 @@ Template.manageUsers.onRendered(async () => {
   });
 }
 const dataUser = await dataUsers();
-console.log(dataUser)
  $('#data_users').DataTable({
   data: dataUser,
   "paging": true,
@@ -65,15 +65,20 @@ console.log(dataUser)
 }); 
 $('#data_users').on('click', 'td.editor-edit', function (e) {
   const data = $('#data_users').DataTable().row(this).data();
-  console.log(data)
   document.getElementById("modal_edit_user").style.display = "block"
   document.getElementById("submit-role").onclick = function (){
       let role = $('[name=role]').val();
-      console.log(role)
+
       const id = data._id;
       Meteor.call('update-role', id, role, (error) => {
         if (error) {
-          Swal.fire(`Lỗi:  ${error.reason}`);
+          Swal.fire(
+            {
+                icon: 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            })
 
         } else {
           Meteor.call('findUsers', function (error, resultdata) {
@@ -116,7 +121,13 @@ $('#data_users').on('click', 'td.editor-edit', function (e) {
             
             }); 
           })
-          Swal.fire(`Thay đổi quyền thành công`);
+          Swal.fire(
+            {
+              icon: 'success',
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Thay đổi quyền thành công!"
+          });
           document.getElementById("modal_edit_user").style.display = "none";
         
         }
@@ -133,11 +144,23 @@ $('#data_users').on('click', 'td.editor-delete', function (e) {
    
     Meteor.call('delete-user', id, (error) => {
       if (error) {
-        Swal.fire(`Lỗi:  ${error.reason}`);
+        Swal.fire(
+          {
+              icon: 'error',
+              heightAuto: false,
+              title: 'Có lỗi xảy ra!',
+              text: error.reason
+          })
 
       } else {
         document.getElementById("_delete_user").style.display = "none"
-        Swal.fire(`Xóa người dùng thành công`);
+        Swal.fire(
+          {
+            icon: 'success',
+            heightAuto: false,
+            title: "Chúc mừng!",
+            text: "Xóa người dùng thành công!"
+        })
         Meteor.call('findUsers', function (error, resultdata) {
           if (error) {
            console.log(error)
@@ -361,17 +384,29 @@ Template.manageUsers.events({
     let password = $('[name=password]').val();
     let email = $('[name=email]').val();
     if ($('[name=password]').val() === $('[name=checkpassword]').val()) {
-console.log(role,"role")
       Meteor.call('serverCreateUser',username,password,email,role,
         function (error) {
           if (error) {
             if (error.reason === "Username already exists.") {
               Session.set("errorMessage", "Please log in to post a comment.");
-              Swal.fire("Tên tài khoản đã có người đăng kí, vui lòng chọn tên tài khoản khác!")
+             
+              Swal.fire(
+                {
+                    icon: 'warning',
+                    heightAuto: false,
+                    title: 'Có lỗi xảy ra!',
+                    text: "Tên tài khoản đã có người đăng kí, vui lòng chọn tên tài khoản khác!"
+                })
             }
 
             else {
-              Swal.fire(error.reason)
+              Swal.fire(
+                {
+                    icon: 'error',
+                    heightAuto: false,
+                    title: 'Có lỗi xảy ra!',
+                    text: error.reason
+                })
             }; // Output error if registration fails
           } else {
             
@@ -417,10 +452,13 @@ console.log(role,"role")
             })
             document.getElementById("_add-user").style.display ='none';
             Swal.fire(
-              'Chúc mừng!',
-              'Bạn đã tạo tài khoản thành công!',
-              'success'
-            );
+              {
+                icon: 'success',
+                heightAuto: false,
+                title: "Chúc mừng!",
+                text: "Bạn đã tạo tài khoản thành công!"
+            })
+           
             
 
           }

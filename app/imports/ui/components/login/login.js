@@ -30,12 +30,20 @@ Template.login.events({
     const password = target.password.value;
     Meteor.loginWithPassword(username, password, function(error){
       if(error){
-        Swal.fire(error.reason); // Output error if registration fails
+        Swal.fire( {
+          icon: 'error',
+          heightAuto: false,
+          title: 'Có lỗi xảy ra',
+          text: error.reason
+      }); // Output error if registration fails
       } else {
         Swal.fire(
-            'Chúc mừng!',
-            'Bạn đã đăng nhập thành công!',
-            'success'
+          {
+            icon: 'success',
+            heightAuto: false,
+            title: 'Chúc mừng!',
+            text: 'Bạn đã đăng nhập thành công!'
+        }
           )
           FlowRouter.go('/');
       }      

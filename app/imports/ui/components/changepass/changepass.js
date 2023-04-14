@@ -12,12 +12,20 @@ Template.changepass.events({
     const newpassword = target.newpassword.value;
     Meteor.call('changePassword',oldpassword,newpassword,function(error){
       if(error){
-        Swal.fire(error.reason); // Output error if registration fails
+        Swal.fire( {
+          icon: 'error',
+          heightAuto: false,
+          title: 'Có lỗi xảy ra!',
+          text: error.reason
+      }); // Output error if registration fails
       } else {
         Swal.fire(
-            'Chúc mừng!',
-            'Bạn đã đổi mật khẩu thành công!',
-            'success'
+          {
+            icon: 'success',
+            heightAuto: false,
+            title: 'Chúc mừng',
+            text: "Bạn đã đổi mật khẩu thành công!"
+        }
           );
           FlowRouter.go('/login');
       }      
@@ -26,6 +34,10 @@ Template.changepass.events({
    
     } 
   });
+  Template.changepass.onRendered(()=>{
+    $("#dashboard-title").html("Đổi mật khẩu")
+
+  })
   Template.changepass.helpers({
     userUnVerified () {
       if(Meteor.userId() === null || Meteor.user() && Meteor.user().emails[0].verified === false){

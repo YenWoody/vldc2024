@@ -7,7 +7,8 @@ import fs from 'fs';
 import pg from 'pg';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { Roles } from 'meteor/alanning:roles'
+import { Roles } from 'meteor/alanning:roles';
+import { Email } from 'meteor/email';
 // server.js
 const PG_HOST = 'localhost'
 const PG_PORT = '5432'
@@ -37,11 +38,11 @@ Meteor.startup(function () {
 
     });
 
-    process.env.MAIL_URL = 'smtps://email:pass@@smtp.gmail.com:465/';
-    Accounts.emailTemplates.siteName = 'Vật Lí Địa Cầu';
-    Accounts.emailTemplates.from = 'Vật Lí Địa Cầu Admin';
+    process.env.MAIL_URL = 'smtps://support@fimo.edu.vn:zmcoooalaksdsvop@smtp.gmail.com:465/';
+    Accounts.emailTemplates.siteName = 'Hệ thống cảnh báo động đất sớm Việt Nam';
+    Accounts.emailTemplates.from = 'Hệ thống cảnh báo động đất sớm Việt Nam Admin';
     Accounts.emailTemplates.enrollAccount.subject = (user) => {
-        return `Chào mừng bạn đến với website Vật Lí Địa Cầu, ${user.profile.name}`;
+        return `Chào mừng bạn đến với website Hệ thống cảnh báo động đất sớm Việt Nam, ${user.profile.name}`;
     };
 
     Accounts.emailTemplates.enrollAccount.text = (user, url) => {
@@ -53,7 +54,7 @@ Meteor.startup(function () {
     Accounts.emailTemplates.resetPassword.from = () => {
         // Overrides the value set in `Accounts.emailTemplates.from` when resetting
         // passwords.
-        return 'Vật Lí Địa Cầu - Khôi phục mật khẩu <no-reply@example.com>';
+        return 'Hệ thống cảnh báo động đất sớm Việt Nam - Khôi phục mật khẩu <no-reply@example.com>';
     };
     Accounts.emailTemplates.resetPassword.html = (user, url) => {
         // Overrides the value set in `Accounts.emailTemplates.from` when resetting
@@ -85,11 +86,11 @@ Meteor.startup(function () {
     //   return `Chào bạn ${user.username} Để khôi phục mật khẩu, bạn vui lòng click vào đường link phía dưới:  ${url}`
     // }
     Accounts.emailTemplates.resetPassword.subject = () => {
-        return `Khôi phục mật khẩu - Vật Lí Địa Cầu`
+        return `Khôi phục mật khẩu - Hệ thống cảnh báo động đất sớm Việt Nam`
     }
     Accounts.emailTemplates.verifyEmail = {
         subject() {
-            return "Kích hoạt tài khoản - Vật Lí Địa Cầu";
+            return "Kích hoạt tài khoản - Hệ thống cảnh báo động đất sớm Việt Nam";
         },
         html(user, url) {
             return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
@@ -99,7 +100,7 @@ Meteor.startup(function () {
           </tr>
           <tr>
               <td style="padding:0 35px;">
-                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Chúc mừng bạn đã đăng kí thành công tài khoản tại Vật Lí Địa Cầu</h1>
+                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Chúc mừng bạn đã đăng kí thành công tài khoản tại Hệ thống cảnh báo động đất sớm Việt Nam</h1>
                   <span
                       style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
@@ -337,7 +338,50 @@ Meteor.methods({
             for (let i = 0; i < contentFile.length; i++) {
                 let { event, event_station } = readFile(contentFile[i], pathFile[i])
                 p = p.then(() => {
+                // Check user đăng kí nhận tin động đất
+               const users =  Meteor.users.find({}).fetch()
+               users.forEach((user)=>{
+                    if(user.mag){
+                        if (event.ml > user.mag[0] && event.ml< user.mag[1] ) {
+                            const email = user.event_mail
+                           
+                            Email.send({
+                                to: `${email}`,
+                                from: "Hệ thống cảnh báo động đất sớm Việt Nam",
+                                subject: "Thông báo tin động đất",
+                                html: `
+                                <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+          style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+          <tr>
+              <td style="height:40px;">&nbsp;</td>
+          </tr>
+          <tr>
+              <td style="padding:0 35px;">
+                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Đây là tin nhắn tự động thông báo động đất của Hệ thống cảnh báo động đất sớm Việt Nam</h1>
+                  <span
+                      style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                  <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                  Cảnh báo động đất có cường độ <b>${event.ml}</b> độ Richter, vị trí xảy ra tại vĩ độ <b>${event.lat}</b> , kinh độ <b>${event.long}</b>, thời gian ghi nhận sự kiện <b>${event.datetime}</b>
+                  </p>
+                   
+                  <a href="/"
+                      style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
+              </td>
+          </tr>
+          <tr>
+              <td style="height:40px;">&nbsp;</td>
+          </tr>
+      </table>`,
+                                
+                             });
+                        }
+                        else {
+                            console.log("không có")
+                        }
+                    }
 
+               })
+                console.log(event.ml,"event")
                     return insertEvent(event)
                 }).then(({ rows: [{ id }] }) => {
                     console.log('insert event')
@@ -507,6 +551,17 @@ Meteor.methods({
                 
         //     }
         // })
+       
+    },
+    'register-event': (id, email,magnitude) => {
+        Meteor.users.update(id, {
+            $set: {
+                event_mail: email,
+                mag: magnitude
+            }
+            
+        });
+    
        
     },
     'delete-user': (id) => {

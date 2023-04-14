@@ -36,7 +36,6 @@ Template.register.events({
         let username = $('[name=username]').val();
         let password = $('[name=password]').val();
         let email= $('[name=email]').val();
-        console.log(username,"username")
    
           if ( $('[name=password]').val() === $('[name=checkpassword]').val()) {
               Accounts.createUser({
@@ -48,16 +47,30 @@ Template.register.events({
                     if (error) {
                         if (error.reason === "Username already exists.") {
                             Session.set("errorMessage", "Please log in to post a comment.");
-                            Swal.fire("Tên tài khoản đã có người đăng kí, vui lòng chọn tên tài khoản khác!")
+                            Swal.fire( {
+                                icon: 'warning',
+                                heightAuto: false,
+                                title: 'Có lỗi xảy ra!',
+                                text: 'Tên tài khoản đã có người đăng kí, vui lòng chọn tên tài khoản khác!'
+                            })
                         } else {
-                            Swal.fire(error.reason)
+                            Swal.fire(
+                                {
+                                    icon: 'error',
+                                    heightAuto: false,
+                                    title: 'Có lỗi xảy ra!',
+                                    text: error.reason
+                                })
                         }
                         ; // Output error if registration fails
                     } else {
                         Swal.fire(
-                            'Chúc mừng!',
-                            'Bạn đã đăng kí thành công!',
-                            'success'
+                            {
+                                icon: 'success',
+                                heightAuto: false,
+                                title: 'Chúc mừng!',
+                                text: 'Bạn đã đăng kí thành công!'
+                            }
                         );
                         FlowRouter.go('/verify');  // Redirect user if registration succeeds
                     }

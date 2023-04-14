@@ -27,7 +27,7 @@
     "litepicker": "^2.0.12",
     "meteor-node-stubs": "^1.1.0",
     "meteor-pg": "^1.0.9",
-    "nouislider": "^15.6.1",
+    "nouislider": "^15.7.0",
     "pg": "^8.8.0",
     "sweetalert2": "^11.5.2",
     "wnumb": "^1.2.0",

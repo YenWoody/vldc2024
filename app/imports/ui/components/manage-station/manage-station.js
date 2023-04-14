@@ -22,7 +22,7 @@ Template.manageStation.onCreated(function () {
 
 })
 Template.manageStation.onRendered(async () => {
-
+  $("#dashboard-title").html("Quản lí các trạm đo")
   function dataStation() {
     return new Promise(function (resolve, reject) {
       Meteor.call('dataStation', function (error, resultdataStation) {
@@ -112,7 +112,13 @@ Template.manageStation.onRendered(async () => {
 
       Meteor.call('insertStation',insert,(error) => {
         if (error) {
-          Swal.fire(`Lỗi:  ${error.reason}`);
+          Swal.fire(
+            {
+                icon: 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            })
   
         } else {
           Meteor.call('dataStation', function (error, resultdataStation) {
@@ -155,7 +161,13 @@ Template.manageStation.onRendered(async () => {
             }
           })
           document.getElementById("modal_add_station").style.display = "none"
-          Swal.fire(`Thêm dữ liệu thành công`)
+          Swal.fire(
+            {
+              icon: 'success',
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Thêm dữ liệu thành công!"
+          })
         }
       })
     }
@@ -196,7 +208,13 @@ Template.manageStation.onRendered(async () => {
       };
       Meteor.call('editStation',insert,(error) => {
         if (error) {
-          Swal.fire(`Lỗi:  ${error.reason}`);
+          Swal.fire(
+            {
+                icon: 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            })
   
         } else {
           Meteor.call('dataStation', function (error, resultdataStation) {
@@ -239,7 +257,13 @@ Template.manageStation.onRendered(async () => {
             }
           })
           document.getElementById("_modal").style.display = "none"
-          Swal.fire(`Lưu dữ liệu thành công`)
+          Swal.fire(
+            {
+              icon: 'success',
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Lưu dữ liệu thành công"
+          })
         }
       })
     };
@@ -256,7 +280,13 @@ Template.manageStation.onRendered(async () => {
     document.getElementById("delete_station").onclick = function() {
        Meteor.call('deleteStation',data.key, (error) => {
         if (error) {
-          Swal.fire(`Lỗi:  ${error.reason}`);
+          Swal.fire(
+            {
+                icon: 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            })
   
         } else {
           Meteor.call('dataStation', function (error, resultdataStation) {
@@ -299,7 +329,13 @@ Template.manageStation.onRendered(async () => {
             }
           })
           document.getElementById("modal_delete_station").style.display = "none"
-          Swal.fire(`Xóa dữ liệu thành công`)
+          Swal.fire(
+            {
+              icon: 'success',
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Xóa dữ liệu thành công!"
+          })
         }
       })
 

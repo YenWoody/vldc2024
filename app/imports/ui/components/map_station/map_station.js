@@ -378,24 +378,24 @@ Template.map_station.onRendered(() => {
         })
         dataEmployee.map(e => {
             dataGeojsonEmployee.push(turf.point([1, 1], e))
-            // console.log(dataGeojson,"dataGeojson")
+            
         })
         dataBaler.map(e => {
             dataGeojsonBaler.push(turf.point([2, 2], e))
-            // console.log(dataGeojson,"dataGeojson")
+           
         })
         dataDataloger.map(e => {
             dataGeojsonDataloger.push(turf.point([3, 3], e))
-            // console.log(dataGeojson,"dataGeojson")
+            
         })
         dataSensor.map(e => {
             dataGeojsonSensor.push(turf.point([4, 4], e))
-            // console.log(dataGeojson,"dataGeojson")
+            
         })
         eventGeojson.map(e => {
             e.datetime = e.datetime.getTime();
             dataGeojsonEvents.push(turf.point([e.long, e.lat], e))
-            // console.log(dataGeojson,"dataGeojson")
+          
         });
         dataEventStations.map(e => {
             dataGeojsonEventStations.push(turf.point([0, 0], e))
@@ -549,7 +549,7 @@ Template.map_station.onRendered(() => {
                     <td>${e.attributes.ws}</td>
                     </tr>`)
                         });
-                        console.log(row_data, "rowdata")
+                       
                         return `<div style="margin: 10px;"><b>Thông số từ các trạm đo</b></div>
                     <table class="display" style="border-style: double">
                     <thead>
@@ -664,7 +664,7 @@ Template.map_station.onRendered(() => {
 
                 async function id() {
                     let query = layerEventStaions.createQuery();
-                    console.log(event.graphic.attributes,"event.graphic.attributes.station_id")
+                    
                     query.where = `station_id LIKE '%${event.graphic.attributes.id}%'`;
                     query.outFields = "*";
                     const id = [];
@@ -687,7 +687,7 @@ Template.map_station.onRendered(() => {
                     id_event.map(e => {
                         id_query.push(`(id = ${e})`)
                     });
-                    console.log(id_query.length)
+                   
                     view.whenLayerView(layerEvent).then((layerView) => {
                         eventview = layerView;
                         eventview.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
@@ -908,7 +908,7 @@ Template.map_station.onRendered(() => {
         layerStations.queryFeatures(query)
             .then(function (response) {
                 const dataSet = response.features
-                console.log(dataSet, "dataSet")
+            
                 $('#dulieu').DataTable({
                     data: dataSet,
                     'buttons': [
@@ -949,7 +949,6 @@ Template.map_station.onRendered(() => {
                 $('#dulieu tbody').off('click', 'tr');
                 $('#dulieu tbody').on('click', 'tr', function () {
                     const data = $('#dulieu').DataTable().row(this).data();
-                    console.log(data, "data");
 
                     async function id() {
                         let query = layerEventStaions.createQuery();
@@ -1093,7 +1092,6 @@ Template.map_station.helpers({
 
 Template.map_station.events({
     'click #close-modal': function () {
-        console.log("check")
         document.getElementById("_modal").style.display = "none"
 
     },

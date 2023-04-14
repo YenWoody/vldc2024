@@ -8,6 +8,7 @@ import '../../ui/pages/station/station.js';
 import '../../ui/pages/not-found/not-found.js';
 import '../../ui/components/upload/upload.js';
 import '../../ui/pages/register/register.js';
+import '../../ui/components/register-event/register-event.js';
 import '../../ui/pages/changepass/changepass.js';
 import '../../ui/pages/login/login.js';
 import '../../ui/pages/reset/reset';
@@ -65,6 +66,12 @@ FlowRouter.route('/upload', {
   name: 'App.upload',
   action() {
     this.render('dashboardTemplate','uploadForm');
+  },
+});
+FlowRouter.route('/register-event', {
+  name: 'App.registerEvent',
+  action() {
+    this.render('dashboardTemplate', 'registerEvent');
   },
 });
 // 404 page

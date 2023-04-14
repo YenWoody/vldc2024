@@ -38,13 +38,30 @@ Template.verify.events({
     'submit .verify-form': function(event){
         event.preventDefault();
         const username = document.getElementById('username');
+        console.log('username',username.innerHTML)
         Meteor.call('verify',username.innerHTML,function (error) {
+
           if (error) {
-            Swal.fire(error.reason); // Output error if registration fails
+            Swal.fire(
+              {
+                icon : 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            }
+            
+             ); // Output error if registration fails
+          
           } else {
             Swal.fire(
-              'Gửi link thành công',
-              'Vui lòng kiểm tra mail!'
+              {
+                icon: 'success',
+                heightAuto: false,
+                title: 'Gửi link thành công',
+                text: 'Vui lòng kiểm tra mail!'
+            }
+     
+
             )
           }
         })

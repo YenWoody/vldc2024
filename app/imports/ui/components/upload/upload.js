@@ -4,7 +4,6 @@ import Files from '/lib/files.collection.js';
 import './upload.html';
 import '../../pages/login/login';
 import '../not_access/not_access'
-import { Event } from '../../../db/event';
 import JSZip from 'jszip';
 import  Swal  from 'sweetalert2/dist/sweetalert2.js';
 const getUser = () => Meteor.user();
@@ -56,6 +55,7 @@ Template.uploadForm.helpers({
   }
 });
 Template.uploadForm.onRendered(function () {
+  $("#dashboard-title").html("Đăng tải dữ liệu sự kiện động đất")
   // var hi = Event.find().fetch()[0].rows
   // console.log(hi,"event")
 })
@@ -91,20 +91,34 @@ Template.uploadForm.events({
               if (data.length > 0) {
                 Meteor.call('importFile',data,pathFile, (error) => {
                   if (error) {
-                    Swal.fire(`Không thể import data do lỗi:  ${error.reason}`);
+                    Swal.fire({
+                      icon : "error",
+                      title: "Không thể import data",
+                      text :error.reason,
+                      heightAuto: false,
+                    });
                     
                   } else {
                     Swal.fire(
-                      'Chúc mừng!',
-                      "Cài dữ liệu vào database thành công! Tiến trình tải lên đang tiếp tục! ",
-                      'success'
+                      {
+                        icon : "success",
+                        title: "Chúc mừng!",
+                        text :"Cài dữ liệu vào database thành công! Tiến trình tải lên đang tiếp tục! ",
+                        heightAuto: false,
+                      }
+                 
                     )
                     
                   }
                 })
               }
               else {
-                Swal.fire(`Không thể import data do tệp không đúng định dạng, tiến trình tải lên vẫn tiếp tục!`)
+                Swal.fire({
+                  icon : "error",
+                  title: "Không thể import data",
+                  text :"Không thể import data do tệp không đúng định dạng, tiến trình tải lên vẫn tiếp tục!",
+                  heightAuto: false,
+                })
               }
              
             });
@@ -114,9 +128,22 @@ Template.uploadForm.events({
         // End Read Zip File
         uploadInstance.on('end', function (error, fileObj) {
           if (error) {
-            Swal.fire('Lỗi trong quá trình tải lên: ' + error.reason);
+            Swal.fire(
+              {
+                icon : "error",
+                title: "Lỗi trong quá trình tải lên",
+                text :error.reason,
+                heightAuto: false,
+              });
           } else {
-            Swal.fire('Tệp tin"' + fileObj.name + '" tải lên thành công!');
+            Swal.fire(
+              {
+                icon : "success",
+                title: "Chúc mừng!",
+                text :'Tệp tin"' + fileObj.name + '" tải lên thành công!',
+                heightAuto: false,
+              }
+              );
           }
           template.currentUpload.set(false);
         });
@@ -128,9 +155,19 @@ Template.uploadForm.events({
   'click .delete'(file) { 
     var remove = file.target.attributes[1].nodeValue
     Meteor.call('remove',remove,(error)=>{if (error) {
-      Swal.fire(`File wasn't removed, error:  ${error.reason}`);
+      Swal.fire( {
+        icon : "error",
+        title: "File chưa được xóa",
+        text :error.reason,
+        heightAuto: false,
+      });
     } else {
-      Swal.fire('Xóa thành công');
+      Swal.fire( {
+        icon : "success",
+        title: "Chúc mừng!",
+        text :"Xóa file thành công",
+        heightAuto: false,
+      });
     }});
    
   },

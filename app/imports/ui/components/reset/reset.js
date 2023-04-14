@@ -11,11 +11,23 @@ Template.reset.events({
     const email = target.email.value;
     Meteor.call("reset",email,function (error) {
       if (error) {
-        Swal.fire(error.reason); // Output error if registration fails
+        Swal.fire(
+          {
+            icon : "error",
+            title: "Có lỗi xảy ra!",
+            text : error.reason,
+            heightAuto: false,
+          }); // Output error if registration fails
       } else {
         Swal.fire(
-          'Gửi link thành công',
-          'Vui lòng kiểm tra mail và click vào đường link để reset mật khẩu!'
+          {
+            icon: 'success',
+            heightAuto: false,
+            title: 'Khôi phục mật khẩu thành công',
+            text: 'Vui lòng kiểm tra email!'
+        }
+          
+        
         )
       }
     })

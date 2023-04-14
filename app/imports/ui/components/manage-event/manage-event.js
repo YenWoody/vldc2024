@@ -21,7 +21,7 @@ Template.manageEvent.onCreated(function () {
 
 })
 Template.manageEvent.onRendered(async () => {
-
+  $("#dashboard-title").html("Quản lí sự kiện động đất")
   function dataEvent() {
     return new Promise(function (resolve, reject) {
       Meteor.call('layerEvent', function (error, resultdata) {
@@ -119,12 +119,18 @@ Template.manageEvent.onRendered(async () => {
  
       Meteor.call('insertEvent',insert,(error) => {
         if (error) {
-          Swal.fire(`Lỗi:  ${error.reason}`);
+          Swal.fire(
+            {
+                icon: 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            })
   
         } else {
           Meteor.call('layerEvent', function (error, resultdata) {
             if (error) {
-              console.log(error)
+            
             }
             else {
               const data = resultdata.rows.filter(e => {
@@ -169,7 +175,13 @@ Template.manageEvent.onRendered(async () => {
             }
           })
           document.getElementById("modal_add_event").style.display = "none"
-          Swal.fire(`Thêm dữ liệu thành công`)
+          Swal.fire(
+            {
+              icon: 'success',
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Thêm dữ liệu thành công"
+          })
         }
       })
     }
@@ -212,7 +224,13 @@ Template.manageEvent.onRendered(async () => {
       }
       Meteor.call('editEvent',insert,(error) => {
         if (error) {
-          Swal.fire(`Lỗi:  ${error.reason}`);
+          Swal.fire(
+            {
+                icon: 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            })
   
         } else {
           
@@ -263,7 +281,13 @@ Template.manageEvent.onRendered(async () => {
             }
           })
           document.getElementById("modal_edit_event").style.display = "none"
-          Swal.fire(`Lưu dữ liệu thành công`)
+          Swal.fire(
+            {
+              icon: 'success',
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Lưu dữ liệu thành công"
+          })
         }
       })
     };
@@ -281,7 +305,13 @@ Template.manageEvent.onRendered(async () => {
     document.getElementById("delete_event").onclick = function() {
        Meteor.call('deleteEvent',data.id, (error) => {
         if (error) {
-          Swal.fire(`Lỗi:  ${error.reason}`);
+          Swal.fire(
+            {
+                icon: 'error',
+                heightAuto: false,
+                title: 'Có lỗi xảy ra!',
+                text: error.reason
+            })
   
         } else {
           Meteor.call('layerEvent', function (error, resultdata) {
@@ -331,7 +361,13 @@ Template.manageEvent.onRendered(async () => {
             }
           })
           document.getElementById("modal_delete_event").style.display = "none"
-          Swal.fire(`Xóa dữ liệu thành công`)
+          Swal.fire(
+            {
+              icon: 'success',
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Xóa dữ liệu thành công"
+          })
         }
       })
 

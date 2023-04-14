@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import './station.html';
 import '../../components/map_station/map_station';
-import '../../components/filter/filter';
 import '../login/login';
 import '../../components/layouts/sidebar/sidebar';
 const getUser = () => Meteor.user();
