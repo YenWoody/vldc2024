@@ -1,7 +1,4 @@
 <template name="home">
-  {{#if rolesCheck}}
-  {{> not_access}}
-  {{else}}
     <div class=" content container--fluid" id ="home_background">
       {{#if userUnVerified}}
       {{> verify_form }}
@@ -10,22 +7,46 @@
             <div class="give-padding give-center">
               <h1>Tra cứu thông tin</h1>
             </div>
-            <div class="wrap">
-              <a href="/event" class="button_event">Sự kiện động đất</a>
-              <a href="/station" class="button_station">Trạm đo động đất</a>
-          </div>
+           
             <div class="give-flex">
               <div class="earth-moon-wrap">
                 <div class="earth"></div>
                 <div class="moon"><img src="/img/space-satellite.png"  alt="" style="width: 70px;" /></div>
               </div>
             </div>
-          
+            <div class="wrap">
+              <div class="col-6 button-main">
+              
+              <div class="col-lg-6 col-xxl-4 mb-5">
+                <div class="card bg-light border-0 h-100 position-relative" style="z-index : 1">
+                    <div class="card-body text-center pt-lg-0" style ="display : grid; justify-items : center">
+                      <div class="feature bg-primary bg-gradient text-white rounded-3 mb-4 mt-n4" ><i class="bi bi-collection"></i></div>
+                        <h2 class="fs-4 fw-bold mt-5">Sự kiện động đất</h2>
+                        <p class="mb-0">Theo dõi những sự kiện động đất đã xảy ra trên lãnh thổ Việt Nam và trên thế giới</p>
+                        <a role="button" class="btn btn-outline-primary btn-lg btn-rounded btn-vldc" href="/event">Xem tại đây</a>
+                       
+                        
+                    </div>
+                </div>
+              </div>
+              </div>
+              <div class="col-6 button-main">
+                <div class="col-lg-6 col-xxl-4 mb-5">
+                  <div class="card bg-light border-0 h-100 position-relative" style="z-index : 1">
+                      <div class="card-body text-center pt-lg-0" style ="display : grid; justify-items : center">
+                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-4 mt-n4"><i class="bi bi-collection d-grid justify-items-center"></i></div>
+                          <h2 class="fs-4 fw-bold mt-5">Trạm đo động đất</h2>
+                          <p class="mb-0">Theo dõi thông tin về trạm đo, thiết bị,...</p>
+                          <a role="button" class="btn btn-outline-primary btn-lg btn-rounded btn-vldc" href="/station">Xem tại đây</a>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>           
           </div>
        
         <script type="text/javascript"
             src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.js"></script>
             {{/if}}
           </div>
-    {{/if}}
 </template>

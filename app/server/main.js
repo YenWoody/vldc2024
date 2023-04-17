@@ -39,10 +39,10 @@ Meteor.startup(function () {
     });
 
     process.env.MAIL_URL = 'smtps://support@fimo.edu.vn:zmcoooalaksdsvop@smtp.gmail.com:465/';
-    Accounts.emailTemplates.siteName = 'Hệ thống cảnh báo động đất sớm Việt Nam';
-    Accounts.emailTemplates.from = 'Hệ thống cảnh báo động đất sớm Việt Nam Admin';
+    Accounts.emailTemplates.siteName = 'Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam';
+    Accounts.emailTemplates.from = 'Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam Admin';
     Accounts.emailTemplates.enrollAccount.subject = (user) => {
-        return `Chào mừng bạn đến với website Hệ thống cảnh báo động đất sớm Việt Nam, ${user.profile.name}`;
+        return `Chào mừng bạn đến với website Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam, ${user.profile.name}`;
     };
 
     Accounts.emailTemplates.enrollAccount.text = (user, url) => {
@@ -54,7 +54,7 @@ Meteor.startup(function () {
     Accounts.emailTemplates.resetPassword.from = () => {
         // Overrides the value set in `Accounts.emailTemplates.from` when resetting
         // passwords.
-        return 'Hệ thống cảnh báo động đất sớm Việt Nam - Khôi phục mật khẩu <no-reply@example.com>';
+        return 'Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam - Khôi phục mật khẩu <no-reply@example.com>';
     };
     Accounts.emailTemplates.resetPassword.html = (user, url) => {
         // Overrides the value set in `Accounts.emailTemplates.from` when resetting
@@ -86,11 +86,11 @@ Meteor.startup(function () {
     //   return `Chào bạn ${user.username} Để khôi phục mật khẩu, bạn vui lòng click vào đường link phía dưới:  ${url}`
     // }
     Accounts.emailTemplates.resetPassword.subject = () => {
-        return `Khôi phục mật khẩu - Hệ thống cảnh báo động đất sớm Việt Nam`
+        return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`
     }
     Accounts.emailTemplates.verifyEmail = {
         subject() {
-            return "Kích hoạt tài khoản - Hệ thống cảnh báo động đất sớm Việt Nam";
+            return "Kích hoạt tài khoản - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam";
         },
         html(user, url) {
             return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
@@ -100,7 +100,7 @@ Meteor.startup(function () {
           </tr>
           <tr>
               <td style="padding:0 35px;">
-                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Chúc mừng bạn đã đăng kí thành công tài khoản tại Hệ thống cảnh báo động đất sớm Việt Nam</h1>
+                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Chúc mừng bạn đã đăng kí thành công tài khoản tại Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</h1>
                   <span
                       style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
@@ -347,7 +347,7 @@ Meteor.methods({
                            
                             Email.send({
                                 to: `${email}`,
-                                from: "Hệ thống cảnh báo động đất sớm Việt Nam",
+                                from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
                                 subject: "Thông báo tin động đất",
                                 html: `
                                 <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
@@ -357,7 +357,7 @@ Meteor.methods({
           </tr>
           <tr>
               <td style="padding:0 35px;">
-                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Đây là tin nhắn tự động thông báo động đất của Hệ thống cảnh báo động đất sớm Việt Nam</h1>
+                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Đây là tin nhắn tự động thông báo động đất của Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</h1>
                   <span
                       style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">

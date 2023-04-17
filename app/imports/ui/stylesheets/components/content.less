@@ -83,7 +83,8 @@ width: 100%;
 
 /*# sourceMappingURL=chartist-plugin-tooltip.css.map */
 .star-wrap{
-    
+    display: grid;
+    justify-items: center;
     background: white;
     overflow: hidden;
     max-width: 1900px;
@@ -224,7 +225,7 @@ form.changepassword-form{
 ///
 .wrap {
   width: 100%;
-  position: absolute;
+  // position: absolute;
   top: 10%;
   display: flex;
   /* left: 50%; */
@@ -232,9 +233,22 @@ form.changepassword-form{
   /* margin-left: -89px; */
   text-align: center;
 }
-
-
+.button-main {
+  display: grid;
+  justify-items: center;
+}
+.feature {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  width: 4rem;
+  font-size: 2rem;
+  top: -2rem;
+}
 a.button_event {
+  position: absolute;
   background-color: white;
   z-index: 1;
 	transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
@@ -254,6 +268,7 @@ a.button_event:hover {
 }
 
 a.button_station {
+  position: absolute;
   background-color: white;
   z-index: 1;
 	transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);

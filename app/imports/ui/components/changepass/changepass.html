@@ -5,9 +5,7 @@
         justify-items: center;
     }
   </style>
-    {{#if rolesCheck}}
-    {{> not_access}}
-    {{else}}
+  
        <div class="container" id = "changepass" >
         {{#if userUnVerified}}
     {{> verify_form }}
@@ -29,5 +27,5 @@
           {{/if}}
     </div>
    
-    {{/if}}
+
   </template>

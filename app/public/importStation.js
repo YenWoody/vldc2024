@@ -24,15 +24,12 @@ run();
 
 function run() {
 	let files = readDir()
-	console.log(files, "file nefdddddddddd")
 	let p = Promise.resolve()
 	for (i = 0; i < files.length; i++) {
 		let { station, baler, employee, dataloger, sensor } = readFile(files[i]);
 
 		p = p.then(() => {
 			let arr = station.map((elem) => {
-
-				console.log(elem, "dongf 193")
 				return insertstation(elem)
 			})
 			return Promise.all(arr)
@@ -79,7 +76,6 @@ function readFile(path) {
 	var workbook = XLSX.readFile(`${path}`);
 	var sheet_name_list = workbook.SheetNames;
 	var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-	console.log(xlData, "xlfa")
 	let station = []
 	let baler = [];
 	let employee = [];
@@ -196,7 +192,6 @@ function insertemployee(employee) {
 
 
 	})
-	console.log(values, "giá trị")
 	return pool.query(
 		`INSERT INTO "employee"
 		(${s1})
@@ -244,7 +239,6 @@ function insertsensor(sensor) {
 
 
 	})
-	console.log(values, "giá trị")
 	return pool.query(
 		`INSERT INTO "sensor"
 		(${s1})

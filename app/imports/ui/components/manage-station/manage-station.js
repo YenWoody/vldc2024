@@ -60,13 +60,13 @@ Template.manageStation.onRendered(async () => {
       {
         data: null,
         className: "dt-center editor-edit", 
-        defaultContent: '<button class= "btn btn-primary btn-xs"><i class="fa fa-pencil fa-lg "/></button>',
+        defaultContent: '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
         orderable: false,
       },
       {
         data: null,
         className: "dt-center editor-delete",
-        defaultContent: '<button class= "btn btn-danger btn-xs"><i class="fa fa-trash fa-lg"/></button>',
+        defaultContent: '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
         orderable: false,
       }
     ]
@@ -145,13 +145,13 @@ Template.manageStation.onRendered(async () => {
                   {
                     data: null,
                     className: "dt-center editor-edit", 
-                    defaultContent: '<button class= "btn btn-primary btn-xs"><i class="fa fa-pencil fa-lg "/></button>',
+                    defaultContent: '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
                     orderable: false,
                   },
                   {
                     data: null,
                     className: "dt-center editor-delete",
-                    defaultContent: '<button class= "btn btn-danger btn-xs"><i class="fa fa-trash fa-lg"/></button>',
+                    defaultContent: '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
                     orderable: false,
                   }
                 ]
@@ -241,13 +241,13 @@ Template.manageStation.onRendered(async () => {
                   {
                     data: null,
                     className: "dt-center editor-edit", 
-                    defaultContent: '<button class= "btn btn-primary btn-xs"><i class="fa fa-pencil fa-lg "/></button>',
+                    defaultContent: '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
                     orderable: false,
                   },
                   {
                     data: null,
                     className: "dt-center editor-delete",
-                    defaultContent: '<button class= "btn btn-danger btn-xs"><i class="fa fa-trash fa-lg"/></button>',
+                    defaultContent: '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
                     orderable: false,
                   }
                 ]
@@ -313,13 +313,13 @@ Template.manageStation.onRendered(async () => {
                   {
                     data: null,
                     className: "dt-center editor-edit", 
-                    defaultContent: '<button class= "btn btn-primary btn-xs"><i class="fa fa-pencil fa-lg "/></button>',
+                    defaultContent: '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
                     orderable: false,
                   },
                   {
                     data: null,
                     className: "dt-center editor-delete",
-                    defaultContent: '<button class= "btn btn-danger btn-xs"><i class="fa fa-trash fa-lg"/></button>',
+                    defaultContent: '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
                     orderable: false,
                   }
                 ]

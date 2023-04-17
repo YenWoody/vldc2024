@@ -9,6 +9,7 @@
     "@arcgis/core": "^4.23.0",
     "@babel/runtime": "^7.19.4",
     "@esri/calcite-components": "^1.0.0-beta.80",
+    "@fortawesome/fontawesome-free": "^6.4.0",
     "@popperjs/core": "^2.11.4",
     "@turf/buffer": "^6.5.0",
     "@turf/collect": "^6.5.0",
