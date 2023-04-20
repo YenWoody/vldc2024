@@ -1,6 +1,6 @@
 <template name="uploadForm">
   {{#if rolesCheck}} {{> not_access}} {{else}}
-  <div class="container" id="upload">
+  <div class="container shadow" id="upload">
     {{#if userUnVerified}} {{> verify_form }} {{else}}
     <div class="upload-progress">
       {{#with currentUpload}} Uploading <b>{{file.name}}</b>:
@@ -16,7 +16,7 @@
     <div class="list-file" style="
         background-color: white;
     padding: 10px;
-    width: 85%;
+    width: 100%;
     height: 620px;
     border-radius: 10px;
     max-width: 850px;">

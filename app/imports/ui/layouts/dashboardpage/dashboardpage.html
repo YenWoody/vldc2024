@@ -1,40 +1,183 @@
 <template name="dashboardTemplate">
-        <section class="section section--header">
-            {{> nav}}
-        </section>
-        <section class="section section--content">
-            {{#if userUnVerified }}  
-            {{> verify_form }}
-            {{else}}
-           
-            <div class="preloader">
-                <div class="lds-ripple">
-                    <div class="lds-pos"></div>
-                    <div class="lds-pos"></div>
-                </div>
-            </div>
-            <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+  <style>
+    #sidebar {
+      min-width: 270px;
+      max-width: 270px;
+      background: white;
+      color: #fff;
+      -webkit-transition: all 0.3s;
+      -o-transition: all 0.3s;
+      transition: all 0.3s;
+      position: relative;
+    }
+    #sidebar .h6 {
+      color: #fff;
+    }
+    #sidebar.active {
+      margin-left: -270px;
+    }
+    #sidebar h1 {
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 30px;
+    }
+    #sidebar h1 .logo {
+      color: #fff;
+    }
+    #sidebar h1 .logo span {
+      font-size: 14px;
+      color: #44bef1;
+      display: block;
+    }
+    #sidebar ul.components {
+      padding: 0;
+    }
+    #sidebar ul li {
+      font-size: 16px;
+    }
+    #sidebar ul li > ul {
+      margin-left: 10px;
+    }
+    #sidebar ul li > ul li {
+      font-size: 14px;
+    }
+    #sidebar ul li a {
+      padding: 10px 0;
+      display: block;
+      color: #414141;
+      border-bottom: 1px solid rgb(0 0 0 / 10%)
+    }
+    #sidebar ul li a span {
+      color: #414141;
+    }
+    #sidebar ul li a:hover {
+      background: #75757524;
+    }
+    #sidebar ul li.active > a {
+      background: transparent;
+      color: #fff;
+    }
+    #sidebar .custom-menu {
+      display: inline-block;
+      position: absolute;
+      top: 20px;
+      right: 0;
+      z-index: 0;
+      margin-right: -20px;
+      -webkit-transition: 0.3s;
+      -o-transition: 0.3s;
+      transition: 0.3s;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #sidebar .custom-menu {
+        -webkit-transition: none;
+        -o-transition: none;
+        transition: none;
+      }
+    }
+    #sidebar .custom-menu .btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      position: relative;
+    }
+    #sidebar .custom-menu .btn i {
+      margin-right: -40px;
+      font-size: 14px;
+      color: black;
+    }
+    #sidebar .custom-menu .btn.btn-primary {
+      background: transparent;
+      border-color: transparent;
+    }
+    #sidebar .custom-menu .btn.btn-primary:after {
+      z-index: -1;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      content: "";
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+      background: white;
+      border-radius: 10px;
+    }
+    #sidebar .custom-menu .btn.btn-primary:hover,
+    #sidebar .custom-menu .btn.btn-primary:focus {
+      background: transparent !important;
+      border-color: transparent !important;
+    }
+    a[data-toggle="collapse"] {
+      position: relative;
+    }
+    .dropdown-toggle::after {
+      display: block;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+    }
+    #content {
+        background-color: whitesmoke;
+      width: 100%;
+      padding: 0;
+      min-height: 100vh;
+      -webkit-transition: all 0.3s;
+      -o-transition: all 0.3s;
+      transition: all 0.3s;
+    }
+    #sidebarCollapse {
+        z-index: 10;
+    }
+    button {
+    -webkit-transition: 0.3s all ease;
+    -o-transition: 0.3s all ease;
+    transition: 0.3s all ease;
+    }
+    button:hover,
+    button:focus {
+        text-decoration: none !important;
+        outline: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+ 
+    }
+  </style>
+  <section class="section section--header">{{> nav}}</section>
+  <section class="section section--content">
+    {{#if userUnVerified }} {{> verify_form }} {{else}}
+
+    <div class="preloader">
+      <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+      </div>
+    </div>
+    <!-- <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
                 data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
                 <aside class="left-sidebar" data-sidebarbg="skin6">
-                    <!-- Sidebar scroll-->
+               
                     <div class="scroll-sidebar">
-                        <!-- <div class="text-center font-weight-bold p-2" style="color: #54667a;"><h4 style="margin: 0px;">MENU</h4></div> -->
-                        <!-- Sidebar navigation-->
+                        
                         <nav class="sidebar-nav">
                             <ul id="sidebarnav">
-                                <!-- User Profile-->
+                         
                                 <li class="sidebar-item">
                                     <a class="sidebar-link waves-effect waves-dark sidebar-link"
                                         aria-expanded="false" href="/changepass">
                                         <i class="col-3 fa fa-key" aria-hidden="true"></i>
-                                        <span class=" col-9 hide-menu" >Đổi mật khẩu</span>
+                                        <span class=" col-9 " >Đổi mật khẩu</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
                                     <a class="sidebar-link waves-effect waves-dark sidebar-link"
                                         aria-expanded="false" href="/register-event">
                                         <i class="col-3 fa fa-bell" aria-hidden="true"></i>
-                                        <span class=" col-9 hide-menu" >Đăng kí nhận sự kiện động đất</span>
+                                        <span class=" col-9 " >Đăng kí nhận sự kiện động đất</span>
                                     </a>
                                 </li>
                                 {{#if rolesCheck}}
@@ -43,37 +186,37 @@
                                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{pathFor 'upload'}}"
                                         aria-expanded="false">
                                         <i class="fa fa-upload" aria-hidden="true"></i>
-                                        <span class="hide-menu">Tải dữ liệu</span>
+                                        <span class="">Tải dữ liệu</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item" id="manage_user_">
                                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-user'}}"
                                         aria-expanded="false">
                                         <i class="fa fa-users" aria-hidden="true"></i>
-                                        <span class="hide-menu">Quản lí người dùng</span>
+                                        <span class="">Quản lí người dùng</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item" id="manage_station_">
                                     <a class="sidebar-link waves-effect waves-dark sidebar-link"  href = "{{pathFor 'manager-station'}}"
                                         aria-expanded="false">
                                         <i class="fa fa-podcast" aria-hidden="true"></i>
-                                        <span class="hide-menu">Quản lí trạm đo</span>
+                                        <span class="">Quản lí trạm đo</span>
                                     </a>
                                 </li>
                                 <li class="sidebar-item" id="manage_event_">
                                     <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-event'}}"
                                         aria-expanded="false">
                                         <i class="fa fa-object-ungroup" aria-hidden="true"></i>
-                                        <span class="hide-menu">Quản lí sự kiện động đất</span>
+                                        <span class="">Quản lí sự kiện động đất</span>
                                     </a>
                                 </li>
                                 {{/if}}
                             </ul>
         
                         </nav>
-                        <!-- End Sidebar navigation -->
+                     
                     </div>
-                    <!-- End Sidebar scroll-->
+                   
                 </aside>
                 <div class="page-wrapper">
                     <div class="page-breadcrumb bg-white">
@@ -83,20 +226,89 @@
                             </div>
                             
                         </div>
-                        <!-- /.col-lg-12 -->
+                       
                     </div>
                     <div class="container-fluid" id ="thongke" style="background-color: whitesmoke;">
                         {{> yield}}
                     </div>     
                 </div>
-            </div>
-        
-            <script src="plugins/js/custom.js"></script>
-        
-            {{/if}}
-        </section>
-    
+            </div> -->
 
-    {{> footer}}
- 
+    <!--New layout -->
+    <div class="wrapper d-flex align-items-stretch">
+      <nav id="sidebar" class="shadow">
+        <div class="custom-menu">
+          <button type="button" id="sidebarCollapse" class="btn btn-primary">
+            <i class="fa fa-bars"></i>           
+          </button>
+        </div>
+        <div class="p-4">
+          <ul class="list-unstyled components mb-5">
+            
+            <li class="sidebar-item">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                    aria-expanded="false" href="{{pathFor 'changepass'}}">
+                 
+                    <span class="col-1 fa fa-key "></span> Đổi mật khẩu
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                    aria-expanded="false" href="{{pathFor 'register-event'}}">
+                    <span class=" col-1 fa fa-bell" ></span> Đăng kí nhận sự kiện động đất
+                </a>
+            </li>
+            {{#if rolesCheck}} {{else}}
+            <li class="sidebar-item">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{pathFor 'upload'}}"
+                    aria-expanded="false">
+                    
+                    <span class="col-1 fa fa-upload"></span> Tải dữ liệu
+                </a>
+            </li>
+            <li class="sidebar-item" id="manage_user_">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-user'}}"
+                    aria-expanded="false">
+                  
+                    <span class="col-1 fa fa-users"></span> Quản lí người dùng
+                </a>
+            </li>
+            <li class="sidebar-item" id="manage_station_">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link"  href = "{{pathFor 'manager-station'}}"
+                    aria-expanded="false">
+                   
+                    <span class="col-1 fa fa-podcast"></span> Quản lí trạm đo
+                </a>
+            </li>
+            <li class="sidebar-item" id="manage_event_">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-event'}}"
+                    aria-expanded="false">
+                    
+                    <span class="fa fa-globe"></span> Quản lí sự kiện động đất
+                </a>
+            </li>
+            {{/if}}
+          </ul>
+
+        </div>
+      </nav>
+
+      <!-- Page Content  -->
+      <div id="content" class="p-5 pt-3 pb-3 container-fluid">
+        <div class="page-breadcrumb bg-white shadow mb-4 rounded">
+          <div class="row align-items-center">
+            <div class="col-12">
+              <h4 class="page-title" id="dashboard-title">Công cụ quản lí</h4>
+            </div>
+          </div>
+        </div>
+        {{> yield}}
+      </div>
+    </div>
+    <script src="plugins/js/custom.js"></script>
+
+    {{/if}}
+  </section>
+
+  {{> footer}}
 </template>

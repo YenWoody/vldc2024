@@ -36,35 +36,20 @@ Template.dashboardTemplate.helpers({
     }
   });
   Meteor.startup( function () {   
-    $.getScript("/plugins/js/jquery.sparkline.min.js");
     
   });
 Template.dashboardTemplate.onRendered(function() {
   
-    setTimeout(function(){
-    $('#sparklinedash').sparkline([102,109,120,99,110,80,87,74], {
-        type: 'bar',
-        height: '30',
-        barWidth: 9,
-        barSpacing: 10,
-        barColor: '#177dff'
-    });},2000);
-    setTimeout(function(){
-        $('#sparklinedash1').sparkline([102,109,120,99,110,80,87,74], {
-            type: 'bar',
-            height: '30',
-            barWidth: 9,
-            barSpacing: 10,
-            barColor: '#177dff'
-        });},2000);
-    setTimeout(function(){
-            $('#sparklinedash2').sparkline([102,109,120,99,110,80,87,74], {
-                type: 'bar',
-                height: '30',
-                barWidth: 9,
-                barSpacing: 10,
-                barColor: '#177dff'
-            });},2000);
+  var fullHeight = function () {
+    $(".js-fullheight").css("height", $(window).height());
+    $(window).resize(function () {
+        $(".js-fullheight").css("height", $(window).height());
+    });
+  };
+  fullHeight();
+  $("#sidebarCollapse").on("click", function () {
+      $("#sidebar").toggleClass("active");
+  });
 
 
 });

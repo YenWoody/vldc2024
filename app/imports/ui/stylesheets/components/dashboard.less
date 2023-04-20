@@ -2974,19 +2974,7 @@ fieldset:disabled .btn {
   -webkit-box-shadow: none;
   box-shadow: none;
 }
-.btn-primary {
-  color: #000;
-  background-color: #707cd2;
-  border-color: #707cd2;
-  -webkit-box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
-    0 1px 3px rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-.btn-primary:hover {
-  color: #000;
-  background-color: #8590d9;
-  border-color: #7e89d7;
-}
+
 .btn-check:focus + .btn-primary,
 .btn-primary:focus {
   color: #000;
@@ -13308,6 +13296,17 @@ html body .waves-notransition {
   .user-btm-box .h1,
   .user-btm-box h1 {
     font-size: 16px;
+  }
+}
+@media (max-width: 991.98px) {
+  #sidebarCollapse span {
+    display: none;
+  }
+  // #sidebar {
+  //   margin-left: -270px;
+  // }
+  #sidebar.active {
+    margin-left: 0;
   }
 }
 @media (min-width: 768px) {
