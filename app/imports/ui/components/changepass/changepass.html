@@ -1,6 +1,7 @@
 <template name="changepass">
   <style>
     #changepass {
+        border-radius: 10px;
         display: grid;
         justify-items: center;
     }
@@ -8,8 +9,8 @@
   
        <div class="container" id = "changepass" >
         {{#if userUnVerified}}
-    {{> verify_form }}
-    {{else}}
+        {{> verify_form }}
+        {{else}}
         <form class="changepassword-form">
             <h1 class="h3 mb-3 fw-normal">Vui lòng nhập mật khẩu</h1>
         

@@ -45,7 +45,23 @@ const dataUser = await dataUsers();
     { data: 'username' },
     { data: 'emails[0].address' },
     { data: 'emails[0].verified' },
-    { data: "roles" },
+    { data: "roles" ,
+        render : function (data, type) {
+            let color = 'green';
+            if (data === 'admin') {
+                color = 'white';
+                return '<span class="badge bg-danger" style="font-size : 12px;color:' + color + '">' + data + '</span>';
+            } else if (data === 'user') {
+                color = 'white';
+                return '<span class="badge bg-info" style="font-size : 12px;color:' + color + '">' + data + '</span>';
+            }
+
+           
+
+
+      
+        },
+    },
     { data: "createdAt" },
     {
       data: null,
@@ -102,7 +118,17 @@ $('#data_users').on('click', 'td.editor-edit', function (e) {
                 { data: 'username' },
                 { data: 'emails[0].address' },
                 { data: 'emails[0].verified' },
-                { data: "roles" },
+                { data: "roles" ,
+                    render : function (data, type) {
+                        let color = 'green';
+                        if (data === 'admin') {
+                            color = 'red';
+                        } else if (data === 'user') {
+                            color = 'orange';
+                        }
+                        return '<span style="color:' + color + '">' + data + '</span>';
+                  },
+              },
                 { data: "createdAt" },
                 {
                   data: null,
@@ -182,7 +208,17 @@ $('#data_users').on('click', 'td.editor-delete', function (e) {
               { data: 'username' },
               { data: 'emails[0].address' },
               { data: 'emails[0].verified' },
-              { data: "roles" },
+              { data: "roles" ,
+                    render : function (data, type) {
+                        let color = 'green';
+                        if (data === 'admin') {
+                            color = 'red';
+                        } else if (data === 'user') {
+                            color = 'orange';
+                        }
+                        return '<span style="color:' + color + '">' + data + '</span>';
+                  },
+              },
               { data: "createdAt" },
               {
                 data: null,
@@ -431,7 +467,17 @@ Template.manageUsers.events({
                   { data: 'username' },
                   { data: 'emails[0].address' },
                   { data: 'emails[0].verified' },
-                  { data: "roles" },
+                  { data: "roles" ,
+                    render : function (data, type) {
+                        let color = 'green';
+                        if (data === 'admin') {
+                            color = 'red';
+                        } else if (data === 'user') {
+                            color = 'orange';
+                        }
+                        return '<span style="color:' + color + '">' + data + '</span>';
+                  },
+                  },
                   { data: "createdAt" },
                   {
                     data: null,

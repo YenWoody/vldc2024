@@ -15,7 +15,8 @@
             <h3 class="title">
                 <span>Option</span>
             </h3>
-            <li class="esri-layer-list__item">
+            <!-- Lọc Trạm theo Network-->
+            <!-- <li class="esri-layer-list__item">
                 <label for="relationship-select">Network:</label>
                 <select id="relationship-select" class="options">
                     <option value="all" selected >Chọn</option>
@@ -23,7 +24,7 @@
                     <option value="RM">RM</option>
                     </select>
                 <br /><br />
-            </li>
+            </li> -->
            <li class="esri-layer-list__item">
                 <label for="depthSlider" style="padding-bottom: 15px;" >Depth:</label>
                 <div id="depthSlider" style="height:60px!important"></div>
@@ -39,12 +40,17 @@
                 <br /><br />
             </li>
             <button class="esri-button" id="clearFilter" type="button" value="Reset">
-                Clear filter
+                Xóa bộ lọc
             </button>
             
         </div>
 
         
     </div>
-    <script src="plugins/js/custom.js"></script>
+<script> 
+// document.getElementById("viewDiv").addEventListener("load", myFunction);
+
+//     function myFunction() {
+//       console.log("tải xong")
+//     }</script>
 </template>

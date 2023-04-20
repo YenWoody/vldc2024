@@ -899,7 +899,11 @@ Template.map_station.onRendered(() => {
         document.getElementById("clearFilter").addEventListener("click", clearFilter);
         function clearFilter() {
             layer.filter = { where: "id = -1" };
-            highlightSelect.remove();
+            floodLayerView.filter = null;
+            if (highlightSelect!= undefined){
+            highlightSelect.remove();           
+            }
+            $("#relationship-select option").prop("selected", false);
         }
         // Datatable 
         let query = layerStations.createQuery();
@@ -1078,7 +1082,10 @@ Template.map_station.onRendered(() => {
         });
         view.ui.add(ccWidget, "manual");
         ccWidget.multipleConversions = false;
-        document.getElementById("infoDiv").style.display = "block";
+        view.when().then(function(){
+            // the webmap successfully loaded
+            $(".preloader").fadeOut();
+          })
 
     }).catch(err => {
         // handle any errors

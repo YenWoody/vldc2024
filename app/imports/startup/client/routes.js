@@ -17,10 +17,10 @@ import '../../ui/components/manage-user/manage-users';
 import '../../ui/components/manage-station/manage-station';
 import '../../ui/components/manage-event/manage-event';
 // Set up all routes in the app
-FlowRouter.route('/event', {
+FlowRouter.route('/main', {
   name: 'App.event',
   action() {
-    this.render('BodyTemplate', 'event');
+    this.render('BodyTemplate', 'home');
   },
 });
 FlowRouter.route('/dashboard', {
@@ -37,13 +37,13 @@ FlowRouter.route('/manager-user', {
 });
 
 FlowRouter.route('/manager-station', {
-  name: 'App.event',
+  name: 'App.managerstation',
   action() {
     this.render('dashboardTemplate', 'manageStation');
   },
 });
 FlowRouter.route('/manager-event', {
-  name: 'App.event',
+  name: 'App.managerevent',
   action() {
     this.render('dashboardTemplate', 'manageEvent');
   },
@@ -51,7 +51,7 @@ FlowRouter.route('/manager-event', {
 FlowRouter.route('/', {
   name: 'App.home',
   action() {
-    this.render('BodyTemplate', 'home');
+    this.render('BodyTemplate', 'event');
   },
 });
 /// Reload the page when the route changes

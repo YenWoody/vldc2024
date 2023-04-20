@@ -7,7 +7,6 @@ import fs from 'fs';
 import pg from 'pg';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { Roles } from 'meteor/alanning:roles';
 import { Email } from 'meteor/email';
 // server.js
 const PG_HOST = 'localhost'
@@ -81,10 +80,6 @@ Meteor.startup(function () {
         </tr>
     </table>`;
     };
-    //   Accounts.emailTemplates.resetPassword.text = (user, url) =>{
-
-    //   return `Chào bạn ${user.username} Để khôi phục mật khẩu, bạn vui lòng click vào đường link phía dưới:  ${url}`
-    // }
     Accounts.emailTemplates.resetPassword.subject = () => {
         return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`
     }
@@ -116,7 +111,27 @@ Meteor.startup(function () {
       </table>`
         }
     };
+    const allUsers =  Meteor.users.find({}).fetch()
 
+    if ( Meteor.users.find().count() == 0 ) {
+        Accounts.createUser({
+            username: 'admin',
+            email : 'admin@gmail.com',
+            password: 'admin123@',
+            roles : 'admin',
+        });
+        const idAdmin = Meteor.users.findOne({username: 'admin'})
+        console.log(idAdmin._id)
+        Meteor.users.update(idAdmin._id, {
+            $set: {
+                roles: 'admin',
+                emails: [
+                    { address: 'adminMail', verified: true }
+                  ],
+            }
+            
+        });
+    }
 });
 Meteor.methods({
     'findUsers': function () {
@@ -228,21 +243,6 @@ Meteor.methods({
             WHERE "key" = ${data.key};`
         )
 
-    },
-    'updateRoles': function (targetUserId, roles, scope) {
-        check(targetUserId, String);
-        check(roles, [String]);
-        check(scope, String);
-
-        const loggedInUser = Meteor.user();
-
-        if (!loggedInUser ||
-            !Roles.userIsInRole(loggedInUser,
-                ['manage-users', 'support-staff'], scope)) {
-            throw new Meteor.Error('access-denied', "Access denied");
-        }
-
-        Roles.setUserRoles(targetUserId, roles, scope);
     },
     'layerEvent': () => {
 
@@ -540,17 +540,6 @@ Meteor.methods({
             }
             
         });
-        // Accounts.onLogin(function (user) {
-        //     if (!user.user.publications) {
-        //         Meteor.users.update(id, {
-        //             $set: {
-        //                 roles: role
-        //             }
-                    
-        //         });
-                
-        //     }
-        // })
        
     },
     'register-event': (id, email,magnitude) => {

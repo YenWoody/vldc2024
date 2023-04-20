@@ -146,7 +146,13 @@ Template.map.onRendered(() => {
           });
         }
         // Fetch Data From Iris
-         const response = await fetch("https://service.iris.edu/fdsnws/event/1/query?starttime=2023-04-12&minmagnitude=1&limit=500&output=text")
+        var d = new Date();
+        const getDate = [
+          d.getFullYear(),
+          ('0' + (d.getMonth() + 1)).slice(-2),
+          ('0' + d.getDate()).slice(-2)
+        ].join('-');
+         const response = await fetch(`https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=100&output=text`)
          const dataIris = await response.text()
         const dtIris = [];
         dataIris.split(/\r?\n/).forEach((lines) => {
@@ -164,36 +170,7 @@ Template.map.onRendered(() => {
           });
         });
         const waitDataIris = await Promise.all(dtIris);
-        
-        // End
-        // Fetch Data From USGS
-        // function getDataUSGS() {
-        //   return new Promise(function (resolve, reject) {
-        //     fetch(
-        //       "https://service.iris.edu/fdsnws/event/1/query?starttime=2023-04-14&minmagnitude=2&limit=1000&output=text"
-        //     ).then((res) => {
-        //       resolve(res.text());
-        //     });
-        //   });
-        // }
-        // const dataUSGS = await getDataUSGS();
-
-        // const dtUSGS = [];
-        // dataUSGS.split(/\r?\n/).forEach((lines) => {
-        //   const line = lines.split(/[|]+/g);
-        //   dtUSGS.push({
-        //     time: line[1],
-        //     lat: Number(line[2]),
-        //     long: Number(line[3]),
-        //     depth: line[4],
-        //     catalog: line[6],
-        //     magtype: line[9],
-        //     magnitude: line[10],
-        //     location: line[12],
-        //   });
-        // });
-        // const waitDataUSGS = await Promise.all(dtUSGS);
-        // End
+      
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
         const dataStations = await dataStation();
@@ -238,7 +215,7 @@ Template.map.onRendered(() => {
         const map = new Map({
           basemap: weMap,
         });
-        let floodLayerView;
+        // let floodLayerView;
         let highlightSelect;
         const view = new MapView({
           map: map,
@@ -259,21 +236,21 @@ Template.map.onRendered(() => {
 
         // end init view
         // Filter by Attributes
-        const networkElement = document.getElementById("relationship-select");
-        // click event handler for network choices
-        networkElement.addEventListener("click", filterByNetwork);
-        function filterByNetwork(event) {
-          let selectedNetWork =
-            event.target.selectedOptions[0].getAttribute("value");
+        // Lọc trạm qua Network
+        // const networkElement = document.getElementById("relationship-select");
+        // networkElement.addEventListener("click", filterByNetwork);
+        // function filterByNetwork(event) {
+        //   let selectedNetWork =
+        //     event.target.selectedOptions[0].getAttribute("value");
 
-          if (selectedNetWork === "all") {
-            return (floodLayerView.filter = null);
-          } else {
-            floodLayerView.filter = {
-              where: `network LIKE '%${selectedNetWork}%'`,
-            };
-          }
-        }
+        //   if (selectedNetWork === "all") {
+        //     return (floodLayerView.filter = null);
+        //   } else {
+        //     floodLayerView.filter = {
+        //       where: `network LIKE '%${selectedNetWork}%'`,
+        //     };
+        //   }
+        // }
 
         const defaultSym = {
           type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
@@ -283,12 +260,13 @@ Template.map.onRendered(() => {
             width: 1,
           },
         };
-        const iconstation = {
-          type: "picture-marker", // autocasts as new PictureMarkerSymbol()
-          url: "/img/broadcast1.png",
-          width: "16px",
-          height: "16px",
-        };
+        //Trạm
+        // const iconstation = {
+        //   type: "picture-marker", // autocasts as new PictureMarkerSymbol()
+        //   url: "/img/broadcast1.png",
+        //   width: "16px",
+        //   height: "16px",
+        // };
         const renderer = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym,
@@ -431,10 +409,11 @@ Template.map.onRendered(() => {
             },
           ],
         };
-        const renderstation = {
-          type: "simple", // autocasts as new SimpleRenderer()
-          symbol: iconstation,
-        };
+        // Trạm
+        // const renderstation = {
+        //   type: "simple", // autocasts as new SimpleRenderer()
+        //   symbol: iconstation,
+        // };
         // Start
         // Data from Database
         const dataGeojsonEvents = [];
@@ -956,16 +935,17 @@ Template.map.onRendered(() => {
             },
           },
         });
-        const layerStations = new GeoJSONLayer({
-          url: url_station,
-          popupTemplate: stationPopupTemplate,
-          listMode: "show",
-          renderer: renderstation,
-          title: "Trạm",
-          visible: true,
-          labelsVisible: true,
-          popupEnabled: true,
-        });
+        // Thêm Layer Trạm
+        // const layerStations = new GeoJSONLayer({
+        //   url: url_station,
+        //   popupTemplate: stationPopupTemplate,
+        //   listMode: "show",
+        //   renderer: renderstation,
+        //   title: "Trạm",
+        //   visible: true,
+        //   labelsVisible: true,
+        //   popupEnabled: true,
+        // });
 
         //End
 
@@ -1020,7 +1000,7 @@ Template.map.onRendered(() => {
           map.addMany([
             layerEvent,
             layerEventStaions,
-            layerStations,
+            // layerStations,
             layerIris,
           ]);
           view.whenLayerView(layerEvent).then(function (lv) {
@@ -1148,46 +1128,17 @@ Template.map.onRendered(() => {
               depthSlider.values = [0, 100];
               magnitudeSlider.values = [0, 10];
               timeSlider.values = [start, end];
-              highlightSelect.remove();
+              if (highlightSelect!= undefined){
+                highlightSelect.remove();
+                }
+                // $("#relationship-select option").prop("selected", false);
             }
             // Datatable Event
           });
-          // view.whenLayerView(eventsLayer).then((layerView) => {
-          //     flView = layerView;
-          //                 // watch for time slider timeExtent change
-          //     timeSlider.watch("timeExtent", function () {
-          //        updateFilter();
-          //     });
-
-          //     depthSlider.on("thumb-drag", function() {
-          //         updateFilter();
-          //     });
-          //     magnitudeSlider.on("thumb-drag", function() {
-          //         updateFilter();
-          //     });
-
-          //     const updateFilter = function() {
-          //         depthMin = depthSlider.values[0];
-          //         depthMax = depthSlider.values[1];
-          //         magnitudeMin = magnitudeSlider.values[0];
-          //         magnitudeMax = magnitudeSlider.values[1];
-          //         let conditions = [];
-          //         if (depthSlider) {
-          //           conditions.push(`(depth >= ${depthMin} and depth <= ${depthMax})`);
-          //         }
-          //         if (magnitudeSlider) {
-          //           conditions.push(`(ms >= ${magnitudeMin} and ms <= ${ magnitudeMax})`);
-          //         }
-          //         if(timeSlider){
-          //             conditions.push(`(time > ${timeSlider.timeExtent.start.getTime()} AND time < ${timeSlider.timeExtent.end.getTime()})`);
-          //         }
-          //         flView.filter = conditions.length > 0 ? {where: conditions.join("AND")} : null;
-          //       };
-
+         
+          // view.whenLayerView(layerStations).then((layerView) => {
+          //   floodLayerView = layerView;
           // });
-          view.whenLayerView(layerStations).then((layerView) => {
-            floodLayerView = layerView;
-          });
         });
         // Datatable
         let query = layerEvent.createQuery();
@@ -1301,8 +1252,13 @@ Template.map.onRendered(() => {
         });
         view.ui.add(ccWidget, "manual");
         ccWidget.multipleConversions = false;
-        document.getElementById("infoDiv").style.display = "block";
+        // document.getElementById("infoDiv").style.display = "block";
+       view.when().then(function(){
+        // the webmap successfully loaded
+        $(".preloader").fadeOut();
+      })
       }
+      
     )
     .catch((err) => {
       // handle any errors
