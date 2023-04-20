@@ -46,8 +46,11 @@ Template.map_station.onRendered(() => {
         'esri/layers/WebTileLayer',
         'esri/widgets/LayerList',
         'esri/popup/content/CustomContent',
-        "esri/symbols/IconSymbol3DLayer",
-        "esri/layers/support/LabelClass"
+        'esri/symbols/IconSymbol3DLayer',
+        'esri/layers/support/LabelClass',
+        'esri/widgets/Sketch',
+        "esri/layers/GraphicsLayer",
+        "esri/layers/support/FeatureFilter",
     ]).then(async ([
         Map,
         MapView,
@@ -70,7 +73,10 @@ Template.map_station.onRendered(() => {
         LayerList,
         CustomContent,
         IconSymbol3DLayer,
-        LabelClass
+        LabelClass,
+        Sketch,
+        GraphicsLayer,
+        FeatureFilter
     ]) => {
         function dataEventStation() {
             return new Promise(function (resolve, reject) {
@@ -181,9 +187,12 @@ Template.map_station.onRendered(() => {
         /**
          * init view
          */
+        const graphicsLayer = new GraphicsLayer({
+            listMode : 'hide'
+        });
         const map = new Map({
             basemap: weMap,
-
+            layers: [graphicsLayer]
         });
         let floodLayerView;
         let highlightSelect;
@@ -761,7 +770,7 @@ Template.map_station.onRendered(() => {
             }
         })
         const stationPopupTemplate = {
-            "title": "Station",
+            "title": "Thông tin Trạm",
             content: [{
                 "type": "fields",
                 "fieldInfos": [
@@ -833,7 +842,7 @@ Template.map_station.onRendered(() => {
             }, contentEmployee, contentDataloger, contentBaler, contentSensor]
         }
         const eventPopupTemplate = {
-            "title": "Event",
+            title: "Sự kiện động đất",
             content: [contentEventStation, contentEvent],
         }
         // create new geojson layer using the blob url
@@ -867,17 +876,57 @@ Template.map_station.onRendered(() => {
             popupEnabled: true,
 
         });
-
+        // Sketch
+        const sketch = new Sketch({
+            layer: graphicsLayer,
+            view: view,
+            availableCreateTools: ["polygon", "rectangle", "circle"]
+          });
+          
+          let sketchGeometry = null
+          sketch.on("create", function (event) {
+            // Only once the polygon is completed
+            if (event.state === "complete") {
+                sketchGeometry = event.graphic.geometry;
+                updateFilter();
+            }
+          });
+          sketch.on("update", function (event) {
+            // Only once the polygon is completed
+          const eventInfo = event.toolEventInfo;
+          // update the filter every time the user moves the filtergeometry
+          if (
+            eventInfo &&
+            eventInfo.type.includes("stop")
+          ) {
+            sketchGeometry = event.graphics[0].geometry;
+            updateFilter();
+          }
+          });
+          function updateFilter() {
+            floodLayerView.filter =  new FeatureFilter({
+            geometry: sketchGeometry,
+              spatialRelationship: "contains"
+            });
+          }
         // LayerList
         const layerList = new LayerList({
             container: document.createElement("div"),
             view: view
         });
+        const layerSketchExpand = new Expand({
+            expandIconClass: "esri-icon-edit",
+            view: view,
+            expandTooltip : "Công cụ vẽ",
+            content: sketch
+        });
         const layerListExpand = new Expand({
             expandIconClass: "esri-icon-layer-list",
             view: view,
+            expandTooltip : "Danh sách lớp dữ liệu",
             content: layerList
         });
+        view.ui.add(layerSketchExpand, "top-right");
         view.ui.add(layerListExpand, "top-right");
         // wait till the layer view is loaded
         let layerView;
@@ -1053,17 +1102,14 @@ Template.map_station.onRendered(() => {
         const bgExpand = new Expand({
             view: view,
             content: basemapGallery,
+            expandTooltip: "Danh sách bản đồ nền",
             group: "top-right"
         });
-        view.on("click", (event) => {
-
-        });
-
         const legendExpand = new Expand({
             view: view,
             content: legendDiv,
             expandIconClass: 'esri-icon-legend',
-            expandTooltip: 'Legend'
+            expandTooltip: 'Chú thích'
         });
         view.ui.add(legendExpand, {
             position: "bottom-left"
@@ -1071,6 +1117,8 @@ Template.map_station.onRendered(() => {
 
         const expand = new Expand({
             view: view,
+            expandIconClass: "esri-icon-filter",
+            expandTooltip: "Bộ lọc Trạm",
             content: document.getElementById("infoDiv"),
             group: "top-right"
         });

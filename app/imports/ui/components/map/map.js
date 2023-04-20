@@ -992,6 +992,7 @@ Template.map.onRendered(() => {
           expandIconClass: "esri-icon-layer-list",
           view: view,
           content: layerList,
+          expandTooltip : "Danh sách lớp dữ liệu"
         });
         view.ui.add(layerListExpand, "top-right");
         // wait till the layer view is loaded
@@ -1224,6 +1225,7 @@ Template.map.onRendered(() => {
 
         const bgExpand = new Expand({
           view: view,
+          expandTooltip: "Danh sách bản đồ nền",
           content: basemapGallery,
           group: "top-right",
         });
@@ -1232,8 +1234,9 @@ Template.map.onRendered(() => {
         const legendExpand = new Expand({
           view: view,
           content: legendDiv,
+          
           expandIconClass: "esri-icon-legend",
-          expandTooltip: "Legend",
+          expandTooltip: "Chú thích",
         });
         view.ui.add(legendExpand, {
           position: "bottom-left",
@@ -1241,6 +1244,8 @@ Template.map.onRendered(() => {
 
         const expand = new Expand({
           view: view,
+          expandIconClass: "esri-icon-filter",
+          expandTooltip: "Bộ lọc sự kiện",
           content: document.getElementById("infoDiv"),
           group: "top-right",
         });
