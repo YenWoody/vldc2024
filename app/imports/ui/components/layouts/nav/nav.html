@@ -56,6 +56,11 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav" style=" padding-left: 10px;">
+                    <a href="/" class="nav-link "><span>Trang chủ</span></a>
+                    <a href="/station" class="nav-link "><span>Trạm đo động đất</span></a>
+                 
+                </ul>
                 <form class="d-flex">
                     <div class="currentUser_div" id="currentUser_div">
                         <div style="display: grid; justify-items: center;"><b
@@ -77,7 +82,27 @@
             <div class="navbar-brand">
                 <a href="/" class="logo"><img class ="head-logo"  src="./assets/img/logo.png" alt="logo"></a>
             </div>
+            <!-- <span class="text-white">Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</span> -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
             
+                <form class="d-flex">
+                        <!-- start -->
+            <div class="back color-1">
+                <div class="row columns">
+                    <ul class="menu align-center expanded text-left hover-nav-link pt-2">
+                        <li><a href="/login" data-hover="Đăng nhập"><span>Đăng nhập</span></a></li>
+                        <li><a href="/register" data-hover="Đăng ký"><span>Đăng ký</span></a></li>
+                    </ul>
+                </div>
+            </div>
+	                <!-- // end -->
+                </form>
+            </div>
         </div>
     </nav>
     {{/if}}

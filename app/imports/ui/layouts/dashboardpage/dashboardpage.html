@@ -60,7 +60,6 @@
     #sidebar .custom-menu {
       display: inline-block;
       position: absolute;
-      top: 20px;
       right: 0;
       z-index: 0;
       margin-right: -20px;
@@ -157,87 +156,10 @@
         <div class="lds-pos"></div>
       </div>
     </div>
-    <!-- <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
-                data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
-                <aside class="left-sidebar" data-sidebarbg="skin6">
-               
-                    <div class="scroll-sidebar">
-                        
-                        <nav class="sidebar-nav">
-                            <ul id="sidebarnav">
-                         
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                        aria-expanded="false" href="/changepass">
-                                        <i class="col-3 fa fa-key" aria-hidden="true"></i>
-                                        <span class=" col-9 " >Đổi mật khẩu</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link"
-                                        aria-expanded="false" href="/register-event">
-                                        <i class="col-3 fa fa-bell" aria-hidden="true"></i>
-                                        <span class=" col-9 " >Đăng kí nhận sự kiện động đất</span>
-                                    </a>
-                                </li>
-                                {{#if rolesCheck}}
-                                {{else}}
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{pathFor 'upload'}}"
-                                        aria-expanded="false">
-                                        <i class="fa fa-upload" aria-hidden="true"></i>
-                                        <span class="">Tải dữ liệu</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item" id="manage_user_">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-user'}}"
-                                        aria-expanded="false">
-                                        <i class="fa fa-users" aria-hidden="true"></i>
-                                        <span class="">Quản lí người dùng</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item" id="manage_station_">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link"  href = "{{pathFor 'manager-station'}}"
-                                        aria-expanded="false">
-                                        <i class="fa fa-podcast" aria-hidden="true"></i>
-                                        <span class="">Quản lí trạm đo</span>
-                                    </a>
-                                </li>
-                                <li class="sidebar-item" id="manage_event_">
-                                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-event'}}"
-                                        aria-expanded="false">
-                                        <i class="fa fa-object-ungroup" aria-hidden="true"></i>
-                                        <span class="">Quản lí sự kiện động đất</span>
-                                    </a>
-                                </li>
-                                {{/if}}
-                            </ul>
-        
-                        </nav>
-                     
-                    </div>
-                   
-                </aside>
-                <div class="page-wrapper">
-                    <div class="page-breadcrumb bg-white">
-                        <div class="row align-items-center">
-                            <div class="col-12">
-                                <h4 class="page-title " id ="dashboard-title" >Công cụ quản lí</h4>
-                            </div>
-                            
-                        </div>
-                       
-                    </div>
-                    <div class="container-fluid" id ="thongke" style="background-color: whitesmoke;">
-                        {{> yield}}
-                    </div>     
-                </div>
-            </div> -->
-
     <!--New layout -->
     <div class="wrapper d-flex align-items-stretch">
       <nav id="sidebar" class="shadow">
-        <div class="custom-menu">
+        <div class="custom-menu mt-3">
           <button type="button" id="sidebarCollapse" class="btn btn-primary">
             <i class="fa fa-bars"></i>           
           </button>
