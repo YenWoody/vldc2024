@@ -1,7 +1,7 @@
 <template name="dashboardTemplate">
   <style>
     #sidebar {
-      min-width: 270px;
+      /* min-width: 270px; */
       max-width: 270px;
       background: white;
       color: #fff;
@@ -42,10 +42,11 @@
       font-size: 14px;
     }
     #sidebar ul li a {
-      padding: 10px 0;
-      display: block;
-      color: #414141;
-      border-bottom: 1px solid rgb(0 0 0 / 10%)
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #414141;
+    border-bottom: 1px solid rgb(0 0 0 / 10%);
     }
     #sidebar ul li a span {
       color: #414141;
@@ -171,13 +172,13 @@
                 <a class="sidebar-link waves-effect waves-dark sidebar-link"
                     aria-expanded="false" href="{{pathFor 'changepass'}}">
                  
-                    <span class="col-1 fa fa-key "></span> Đổi mật khẩu
+                    <span class="fa fa-key me-2"></span>Đổi mật khẩu
                 </a>
             </li>
             <li class="sidebar-item">
                 <a class="sidebar-link waves-effect waves-dark sidebar-link"
                     aria-expanded="false" href="{{pathFor 'register-event'}}">
-                    <span class=" col-1 fa fa-bell" ></span> Đăng kí nhận sự kiện động đất
+                    <span class="fa fa-bell me-2" ></span>Đăng kí nhận sự kiện động đất
                 </a>
             </li>
             {{#if rolesCheck}} {{else}}
@@ -185,28 +186,28 @@
                 <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{pathFor 'upload'}}"
                     aria-expanded="false">
                     
-                    <span class="col-1 fa fa-upload"></span> Tải dữ liệu
+                    <span class="fa fa-upload me-2"></span>Tải dữ liệu
                 </a>
             </li>
             <li class="sidebar-item" id="manage_user_">
                 <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-user'}}"
                     aria-expanded="false">
                   
-                    <span class="col-1 fa fa-users"></span> Quản lí người dùng
+                    <span class=" fa fa-users me-2"></span>Quản lí người dùng
                 </a>
             </li>
             <li class="sidebar-item" id="manage_station_">
                 <a class="sidebar-link waves-effect waves-dark sidebar-link"  href = "{{pathFor 'manager-station'}}"
                     aria-expanded="false">
                    
-                    <span class="col-1 fa fa-podcast"></span> Quản lí trạm đo
+                    <span class=" fa fa-podcast me-2"></span>Quản lí trạm đo
                 </a>
             </li>
             <li class="sidebar-item" id="manage_event_">
                 <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-event'}}"
                     aria-expanded="false">
                     
-                    <span class="fa fa-globe"></span> Quản lí sự kiện động đất
+                    <span class="fa fa-globe me-2"></span>Quản lí sự kiện động đất
                 </a>
             </li>
             {{/if}}

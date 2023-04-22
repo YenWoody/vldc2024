@@ -80,6 +80,7 @@ Template.map.onRendered(() => {
                 if (error) {
                   reject(error);
                 }
+                console.log(resulteventStation)
                 resolve(resulteventStation.rows);
               }
             );
