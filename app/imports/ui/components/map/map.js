@@ -19,9 +19,6 @@ Template.map.onCreated(() => {
   datatables(window, $);
   datatables_bs(window, $);
 });
-Meteor.startup(function () {
-  $.getScript("/plugins/js/jquery.sparkline.min.js");
-});
 Template.map.onRendered(() => {
   loadModules([
     "esri/Map",
@@ -46,6 +43,7 @@ Template.map.onRendered(() => {
     "esri/popup/content/CustomContent",
     "esri/symbols/IconSymbol3DLayer",
     "esri/layers/support/LabelClass",
+    "dojo/domReady!"
   ])
     .then(
       async ([
@@ -72,6 +70,34 @@ Template.map.onRendered(() => {
         IconSymbol3DLayer,
         LabelClass,
       ]) => {
+        function dataRealTimes() {
+          return new Promise(function (resolve, reject) {
+            Meteor.call(
+              "dataRealTime",
+              function (error, resulteventStation) {
+                if (error) {
+                  reject(error);
+                }
+             
+                resolve(resulteventStation.rows);
+              }
+            );
+          });
+        }
+        function dataRealTimeEvents() {
+          return new Promise(function (resolve, reject) {
+            Meteor.call(
+              "dataRealTimeEvent",
+              function (error, resulteventStation) {
+                if (error) {
+                  reject(error);
+                }
+             
+                resolve(resulteventStation.rows);
+              }
+            );
+          });
+        }
         function dataEventStation() {
           return new Promise(function (resolve, reject) {
             Meteor.call(
@@ -80,52 +106,13 @@ Template.map.onRendered(() => {
                 if (error) {
                   reject(error);
                 }
-                console.log(resulteventStation)
+             
                 resolve(resulteventStation.rows);
               }
             );
           });
         }
-        function dataStation() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataStation", function (error, resultdataStation) {
-              if (error) {
-                reject(error);
-              }
-              resolve(resultdataStation.rows);
-            });
-          });
-        }
-        function dataBalers() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataBaler", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        function dataDatalogers() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataDataloger", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        function dataSensors() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataSensor", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
+
         function dataEvent() {
           return new Promise(function (resolve, reject) {
             Meteor.call("layerEvent", function (error, resultEvent) {
@@ -136,22 +123,13 @@ Template.map.onRendered(() => {
             });
           });
         }
-        function dataEmployes() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataEmployee", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
+
         // Fetch Data From Iris
         var d = new Date();
         const getDate = [
           d.getFullYear(),
           ('0' + (d.getMonth() + 1)).slice(-2),
-          ('0' + d.getDate()).slice(-2)
+          ('0' + (d.getDate()-1)).slice(-2)
         ].join('-');
          const response = await fetch(`https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=100&output=text`)
          const dataIris = await response.text()
@@ -171,14 +149,10 @@ Template.map.onRendered(() => {
           });
         });
         const waitDataIris = await Promise.all(dtIris);
-      
+        const dataRealTimeEvent = await dataRealTimeEvents();
+        const dataRealTime = await dataRealTimes();
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
-        const dataStations = await dataStation();
-        const dataEmployee = await dataEmployes();
-        const dataBaler = await dataBalers();
-        const dataDataloger = await dataDatalogers();
-        const dataSensor = await dataSensors();
 
         /**
          * init basemap
@@ -417,36 +391,24 @@ Template.map.onRendered(() => {
         // };
         // Start
         // Data from Database
+        const dataGeojsonRealTime = [];
+        const dataGeojsonRealTimeEvent = [];
         const dataGeojsonEvents = [];
         const dataGeojsonEventStations = [];
-        const dataGeojsonStations = [];
-        const dataGeojsonEmployee = [];
-        const dataGeojsonBaler = [];
-        const dataGeojsonDataloger = [];
-        const dataGeojsonSensor = [];
-        const dataGeojsonIris = [];
+        const dataGeojsonIris = []
         const eventGeojson = dataEvents.filter((e) => {
           return !(e.geometry === null);
         });
+        const realTimeGeojson = dataRealTime.filter((e)=>{
+          return !(e.lat === null && e.lon === null );
 
-        const stationsGeojson = dataStations.filter((e) => {
-          return !(e.geometry === null);
+        })   
+        realTimeGeojson.map((e) => {
+          dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
         });
-        dataEmployee.map((e) => {
-          dataGeojsonEmployee.push(turf.point([1, 1], e));
-        });
-        dataBaler.map((e) => {
-          dataGeojsonBaler.push(turf.point([2, 2], e));
-      
-        });
-        dataDataloger.map((e) => {
-          dataGeojsonDataloger.push(turf.point([3, 3], e));
-         
-        });
-        dataSensor.map((e) => {
-          dataGeojsonSensor.push(turf.point([4, 4], e));
-       
-        });
+        dataRealTimeEvent.map((e)=>{
+          dataGeojsonRealTimeEvent.push(turf.point([0, 0], e));
+        })
         eventGeojson.map((e) => {
           e.datetime = e.datetime.getTime();
           dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
@@ -454,9 +416,6 @@ Template.map.onRendered(() => {
         });
         dataEventStations.map((e) => {
           dataGeojsonEventStations.push(turf.point([0, 0], e));
-        });
-        stationsGeojson.map((e) => {
-          dataGeojsonStations.push(turf.point([e.long, e.lat], e));
         });
         waitDataIris.map((e) => {
           if (isNaN(e.long) === false) {
@@ -469,11 +428,8 @@ Template.map.onRendered(() => {
         let collection_events_station = turf.featureCollection(
           dataGeojsonEventStations
         );
-        let collection_station = turf.featureCollection(dataGeojsonStations);
-        let collection_employee = turf.featureCollection(dataGeojsonEmployee);
-        let collection_baler = turf.featureCollection(dataGeojsonBaler);
-        let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
-        let collection_sensor = turf.featureCollection(dataGeojsonSensor);
+        let collection_realtime = turf.featureCollection(dataGeojsonRealTime);
+        let collection_realtimeEvent = turf.featureCollection(dataGeojsonRealTimeEvent);
         let collection_dataIris = turf.featureCollection(dataGeojsonIris);
         // create a new blob from geojson featurecollection
         const blob = new Blob([JSON.stringify(collection)], {
@@ -488,33 +444,25 @@ Template.map.onRendered(() => {
             type: "application/json",
           }
         );
-        const blob_station = new Blob([JSON.stringify(collection_station)], {
-          type: "application/json",
-        });
-        const blob_employee = new Blob([JSON.stringify(collection_employee)], {
-          type: "application/json",
-        });
-        const blob_baler = new Blob([JSON.stringify(collection_baler)], {
-          type: "application/json",
-        });
-        const blob_dataloger = new Blob(
-          [JSON.stringify(collection_dataloger)],
+        const blob_realTime = new Blob(
+          [JSON.stringify(collection_realtime)],
           {
             type: "application/json",
           }
         );
-        const blob_sensor = new Blob([JSON.stringify(collection_sensor)], {
-          type: "application/json",
-        });
+        const blob_realTimeEvent = new Blob(
+          [JSON.stringify(collection_realtimeEvent)],
+          {
+            type: "application/json",
+          }
+        );
+      
         // URL reference to the blob
         const url = URL.createObjectURL(blob);
         const url_event_station = URL.createObjectURL(blob_event_station);
-        const url_station = URL.createObjectURL(blob_station);
-        const url_employee = URL.createObjectURL(blob_employee);
-        const url_baler = URL.createObjectURL(blob_baler);
-        const url_dataloger = URL.createObjectURL(blob_dataloger);
-        const url_sensor = URL.createObjectURL(blob_sensor);
         const url_dataIris = URL.createObjectURL(blob_dataIris);
+        const url_realTime = URL.createObjectURL (blob_realTime)
+        const url_realTimeEvent = URL.createObjectURL (blob_realTimeEvent)
         // Khởi tạo layer
         const layerEventStaions = new GeoJSONLayer({
           url: url_event_station,
@@ -523,34 +471,13 @@ Template.map.onRendered(() => {
           labelsVisible: false,
           listMode: "hide",
         });
-        const layerEmployee = new GeoJSONLayer({
-          url: url_employee,
-          title: "Employee",
+        const layerrealtimeEvent = new GeoJSONLayer({
+          url: url_realTimeEvent,
           visible: false,
           labelsVisible: false,
           listMode: "hide",
         });
-        const layerBaler = new GeoJSONLayer({
-          url: url_baler,
-          title: "Baler",
-          visible: false,
-          labelsVisible: false,
-          listMode: "hide",
-        });
-        const layerDataloger = new GeoJSONLayer({
-          url: url_dataloger,
-          title: "Dataloger",
-          visible: false,
-          labelsVisible: false,
-          listMode: "hide",
-        });
-        const layerSensor = new GeoJSONLayer({
-          url: url_sensor,
-          title: "Sensor",
-          visible: false,
-          labelsVisible: false,
-          listMode: "hide",
-        });
+
 
         const contentEvent = new CustomContent({
           outFields: ["*"],
@@ -649,150 +576,7 @@ Template.map.onRendered(() => {
           },
         });
 
-        const contentEmployee = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `key = ${event.graphic.attributes.key}`;
-            let query_Station = layerEmployee.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            return layerEmployee
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  row_data.push(` <tr>
-                    <td>${e.attributes.name}</td>
-                    <td>${e.attributes.phone}</td>
-                    <td>${e.attributes.start_date}</td>
-                    <td>${e.attributes.end_date}</td>
-                    </tr>`);
-                });
-                return `<div style="margin: 10px;"><b>Thông tin Quan trắc viên/Bảo vệ</b></div>
-                    <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên nhân viên</th>
-                            <th class="content_popup">Số điện thoại</th>
-                            <th class="content_popup">Ngày bắt đầu</th>
-                            <th class="content_popup">Ngày kết thúc</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       ${row_data.join("")}
-                    </tbody>
-                </table>`;
-              });
-          },
-        });
-        const contentBaler = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `key = ${event.graphic.attributes.key}`;
-            let query_Station = layerBaler.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            return layerBaler
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  row_data.push(` <tr>
-                    <td>${e.attributes.code}</td>
-                    <td>${e.attributes.serial}</td>
-                    </tr>`);
-                });
-                return `<div style="margin: 10px;"><b>Thông tin máy</b></div>
-                    <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên máy</th>
-                            <th class="content_popup">Serial</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       ${row_data.join("")}
-                    </tbody>
-                </table>`;
-              });
-          },
-        });
-        const contentDataloger = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `key = ${event.graphic.attributes.key}`;
-            let query_Station = layerDataloger.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            return layerDataloger
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  row_data.push(` <tr>
-                    <td>${e.attributes.dataloger}</td>
-                    <td>${e.attributes.serial}</td>
-                    <td>${e.attributes.start_date}</td>
-                    <td>${e.attributes.end_date}</td>
-                    </tr>`);
-                });
-                return `<div style="margin: 10px;"><b>Thông tin bộ ghi dữ liệu</b></div>
-                    <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên máy</th>
-                            <th class="content_popup">Serial</th>
-                            <th class="content_popup">Ngày bắt đầu</th>
-                            <th class="content_popup">Ngày kết thúc</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       ${row_data.join("")}
-                    </tbody>
-                </table>`;
-              });
-          },
-        });
-        const contentSensor = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `key = ${event.graphic.attributes.key}`;
-            let query_Station = layerSensor.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            return layerSensor
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  row_data.push(` <tr>
-                    <td>${e.attributes.code}</td>
-                    <td>${e.attributes.serial}</td>
-                    <td>${e.attributes.start_date}</td>
-                    <td>${e.attributes.end_date}</td>
-                    </tr>`);
-                });
-                return `<div style="margin: 10px;"><b>Thông tin cảm biến</b></div>
-                    <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên cảm biến</th>
-                            <th class="content_popup">Serial</th>
-                            <th class="content_popup">Ngày bắt đầu</th>
-                            <th class="content_popup">Ngày kết thúc</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       ${row_data.join("")}
-                    </tbody>
-                </table>`;
-              });
-          },
-        });
+       
         const contentIris = new CustomContent({
           outFields: ["*"],
           creator: (event) => {
@@ -822,86 +606,90 @@ Template.map.onRendered(() => {
                 </table>`;
           },
         });
+        const contentRealTimeEvent = new CustomContent({
+          outFields: ["*"],
+          creator: (event) => {
+              const where = `realtime_id = ${event.graphic.attributes.id}`;
+              let query = layerrealtimeEvent.createQuery();
+              query.where = where;
+              query.outFields = "*";
+              return layerrealtimeEvent.queryFeatures(query)
+                  .then(function (response) {
+                      const dataSet = response.features
+                      const row_data = []
+                      dataSet.map(e => {
+                          row_data.push(` <tr>
+                  <td>${e.attributes.Sta}</td>
+                  <td>${e.attributes.pa}</td>
+                  <td>${e.attributes.pv}</td>
+                  <td>${e.attributes.pd}</td>
+                  <td>${e.attributes.tc}</td>
+                  <td>${e.attributes.Mtc}</td>
+                  <td>${e.attributes.MPd}</td>
+                  <td>${e.attributes.Dis}</td>
+                  <td>${e.attributes.Parr}</td>
+                  </tr>`)
+                      });
+                      return `<div style="margin: 10px;"><b>Thông tin thêm</b></div>
+                  <table class="display" style="border-style: double">
+                  <thead>
+                      <tr style="border-bottom: groove">
+                          <th class="content_popup">Tên Trạm</th>
+                          <th class="content_popup">Pa</th>
+                          <th class="content_popup">Pv</th>
+                          <th class="content_popup">Pd</th>
+                          <th class="content_popup">Tc</th>
+                          <th class="content_popup">Mtc</th>
+                          <th class="content_popup">MPd</th>
+                          <th class="content_popup">Dis</th>
+                          <th class="content_popup">Parr</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                     ${row_data.join("")}
+                  </tbody>
+              </table>`
+                  })
+          }
+      })
+      const contentRealTime = new CustomContent({
+        outFields: ["*"],
+        creator: (event) => {
+          
+          return `
+              <table class="display" style="border-style: double">
+                  <thead>
+                      <tr style="border-bottom: groove">
+                          <th class="content_popup">Thời gian</th>
+                          <th class="content_popup">Lat</th>
+                          <th class="content_popup">Long</th>
+                          <th class="content_popup">Độ sâu</th>
+                          <th class="content_popup">Mall</th>
+                          <th class="content_popup">Mpd</th>
+                          <th class="content_popup">Mtc</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  <td>Ngày ${event.graphic.attributes.day} tháng ${event.graphic.attributes.month} năm ${event.graphic.attributes.year} - ${event.graphic.attributes.hour} giờ ${event.graphic.attributes.min} phút ${event.graphic.attributes.sec} giây </td>
+                  <td>${event.graphic.attributes.lat}</td>
+                  <td>${event.graphic.attributes.lon}</td>
+                  <td>${event.graphic.attributes.dep}</td>              
+                  <td>${event.graphic.attributes.Mall}</td>
+                  <td>${event.graphic.attributes.Mpd}</td>
+                  <td>${event.graphic.attributes.Mtc}</td>
+                  </tr>
+                  </tbody>
+              </table>`;
+        },
+    })
         const popupIris = {
           title: "Sự kiện động đất trên thế giới",
           content: [contentIris],
         };
-        const stationPopupTemplate = {
-          title: "Station",
-          content: [
-            {
-              type: "fields",
-              fieldInfos: [
-                {
-                  fieldName: "id",
-                  label: "Tên trạm",
-                  isEditable: true,
-                  tooltip: "",
-                  visible: true,
-                  format: null,
-                  stringFieldOption: "text-box",
-                },
-                {
-                  fieldName: "network",
-                  label: "Network",
-                  isEditable: true,
-                  tooltip: "",
-                  visible: true,
-                  format: null,
-                  stringFieldOption: "text-box",
-                },
-                {
-                  fieldName: "name",
-                  label: "Vị trí",
-                  isEditable: true,
-                  tooltip: "",
-                  visible: true,
-                  format: null,
-                  stringFieldOption: "text-box",
-                },
-                {
-                  fieldName: "address",
-                  label: "Địa chỉ",
-                  isEditable: true,
-                  tooltip: "",
-                  visible: true,
-                  format: null,
-                  stringFieldOption: "text-box",
-                },
-                {
-                  fieldName: "lat",
-                  label: "Lat",
-                  isEditable: true,
-                  tooltip: "",
-                  visible: true,
-                  format: null,
-                  stringFieldOption: "text-box",
-                },
-                {
-                  fieldName: "long",
-                  label: "Long",
-                  isEditable: true,
-                  tooltip: "",
-                  visible: true,
-                  format: null,
-                  stringFieldOption: "text-box",
-                },
-                {
-                  fieldName: "height",
-                  label: "Độ cao",
-                  isEditable: true,
-                  tooltip: "",
-                  visible: true,
-                  format: null,
-                  stringFieldOption: "text-box",
-                },
-              ],
-            },
-            contentEmployee,
-            contentDataloger,
-            contentBaler,
-            contentSensor,
-          ],
+        const popupRealTime = {
+          title: "Sự kiện động đất (Real Time)",
+          content: [contentRealTime,contentRealTimeEvent],
         };
         const eventPopupTemplate = {
           title: "Sự kiện động đất tại VN",
@@ -913,6 +701,7 @@ Template.map.onRendered(() => {
           popupTemplate: popupIris,
           listMode: "show",
           renderer: renderer,
+          legendEnabled : false,
           title: "Động đất trên thế giới",
           visible: true,
           labelsVisible: false,
@@ -935,6 +724,16 @@ Template.map.onRendered(() => {
               value: 5,
             },
           },
+        });
+        const layerRealTime = new GeoJSONLayer({
+          url: url_realTime,
+          renderer: renderer1,
+          legendEnabled : false,
+          title: "Động đất tại Việt Nam (Real time)",
+          visible: true,
+          labelsVisible: false,
+          popupEnabled: true,
+          popupTemplate: popupRealTime,
         });
         // Thêm Layer Trạm
         // const layerStations = new GeoJSONLayer({
@@ -1002,7 +801,7 @@ Template.map.onRendered(() => {
           map.addMany([
             layerEvent,
             layerEventStaions,
-            // layerStations,
+            layerRealTime,
             layerIris,
           ]);
           view.whenLayerView(layerEvent).then(function (lv) {
@@ -1184,7 +983,6 @@ Template.map.onRendered(() => {
           $("#dulieu tbody").off("click", "tr");
           $("#dulieu tbody").on("click", "tr", function () {
             const data = $("#dulieu").DataTable().row(this).data();
-          
             view.whenLayerView(data.layer).then(function (layerView) {
               if (highlightSelect) {
                 highlightSelect.remove();

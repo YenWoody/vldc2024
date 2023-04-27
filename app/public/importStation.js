@@ -3,11 +3,11 @@ const fs = require('fs');
 const pg = require('pg');
 const XLSX = require('xlsx');
 // config db
-const PG_HOST = 'localhost'
+const PG_HOST = '127.0.0.1'
 const PG_PORT = '5432'
-const PG_DATABASE = 'data'
-const PG_USER = 'postgres'
-const PG_PASSWORD = ''
+const PG_DATABASE = 'vldc'
+const PG_USER = 'pgadmin'
+const PG_PASSWORD = 'secure_password'
 
 // config folder path
 const DIR_PATH = 'data'

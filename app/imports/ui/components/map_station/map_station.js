@@ -51,6 +51,7 @@ Template.map_station.onRendered(() => {
         'esri/widgets/Sketch',
         "esri/layers/GraphicsLayer",
         "esri/layers/support/FeatureFilter",
+        "dojo/domReady!"
     ]).then(async ([
         Map,
         MapView,

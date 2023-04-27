@@ -9,11 +9,11 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { Email } from 'meteor/email';
 // server.js
-const PG_HOST = 'localhost'
+const PG_HOST = '127.0.0.1'
 const PG_PORT = '5432'
-const PG_DATABASE = 'data'
-const PG_USER = 'postgres'
-const PG_PASSWORD = ''
+const PG_DATABASE = 'vldc'
+const PG_USER = 'pgadmin'
+const PG_PASSWORD = 'secure_password'
 // const DIR_PATH = f
 const pool = new pg.Pool({
     host: PG_HOST,
@@ -311,6 +311,30 @@ Meteor.methods({
         const result = pool.query(
             `SELECT *
           FROM sensor;`
+        ).then((data) => {
+            return data
+        })
+
+        return result
+
+    },
+    'dataRealTime': () => {
+
+        const result = pool.query(
+            `SELECT *
+          FROM realtime;`
+        ).then((data) => {
+            return data
+        })
+
+        return result
+
+    },
+    'dataRealTimeEvent': () => {
+
+        const result = pool.query(
+            `SELECT *
+          FROM realtime_event;`
         ).then((data) => {
             return data
         })
