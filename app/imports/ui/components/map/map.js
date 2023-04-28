@@ -384,6 +384,77 @@ Template.map.onRendered(() => {
             },
           ],
         };
+        const renderer2 = {
+          type: "simple", // autocasts as new SimpleRenderer()
+          symbol: defaultSym,
+          visualVariables: [
+            {
+              type: "size",
+              field: "Mpd",
+              legendOptions: {
+                title: "Mức độ động đất",
+              },
+              stops: [
+                {
+                  value: 1,
+                  size: 3,
+                  label: "0-1",
+                  color: "black",
+                },
+                {
+                  value: 1.5,
+                  size: 5,
+                  label: "1.1-1.5",
+                },
+                {
+                  value: 2,
+                  size: 7,
+                  label: "1.6-2",
+                },
+                {
+                  value: 2.5,
+                  size: 10,
+                  label: "2.1-2.5",
+                },
+                {
+                  value: 3,
+                  size: 12,
+                  label: "2.6-3",
+                },
+                {
+                  value: 3.5,
+                  size: 13,
+                  label: "3.1-3.5",
+                },
+                {
+                  value: 4,
+                  size: 15,
+                  label: "3.51-4",
+                },
+                {
+                  value: 4.5,
+                  size: 17,
+                  label: "4.1-4.5",
+                },
+                {
+                  value: 5,
+                  size: 19,
+                  label: "4.6-5",
+                },
+                {
+                  value: 6,
+                  size: 22,
+                  label: "5.1-6",
+                },
+                {
+                  value: 7,
+                  size: 25,
+                  label: "6.1-7",
+                },
+              ],
+            },
+          ],
+        };
         // Trạm
         // const renderstation = {
         //   type: "simple", // autocasts as new SimpleRenderer()
@@ -404,6 +475,8 @@ Template.map.onRendered(() => {
 
         })   
         realTimeGeojson.map((e) => {
+    
+          e.Reporting_time = e.Reporting_time.getTime();
           dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
         });
         dataRealTimeEvent.map((e)=>{
@@ -727,14 +800,23 @@ Template.map.onRendered(() => {
         });
         const layerRealTime = new GeoJSONLayer({
           url: url_realTime,
-          renderer: renderer1,
+          renderer: renderer2,
           legendEnabled : false,
           title: "Động đất tại Việt Nam (Real time)",
           visible: true,
           labelsVisible: false,
           popupEnabled: true,
           popupTemplate: popupRealTime,
+          timeInfo: {
+            startField: "Reporting_time", // name of the date field
+            interval: {
+              // set time interval to one day
+              unit: "days",
+              value: 5,
+            },
+          },
         });
+
         // Thêm Layer Trạm
         // const layerStations = new GeoJSONLayer({
         //   url: url_station,
@@ -775,19 +857,36 @@ Template.map.onRendered(() => {
 
         const timeSlider = new TimeSlider({
           container: "timeSlider",
-          playRate: 50,
+          playRate: 5,
           stops: {
             interval: {
               value: 1,
               unit: "days",
             },
           },
+          timeVisible: true, // show the time stamps on the timeslider
+          loop: true
+        });
+        const timeSlider_realtime = new TimeSlider({
+          container: "timeSlider_realtime",
+          playRate: 5,
+          stops: {
+            interval: {
+              value: 1,
+              unit: "days",
+            },
+          },
+          timeVisible: true, // show the time stamps on the timeslider
+          loop: true
         });
         // LayerList
         const layerList = new LayerList({
           container: document.createElement("div"),
           view: view,
+          // listItemCreatedFunction : actionlayer,
+
         });
+        
         const layerListExpand = new Expand({
           expandIconClass: "esri-icon-layer-list",
           view: view,
@@ -804,8 +903,63 @@ Template.map.onRendered(() => {
             layerRealTime,
             layerIris,
           ]);
-          view.whenLayerView(layerEvent).then(function (lv) {
+          let flV = null;
+          view.whenLayerView(layerRealTime).then(function (lv) {
+            flV = lv
             // start time of the time slider - 13/02/1918
+            console.log(layerRealTime.timeInfo,"layerRealTime.timeInfo")
+            const start = layerRealTime.timeInfo.fullTimeExtent.start;
+            const end = layerRealTime.timeInfo.fullTimeExtent.end;
+            // set time slider's full extent to
+            timeSlider_realtime.fullTimeExtent = {
+              start: start,
+              end: end,
+            };
+            console.log(start.getTime(),end.getTime() ,"check")
+            // showing earthquakes with one day interval
+            end.setDate(end.getDate() + 1);
+            // Values property is set so that timeslider
+            // widget show the first day. We are setting
+            // the thumbs positions.
+            timeSlider_realtime.values = [start, end];
+            timeSlider_realtime.watch("timeExtent", function () {
+              updateFilter_realtime();
+            });
+            depthSlider.on("thumb-drag", function () {
+              updateFilter_realtime();
+            });
+            magnitudeSlider.on("thumb-drag", function () {
+              updateFilter_realtime();
+            });
+            function updateFilter_realtime() {
+              depthMin = depthSlider.values[0];
+              depthMax = depthSlider.values[1];
+              magnitudeMin = magnitudeSlider.values[0];
+              magnitudeMax = magnitudeSlider.values[1];
+              let conditions = [];
+              if (depthSlider) {
+                conditions.push(`(dep >= ${depthMin} and dep <= ${depthMax})`);
+              }
+              if (magnitudeSlider) {
+                conditions.push(
+                  `(Mpd >= ${magnitudeMin} and Mpd <= ${magnitudeMax})`
+                );
+              }
+              if (timeSlider_realtime) {
+                conditions.push(
+                  `(Reporting_time >= ${timeSlider_realtime.timeExtent.start.getTime()} AND Reporting_time <= ${timeSlider_realtime.timeExtent.end.getTime()})`
+                );
+              }
+              console.log(conditions,"conditions")
+              flV.filter =
+                conditions.length > 0
+                  ? { where: conditions.join("AND") }
+                  : null;
+            }
+          });
+          let flView = null;
+          view.whenLayerView(layerEvent).then((layerView) => {
+            flView = layerView;
             const start = layerEvent.timeInfo.fullTimeExtent.start;
             const end = layerEvent.timeInfo.fullTimeExtent.end;
             // set time slider's full extent to
@@ -819,11 +973,6 @@ Template.map.onRendered(() => {
             // widget show the first day. We are setting
             // the thumbs positions.
             timeSlider.values = [start, end];
-          });
-
-          let flView = null;
-          view.whenLayerView(layerEvent).then((layerView) => {
-            flView = layerView;
             // watch for time slider timeExtent change
             timeSlider.watch("timeExtent", function () {
               updateFilter();
@@ -899,7 +1048,7 @@ Template.map.onRendered(() => {
                   scrollX: "true",
                   scrollY: "250",
                   language: {
-                    info: "Hiển thị từ _START_ đến _END_ Events",
+                    info: "Hiển thị từ _START_ đến _END_ sự kiện",
                     infoFiltered: " ",
                   },
                   columns: [
@@ -923,12 +1072,16 @@ Template.map.onRendered(() => {
             function clearFilter() {
               const start = layerEvent.timeInfo.fullTimeExtent.start;
               const end = layerEvent.timeInfo.fullTimeExtent.end;
+              const start_realtime =  layerRealTime.timeInfo.fullTimeExtent.start;
+              const end_realtime = layerRealTime.timeInfo.fullTimeExtent.end;
               //  depthSlider.filter = null;
               //  magnitudeSlider.filter = null;
               flView.filter = null;
+              flV.filter = null;
               depthSlider.values = [0, 100];
               magnitudeSlider.values = [0, 10];
               timeSlider.values = [start, end];
+              timeSlider_realtime.values = [start_realtime, end_realtime];
               if (highlightSelect!= undefined){
                 highlightSelect.remove();
                 }
@@ -967,8 +1120,8 @@ Template.map.onRendered(() => {
             scrollY: "250",
             language: {
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
-              info: "Hiển thị từ _START_ đến _END_ Events",
-              infoEmpty: "Hiển thị 0 Events",
+              info: "Hiển thị từ _START_ đến _END_ sự kiện",
+              infoEmpty: "Hiển thị 0 sự kiện",
             },
             columns: [
               // { data: 'attributes.year' },
