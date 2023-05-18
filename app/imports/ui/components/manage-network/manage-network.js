@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import './manage-station.html';
+import './manage-network.html';
 import '../not_access/not_access';
 import { $ } from 'meteor/jquery';
 import datatables from 'datatables.net';
@@ -7,12 +7,11 @@ import datatables from 'datatables.net';
 // import 'datatables.net-bs/css/dataTables.bootstrap.css';
 import { loadCss } from 'esri-loader';
 import  Swal  from 'sweetalert2/dist/sweetalert2.js';
-import XLSX from 'xlsx';
 let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageStation.onCreated(function () {
+Template.manageNetwork.onCreated(function () {
   this.subscribe("users")
   Meteor.subscribe('allUsers');
   Meteor.users.find({}).fetch(); // will return all users
@@ -21,9 +20,8 @@ Template.manageStation.onCreated(function () {
   datatables(window, $);
   // datatables_bs(window, $);
 
-
 })
-Template.manageStation.onRendered(async () => {
+Template.manageNetwork.onRendered(async () => {
   $("#dashboard-title").html("Quản lí các trạm đo")
   function dataStation() {
     return new Promise(function (resolve, reject) {
@@ -51,7 +49,7 @@ Template.manageStation.onRendered(async () => {
       "infoFiltered": "(Lọc từ tổng số _MAX_ Trạm)"
   },
     "columns": [
-      { data: 'id_key' },
+      { data: 'key' },
       { data: 'id' },
       { data: "network" },
       { data: "address" },
@@ -75,102 +73,6 @@ Template.manageStation.onRendered(async () => {
 
 
   }); 
-  document.getElementById("add-station-excel").onclick = async function (){
-    document.getElementById('modal_add_station_excel').style.display = 'block';
-    var ExcelToJSON = function() {
-
-      this.parseExcel = function(file) {
-        var reader = new FileReader();
-  
-        reader.onload = function(e) {
-          var data = e.target.result;
-          var workbook = XLSX.read(data, {
-            type: 'binary'
-          });
-          workbook.SheetNames.forEach(function(sheetName) {
-            var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-            var json_object = JSON.stringify(XL_row_object);
-            const data_json = JSON.parse(json_object)
-        
-            Meteor.call('importStation',data_json, (error) => {
-              if (error) {
-                Swal.fire({
-                  icon : "error",
-                  title: "Không thể import data, dữ liệu không đúng định dạng",
-                  text :error.reason,
-                  heightAuto: false,
-                });
-                
-              } else {
-                Meteor.call('dataStation', function (error, resultdataStation) {
-                  if (error) {
-                    console.log(error)
-                  }
-                  else {
-              
-                  $('#data_tram').DataTable({
-                    data: resultdataStation.rows,
-                    "paging": true,
-                    "destroy": true,
-                    "scrollX": true,
-                    "pageLength": 10,
-                    "columns": [
-                      { data: 'id_key' },
-                      { data: 'id' },
-                      { data: "network" },
-                      { data: "address" },
-                      { data: "name" },
-                      { data: "height" },
-                      { data: "lat" },
-                      { data: "long" },
-                      {
-                        data: null,
-                        className: "dt-center editor-edit", 
-                        defaultContent: '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                        orderable: false,
-                      },
-                      {
-                        data: null,
-                        className: "dt-center editor-delete",
-                        defaultContent: '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                        orderable: false,
-                      }
-                    ]
-                
-                
-                  });
-                }})
-                Swal.fire(
-                  {
-                    icon : "success",
-                    title: "Chúc mừng!",
-                    text :"Cài dữ liệu vào database thành công! ",
-                    heightAuto: false,
-                  }
-             
-                )
-                document.getElementById('modal_add_station_excel').style.display = 'none';
-              }
-            })
-          })
-        };
-  
-        reader.onerror = function(ex) {
-          console.log(ex);
-        };
-  
-        reader.readAsBinaryString(file);
-      };
-    };
-  
-    function handleFileSelect(evt) {
-  
-      var files = evt.target.files; // FileList object
-      var xl2json = new ExcelToJSON();
-      xl2json.parseExcel(files[0]);
-    }
-    document.getElementById('upload').addEventListener('change', handleFileSelect, false);
-  }
   document.getElementById("add-station").onclick = async function(){
     function data() {
       return new Promise(function (resolve, reject) {
@@ -199,7 +101,7 @@ Template.manageStation.onRendered(async () => {
       const long_tram_ = parseFloat(document.getElementById("long_tram_").value)
       const insert = {
         id : id_tram_,
-        id_key : key_tram_,
+        key : key_tram_,
         network : network_tram_,
         address : diachi_tram_,
         name : ten_tram_,
@@ -232,7 +134,7 @@ Template.manageStation.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "columns": [
-                  { data: 'id_key' },
+                  { data: 'key' },
                   { data: 'id' },
                   { data: "network" },
                   { data: "address" },
@@ -279,7 +181,7 @@ Template.manageStation.onRendered(async () => {
     const data = $('#data_tram').DataTable().row(this).data();
     document.getElementById("_modal").style.display = "block";
     document.getElementById("id_tram").value = data.id;
-    document.getElementById("stt_tram").innerHTML = data.id_key;
+    document.getElementById("stt_tram").innerHTML = data.key;
     document.getElementById("network_tram").value = data.network;
     document.getElementById("diachi_tram").value = data.address;
     document.getElementById("ten_tram").value = data.name;
@@ -296,7 +198,7 @@ Template.manageStation.onRendered(async () => {
       const long_tram = parseFloat(document.getElementById("long_tram").value)
       const insert = {
         id : id_tram,
-        id_key:  data.id_key,
+        key:  data.key,
         network : network_tram,
         address : diachi_tram,
         name : ten_tram,
@@ -328,7 +230,7 @@ Template.manageStation.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "columns": [
-                  { data: 'id_key' },
+                  { data: 'key' },
                   { data: 'id' },
                   { data: "network" },
                   { data: "address" },
@@ -365,6 +267,9 @@ Template.manageStation.onRendered(async () => {
         }
       })
     };
+
+  
+
   });
 
   // Delete a record
@@ -373,7 +278,7 @@ Template.manageStation.onRendered(async () => {
     document.getElementById("modal_delete_station").style.display = "block";
     document.getElementById("content_delete").innerHTML = `Sau khi xác nhận dữ liệu trạm "${data.name}" sẽ bị xóa và không khôi phục lại được!`;
     document.getElementById("delete_station").onclick = function() {
-       Meteor.call('deleteStation',data.id_key, (error) => {
+       Meteor.call('deleteStation',data.key, (error) => {
         if (error) {
           Swal.fire(
             {
@@ -397,7 +302,7 @@ Template.manageStation.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "columns": [
-                  { data: 'id_key' },
+                  { data: 'key' },
                   { data: 'id' },
                   { data: "network" },
                   { data: "address" },
@@ -439,15 +344,14 @@ Template.manageStation.onRendered(async () => {
 
 })
 
-Template.manageStation.events({
+Template.manageNetwork.events({
   'click #close-modal': function () {
     document.getElementById("_modal").style.display = "none";
     document.getElementById("modal_add_station").style.display = "none";
     document.getElementById("modal_delete_station").style.display = "none";
-    document.getElementById("modal_add_station_excel").style.display = "none";
   },
 })
-Template.manageStation.helpers({
+Template.manageNetwork.helpers({
   stations: () => {
     return dataTram
   },
@@ -478,16 +382,5 @@ Template.manageStation.helpers({
       return false; // look at the current user
 
   },
-
-})
-Template.manageStation.events({
-'change #fileInput' :  function (e, template) {
-  if (e.currentTarget.files && e.currentTarget.files[0]) {
-    // We upload only one file, in case
-    // there was multiple files selected
-    var file = e.currentTarget.files[0];
-    console.log(file)
-  }
-}
 
 })

@@ -19,6 +19,13 @@ Template.map.onCreated(() => {
   datatables(window, $);
   datatables_bs(window, $);
 });
+Meteor.startup(
+  ()=>{
+    Meteor.call ('importRealtimeData',function(e,r){
+      console.log(r)
+    })
+  }
+)
 Template.map.onRendered(() => {
   loadModules([
     "esri/Map",
@@ -70,6 +77,7 @@ Template.map.onRendered(() => {
         IconSymbol3DLayer,
         LabelClass,
       ]) => {
+
         function dataRealTimes() {
           return new Promise(function (resolve, reject) {
             Meteor.call(
@@ -551,25 +559,29 @@ Template.map.onRendered(() => {
           listMode: "hide",
         });
 
-
+        const weekday = ["Chủ nhât","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"];
         const contentEvent = new CustomContent({
           outFields: ["*"],
           creator: (event) => {
             const date = new Date(event.graphic.attributes.datetime);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
             return `
                 <table class="display" style="border-style: double">
                     <thead>
                         <tr style="border-bottom: groove">
                             <th class="content_popup">Thời gian</th>
                             <th class="content_popup">Độ sâu</th>
-                            <th class="content_popup">Cường độ</th>
-                            <th class="content_popup">Lat</th>
-                            <th class="content_popup">Long</th>
+                            <th class="content_popup">Độ lớn (Ml)</th>
+                            <th class="content_popup">Vĩ độ</th>
+                            <th class="content_popup">Kinh độ</th>
                         </tr>
                     </thead>
                     <tbody>
                     <tr>
-                    <td>${date}</td>
+                    <td>${dateFormat}</td>
                     <td>${event.graphic.attributes.md}</td>
                     <td>${event.graphic.attributes.ml}</td>              
                     <td>${event.graphic.attributes.lat}</td>
@@ -662,8 +674,8 @@ Template.map.onRendered(() => {
                             <th class="content_popup">Địa điểm</th>
                             <th class="content_popup">Loại cường độ</th>
                             <th class="content_popup">Cường độ</th>
-                            <th class="content_popup">Lat</th>
-                            <th class="content_popup">Long</th>
+                            <th class="content_popup">Vĩ độ</th>
+                            <th class="content_popup">Kinh độ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -734,8 +746,8 @@ Template.map.onRendered(() => {
                   <thead>
                       <tr style="border-bottom: groove">
                           <th class="content_popup">Thời gian</th>
-                          <th class="content_popup">Lat</th>
-                          <th class="content_popup">Long</th>
+                          <th class="content_popup">Vĩ độ</th>
+                          <th class="content_popup">Kinh độ</th>
                           <th class="content_popup">Độ sâu</th>
                           <th class="content_popup">Mall</th>
                           <th class="content_popup">Mpd</th>
@@ -766,7 +778,7 @@ Template.map.onRendered(() => {
         };
         const eventPopupTemplate = {
           title: "Sự kiện động đất tại VN",
-          content: [contentEventStation, contentEvent],
+          content: [contentEvent,contentEventStation],
         };
         // create new geojson layer using the blob url
         const layerIris = new GeoJSONLayer({
@@ -1054,7 +1066,17 @@ Template.map.onRendered(() => {
                   columns: [
                     // { data: 'attributes.year' },
                     // { data: 'attributes.month' },
-                    { data: "attributes.datetime" },
+                    { 
+                      data: "attributes.datetime",
+                      render: function ( data, type, row ) {
+                        const date = data
+                        const year = date.getFullYear();
+                        const month = date.getMonth() + 1;
+                        const day = date.getDate();
+                        dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
+                      return dateFormat;
+                      }  
+                   },
                     { data: "attributes.ml" },
                     { data: "attributes.lat" },
                     { data: "attributes.long" },
@@ -1126,7 +1148,16 @@ Template.map.onRendered(() => {
             columns: [
               // { data: 'attributes.year' },
               // { data: 'attributes.month' },
-              { data: "attributes.datetime" },
+              { data: "attributes.datetime",
+              render: function ( data, type, row ) {
+                const date = data
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
+     
+              return dateFormat;
+          }   },
               { data: "attributes.ml" },
               { data: "attributes.lat" },
               { data: "attributes.long" },

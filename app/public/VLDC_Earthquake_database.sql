@@ -1,6 +1,6 @@
 ﻿CREATE TABLE "station" (
+  "id_key" SERIAL PRIMARY KEY,
   "id" varchar,  
-  "key" float,
   "name" varchar,
   "lat" float,
   "long" float,
@@ -13,7 +13,7 @@
 -- Baler/Serial	
 CREATE TABLE "baler" (
   "id" SERIAL PRIMARY KEY,
- "key" float,
+  "id_stat" integer,
   "code" varchar,
   "serial" varchar,
   "station_id" varchar
@@ -22,9 +22,11 @@ CREATE TABLE "baler" (
 -- Quan trắc viên/Bảo vệ
 CREATE TABLE "employee" (
   "id" SERIAL PRIMARY KEY,
-  "key" float,
+  "id_stat" integer,
   "name" varchar,
   "phone" varchar,
+  "name2" varchar,
+  "phone2" varchar,
   "title" varchar,
   "start_date" date,
   "end_date" date,
@@ -34,7 +36,7 @@ CREATE TABLE "employee" (
 -- Dataloger	
 CREATE TABLE "dataloger" (
   "id" SERIAL PRIMARY KEY,
-   "key" float,
+  "id_stat" integer,
   "serial" varchar,
   "dataloger" varchar,
   "start_date" date,
@@ -42,21 +44,22 @@ CREATE TABLE "dataloger" (
   "station_id" varchar
 );
 
--- Sensor 1/Date/Serial		
+-- Sensor 1,2/Date/Serial		
 CREATE TABLE "sensor" (
   "id" SERIAL PRIMARY KEY,
- "key" float,
-  "code" varchar,
-  "serial" varchar,
+  "id_stat" integer,
+  "sensor1" varchar,
+  "serial1" varchar,
+  "sensor2" varchar,
+  "serial2" varchar,
   "start_date" date,
   "end_date" date,
-  "dataloger_id" int
+  "dataloger_id" int,
+  "station_id" varchar
 );
 
--- 
 CREATE TABLE "raw_data" (
   "id" SERIAL PRIMARY KEY,
- "key" float,
   "name" varchar,
   "path" varchar,
   "year" int,
@@ -103,7 +106,40 @@ CREATE TABLE "event_station" (
   "dis" float,
   "caz7" float
 );
+CREATE TABLE IF NOT EXISTS "realtime" (
+  "id" serial PRIMARY KEY,
+  "filename" text UNIQUE,
+  "Reporting_time" timestamp with time zone,
+  "year" smallint,
+  "month" smallint,
+  "day" smallint,
+  "hour" smallint,
+  "min" smallint,
+  "sec" smallint,
+  "milli" smallint,
+  "lat" decimal,
+  "lon" decimal,
+  "dep" decimal,
+  "Mall" decimal,
+  "Mpd" decimal,
+  "Mtc" decimal,
+  "process_time" text
+);
 
+
+CREATE TABLE IF NOT EXISTS "realtime_event" (
+  "id" serial PRIMARY KEY,
+  "realtime_id" integer,
+  "Sta" text,
+  "pa" decimal,
+  "pv" decimal,
+  "pd" decimal,
+  "tc" decimal,
+  "Mtc" decimal,
+  "MPd" decimal,
+  "Dis" decimal,
+  "Parr" timestamp with time zone
+);
 -- ALTER TABLE "baler" ADD FOREIGN KEY ("station_id") REFERENCES "station" ("id");
 
 -- ALTER TABLE "employee" ADD FOREIGN KEY ("station_id") REFERENCES "station" ("id");

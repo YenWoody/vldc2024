@@ -15,6 +15,7 @@ import '../../ui/pages/reset/reset';
 import '../../ui/pages/verify/verify';
 import '../../ui/components/manage-user/manage-users';
 import '../../ui/components/manage-station/manage-station';
+import '../../ui/components/manage-device/manage-device';
 import '../../ui/components/manage-event/manage-event';
 // Set up all routes in the app
 FlowRouter.route('/main', {
@@ -35,7 +36,12 @@ FlowRouter.route('/manager-user', {
     this.render('dashboardTemplate', 'manageUsers');
   },
 });
-
+FlowRouter.route('/manager-device', {
+  name: 'App.manageUsers',
+  action() {
+    this.render('dashboardTemplate', 'manageDevice');
+  },
+});
 FlowRouter.route('/manager-station', {
   name: 'App.managerstation',
   action() {

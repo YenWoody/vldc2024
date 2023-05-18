@@ -19,7 +19,14 @@ function run () {
   fs.readdirSync(FOLDER).forEach((file) => {
     if (/^.+\.rep$/.test(file)) {
       let realtime = getRealtime(file)
-      if (realtime != undefined) insertRealtime(realtime).catch(console.log)
+      
+      if (realtime != undefined) {
+       
+        insertRealtime(realtime).then((e)=>{
+
+        })
+        .catch(console.log)
+      }
     }
   })
 
@@ -29,10 +36,11 @@ function run () {
 function getRealtime (filename) {
   try {
     const content = fs.readFileSync(path.join(FOLDER, filename)).toString()
+    console.log(path.join(FOLDER, filename),"content")
     const lines = content.split(os.EOL)
 
     let realtime = { filename }
-
+    
     const i0 = lines.findIndex(x => /^Reporting time/.test(x))
     realtime.Reporting_time = lines[i0].match(/^Reporting time(?:\s+)(\S+\s+\S+)/)[1]
 
@@ -58,7 +66,6 @@ function getRealtime (filename) {
         return { ...a, [keys[i]]: e }
       }, {}))
     })
-
     return realtime
   } catch (e) {
     console.log(filename, e)
@@ -79,12 +86,16 @@ function insertRealtime (realtime) {
   ).then(({ rowCount, rows }) => {
     if (rowCount === 1) {
       console.log(`import ${realtime.filename}`)
+      console.log(rowCount, rows)
       if (realtime.event.length > 0) {
         let values1 = []
+        console.log(realtime.event,"realtime.event")
         let temp = realtime.event.map((event) => {
-          event.realtime_id = rows[0].id
+          event.realtime_id = rows[0].id;
+          console.log(event)
           return `(${keys1.map(e => `$${values1.push(event[e])}`).join(', ')})`
         }).join(', ')
+  
         return pool.query(
           `INSERT INTO "realtime_event"
           (${keys1.map(e => `"${e}"`).join(', ')})

@@ -1,4 +1,4 @@
-<template name="manageStation">
+<template name="manageNetwork">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -92,11 +92,9 @@ td.dt-center.editor-delete {
   {{else}}
 
   <div class="manage-users row shadow">
-    <div class="col-md-12 pull-right" style="display: flex;
-    justify-items: center;
-    justify-content: space-between;">
-      <button type="submit" class="btn btn-success mt-2" id="add-station">Thêm trạm mới</button>
-      <button type="submit" class="btn btn-success mt-2" id="add-station-excel">Tải lên nhiều trạm mới</button>
+    <div class="col-md-3 pull-right" style="display: grid;
+    justify-items: center;">
+      <button type="submit" class="btn btn-success" id="add-station">Thêm trạm mới</button>
     </div>
     <table id="data_tram" class="display" style="width:100%">
       <thead>
@@ -127,7 +125,7 @@ td.dt-center.editor-delete {
       /* align-content: stretch; */">
       <div class="_container">
         <div class="_title">
-          <h3>Sửa dữ liệu của trạm</h3>
+          <h3>Sửa dữ liệu của mạng trạm</h3>
         </div>
         <hr />
         <div class="modal-body">
@@ -222,37 +220,6 @@ td.dt-center.editor-delete {
             <label for="recipient-name" class="col-lg-4 col-form-label">Long:</label>
             <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" id="long_tram_" value=""></div>
           </div>
-        </form>
-      </div>
-        <div class="_footer mt-5">
-          <button class="btn btn-info save" id = "save_add_station" >Xác nhận</button>
-          <button id="close-modal" class="close-modal">Đóng</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-  <div id="modal_add_station_excel" class="_modal">
-    <div class="_main" style="
-      display: grid;
-  
-      max-height: 700px;
-      overflow: auto;
-      width: 30%;
-      /* justify-items: center; */
-      /* align-content: stretch; */">
-      <div class="_container">
-        <div class="_title">
-          <h3>Thêm dữ liệu của trạm bằng tệp Excel</h3>
-        </div>
-        <hr />
-        <div class="modal-body d-flex justify-content-center">
-        <form>
-          <label class="btn btn-outline-info btn-lg">
-            Tải lên tệp tin
-            <input id="upload" type="file" hidden />
-            <i class="fa fa-cloud-upload fa-lg" aria-hidden="true"></i>
-          </label>
         </form>
       </div>
         <div class="_footer mt-5">

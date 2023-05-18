@@ -495,11 +495,15 @@ Template.map_station.onRendered(() => {
             listMode: "hide"
 
         });
-
+        const weekday = ["Chủ nhât","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"];
         const contentEvent = new CustomContent({
             outFields: ["*"],
             creator: (event) => {
                 const date = new Date(event.graphic.attributes.datetime)
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
                 return `
                 <table class="display" style="border-style: double">
                     <thead>
@@ -507,13 +511,13 @@ Template.map_station.onRendered(() => {
                             <th class="content_popup">Thời gian</th>
                             <th class="content_popup">Độ sâu</th>
                             <th class="content_popup">Cường độ</th>
-                            <th class="content_popup">Lat</th>
-                            <th class="content_popup">Long</th>
+                            <th class="content_popup">Vĩ độ</th>
+                            <th class="content_popup">Kinh độ</th>
                         </tr>
                     </thead>
                     <tbody>
                     <tr>
-                    <td>${date}</td>
+                    <td>${dateFormat}</td>
                     <td>${event.graphic.attributes.md}</td>
                     <td>${event.graphic.attributes.ml}</td>              
                     <td>${event.graphic.attributes.lat}</td>
@@ -598,7 +602,7 @@ Template.map_station.onRendered(() => {
         const contentEmployee = new CustomContent({
             outFields: ["*"],
             creator: (event) => {
-                const where = `key = ${event.graphic.attributes.key}`;
+                const where = `station_id = '${event.graphic.attributes.id}'`;
                 let query_Station = layerEmployee.createQuery();
                 query_Station.where = where;
                 query_Station.outFields = "*";
@@ -607,19 +611,59 @@ Template.map_station.onRendered(() => {
                         const dataSet = response.features
                         const row_data = []
                         dataSet.map(e => {
+                            const date_start = new Date(e.attributes.start_date) 
+                            const date_end = new Date(e.attributes.end_date)
+                            console.log(e.attributes.end_date,"e.attributes.end_date")
+                            const year_start = date_start.getFullYear();
+                            const month_start = date_start.getMonth() + 1;
+                            const day_start = date_start.getDate();
+                            const year_end = date_end.getFullYear();
+                            const month_end = date_end.getMonth() + 1;
+                            const day_end = date_end.getDate();
+                            dateFormat_start = weekday[date_start.getUTCDay()] + " ngày " + day_start +"/"+ month_start + "/" + year_start + " (GMT)";
+                            dateFormat_end = weekday[date_end.getUTCDay()] + " ngày " + day_end +"/"+ month_end + "/" + year_end + " (GMT)";
+                            if (e.attributes.start_date == null ){
+                                dateFormat_start = "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.end_date == null ){
+                                dateFormat_end = "Chưa có thông tin"
+                          
+                            }
+                            if (e.attributes.name == null ){
+                                e.attributes.name = "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.phone == null ){
+                                e.attributes.phone = "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.name2== null ){
+                                e.attributes.name2 = "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.phone2 == null ){
+                                e.attributes.phone2 = "Chưa có thông tin"
+                                
+                            }
+
                             row_data.push(` <tr>
-                    <td>${e.attributes.name}</td>
-                    <td>${e.attributes.phone}</td>
-                    <td>${e.attributes.start_date}</td>
-                    <td>${e.attributes.end_date}</td>
-                    </tr>`)
+                            <td>${e.attributes.name}</td>
+                            <td>${e.attributes.phone}</td>
+                            <td>${e.attributes.name2}</td>
+                            <td>${e.attributes.phone2}</td>
+                            <td>${dateFormat_start}</td>
+                            <td>${dateFormat_end}</td>
+                            </tr>`)
                         });
                         return `<div style="margin: 10px;"><b>Thông tin Quan trắc viên/Bảo vệ</b></div>
                     <table class="display" style="border-style: double">
                     <thead>
                         <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên nhân viên</th>
-                            <th class="content_popup">Số điện thoại</th>
+                            <th class="content_popup">Tên nhân viên 1</th>
+                            <th class="content_popup">Số điện thoại 1</th>
+                            <th class="content_popup">Tên nhân viên 2</th>
+                            <th class="content_popup">Số điện thoại 2</th>
                             <th class="content_popup">Ngày bắt đầu</th>
                             <th class="content_popup">Ngày kết thúc</th>
                         </tr>
@@ -634,7 +678,8 @@ Template.map_station.onRendered(() => {
         const contentBaler = new CustomContent({
             outFields: ["*"],
             creator: (event) => {
-                const where = `key = ${event.graphic.attributes.key}`;
+             
+                const where = `station_id = '${event.graphic.attributes.id}'`;
                 let query_Station = layerBaler.createQuery();
                 query_Station.where = where;
                 query_Station.outFields = "*";
@@ -643,12 +688,24 @@ Template.map_station.onRendered(() => {
                         const dataSet = response.features
                         const row_data = []
                         dataSet.map(e => {
-                            row_data.push(` <tr>
-                    <td>${e.attributes.code}</td>
-                    <td>${e.attributes.serial}</td>
-                    </tr>`)
+                            if (e.attributes.code == null ){
+                                e.attributes.code = "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.serial == null ){
+                                e.attributes.serial = "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.serial !== "Chưa có thông tin" &&  e.attributes.code !== "Chưa có thông tin" ){
+                                row_data.push(` <tr>
+                                <td>${e.attributes.code}</td>
+                                <td>${e.attributes.serial}</td>
+                                </tr>`)
+                                
+                            }
+                            
                         });
-                        return `<div style="margin: 10px;"><b>Thông tin máy</b></div>
+                        return `<div style="margin: 10px;"><b>Thông tin máy Baler</b></div>
                     <table class="display" style="border-style: double">
                     <thead>
                         <tr style="border-bottom: groove">
@@ -666,12 +723,10 @@ Template.map_station.onRendered(() => {
         const contentDataloger = new CustomContent({
             outFields: ["*"],
             creator: (event) => {
-                const where = `key = ${event.graphic.attributes.key}`;
+                const where = `station_id = '${event.graphic.attributes.id}'`;
                 let query_Station = layerDataloger.createQuery();
                 query_Station.where = where;
                 query_Station.outFields = "*";
-                //
-
                 async function id() {
                     let query = layerEventStaions.createQuery();
                     
@@ -683,17 +738,20 @@ Template.map_station.onRendered(() => {
                         id.push(e.attributes.event_id)
 
                     })
-                    function check(arr) {
-                        var newArr = []
-                        for (var i = 0; i < arr.length; i++) {
-                            if (newArr.indexOf(arr[i]) === -1) {
-                                newArr.push(arr[i])
-                            }
-                        }
-                        return newArr
-                    }
-                    const id_event = check(id);
+                    // Lọc số bị trùng
+                    // function check(arr) {
+                    //     var newArr = []
+                    //     for (var i = 0; i < arr.length; i++) {
+                    //         if (newArr.indexOf(arr[i]) === -1) {
+                    //             newArr.push(arr[i])
+                    //         }
+                    //     }
+                    //     return newArr
+                    // }
+                    // end
+                    const id_event = id;
                     const id_query = []
+                    console.log(id_event,"id_event")
                     id_event.map(e => {
                         id_query.push(`(id = ${e})`)
                     });
@@ -710,21 +768,27 @@ Template.map_station.onRendered(() => {
                         const dataSet = response.features
                         const row_data = []
                         dataSet.map(e => {
+                            if (e.attributes.dataloger == null ){
+                                e.attributes.dataloger= "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.serial == null ){
+                                e.attributes.serial = "Chưa có thông tin"
+                                
+                            }
                             row_data.push(` <tr>
                     <td>${e.attributes.dataloger}</td>
                     <td>${e.attributes.serial}</td>
-                    <td>${e.attributes.start_date}</td>
-                    <td>${e.attributes.end_date}</td>
+        
                     </tr>`)
                         });
-                        return `<div style="margin: 10px;"><b>Thông tin bộ ghi dữ liệu</b></div>
+                        return `<div style="margin: 10px;"><b>Thông tin bộ ghi dữ liệu Dataloger</b></div>
                     <table class="display" style="border-style: double">
                     <thead>
                         <tr style="border-bottom: groove">
                             <th class="content_popup">Tên máy</th>
                             <th class="content_popup">Serial</th>
-                            <th class="content_popup">Ngày bắt đầu</th>
-                            <th class="content_popup">Ngày kết thúc</th>
+                   
                         </tr>
                     </thead>
                     <tbody>
@@ -737,7 +801,7 @@ Template.map_station.onRendered(() => {
         const contentSensor = new CustomContent({
             outFields: ["*"],
             creator: (event) => {
-                const where = `key = ${event.graphic.attributes.key}`;
+                const where = `id_stat = ${event.graphic.attributes.id_key}`;
                 let query_Station = layerSensor.createQuery();
                 query_Station.where = where;
                 query_Station.outFields = "*";
@@ -746,21 +810,37 @@ Template.map_station.onRendered(() => {
                         const dataSet = response.features
                         const row_data = []
                         dataSet.map(e => {
+                            if (e.attributes.sensor1 == null ){
+                                e.attributes.sensor1= "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.serial1 == null ){
+                                e.attributes.serial1 = "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.sensor2 == null ){
+                                e.attributes.sensor2= "Chưa có thông tin"
+                                
+                            }
+                            if (e.attributes.serial2 == null ){
+                                e.attributes.serial2 = "Chưa có thông tin"
+                                
+                            }
                             row_data.push(` <tr>
-                    <td>${e.attributes.code}</td>
-                    <td>${e.attributes.serial}</td>
-                    <td>${e.attributes.start_date}</td>
-                    <td>${e.attributes.end_date}</td>
+                    <td>${e.attributes.sensor1}</td>
+                    <td>${e.attributes.serial1}</td>
+                    <td>${e.attributes.sensor2}</td>
+                    <td>${e.attributes.serial2}</td>
                     </tr>`)
                         });
                         return `<div style="margin: 10px;"><b>Thông tin cảm biến</b></div>
                     <table class="display" style="border-style: double">
                     <thead>
                         <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên cảm biến</th>
-                            <th class="content_popup">Serial</th>
-                            <th class="content_popup">Ngày bắt đầu</th>
-                            <th class="content_popup">Ngày kết thúc</th>
+                            <th class="content_popup">Tên cảm biến 1</th>
+                            <th class="content_popup">Serial 1</th>
+                            <th class="content_popup">Tên cảm biến 2</th>
+                            <th class="content_popup">Serial 2</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -813,7 +893,7 @@ Template.map_station.onRendered(() => {
                     },
                     {
                         "fieldName": "lat",
-                        "label": "Lat",
+                        "label": "Vĩ độ",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -822,7 +902,7 @@ Template.map_station.onRendered(() => {
                     },
                     {
                         "fieldName": "long",
-                        "label": "Long",
+                        "label": "Kinh độ",
                         "isEditable": true,
                         "tooltip": "",
                         "visible": true,
@@ -843,8 +923,8 @@ Template.map_station.onRendered(() => {
             }, contentEmployee, contentDataloger, contentBaler, contentSensor]
         }
         const eventPopupTemplate = {
-            title: "Sự kiện động đất",
-            content: [contentEventStation, contentEvent],
+            title: "Sự kiện động đất tại VN",
+            content: [contentEvent,contentEventStation],
         }
         // create new geojson layer using the blob url
 
@@ -853,7 +933,7 @@ Template.map_station.onRendered(() => {
             popupTemplate: eventPopupTemplate,
             listMode: 'show',
             renderer: renderer1,
-            title: 'Sự kiện động đất',
+            title: 'Sự kiện động đất tại VN',
             visible: true,
             labelsVisible: false,
             popupEnabled: true,
@@ -871,7 +951,7 @@ Template.map_station.onRendered(() => {
             popupTemplate: stationPopupTemplate,
             listMode: 'show',
             renderer: renderstation,
-            title: 'Trạm',
+            title: 'Trạm đo',
             visible: true,
             labelsVisible: true,
             popupEnabled: true,
@@ -957,7 +1037,7 @@ Template.map_station.onRendered(() => {
         }
         // Datatable 
         let query = layerStations.createQuery();
-        query.where = `key >= 0 and key <= 1000`;
+        query.where = `id_key >= 0 and id_key <= 10000`;
         query.outFields = "*";
         layerStations.queryFeatures(query)
             .then(function (response) {
@@ -1047,8 +1127,8 @@ Template.map_station.onRendered(() => {
                         <thead>
                             <tr style="border-bottom: groove">
                                 <th class="content_popup">Thời gian</th>
-                                <th class="content_popup">Lat</th>
-                                <th class="content_popup">Long</th>
+                                <th class="content_popup">Vĩ độ</th>
+                                <th class="content_popup">Kinh độ</th>
                                 <th class="content_popup">Độ sâu</th>
                                 <th class="content_popup">Cường độ</th>
                             </tr>
