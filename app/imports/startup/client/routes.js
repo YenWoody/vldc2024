@@ -16,7 +16,10 @@ import '../../ui/pages/verify/verify';
 import '../../ui/components/manage-user/manage-users';
 import '../../ui/components/manage-station/manage-station';
 import '../../ui/components/manage-device/manage-device';
+import '../../ui/components/manage-sensor/manage-sensor';
+import '../../ui/components/manage-baler/manage-baler';
 import '../../ui/components/manage-event/manage-event';
+import '../../ui/components/manage-network/manage-network';
 // Set up all routes in the app
 FlowRouter.route('/main', {
   name: 'App.event',
@@ -30,26 +33,44 @@ FlowRouter.route('/dashboard', {
     this.render('dashboardTemplate','');
   },
 });
-FlowRouter.route('/manager-user', {
+FlowRouter.route('/manage-user', {
   name: 'App.manageUsers',
   action() {
     this.render('dashboardTemplate', 'manageUsers');
   },
 });
-FlowRouter.route('/manager-device', {
+FlowRouter.route('/manage-device', {
   name: 'App.manageUsers',
   action() {
     this.render('dashboardTemplate', 'manageDevice');
   },
 });
-FlowRouter.route('/manager-station', {
-  name: 'App.managerstation',
+FlowRouter.route('/manage-sensor', {
+  name: 'App.manageSensor',
+  action() {
+    this.render('dashboardTemplate', 'manageSensors');
+  },
+});
+FlowRouter.route('/manage-baler', {
+  name: 'App.manageBaler',
+  action() {
+    this.render('dashboardTemplate', 'manageBaler');
+  },
+});
+FlowRouter.route('/manage-station', {
+  name: 'App.manageStation',
   action() {
     this.render('dashboardTemplate', 'manageStation');
   },
 });
-FlowRouter.route('/manager-event', {
-  name: 'App.managerevent',
+FlowRouter.route('/manage-network', {
+  name: 'App.manageNetwork',
+  action() {
+    this.render('dashboardTemplate', 'manageNetwork');
+  },
+});
+FlowRouter.route('/manage-event', {
+  name: 'App.manageevent',
   action() {
     this.render('dashboardTemplate', 'manageEvent');
   },

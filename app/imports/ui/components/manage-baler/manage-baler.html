@@ -1,4 +1,4 @@
-<template name="manageNetwork">
+<template name="manageBaler">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -94,13 +94,15 @@ td.dt-center.editor-delete {
   <div class="manage-users row shadow">
     <div class="col-md-3 pull-right" style="display: grid;
     justify-items: center;">
-      <button type="submit" class="btn btn-success" id="add-station">Thêm network mới</button>
+      <button type="submit" class="btn btn-success" id="add-station">Thêm Baler mới</button>
     </div>
-    <table id="data_network" class="display" style="width:100%">
+    <table id="data_baler" class="display" style="width:100%">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Network</th>
+          <th>Baler</th>
+          <th>Serial </th>
+          <th>Trạm</th>
           <th></th>
           <th></th>
         </tr>
@@ -119,26 +121,35 @@ td.dt-center.editor-delete {
       /* align-content: stretch; */">
       <div class="_container">
         <div class="_title">
-          <h3>Sửa dữ liệu của network</h3>
+          <h3>Sửa dữ liệu của baler</h3>
         </div>
         <hr />
         <div class="modal-body">
         <form>
           <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Network:</label>
-            <div class="col-lg-8"><input type="text" class="form-control" id="network" placeholder="Tên mạng" value=""></div>
+            <label for="recipient-name" class="col-lg-4 col-form-label">Trạm:</label>
+            <div class="col-lg-8"><input type="text" class="form-control" id="baler_station" placeholder="Ví dụ : BDVB" value=""></div>
           </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-lg-4 col-form-label">Baler:</label>
+            <div class="col-lg-8"><input type="text" class="form-control" id="baler" placeholder="Tên thiết bị" value=""></div>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-lg-4 col-form-label">Serial:</label>
+            <div class="col-lg-8"><input type="text" class="form-control" id="serial" value=""></div>
+          </div>
+        
         </form>
       </div>
         <div class="_footer mt-5">
-          <button class="btn btn-info save" id = "save_edit_network" >Xác nhận</button>
+          <button class="btn btn-info save" id = "save_edit_baler" >Xác nhận</button>
           <button id="close-modal" class="close-modal">Đóng</button>
         </div>
       </div>
     </div>
 
   </div>
-  <div id="modal_add_network" class="_modal">
+  <div id="modal_add_baler" class="_modal">
     <div class="_main" style="
       display: grid;
   
@@ -149,28 +160,36 @@ td.dt-center.editor-delete {
       /* align-content: stretch; */">
       <div class="_container">
         <div class="_title">
-          <h3>Thêm dữ liệu của network</h3>
+          <h3>Thêm dữ liệu của Baler</h3>
         </div>
         <hr />
         <div class="modal-body">
         <form>
           <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Network:</label>
-            <div class="col-lg-8"><input type="text" class="form-control" placeholder="Tên mạng" id="network_" value=""></div>
+            <label for="recipient-name" class="col-lg-4 col-form-label">Trạm:</label>
+            <div class="col-lg-8"><input type="text" class="form-control" id="baler_station_" placeholder="Ví dụ : BDVB" value=""></div>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-lg-4 col-form-label">Baler:</label>
+            <div class="col-lg-8"><input type="text" class="form-control" placeholder="Tên thiết bị" id="baler_" value=""></div>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-lg-4 col-form-label">Serial:</label>
+            <div class="col-lg-8"><input type="text" class="form-control" id="serial_" value=""></div>
           </div>
     
     
         </form>
       </div>
         <div class="_footer mt-5">
-          <button class="btn btn-info save" id = "save_add_network" >Xác nhận</button>
+          <button class="btn btn-info save" id = "save_add_baler" >Xác nhận</button>
           <button id="close-modal" class="close-modal">Đóng</button>
         </div>
       </div>
     </div>
 
   </div>
-  <div id="modal_delete_network" class="_modal">
+  <div id="modal_delete_baler" class="_modal">
     <div class="_main" style="
         display: grid;
         overflow: auto;
@@ -180,14 +199,14 @@ td.dt-center.editor-delete {
         /* align-content: stretch; */">
       <div class="_container">
         <div class="_title">
-          <h3>Xóa dữ liệu của network</h3>
+          <h3>Xóa dữ liệu của Baler</h3>
         </div>
         <hr />
         <div class="modal-body">
           <h4 id="content_delete"></h4>
         </div>
         <div class="_footer">
-          <button class="btn btn-info save" id="delete_network">Xác nhận</button>
+          <button class="btn btn-info save" id="delete_baler">Xác nhận</button>
           <button id="close-modal" class="close-modal">Hủy</button>
         </div>
       </div>

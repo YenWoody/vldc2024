@@ -149,6 +149,17 @@ Template.map_station.onRendered(() => {
                 })
             })
         }
+        function dataNetwork() {
+            return new Promise(function (resolve, reject) {
+              Meteor.call('dataNetwork', function (error, resultdata) {
+                if (error) {
+                  reject(error)
+                }
+                resolve(resultdata.rows)
+              })
+            });
+          }
+        const data_Network = await dataNetwork()
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
         const dataStations = await dataStation();
@@ -216,7 +227,14 @@ Template.map_station.onRendered(() => {
 
         // end init view
         // Filter by Attributes
+
+
         const networkElement = document.getElementById("relationship-select");
+        const content = ["<option value='all' selected=''>Chọn</option>"];
+        data_Network.map((e)=>{
+            return content.push( `<option value="${e.code}">${e.code}</option>`)
+        });
+        networkElement.innerHTML = content.join("")
         // click event handler for network choices
         networkElement.addEventListener("click", filterByNetwork);
         function filterByNetwork(event) {
@@ -613,7 +631,6 @@ Template.map_station.onRendered(() => {
                         dataSet.map(e => {
                             const date_start = new Date(e.attributes.start_date) 
                             const date_end = new Date(e.attributes.end_date)
-                            console.log(e.attributes.end_date,"e.attributes.end_date")
                             const year_start = date_start.getFullYear();
                             const month_start = date_start.getMonth() + 1;
                             const day_start = date_start.getDate();
@@ -751,7 +768,6 @@ Template.map_station.onRendered(() => {
                     // end
                     const id_event = id;
                     const id_query = []
-                    console.log(id_event,"id_event")
                     id_event.map(e => {
                         id_query.push(`(id = ${e})`)
                     });
@@ -1223,7 +1239,20 @@ Template.map_station.onRendered(() => {
 });
 
 Template.map_station.helpers({
-
+    network : async function (){
+        function dataDevice() {
+            return new Promise(function (resolve, reject) {
+              Meteor.call('dataNetwork', function (error, resultdata) {
+                if (error) {
+                  reject(error)
+                }
+                resolve(resultdata.rows)
+              })
+            });
+          }
+          const dt = await dataDevice()
+          return dt
+    }   
 });
 
 Template.map_station.events({

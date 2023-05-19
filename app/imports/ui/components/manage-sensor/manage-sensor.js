@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import './manage-network.html';
+import './manage-sensor.html';
 import '../not_access/not_access';
 import { $ } from 'meteor/jquery';
 import datatables from 'datatables.net';
@@ -11,7 +11,7 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageNetwork.onCreated(function () {
+Template.manageSensors.onCreated(function () {
   this.subscribe("users")
   Meteor.subscribe('allUsers');
   Meteor.users.find({}).fetch(); // will return all users
@@ -21,11 +21,11 @@ Template.manageNetwork.onCreated(function () {
   // datatables_bs(window, $);
 
 })
-Template.manageNetwork.onRendered(async () => {
-  $("#dashboard-title").html("Quản lí các mạng trạm")
+Template.manageSensors.onRendered(async () => {
+  $("#dashboard-title").html("Quản lí các thiết bị")
   function dataDevice() {
     return new Promise(function (resolve, reject) {
-      Meteor.call('dataNetwork', function (error, resultdata) {
+      Meteor.call('dataSensor', function (error, resultdata) {
         if (error) {
           reject(error)
         }
@@ -34,8 +34,8 @@ Template.manageNetwork.onRendered(async () => {
     });
   }
   const dt = await dataDevice()
- console.log(dt)
-    $('#data_network').DataTable({
+ 
+    $('#data_Sensor').DataTable({
     data: dt,
     "paging": true,
     "destroy": true,
@@ -43,15 +43,19 @@ Template.manageNetwork.onRendered(async () => {
     "pageLength": 10,
     "language": {
       "emptyTable": "Dữ liệu chưa tải thành công",
-      "info": "Hiển thị từ _START_ đến _END_ network",
-      "infoEmpty": "Hiển thị 0 network",
-      "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-      "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+      "info": "Hiển thị từ _START_ đến _END_ Sensor",
+      "infoEmpty": "Hiển thị 0 Sensor",
+      "lengthMenu": "Hiển thị _MENU_ Sensor mỗi trang",
+      "infoFiltered": "(Lọc từ tổng số _MAX_ Sensor)"
   },
     "columns": [
   
       { data: 'id' },
-      { data: "code" },
+      { data: "sensor1" },
+      { data: "serial1" },
+      { data: "sensor2" },
+      { data: "serial2" },
+      { data: "station_id" },
       {
         data: null,
         className: "dt-center editor-edit", 
@@ -72,14 +76,24 @@ Template.manageNetwork.onRendered(async () => {
 
 
    
-    // document.getElementById('stt_network_').innerHTML = maxKey + 1;
-    document.getElementById('modal_add_network').style.display = 'block';
-    document.getElementById("save_add_network").onclick = function() {
-      const network = document.getElementById("network_").value  
+    // document.getElementById('stt_Sensor_').innerHTML = maxKey + 1;
+    document.getElementById('modal_add_Sensor').style.display = 'block';
+    document.getElementById("save_add_Sensor").onclick = function() {
+      const sensor_station_ = document.getElementById("sensor_station_").value
+      const sensor1 = document.getElementById("sensor1_").value
+      const serial1 = document.getElementById("serial1_").value
+      const sensor2 = document.getElementById("sensor2_").value
+      const serial2 = document.getElementById("serial2_").value
+      
       const insert = {
-        code : network,
+        station_id : sensor_station_,
+        sensor1 : sensor1,
+        serial1 : serial1,
+        sensor2 : sensor2,
+        serial2 : serial2,
+
       }
-      Meteor.call('insertNetwork',insert,(error) => {
+      Meteor.call('insertSensor',insert,(error) => {
         if (error) {
           Swal.fire(
             {
@@ -90,13 +104,13 @@ Template.manageNetwork.onRendered(async () => {
             })
   
         } else {
-          Meteor.call('dataNetwork', function (error, resultdata) {
+          Meteor.call('dataSensor', function (error, resultdata) {
             if (error) {
               console.log(error)
             }
             else {
         
-              $('#data_network').DataTable({
+              $('#data_Sensor').DataTable({
                 data: resultdata.rows,
                 "paging": true,
                 "destroy": true,
@@ -104,15 +118,19 @@ Template.manageNetwork.onRendered(async () => {
                 "pageLength": 10,
                 "language": {
                   "emptyTable": "Dữ liệu chưa tải thành công",
-                  "info": "Hiển thị từ _START_ đến _END_ network",
-                  "infoEmpty": "Hiển thị 0 network",
-                  "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-                  "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+                  "info": "Hiển thị từ _START_ đến _END_ Sensor",
+                  "infoEmpty": "Hiển thị 0 Sensor",
+                  "lengthMenu": "Hiển thị _MENU_ Sensor mỗi trang",
+                  "infoFiltered": "(Lọc từ tổng số _MAX_ Sensor)"
               },
                 "columns": [
               
                   { data: 'id' },
-                  { data: "code" },
+                  { data: "sensor1" },
+                  { data: "serial1" },
+                  { data: "sensor2" },
+                  { data: "serial2" },
+                  { data: "station_id" },
                   {
                     data: null,
                     className: "dt-center editor-edit", 
@@ -131,7 +149,7 @@ Template.manageNetwork.onRendered(async () => {
               }); 
             }
           })
-          document.getElementById("modal_add_network").style.display = "none"
+          document.getElementById("modal_add_Sensor").style.display = "none"
           Swal.fire(
             {
               icon: 'success',
@@ -146,18 +164,31 @@ Template.manageNetwork.onRendered(async () => {
 
   }
   // Edit Record
-  $('#data_network').on('click', 'td.editor-edit', function (e) {
+  $('#data_Sensor').on('click', 'td.editor-edit', function (e) {
     e.preventDefault();
-    const data = $('#data_network').DataTable().row(this).data();
+    const data = $('#data_Sensor').DataTable().row(this).data();
     document.getElementById("_modal").style.display = "block";
-    document.getElementById("network").value = data.code;
-    document.getElementById("save_edit_network").onclick = function() {
-      const network1 = document.getElementById("network").value
+    document.getElementById("sensor1").value = data.sensor1;
+    document.getElementById("serial1").value = data.serial1;
+    document.getElementById("sensor2").value = data.sensor2;
+    document.getElementById("serial2").value = data.serial2;
+    document.getElementById("sensor_station").value = data.station_id;
+    document.getElementById("save_edit_Sensor").onclick = function() {
+      const sensor1 = document.getElementById("sensor1").value
+      const sensor2 = document.getElementById("sensor2").value
+      let serial1 = document.getElementById("serial1").value
+      let serial2 = document.getElementById("serial2").value
+     
+      const sensor_station = document.getElementById("sensor_station").value 
       const insert = {
         key : data.id,
-        code : network1,
+        sensor1 : sensor1,
+        serial1 : serial1,
+        sensor2 : sensor2,
+        serial2 : serial2,
+        station_id : sensor_station
       }
-      Meteor.call('editNetwork',insert,(error) => {
+      Meteor.call('editSensor',insert,(error) => {
         if (error) {
           Swal.fire(
             {
@@ -168,13 +199,13 @@ Template.manageNetwork.onRendered(async () => {
             })
   
         } else {
-          Meteor.call('dataNetwork', function (error, resultdata) {
+          Meteor.call('dataSensor', function (error, resultdata) {
             if (error) {
               console.log(error)
             }
             else {
         
-              $('#data_network').DataTable({
+              $('#data_Sensor').DataTable({
                 data: resultdata.rows,
                 "paging": true,
                 "destroy": true,
@@ -182,15 +213,19 @@ Template.manageNetwork.onRendered(async () => {
                 "pageLength": 10,
                 "language": {
                   "emptyTable": "Dữ liệu chưa tải thành công",
-                  "info": "Hiển thị từ _START_ đến _END_ network",
-                  "infoEmpty": "Hiển thị 0 network",
-                  "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-                  "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+                  "info": "Hiển thị từ _START_ đến _END_ Sensor",
+                  "infoEmpty": "Hiển thị 0 Sensor",
+                  "lengthMenu": "Hiển thị _MENU_ Sensor mỗi trang",
+                  "infoFiltered": "(Lọc từ tổng số _MAX_ Sensor)"
               },
                 "columns": [
               
                   { data: 'id' },
-                  { data: "code" },
+                  { data: "sensor1" },
+                  { data: "serial1" },
+                  { data: "sensor2" },
+                  { data: "serial2" },
+                  { data: "station_id" },
                   {
                     data: null,
                     className: "dt-center editor-edit", 
@@ -226,12 +261,12 @@ Template.manageNetwork.onRendered(async () => {
   });
 
   // Delete a record
-  $('#data_network').on('click', 'td.editor-delete', function (e) {
-    const data = $('#data_network').DataTable().row(this).data();
-    document.getElementById("modal_delete_network").style.display = "block";
-    document.getElementById("content_delete").innerHTML = `Sau khi xác nhận dữ liệu network "${data.code}" sẽ bị xóa và không khôi phục lại được!`;
-    document.getElementById("delete_network").onclick = function() {
-       Meteor.call('deleteNetwork',data.id, (error) => {
+  $('#data_Sensor').on('click', 'td.editor-delete', function (e) {
+    const data = $('#data_Sensor').DataTable().row(this).data();
+    document.getElementById("modal_delete_Sensor").style.display = "block";
+    document.getElementById("content_delete").innerHTML = `Sau khi xác nhận dữ liệu Sensor "${data.sensor1}" - "${data.sensor2}"  sẽ bị xóa và không khôi phục lại được!`;
+    document.getElementById("delete_Sensor").onclick = function() {
+       Meteor.call('deleteSensor',data.id, (error) => {
         if (error) {
           Swal.fire(
             {
@@ -242,13 +277,13 @@ Template.manageNetwork.onRendered(async () => {
             })
   
         } else {
-          Meteor.call('dataNetwork', function (error, resultdata) {
+          Meteor.call('dataSensor', function (error, resultdata) {
             if (error) {
               console.log(error)
             }
             else {
         
-              $('#data_network').DataTable({
+              $('#data_Sensor').DataTable({
                 data: resultdata.rows,
                 "paging": true,
                 "destroy": true,
@@ -256,15 +291,19 @@ Template.manageNetwork.onRendered(async () => {
                 "pageLength": 10,
                 "language": {
                   "emptyTable": "Dữ liệu chưa tải thành công",
-                  "info": "Hiển thị từ _START_ đến _END_ network",
-                  "infoEmpty": "Hiển thị 0 network",
-                  "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-                  "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+                  "info": "Hiển thị từ _START_ đến _END_ Sensor",
+                  "infoEmpty": "Hiển thị 0 Sensor",
+                  "lengthMenu": "Hiển thị _MENU_ Sensor mỗi trang",
+                  "infoFiltered": "(Lọc từ tổng số _MAX_ Sensor)"
               },
                 "columns": [
               
                   { data: 'id' },
-                  { data: "code" },
+                  { data: "sensor1" },
+                  { data: "serial1" },
+                  { data: "sensor2" },
+                  { data: "serial2" },
+                  { data: "station_id" },
                   {
                     data: null,
                     className: "dt-center editor-edit", 
@@ -283,7 +322,7 @@ Template.manageNetwork.onRendered(async () => {
               }); 
             }
           })
-          document.getElementById("modal_delete_network").style.display = "none"
+          document.getElementById("modal_delete_Sensor").style.display = "none"
           Swal.fire(
             {
               icon: 'success',
@@ -299,14 +338,14 @@ Template.manageNetwork.onRendered(async () => {
 
 })
 
-Template.manageNetwork.events({
+Template.manageSensors.events({
   'click #close-modal': function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_network").style.display = "none";
-    document.getElementById("modal_delete_network").style.display = "none";
+    document.getElementById("modal_add_Sensor").style.display = "none";
+    document.getElementById("modal_delete_Sensor").style.display = "none";
   },
 })
-Template.manageNetwork.helpers({
+Template.manageSensors.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch()
   },

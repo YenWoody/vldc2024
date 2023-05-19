@@ -9,7 +9,6 @@ const Files = new FilesCollection({
     return `../../../../../.uploads/`;
   },
   onBeforeUpload: file => {
-    console.log(file,"file222222222")
     // Giới hạn định dạng file
     if (/zip/i.test(file.extension)) {
       return true;

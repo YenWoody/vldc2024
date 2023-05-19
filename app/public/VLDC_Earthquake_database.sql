@@ -18,7 +18,11 @@ CREATE TABLE "baler" (
   "serial" varchar,
   "station_id" varchar
 );
-
+-- Network
+CREATE TABLE "network" (
+  "id" SERIAL PRIMARY KEY,
+  "code" varchar
+);
 -- Quan trắc viên/Bảo vệ
 CREATE TABLE "employee" (
   "id" SERIAL PRIMARY KEY,

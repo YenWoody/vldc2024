@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import './manage-network.html';
+import './manage-baler.html';
 import '../not_access/not_access';
 import { $ } from 'meteor/jquery';
 import datatables from 'datatables.net';
@@ -11,7 +11,7 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageNetwork.onCreated(function () {
+Template.manageBaler.onCreated(function () {
   this.subscribe("users")
   Meteor.subscribe('allUsers');
   Meteor.users.find({}).fetch(); // will return all users
@@ -21,11 +21,11 @@ Template.manageNetwork.onCreated(function () {
   // datatables_bs(window, $);
 
 })
-Template.manageNetwork.onRendered(async () => {
-  $("#dashboard-title").html("Quản lí các mạng trạm")
+Template.manageBaler.onRendered(async () => {
+  $("#dashboard-title").html("Quản lí các thiết bị")
   function dataDevice() {
     return new Promise(function (resolve, reject) {
-      Meteor.call('dataNetwork', function (error, resultdata) {
+      Meteor.call('dataBaler', function (error, resultdata) {
         if (error) {
           reject(error)
         }
@@ -34,8 +34,8 @@ Template.manageNetwork.onRendered(async () => {
     });
   }
   const dt = await dataDevice()
- console.log(dt)
-    $('#data_network').DataTable({
+ 
+    $('#data_baler').DataTable({
     data: dt,
     "paging": true,
     "destroy": true,
@@ -43,15 +43,17 @@ Template.manageNetwork.onRendered(async () => {
     "pageLength": 10,
     "language": {
       "emptyTable": "Dữ liệu chưa tải thành công",
-      "info": "Hiển thị từ _START_ đến _END_ network",
-      "infoEmpty": "Hiển thị 0 network",
-      "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-      "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+      "info": "Hiển thị từ _START_ đến _END_ baler",
+      "infoEmpty": "Hiển thị 0 baler",
+      "lengthMenu": "Hiển thị _MENU_ baler mỗi trang",
+      "infoFiltered": "(Lọc từ tổng số _MAX_ baler)"
   },
     "columns": [
   
       { data: 'id' },
       { data: "code" },
+      { data: "serial" },
+      { data: "station_id" },
       {
         data: null,
         className: "dt-center editor-edit", 
@@ -72,14 +74,20 @@ Template.manageNetwork.onRendered(async () => {
 
 
    
-    // document.getElementById('stt_network_').innerHTML = maxKey + 1;
-    document.getElementById('modal_add_network').style.display = 'block';
-    document.getElementById("save_add_network").onclick = function() {
-      const network = document.getElementById("network_").value  
+    // document.getElementById('stt_baler_').innerHTML = maxKey + 1;
+    document.getElementById('modal_add_baler').style.display = 'block';
+    document.getElementById("save_add_baler").onclick = function() {
+      const baler_station_ = document.getElementById("baler_station_").value
+      const baler = document.getElementById("baler_").value
+      const serial = document.getElementById("serial_").value
+      
       const insert = {
-        code : network,
+        station_id : baler_station_,
+        code : baler,
+        serial : serial,
+
       }
-      Meteor.call('insertNetwork',insert,(error) => {
+      Meteor.call('insertBaler',insert,(error) => {
         if (error) {
           Swal.fire(
             {
@@ -90,13 +98,13 @@ Template.manageNetwork.onRendered(async () => {
             })
   
         } else {
-          Meteor.call('dataNetwork', function (error, resultdata) {
+          Meteor.call('dataBaler', function (error, resultdata) {
             if (error) {
               console.log(error)
             }
             else {
         
-              $('#data_network').DataTable({
+              $('#data_baler').DataTable({
                 data: resultdata.rows,
                 "paging": true,
                 "destroy": true,
@@ -104,15 +112,17 @@ Template.manageNetwork.onRendered(async () => {
                 "pageLength": 10,
                 "language": {
                   "emptyTable": "Dữ liệu chưa tải thành công",
-                  "info": "Hiển thị từ _START_ đến _END_ network",
-                  "infoEmpty": "Hiển thị 0 network",
-                  "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-                  "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+                  "info": "Hiển thị từ _START_ đến _END_ baler",
+                  "infoEmpty": "Hiển thị 0 baler",
+                  "lengthMenu": "Hiển thị _MENU_ baler mỗi trang",
+                  "infoFiltered": "(Lọc từ tổng số _MAX_ baler)"
               },
                 "columns": [
               
                   { data: 'id' },
                   { data: "code" },
+                  { data: "serial" },
+                  { data: "station_id" },
                   {
                     data: null,
                     className: "dt-center editor-edit", 
@@ -131,7 +141,7 @@ Template.manageNetwork.onRendered(async () => {
               }); 
             }
           })
-          document.getElementById("modal_add_network").style.display = "none"
+          document.getElementById("modal_add_baler").style.display = "none"
           Swal.fire(
             {
               icon: 'success',
@@ -146,18 +156,25 @@ Template.manageNetwork.onRendered(async () => {
 
   }
   // Edit Record
-  $('#data_network').on('click', 'td.editor-edit', function (e) {
+  $('#data_baler').on('click', 'td.editor-edit', function (e) {
     e.preventDefault();
-    const data = $('#data_network').DataTable().row(this).data();
+    const data = $('#data_baler').DataTable().row(this).data();
     document.getElementById("_modal").style.display = "block";
-    document.getElementById("network").value = data.code;
-    document.getElementById("save_edit_network").onclick = function() {
-      const network1 = document.getElementById("network").value
+    document.getElementById("baler").value = data.code;
+    document.getElementById("serial").value = data.serial;
+    document.getElementById("baler_station").value = data.station_id;
+    document.getElementById("save_edit_baler").onclick = function() {
+      const baler1 = document.getElementById("baler").value
+      let serial1 = document.getElementById("serial").value
+     
+      const baler_station = document.getElementById("baler_station").value 
       const insert = {
         key : data.id,
-        code : network1,
+        code : baler1,
+        serial : serial1,
+        station_id : baler_station
       }
-      Meteor.call('editNetwork',insert,(error) => {
+      Meteor.call('editBaler',insert,(error) => {
         if (error) {
           Swal.fire(
             {
@@ -168,13 +185,13 @@ Template.manageNetwork.onRendered(async () => {
             })
   
         } else {
-          Meteor.call('dataNetwork', function (error, resultdata) {
+          Meteor.call('dataBaler', function (error, resultdata) {
             if (error) {
               console.log(error)
             }
             else {
         
-              $('#data_network').DataTable({
+              $('#data_baler').DataTable({
                 data: resultdata.rows,
                 "paging": true,
                 "destroy": true,
@@ -182,15 +199,17 @@ Template.manageNetwork.onRendered(async () => {
                 "pageLength": 10,
                 "language": {
                   "emptyTable": "Dữ liệu chưa tải thành công",
-                  "info": "Hiển thị từ _START_ đến _END_ network",
-                  "infoEmpty": "Hiển thị 0 network",
-                  "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-                  "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+                  "info": "Hiển thị từ _START_ đến _END_ baler",
+                  "infoEmpty": "Hiển thị 0 baler",
+                  "lengthMenu": "Hiển thị _MENU_ baler mỗi trang",
+                  "infoFiltered": "(Lọc từ tổng số _MAX_ baler)"
               },
                 "columns": [
               
                   { data: 'id' },
                   { data: "code" },
+                  { data: "serial" },
+                  { data: "station_id" },
                   {
                     data: null,
                     className: "dt-center editor-edit", 
@@ -226,12 +245,12 @@ Template.manageNetwork.onRendered(async () => {
   });
 
   // Delete a record
-  $('#data_network').on('click', 'td.editor-delete', function (e) {
-    const data = $('#data_network').DataTable().row(this).data();
-    document.getElementById("modal_delete_network").style.display = "block";
-    document.getElementById("content_delete").innerHTML = `Sau khi xác nhận dữ liệu network "${data.code}" sẽ bị xóa và không khôi phục lại được!`;
-    document.getElementById("delete_network").onclick = function() {
-       Meteor.call('deleteNetwork',data.id, (error) => {
+  $('#data_baler').on('click', 'td.editor-delete', function (e) {
+    const data = $('#data_baler').DataTable().row(this).data();
+    document.getElementById("modal_delete_baler").style.display = "block";
+    document.getElementById("content_delete").innerHTML = `Sau khi xác nhận dữ liệu baler "${data.code}" sẽ bị xóa và không khôi phục lại được!`;
+    document.getElementById("delete_baler").onclick = function() {
+       Meteor.call('deleteBaler',data.id, (error) => {
         if (error) {
           Swal.fire(
             {
@@ -242,13 +261,13 @@ Template.manageNetwork.onRendered(async () => {
             })
   
         } else {
-          Meteor.call('dataNetwork', function (error, resultdata) {
+          Meteor.call('dataBaler', function (error, resultdata) {
             if (error) {
               console.log(error)
             }
             else {
         
-              $('#data_network').DataTable({
+              $('#data_baler').DataTable({
                 data: resultdata.rows,
                 "paging": true,
                 "destroy": true,
@@ -256,15 +275,17 @@ Template.manageNetwork.onRendered(async () => {
                 "pageLength": 10,
                 "language": {
                   "emptyTable": "Dữ liệu chưa tải thành công",
-                  "info": "Hiển thị từ _START_ đến _END_ network",
-                  "infoEmpty": "Hiển thị 0 network",
-                  "lengthMenu": "Hiển thị _MENU_ network mỗi trang",
-                  "infoFiltered": "(Lọc từ tổng số _MAX_ network)"
+                  "info": "Hiển thị từ _START_ đến _END_ baler",
+                  "infoEmpty": "Hiển thị 0 baler",
+                  "lengthMenu": "Hiển thị _MENU_ baler mỗi trang",
+                  "infoFiltered": "(Lọc từ tổng số _MAX_ baler)"
               },
                 "columns": [
               
                   { data: 'id' },
                   { data: "code" },
+                  { data: "serial" },
+                  { data: "station_id" },
                   {
                     data: null,
                     className: "dt-center editor-edit", 
@@ -283,7 +304,7 @@ Template.manageNetwork.onRendered(async () => {
               }); 
             }
           })
-          document.getElementById("modal_delete_network").style.display = "none"
+          document.getElementById("modal_delete_baler").style.display = "none"
           Swal.fire(
             {
               icon: 'success',
@@ -299,14 +320,14 @@ Template.manageNetwork.onRendered(async () => {
 
 })
 
-Template.manageNetwork.events({
+Template.manageBaler.events({
   'click #close-modal': function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_network").style.display = "none";
-    document.getElementById("modal_delete_network").style.display = "none";
+    document.getElementById("modal_add_baler").style.display = "none";
+    document.getElementById("modal_delete_baler").style.display = "none";
   },
 })
-Template.manageNetwork.helpers({
+Template.manageBaler.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch()
   },

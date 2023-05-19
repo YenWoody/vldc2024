@@ -1,5 +1,7 @@
 <template name="dashboardTemplate">
   <style>
+    /* Option 2: Import via CSS */
+  @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css");
     #sidebar {
       /* min-width: 270px; */
       max-width: 270px;
@@ -146,6 +148,15 @@
         box-shadow: none !important;
  
     }
+    @media (min-width: 1500px) {
+    #sidebar {
+      width: 370px;
+      max-width: 370px;
+    }
+    #sidebar.active {
+     margin-left: -370px;
+    }
+    }
   </style>
   <section class="section section--header">{{> nav}}</section>
   <section class="section section--content">
@@ -189,34 +200,55 @@
                     <span class="fa fa-upload me-2"></span>Tải dữ liệu sự kiện động đất
                 </a>
             </li>
-            <li class="sidebar-item" id="manage_user_">
-                <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-user'}}"
+            <li class="sidebar-item" >
+                <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manage-user'}}"
                     aria-expanded="false">
                   
                     <span class=" fa fa-users me-2"></span>Quản lí người dùng
                 </a>
             </li>
-            <li class="sidebar-item" id="manage_station_">
-                <a class="sidebar-link waves-effect waves-dark sidebar-link"  href = "{{pathFor 'manager-station'}}"
+            <li class="sidebar-item" >
+                <a class="sidebar-link waves-effect waves-dark sidebar-link"  href = "{{pathFor 'manage-station'}}"
                     aria-expanded="false">
                    
-                    <span class=" fa fa-podcast me-2"></span>Quản lí trạm đo
+                    <span class="bi bi-inboxes-fill me-2"></span>Quản lí trạm đo
                 </a>
             </li>
-            <li class="sidebar-item" id="manage_event_">
-                <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-event'}}"
+            <li class="sidebar-item" >
+                <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manage-event'}}"
                     aria-expanded="false">
                     
                     <span class="fa fa-globe me-2"></span>Quản lí sự kiện động đất
                 </a>
             </li>
-            <li class="sidebar-item" id="manage_event_">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manager-device'}}"
+            <li class="sidebar-item" >
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manage-network'}}"
                   aria-expanded="false">
                   
-                  <span class="fa fa-microchip me-2"></span>Quản lí thiết bị
+                  <span class="bi bi-hdd-rack-fill me-2"></span>Quản lí mạng trạm
               </a>
           </li>
+            <li class="sidebar-item" >
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manage-device'}}"
+                  aria-expanded="false">
+                  
+                  <span class="bi bi-hdd-rack-fill me-2"></span>Quản lí thiết bị Dataloger
+              </a>
+          </li>
+          <li class="sidebar-item" >
+            <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manage-sensor'}}"
+                aria-expanded="false">
+                
+                <span class="bi bi-easel-fill me-2"></span>Quản lí thiết bị Sensor
+            </a>
+        </li>
+        <li class="sidebar-item" >
+          <a class="sidebar-link waves-effect waves-dark sidebar-link" href = "{{pathFor 'manage-baler'}}"
+              aria-expanded="false">
+              
+              <span class="fa fa-microchip me-2"></span>Quản lí thiết bị Baler
+          </a>
+      </li>
             {{/if}}
           </ul>
 

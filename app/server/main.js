@@ -338,6 +338,87 @@ Meteor.methods({
         )
 
     },
+    'editNetwork': function (data) {
+
+        pool.query(
+            `UPDATE "network"
+            SET "code" = '${data.code}'
+            WHERE "id" = ${data.key};`
+        )
+
+ 
+
+    },    
+    'insertNetwork': function (data){
+
+        pool.query(
+            `INSERT INTO "network" ("code") VALUES ('${data.code}')`
+        )
+   
+
+
+   },
+   'deleteNetwork': function (id) {
+    pool.query(
+        `DELETE FROM network
+              WHERE id = ${id};`
+    )
+
+},
+    'editBaler': function (data) {
+
+        pool.query(
+            `UPDATE "baler"
+            SET "serial" = '${data.serial}', "code" = '${data.code}',"station_id" = '${data.station_id}'
+            WHERE "id" = ${data.key};`
+        )
+
+ 
+
+    },    
+    'insertBaler': function (data){
+
+        pool.query(
+            `INSERT INTO "baler" ("code","serial","station_id") VALUES ('${data.code}','${data.serial}','${data.station_id}')`
+        )
+   
+
+
+   },
+   'deleteBaler': function (id) {
+    pool.query(
+        `DELETE FROM baler
+              WHERE id = ${id};`
+    )
+
+},
+    'editSensor': function (data) {
+
+            pool.query(
+                `UPDATE "sensor"
+                SET "serial1" = '${data.serial1}', "sensor1" = '${data.sensor1}',"serial2" = '${data.serial2}', "sensor2" = '${data.sensor2}', "station_id" = '${data.station_id}'
+                WHERE "id" = ${data.key};`
+            )
+
+     
+
+    },    
+    'insertSensor': function (data){
+
+            pool.query(
+                `INSERT INTO "sensor" ("serial1","sensor1","sensor2","serial2","station_id") VALUES ('${data.serial1}','${data.sensor1}','${data.sensor2}','${data.serial2}','${data.station_id}')`
+            )
+       
+
+
+       },
+       'deleteSensor': function (id) {
+        pool.query(
+            `DELETE FROM sensor
+                  WHERE id = ${id};`
+        )
+
+    },
     'editEvent': function (data) {
         if (isNaN(data.lat)){
             data.lat = null
@@ -493,6 +574,18 @@ Meteor.methods({
         const result = pool.query(
             `SELECT *
           FROM dataloger;`
+        ).then((data) => {
+            return data
+        })
+
+        return result
+
+    },
+    'dataNetwork': () => {
+
+        const result = pool.query(
+            `SELECT *
+          FROM network;`
         ).then((data) => {
             return data
         })

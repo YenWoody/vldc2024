@@ -27,13 +27,11 @@ johanbrook:publication-collector  # Test a Meteor publication by collecting its 
 session
 natestrauser:select2
 mrt:loadpicker
-kadira:blaze-layout
 underscore
 ostrio:files
 fortawesome:fontawesome
 accounts-base
 accounts-password
 accounts-ui
-kadira:flow-router
 alanning:roles
 email

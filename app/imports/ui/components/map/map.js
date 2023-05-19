@@ -22,12 +22,13 @@ Template.map.onCreated(() => {
 Meteor.startup(
   ()=>{
     Meteor.call ('importRealtimeData',function(e,r){
-      console.log(r)
     })
   }
 )
 Template.map.onRendered(() => {
   loadModules([
+    "dojo/dom",
+    "dojo/on",
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/VectorTileLayer",
@@ -54,6 +55,8 @@ Template.map.onRendered(() => {
   ])
     .then(
       async ([
+        dom, 
+        on,
         Map,
         MapView,
         VectorTileLayer,
@@ -919,7 +922,6 @@ Template.map.onRendered(() => {
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv
             // start time of the time slider - 13/02/1918
-            console.log(layerRealTime.timeInfo,"layerRealTime.timeInfo")
             const start = layerRealTime.timeInfo.fullTimeExtent.start;
             const end = layerRealTime.timeInfo.fullTimeExtent.end;
             // set time slider's full extent to
@@ -927,7 +929,6 @@ Template.map.onRendered(() => {
               start: start,
               end: end,
             };
-            console.log(start.getTime(),end.getTime() ,"check")
             // showing earthquakes with one day interval
             end.setDate(end.getDate() + 1);
             // Values property is set so that timeslider
@@ -962,7 +963,6 @@ Template.map.onRendered(() => {
                   `(Reporting_time >= ${timeSlider_realtime.timeExtent.start.getTime()} AND Reporting_time <= ${timeSlider_realtime.timeExtent.end.getTime()})`
                 );
               }
-              console.log(conditions,"conditions")
               flV.filter =
                 conditions.length > 0
                   ? { where: conditions.join("AND") }
