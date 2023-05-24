@@ -10,10 +10,10 @@ const Files = new FilesCollection({
   },
   onBeforeUpload: file => {
     // Giới hạn định dạng file
-    if (/zip/i.test(file.extension)) {
+    if (/xlsx|xls|zip/i.test(file.extension)) {
       return true;
     } else {
-      return 'Vui lòng chọn file có đuôi zip';
+      return 'Vui lòng chọn file có định dạng .zip, xlsx hoặc xls';
     }
 
   },

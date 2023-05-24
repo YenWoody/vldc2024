@@ -25,7 +25,7 @@ const pool = new pg.Pool({
     password: PG_PASSWORD,
 })
 // Insert Realtime Data
-    const FOLDER = 'assets/app/files/Sample'
+    const FOLDER = 'assets/app/files'
         run()
         function run () {
           fs.readdirSync(FOLDER).forEach((file) => {
@@ -89,7 +89,6 @@ const pool = new pg.Pool({
             values,
           ).then(({ rowCount, rows }) => {
             if (rowCount === 1) {
-              console.log(`import ${realtime.filename}`)
                // Check user đăng kí nhận tin động đất
                const users =  Meteor.users.find({}).fetch()
                users.forEach((user)=>{
@@ -247,7 +246,6 @@ Meteor.startup(function () {
             roles : 'admin',
         });
         const idAdmin = Meteor.users.findOne({username: 'admin'})
-        console.log(idAdmin._id)
         Meteor.users.update(idAdmin._id, {
             $set: {
                 roles: 'admin',
@@ -642,190 +640,221 @@ Meteor.methods({
         return result
 
     },
-    'importStation' : function (data){
+    'importEventExcel' : function (data){
         run();
-    function run() {
-		if (data != undefined) {
-			insertstation(data)
-		  }
-    }
-    function insertstation(data) {
-        data.map((e) => {
-            let station = [];
-            let baler = [];
-            let employee = [];
-            let dataloger = [];
-            let sensor = [];
-            const t = {
-                "Network": "VN",
-                "Station": "BKVB",
-                "Lat": "22.1500350",
-                "Long": "105.8561217",
-                "Height": "141",
-                "Dataloger": "Q330HR",
-                "Serial 1": "5288",
-                "Serial Dataloger": "0x01000014EB83CD64",
-                "Q330 Port": "5330",
-                "Start date": "2017/30",
-                "Local Q330 IP": "192.168.1.14",
-                "WAN IP": "113,160,162,150",
-                "Account": "vvldc2e",
-                "Passwd": "bk123456",
-                "Sensor 1": "PBB200",
-                "Date": "2017/007",
-                "Serial 2": "00215",
-                "Sensor 2": "FBA-EST",
-                "Serial 3": "5741",
-                "Baler": "Baler44",
-                "Serial 4": "12663",
-                "Tên trạm": "Bắc Kạn",
-                "Địa chỉ": "phường Huyền Tụng, thị xã Bắc Kạn, tỉnh Bắc Kạn",
-                "Quan trắc viên/Bảo vệ 1": "Lương Thị Nhạn",
-                "Số điện thoại 1": "0966.680.238"
-              }
-        station.push({
-            id: e.Station,
-            name: e['Tên trạm'],
-            lat: e.Lat,
-            long: e.Long,
-            height: e.Height,
-            network: e.Network,
-            address: e['Địa chỉ']
-        });
-        baler.push({
-            code: e.Baler,
-            serial: e['Serial 4'],
-            station_id: e.Station,
-        });
-        employee.push({
+        function run() {
+            if (data != undefined) {
+                insertEvent(data)
+            }
+        }
+        function insertEvent(data) {
+            data.map((e) => {
+            let event = [];
+            const date = [
+                e['Năm'],
+                ('0' + ( e['Tháng'])).slice(-2),
+                ('0' + ( e['Ngày'])).slice(-2)].join('-')
+            const hour = [
+                e['Giờ'], 
+                e['Phút'],
+                Math.round(e['Giây'])].join(':');
+                var datetime = date.concat(" ",hour)
+            event.push({
+                datetime: datetime,
+                lat: e['Vĩ độ'],
+                long: e['Kinh độ'],
+                ml: e['Ml'],
+                md: e['Độ sâu'],
+                ms: e['RMS']
+            });
+            let values = []
+            let s1 = ''
+            let s2 = ''
+            let cols = ['datetime', 'lat', 'long', 'ml', 'md', 'ms', 'geometry']
+            cols.forEach((col, ind) => {
+                if (ind > 0) {
+                    s1 += ', '
+                    s2 += ', '
+                }
+                s1 += `"${col}"`
+                if (col === 'geometry') {
+                    s2 += `ST_SetSRID(ST_Point($${values.push(event[0].long)}, $${values.push(event[0].lat)}), 4326)`
+                } else {
+                    s2 += `$${values.push(event[0][col])}`
+                }
+            })
+            return pool.query(
+                `INSERT INTO "event"
+                (${s1})
+                SELECT ${s2}
+                WHERE NOT EXISTS (SELECT 1 FROM "event" WHERE "datetime" = $${values.push(event[0].datetime)})
+                RETURNING "id"`,
+                values,
+            )
             
-            name: e['Quan trắc viên/Bảo vệ 1'],
-            phone: e['Số điện thoại 1'],
-            name2: e['Quan trắc viên/Bảo vệ 2'],
-            phone2: e['Số điện thoại 2'],
-            start_date: e['Start date'],
-            end_date: e['End date'],
-            station_id: e.Station,
-        })
-        dataloger.push({
-          
-            serial: e['Serial 1'],
-            dataloger: e.Dataloger,
-            start_date: e['Start date'],
-            end_date: e['End date'],
-            station_id: e.Station
-        });
-        sensor.push({
+             })
             
-            sensor1: e['Sensor 1'],
-            serial1: e['Serial 2'],
-            sensor2: e['Sensor 2'],
-            serial2: e['Serial 3'],
-            start_date: e['Start date'],
-            end_date: e['End date'],
-            dataloger_id: e['Serial 1'],
-            station_id: e.Station
-        });
+        }
 
-        let values = []
-        let s1 = ''
-        let s2 = ''
-        let cols = ['id', 'name', 'lat', 'long', 'height', 'geometry', 'network', 'address'];
-        
-        cols.forEach((col, ind) => {
-            if (ind > 0) {
-                s1 += ', '
-                s2 += ', '
+
+    },
+    'importStation' : function (data){
+            run();
+            function run() {
+                if (data != undefined) {
+                    insertstation(data)
+                }
             }
-            s1 += `"${col}"`
-            if (col === 'geometry') {
-                s2 += `ST_SetSRID(ST_Point($${values.push(station[0].long)}, $${values.push(station[0].lat)}), 4326)`
-            } else {
-                s2 += `$${values.push(station[0][col])}`
-            }
-        })
-        return pool.query(
-            `INSERT INTO "station"
-            (${s1})
-              SELECT ${s2}
-            RETURNING "id_key"`,
-            values,
-        ).then(({ rowCount, rows }) => {
-            if (rowCount === 1) {
-              function insertbaler(baler) {
-                let values = []
-                let cols = ['code', 'serial', 'station_id', 'id_stat']
-                let baler_full = baler.map((es)=>{
-                    es.id_stat = rows[0].id_key
-                    return `(${cols.map(e => `$${values.push(es[e])}`).join(', ')})`
-                    }).join(', ')
-            
-                return pool.query(
-                    `INSERT INTO "baler"
-                    (${cols.map(e => `"${e}"`).join(', ')})
-                    VALUES ${baler_full}`,
+            function insertstation(data) {
+                data.map((e) => {
+                    let station = [];
+                    let baler = [];
+                    let employee = [];
+                    let dataloger = [];
+                    let sensor = [];        
+                station.push({
+                    id: e.Station,
+                    name: e['Tên trạm'],
+                    lat: e.Lat,
+                    long: e.Long,
+                    height: e.Height,
+                    network: e.Network,
+                    address: e['Địa chỉ']
+                });
+                baler.push({
+                    code: e.Baler,
+                    serial: e['Serial 4'],
+                    station_id: e.Station,
+                });
+                employee.push({
                     
+                    name: e['Quan trắc viên/Bảo vệ 1'],
+                    phone: e['Số điện thoại 1'],
+                    name2: e['Quan trắc viên/Bảo vệ 2'],
+                    phone2: e['Số điện thoại 2'],
+                    start_date: e['Start date'],
+                    end_date: e['End date'],
+                    station_id: e.Station,
+                })
+                dataloger.push({
+                
+                    serial: e['Serial 1'],
+                    dataloger: e.Dataloger,
+                    start_date: e['Start date'],
+                    end_date: e['End date'],
+                    station_id: e.Station
+                });
+                sensor.push({
+                    
+                    sensor1: e['Sensor 1'],
+                    serial1: e['Serial 2'],
+                    sensor2: e['Sensor 2'],
+                    serial2: e['Serial 3'],
+                    start_date: e['Start date'],
+                    end_date: e['End date'],
+                    dataloger_id: e['Serial 1'],
+                    station_id: e.Station
+                });
+
+                let values = []
+                let s1 = ''
+                let s2 = ''
+                let cols = ['id', 'name', 'lat', 'long', 'height', 'geometry', 'network', 'address'];
+                
+                cols.forEach((col, ind) => {
+                    if (ind > 0) {
+                        s1 += ', '
+                        s2 += ', '
+                    }
+                    s1 += `"${col}"`
+                    if (col === 'geometry') {
+                        s2 += `ST_SetSRID(ST_Point($${values.push(station[0].long)}, $${values.push(station[0].lat)}), 4326)`
+                    } else {
+                        s2 += `$${values.push(station[0][col])}`
+                    }
+                })
+                return pool.query(
+                    `INSERT INTO "station"
+                    (${s1})
+                    SELECT ${s2}
+                    RETURNING "id_key"`,
                     values,
-                )
-            }
-            insertbaler(baler).then(()=>{
-                    function insertemployee(employee) {
+                ).then(({ rowCount, rows }) => {
+                    if (rowCount === 1) {
+                    function insertbaler(baler) {
                         let values = []
-                        let cols = ['name', 'phone','name2', 'phone2', 'start_date', 'end_date', 'station_id', 'id_stat']
-                        let employee_full = employee.map((es)=>{
+                        let cols = ['code', 'serial', 'station_id', 'id_stat']
+                        let baler_full = baler.map((es)=>{
                             es.id_stat = rows[0].id_key
                             return `(${cols.map(e => `$${values.push(es[e])}`).join(', ')})`
                             }).join(', ')
+                    
                         return pool.query(
-                            `INSERT INTO "employee"
+                            `INSERT INTO "baler"
                             (${cols.map(e => `"${e}"`).join(', ')})
-                            VALUES ${employee_full}`,
+                            VALUES ${baler_full}`,
+                            
                             values,
                         )
                     }
-                    insertemployee(employee);
-    
-            }).then(()=>{
-                function insertdataloger(dataloger) {
-                    let values = []
-                    let cols = ['serial', 'dataloger', 'start_date', 'end_date', 'station_id', 'id_stat']
-                    let dataloger_full = dataloger.map((es)=>{
-                        es.id_stat = rows[0].id_key
-                        return `(${cols.map(e => `$${values.push(es[e])}`).join(', ')})`
-                        }).join(', ')
-                
-                    return pool.query(
-                        `INSERT INTO "dataloger"
-                        (${cols.map(e => `"${e}"`).join(', ')})
-                        VALUES ${dataloger_full}`,
-                        values,
-                    )
-                }
-                insertdataloger(dataloger) 
-                
-            }).then(()=>{
-                function insertsensor(sensor) {
-                    let values = []
-                
-                    let cols = ['sensor1', 'serial1','sensor2', 'serial2', 'start_date', 'end_date', 'dataloger_id', 'id_stat','station_id']
-                    let sensor_full = sensor.map((es)=>{
-                        es.id_stat = rows[0].id_key
-                        return `(${cols.map(e => `$${values.push(es[e])}`).join(', ')})`
-                        }).join(', ')
-                    return pool.query(
-                        `INSERT INTO "sensor"
-                        (${cols.map(e => `"${e}"`).join(', ')})
-                        VALUES ${sensor_full}`,
-                        values,
-                    )
-                }
-                insertsensor(sensor)
+                    insertbaler(baler).then(()=>{
+                            function insertemployee(employee) {
+                                let values = []
+                                let cols = ['name', 'phone','name2', 'phone2', 'start_date', 'end_date', 'station_id', 'id_stat']
+                                let employee_full = employee.map((es)=>{
+                                    es.id_stat = rows[0].id_key
+                                    return `(${cols.map(e => `$${values.push(es[e])}`).join(', ')})`
+                                    }).join(', ')
+                                return pool.query(
+                                    `INSERT INTO "employee"
+                                    (${cols.map(e => `"${e}"`).join(', ')})
+                                    VALUES ${employee_full}`,
+                                    values,
+                                )
+                            }
+                            insertemployee(employee);
+            
+                    }).then(()=>{
+                        function insertdataloger(dataloger) {
+                            let values = []
+                            let cols = ['serial', 'dataloger', 'start_date', 'end_date', 'station_id', 'id_stat']
+                            let dataloger_full = dataloger.map((es)=>{
+                                es.id_stat = rows[0].id_key
+                                return `(${cols.map(e => `$${values.push(es[e])}`).join(', ')})`
+                                }).join(', ')
+                        
+                            return pool.query(
+                                `INSERT INTO "dataloger"
+                                (${cols.map(e => `"${e}"`).join(', ')})
+                                VALUES ${dataloger_full}`,
+                                values,
+                            )
+                        }
+                        insertdataloger(dataloger) 
+                        
+                    }).then(()=>{
+                        function insertsensor(sensor) {
+                            let values = []
+                        
+                            let cols = ['sensor1', 'serial1','sensor2', 'serial2', 'start_date', 'end_date', 'dataloger_id', 'id_stat','station_id']
+                            let sensor_full = sensor.map((es)=>{
+                                es.id_stat = rows[0].id_key
+                                return `(${cols.map(e => `$${values.push(es[e])}`).join(', ')})`
+                                }).join(', ')
+                            return pool.query(
+                                `INSERT INTO "sensor"
+                                (${cols.map(e => `"${e}"`).join(', ')})
+                                VALUES ${sensor_full}`,
+                                values,
+                            )
+                        }
+                        insertsensor(sensor)
+                    })
+                    }
+                })
             })
+                
             }
-          })
-      })
-        
-    }
 
 
     },
@@ -879,13 +908,11 @@ Meteor.methods({
                     }
 
                })
-                console.log(event.ml,"event")
                     return insertEvent(event)
                 }).then(({ rows: [{ id }] }) => {
                     console.log('insert event')
                     let arr = event_station.map((elem) => {
                         elem.event_id = id
-
                         return insertEvent_station(elem)
                     })
                     return Promise.all(arr)

@@ -6,6 +6,7 @@ import '../../pages/login/login';
 import '../not_access/not_access'
 import JSZip from 'jszip';
 import  Swal  from 'sweetalert2/dist/sweetalert2.js';
+import XLSX from 'xlsx';
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.uploadedFiles.helpers({
@@ -65,7 +66,102 @@ Template.uploadForm.events({
       // We upload only one file, in case
       // there was multiple files selected
       var file = e.currentTarget.files[0];
-      if (file) {
+      const file_type = file.name.split(".").pop()
+      console.log(file_type)
+      if (file_type === "xls" || file_type === "xlsx" ) { 
+
+        var ExcelToJSON = function() {
+
+          this.parseExcel = function(file) {
+            var reader = new FileReader();
+      
+            reader.onload = function(e) {
+              var data = e.target.result;
+              var workbook = XLSX.read(data, {
+                type: 'binary'
+              });
+              workbook.SheetNames.forEach(function(sheetName) {
+                var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                var json_object = JSON.stringify(XL_row_object);
+                const data_json = JSON.parse(json_object)
+                Meteor.call('importEventExcel',data_json, (error) => {
+                  if (error) {
+                    Swal.fire({
+                      icon : "error",
+                      title: "Không thể import dữ liệu,vui lòng kiểm tra lại tệp tin!",
+                      text :error.reason,
+                      heightAuto: false,
+                    });
+                    
+                  } else {
+                    Swal.fire(
+                      {
+                        icon : "success",
+                        title: "Chúc mừng!",
+                        text :"Cài dữ liệu vào database thành công! Tiến trình tải lên đang tiếp tục! ",
+                        heightAuto: false,
+                      }
+                 
+                    )
+                    
+                  }
+                })
+              })
+            };
+      
+            reader.onerror = function(ex) {
+              console.log(ex);
+            };
+      
+            reader.readAsBinaryString(file);
+          };
+        };
+      
+
+       
+          var xl2json = new ExcelToJSON();
+          xl2json.parseExcel(file);
+ 
+
+        ///////////
+
+
+
+        var uploadInstance = Files.insert({
+          file: file,
+          // fileId: file.name.slice(0, 11),
+          chunkSize: 'dynamic'
+        }, false);
+        uploadInstance.on('start', function () {
+          template.currentUpload.set(this);
+        });
+
+        // End Read Zip File
+        uploadInstance.on('end', function (error, fileObj) {
+          if (error) {
+            Swal.fire(
+              {
+                icon : "error",
+                title: "Lỗi trong quá trình tải lên",
+                text :error.reason,
+                heightAuto: false,
+              });
+          } else {
+            Swal.fire(
+              {
+                icon : "success",
+                title: "Chúc mừng!",
+                text :'Tệp tin"' + fileObj.name + '" tải lên thành công!',
+                heightAuto: false,
+              }
+              );
+          }
+          template.currentUpload.set(false);
+        });
+        uploadInstance.start();
+      }
+      else {
+      
         var uploadInstance = Files.insert({
           file: file,
           // fileId: file.name.slice(0, 11),
