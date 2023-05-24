@@ -16,8 +16,7 @@ Template.map.onCreated(() => {
   loadCss(
     "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
   );
-  datatables(window, $);
-  datatables_bs(window, $);
+ 
 });
 Meteor.startup(
   ()=>{
@@ -26,9 +25,12 @@ Meteor.startup(
   }
 )
 Template.map.onRendered(() => {
+  document.addEventListener('DOMContentLoaded', function () {
+    datatables(window, $);
+    datatables_bs(window, $);
+  });
+ 
   loadModules([
-    "dojo/dom",
-    "dojo/on",
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/VectorTileLayer",
@@ -37,26 +39,17 @@ Template.map.onRendered(() => {
     "esri/widgets/TimeSlider",
     "esri/widgets/BasemapGallery",
     "esri/layers/TileLayer",
-    "esri/layers/FeatureLayer",
-    "esri/layers/MapImageLayer",
-    "esri/layers/GroupLayer",
     "esri/widgets/Legend",
     "esri/widgets/Expand",
-    "esri/rest/support/Query",
     "esri/widgets/Slider",
     "esri/widgets/BasemapToggle",
     "esri/widgets/CoordinateConversion",
     "esri/layers/WebTileLayer",
     "esri/widgets/LayerList",
     "esri/popup/content/CustomContent",
-    "esri/symbols/IconSymbol3DLayer",
-    "esri/layers/support/LabelClass",
-    "dojo/domReady!"
   ])
     .then(
       async ([
-        dom, 
-        on,
         Map,
         MapView,
         VectorTileLayer,
@@ -65,20 +58,14 @@ Template.map.onRendered(() => {
         TimeSlider,
         BasemapGallery,
         TileLayer,
-        FeatureLayer,
-        MapImageLayer,
-        GroupLayer,
         Legend,
         Expand,
-        Query,
         Slider,
         BasemapToggle,
         CoordinateConversion,
         WebTileLayer,
         LayerList,
         CustomContent,
-        IconSymbol3DLayer,
-        LabelClass,
       ]) => {
 
         function dataRealTimes() {
