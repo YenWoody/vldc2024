@@ -12,10 +12,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Email } from 'meteor/email';
 // server.js
 const PG_HOST = '127.0.0.1'
-const PG_PORT = '5433'
+const PG_PORT = '5432'
 const PG_DATABASE = 'vldc'
 const PG_USER = 'pgadmin'
-const PG_PASSWORD = '1'
+const PG_PASSWORD = 'secure_password'
 // const DIR_PATH = f
 const pool = new pg.Pool({
     host: PG_HOST,
@@ -687,11 +687,10 @@ Meteor.methods({
                 `INSERT INTO "event"
                 (${s1})
                 SELECT ${s2}
-                WHERE NOT EXISTS (SELECT 1 FROM "event" WHERE "datetime" = $${values.push(event[0].datetime)})
+                WHERE NOT EXISTS (SELECT 1 FROM "event" WHERE "datetime" = '${event[0].datetime}')
                 RETURNING "id"`,
                 values,
-            )
-            
+            )           
              })
             
         }
@@ -877,28 +876,28 @@ Meteor.methods({
                                 from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
                                 subject: "Thông báo tin động đất",
                                 html: `
-                                <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
-          style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
-          <tr>
-              <td style="height:40px;">&nbsp;</td>
-          </tr>
-          <tr>
-              <td style="padding:0 35px;">
-                  <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Đây là tin nhắn tự động thông báo động đất của Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</h1>
-                  <span
-                      style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
-                  <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                  Cảnh báo động đất có cường độ <b>${event.ml}</b> độ Richter, vị trí xảy ra tại vĩ độ <b>${event.lat}</b> , kinh độ <b>${event.long}</b>, thời gian ghi nhận sự kiện <b>${event.datetime}</b>
-                  </p>
-                   
-                  <a href="/"
-                      style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
-              </td>
-          </tr>
-          <tr>
-              <td style="height:40px;">&nbsp;</td>
-          </tr>
-      </table>`,
+                                                            <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+                                    style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+                                    <tr>
+                                        <td style="height:40px;">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:0 35px;">
+                                            <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Đây là tin nhắn tự động thông báo động đất của Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</h1>
+                                            <span
+                                                style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                                            <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                                            Cảnh báo động đất có cường độ <b>${event.ml}</b> độ Richter, vị trí xảy ra tại vĩ độ <b>${event.lat}</b> , kinh độ <b>${event.long}</b>, thời gian ghi nhận sự kiện <b>${event.datetime}</b>
+                                            </p>
+                                            
+                                            <a href="/"
+                                                style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:40px;">&nbsp;</td>
+                                    </tr>
+                                </table>`,
                                 
                              });
                         }
@@ -908,14 +907,15 @@ Meteor.methods({
                     }
 
                })
-                    return insertEvent(event)
-                }).then(({ rows: [{ id }] }) => {
-                    console.log('insert event')
-                    let arr = event_station.map((elem) => {
-                        elem.event_id = id
+                return insertEvent(event)
+                }).then(({ rowCount, rows }) => {
+                    console.log('insert event', rowCount, rows)
+                    if (rowCount === 1) {
+                    event_station.map((elem) => {
+                        elem.event_id = rows[0].id
                         return insertEvent_station(elem)
                     })
-                    return Promise.all(arr)
+                }
                 }).then(() => {
                     console.log('insert event_station')
                 })
@@ -928,7 +928,9 @@ Meteor.methods({
             let event = {}
             let m = pathFile.match(/([0-9]{2})-([0-9]{2})([0-9]{2})-([0-9]{2})(L|R)\.S([0-9]{4})([0-9]{2})$/);
             if (m != null) {
-                event.datetime = new Date(Number(m[6]), Number(m[7]) - 1, Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]))
+                // event.datetime = new Date(Number(m[6]), Number(m[7]) - 1, Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4]));
+                event.datetime = m[6]+"-"+ m[7] +"-"+m[1]+" "+m[2]+":"+ m[3]+":"+m[4]
+        
             }
             let m1 = lines[0].match(/L +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+) + (HAN) +([0-9]+) +([0-9]+\.[0-9]+) +([0-9]+\.[0-9]+)/)
             if (m1 != null) {
@@ -1019,6 +1021,7 @@ Meteor.methods({
                 `INSERT INTO "event"
                 (${s1})
                 SELECT ${s2}
+                WHERE NOT EXISTS (SELECT 1 FROM "event" WHERE "datetime" = '${event.datetime}')
                 RETURNING "id"`,
                 values,
             )

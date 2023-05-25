@@ -557,7 +557,8 @@ Template.map.onRendered(() => {
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
             const day = date.getDate();
-            dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
+        
+            dateFormat = ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây , " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
             return `
                 <table class="display" style="border-style: double">
                     <thead>
@@ -593,6 +594,31 @@ Template.map.onRendered(() => {
               .then(function (response) {
                 const dataSet = response.features;
                 const row_data = [];
+                if (dataSet.length == 0){
+                  row_data.push(` <tr>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>      
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>      
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>      
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>      
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>
+                    <td>Không có thông tin</td>      
+                    <td>Không có thông tin</td>
+                    </tr>`);
+                }
+                else {
                 dataSet.map((e) => {
                   row_data.push(` <tr>
                     <td>${e.attributes.station_id}</td>
@@ -616,7 +642,7 @@ Template.map.onRendered(() => {
                     <td>${e.attributes.w}</td>
                     <td>${e.attributes.ws}</td>
                     </tr>`);
-                });
+                });}
                 return `<div style="margin: 10px;"><b>Thông số từ các trạm đo</b></div>
                     <table class="display" style="border-style: double">
                     <thead>
