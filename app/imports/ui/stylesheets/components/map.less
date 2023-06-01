@@ -82,9 +82,10 @@ td.dataTables_empty {
 //   height: 440px!important;
 // }
 div#dulieu_wrapper {
-  height: 100%;
-  // display: inline;
-  // margin: 10px;
+
+    // padding: 10px;
+    // border: solid gray 1px;
+    // border-radius: 5px;
   padding: unset;
   border: unset;
   border-radius: 0;
@@ -241,7 +242,7 @@ li.esri-layer-list__item {
 
   ._main {
     width: 65%;
-    // height: 60%;
+   max-height: 80vh;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -251,7 +252,7 @@ li.esri-layer-list__item {
     color: #0079c1;
     background: #ffffff;
     box-shadow: 0 0px 8px #00000020;
-    overflow: hidden;
+    overflow: auto;
     z-index: 11;
   }
 
@@ -280,10 +281,8 @@ li.esri-layer-list__item {
 
       ._footer {
         display: flex;
-        /* flex-direction: column; */
-        justify-content: space-evenly;
-        // margin-top: auto;
-        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-around;
 
         .close-modal {
           cursor: pointer;

@@ -124,11 +124,16 @@ Template.map.onRendered(() => {
 
         // Fetch Data From Iris
         var d = new Date();
+        var lastday = d.getDate() - 1
+        if (lastday == 0 ){
+          lastday = 1
+        }
         const getDate = [
           d.getFullYear(),
           ('0' + (d.getMonth() + 1)).slice(-2),
-          ('0' + (d.getDate()-1)).slice(-2)
+          ('0' + lastday).slice(-2)
         ].join('-');
+        
          const response = await fetch(`https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=100&output=text`)
          const dataIris = await response.text()
         const dtIris = [];
@@ -227,9 +232,25 @@ Template.map.onRendered(() => {
 
         const defaultSym = {
           type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-          color: [238, 174, 15, 0.36],
+          color: [8, 174, 153, 0.5],
           outline: {
-            color: [238, 174, 15, 0.36],
+            color: [8, 174, 153, 0.9],
+            width: 1,
+          },
+        };
+        const defaultSym_Realtime = {
+          type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+          color: [14, 154, 225, 0.5],
+          outline: {
+            color: [14, 154, 225, 0.9],
+            width: 1,
+          },
+        };
+        const defaultSym_VietNam = {
+          type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+          color: [232, 112, 0, 0.5],
+          outline: {
+            color: [238, 174, 15],
             width: 1,
           },
         };
@@ -311,9 +332,80 @@ Template.map.onRendered(() => {
             },
           ],
         };
+        const renderer_realtime = {
+          type: "simple", // autocasts as new SimpleRenderer()
+          symbol: defaultSym_Realtime,
+          visualVariables: [
+            {
+              type: "size",
+              field: "magnitude",
+              legendOptions: {
+                title: "Mức độ động đất",
+              },
+              stops: [
+                {
+                  value: 1,
+                  size: 3,
+                  label: "0-1",
+                  color: "black",
+                },
+                {
+                  value: 1.5,
+                  size: 5,
+                  label: "1.1-1.5",
+                },
+                {
+                  value: 2,
+                  size: 7,
+                  label: "1.6-2",
+                },
+                {
+                  value: 2.5,
+                  size: 10,
+                  label: "2.1-2.5",
+                },
+                {
+                  value: 3,
+                  size: 12,
+                  label: "2.6-3",
+                },
+                {
+                  value: 3.5,
+                  size: 13,
+                  label: "3.1-3.5",
+                },
+                {
+                  value: 4,
+                  size: 15,
+                  label: "3.6-4",
+                },
+                {
+                  value: 4.5,
+                  size: 17,
+                  label: "4.1-4.5",
+                },
+                {
+                  value: 5,
+                  size: 19,
+                  label: "4.6-5",
+                },
+                {
+                  value: 6,
+                  size: 22,
+                  label: "5.1-6",
+                },
+                {
+                  value: 7,
+                  size: 25,
+                  label: "6.1-7",
+                },
+              ],
+            },
+          ],
+        };
         const renderer1 = {
           type: "simple", // autocasts as new SimpleRenderer()
-          symbol: defaultSym,
+          symbol: defaultSym_VietNam,
           visualVariables: [
             {
               type: "size",
@@ -549,7 +641,7 @@ Template.map.onRendered(() => {
           listMode: "hide",
         });
 
-        const weekday = ["Chủ nhât","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"];
+     
         const contentEvent = new CustomContent({
           outFields: ["*"],
           creator: (event) => {
@@ -558,12 +650,12 @@ Template.map.onRendered(() => {
             const month = date.getMonth() + 1;
             const day = date.getDate();
         
-            dateFormat = ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây , " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
+            dateFormat = "Ngày " + day +"/"+ month+ "/" +year +", "+ ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây";
             return `
                 <table class="display" style="border-style: double">
                     <thead>
                         <tr style="border-bottom: groove">
-                            <th class="content_popup">Thời gian</th>
+                            <th class="content_popup">Thời gian (GMT)</th>
                             <th class="content_popup">Độ sâu</th>
                             <th class="content_popup">Độ lớn (Ml)</th>
                             <th class="content_popup">Vĩ độ</th>
@@ -620,6 +712,17 @@ Template.map.onRendered(() => {
                 }
                 else {
                 dataSet.map((e) => {
+                  for (const prop in e.attributes) {
+                    if (e.attributes[prop] === undefined ) {
+                     e.attributes[prop] = "Chưa có thông tin"
+                    }
+                    if (e.attributes[prop] === null ) {
+                      e.attributes[prop] = "Chưa có thông tin"
+                     }
+                     if (prop === undefined ) {
+                      e.attributes[prop] = "Chưa có thông tin"
+                     }
+                   }
                   row_data.push(` <tr>
                     <td>${e.attributes.station_id}</td>
                     <td>${e.attributes.ain}</td>
@@ -682,11 +785,21 @@ Template.map.onRendered(() => {
           outFields: ["*"],
           creator: (event) => {
             const date = new Date(event.graphic.attributes.time);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+        
+            dateFormat = "Ngày " + day +"/"+ month+ "/" +year +", "+ ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây ";
+            for (const prop in event.graphic.attributes) {
+             if (event.graphic.attributes[prop] == undefined ) {
+              event.graphic.attributes[prop] = "Chưa có thông tin"
+             }
+            }
             return `
                 <table class="display" style="border-style: double">
                     <thead>
                         <tr style="border-bottom: groove">
-                            <th class="content_popup">Thời gian</th>
+                            <th class="content_popup">Thời gian (GMT)</th>
                             <th class="content_popup">Địa điểm</th>
                             <th class="content_popup">Loại cường độ</th>
                             <th class="content_popup">Cường độ</th>
@@ -696,7 +809,7 @@ Template.map.onRendered(() => {
                     </thead>
                     <tbody>
                     <tr>
-                    <td>${date}</td>
+                    <td>${dateFormat}</td>
                     <td>${event.graphic.attributes.location}</td>
                     <td>${event.graphic.attributes.magtype}</td>
                     <td>${event.graphic.attributes.magnitude}</td>              
@@ -719,6 +832,14 @@ Template.map.onRendered(() => {
                       const dataSet = response.features
                       const row_data = []
                       dataSet.map(e => {
+                    for (const prop in e.attributes) {
+                          if (e.attributes[prop] == undefined ) {
+                           e.attributes[prop] = "Chưa có thông tin"
+                          }
+                          if (e.attributes[prop] == null ) {
+                            e.attributes[prop] = "Chưa có thông tin"
+                           }
+                    }
                           row_data.push(` <tr>
                   <td>${e.attributes.Sta}</td>
                   <td>${e.attributes.pa}</td>
@@ -756,7 +877,14 @@ Template.map.onRendered(() => {
       const contentRealTime = new CustomContent({
         outFields: ["*"],
         creator: (event) => {
-          
+          for (const prop in event.graphic.attributes) {
+            if (event.graphic.attributes[prop] == undefined ) {
+             event.graphic.attributes[prop] = "Chưa có thông tin"
+            }
+            if (event.graphic.attributes[prop] == null ) {
+              event.graphic.attributes[prop] = "Chưa có thông tin"
+             }
+           }
           return `
               <table class="display" style="border-style: double">
                   <thead>
@@ -803,7 +931,7 @@ Template.map.onRendered(() => {
           listMode: "show",
           renderer: renderer,
           legendEnabled : false,
-          title: "Động đất trên thế giới",
+          title: "Động đất trên thế giới ( Hiển thị dữ liệu trong một ngày gần nhất )",
           visible: true,
           labelsVisible: false,
           popupEnabled: true,
@@ -828,7 +956,7 @@ Template.map.onRendered(() => {
         });
         const layerRealTime = new GeoJSONLayer({
           url: url_realTime,
-          renderer: renderer2,
+          renderer: renderer_realtime,
           legendEnabled : false,
           title: "Động đất tại Việt Nam (Real time)",
           visible: true,
@@ -915,13 +1043,7 @@ Template.map.onRendered(() => {
 
         });
         
-        const layerListExpand = new Expand({
-          expandIconClass: "esri-icon-layer-list",
-          view: view,
-          content: layerList,
-          expandTooltip : "Danh sách lớp dữ liệu"
-        });
-        view.ui.add(layerListExpand, "top-right");
+
         // wait till the layer view is loaded
         let layerView;
         view.when(function () {
@@ -1076,20 +1198,52 @@ Template.map.onRendered(() => {
                     info: "Hiển thị từ _START_ đến _END_ sự kiện",
                     infoFiltered: " ",
                   },
-                  columns: [
-                    // { data: 'attributes.year' },
-                    // { data: 'attributes.month' },
-                    { 
+                  columns: [                    
+                            { 
+                              data: "attributes.datetime",
+                              render: function ( data, type, row ) {
+                                const date = data
+                                const year = date.getFullYear();
+                              return year;
+                              }  
+                          },
+                          { 
+                            data: "attributes.datetime",
+                            render: function ( data, type, row ) {
+                              const date = data              
+                              const month = date.getMonth() + 1;
+                              return month;
+                            }  
+                        },
+                        { 
+                          data: "attributes.datetime",
+                          render: function ( data, type, row ) {
+                            const date = data
+                            const day = date.getDate();
+                          return day;
+                          }  
+                      },
+                      { 
+                        data: "attributes.datetime",
+                        render: function ( data, type, row ) {
+                          const date = data
+                        return date.getHours();
+                        }  
+                    },
+                    {
+                    data: "attributes.datetime",
+                    render: function ( data, type, row ) {
+                      const date = data
+                    return date.getMinutes();
+                    }  
+                    },
+                    {
                       data: "attributes.datetime",
                       render: function ( data, type, row ) {
                         const date = data
-                        const year = date.getFullYear();
-                        const month = date.getMonth() + 1;
-                        const day = date.getDate();
-                        dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
-                      return dateFormat;
+                        return date.getSeconds();
                       }  
-                   },
+                      },
                     { data: "attributes.ml" },
                     { data: "attributes.lat" },
                     { data: "attributes.long" },
@@ -1161,16 +1315,51 @@ Template.map.onRendered(() => {
             columns: [
               // { data: 'attributes.year' },
               // { data: 'attributes.month' },
-              { data: "attributes.datetime",
+              { 
+                data: "attributes.datetime",
+                render: function ( data, type, row ) {
+                  const date = data
+                  const year = date.getFullYear();
+                return year;
+                }  
+            },
+            { 
+              data: "attributes.datetime",
               render: function ( data, type, row ) {
-                const date = data
-                const year = date.getFullYear();
+                const date = data              
                 const month = date.getMonth() + 1;
-                const day = date.getDate();
-                dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
-     
-              return dateFormat;
-          }   },
+                return month;
+              }  
+          },
+          { 
+            data: "attributes.datetime",
+            render: function ( data, type, row ) {
+              const date = data
+              const day = date.getDate();
+            return day;
+            }  
+        },
+        { 
+          data: "attributes.datetime",
+          render: function ( data, type, row ) {
+            const date = data
+          return date.getHours();
+          }  
+      },
+      {
+      data: "attributes.datetime",
+      render: function ( data, type, row ) {
+        const date = data
+      return date.getMinutes();
+      }  
+      },
+      {
+        data: "attributes.datetime",
+        render: function ( data, type, row ) {
+          const date = data
+          return date.getSeconds();
+        }  
+        },
               { data: "attributes.ml" },
               { data: "attributes.lat" },
               { data: "attributes.long" },
@@ -1184,6 +1373,8 @@ Template.map.onRendered(() => {
               if (highlightSelect) {
                 highlightSelect.remove();
               }
+              console.log(layerView)
+              console.log(view,"view")
               highlightSelect = layerView.highlight(data);
               view.goTo({
                 geometry: data.geometry,
@@ -1237,7 +1428,13 @@ Template.map.onRendered(() => {
         view.ui.add(legendExpand, {
           position: "bottom-left",
         });
-
+        const layerListExpand = new Expand({
+          expandIconClass: "esri-icon-layer-list",
+          view: view,
+          content: layerList,
+          expandTooltip : "Danh sách lớp dữ liệu",
+          group: "top-right",
+        });
         const expand = new Expand({
           view: view,
           expandIconClass: "esri-icon-filter",
@@ -1245,7 +1442,7 @@ Template.map.onRendered(() => {
           content: document.getElementById("infoDiv"),
           group: "top-right",
         });
-        view.ui.add([bgExpand, expand], "top-right");
+        view.ui.add([layerListExpand,bgExpand, expand], "top-right");
 
         let ccWidget = new CoordinateConversion({
           view: view,

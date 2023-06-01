@@ -1004,13 +1004,15 @@ Template.map_station.onRendered(() => {
             expandIconClass: "esri-icon-edit",
             view: view,
             expandTooltip : "Công cụ vẽ",
-            content: sketch
+            content: sketch,
+            group: "top-right"
         });
         const layerListExpand = new Expand({
             expandIconClass: "esri-icon-layer-list",
             view: view,
             expandTooltip : "Danh sách lớp dữ liệu",
-            content: layerList
+            content: layerList,
+            group: "top-right"
         });
         view.ui.add(layerSketchExpand, "top-right");
         view.ui.add(layerListExpand, "top-right");
@@ -1189,7 +1191,7 @@ Template.map_station.onRendered(() => {
             view: view,
             content: basemapGallery,
             expandTooltip: "Danh sách bản đồ nền",
-            group: "top-right"
+            group: "top-right",
         });
         const legendExpand = new Expand({
             view: view,
@@ -1220,7 +1222,12 @@ Template.map_station.onRendered(() => {
             // the webmap successfully loaded
             $(".preloader").fadeOut();
           })
-
+        var modal = document.getElementById("_modal");
+        window.onclick = function (event) {
+			if (event.target === modal) {
+                document.getElementById("_modal").style.display = "none"
+			}
+		}
     }).catch(err => {
         // handle any errors
         console.error(err);
@@ -1249,6 +1256,6 @@ Template.map_station.events({
         document.getElementById("_modal").style.display = "none"
 
     },
-
+   
 
 });
