@@ -1060,7 +1060,7 @@ Template.map_station.onRendered(() => {
                     "paging": false,
                     "destroy": true,
                     "scrollX": 'true',
-                    "scrollY": "250",
+                    "scrollY": "60vh",
                     "language": {
                         "emptyTable": "Sử dụng bộ lọc để hiển thị dữ liệu",
                         "info": "Hiển thị từ _START_ đến _END_ Trạm",
