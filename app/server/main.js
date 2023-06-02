@@ -12,10 +12,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Email } from 'meteor/email';
 // server.js
 const PG_HOST = '127.0.0.1'
-const PG_PORT = '5433'
+const PG_PORT = '5432'
 const PG_DATABASE = 'vldc'
-const PG_USER = 'postgres'
-const PG_PASSWORD = '1'
+const PG_USER = 'pgadmin'
+const PG_PASSWORD = 'secure_password'
 // const DIR_PATH = f
 const pool = new pg.Pool({
     host: PG_HOST,
@@ -112,7 +112,7 @@ const pool = new pg.Pool({
                   <span
                       style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                  Cảnh báo động đất có cường độ <b>${realtime.Mall}</b> độ Richter, vị trí xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
+                  Trận động đất có độ lớn <b>${realtime.Mall}</b> độ Richter, xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
                   </p>
                    
                   <a href="/"
@@ -887,7 +887,7 @@ Meteor.methods({
                                             <span
                                                 style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                                             <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                                            Cảnh báo động đất có cường độ <b>${event.ml}</b> độ Richter, vị trí xảy ra tại vĩ độ <b>${event.lat}</b> , kinh độ <b>${event.long}</b>, thời gian ghi nhận sự kiện <b>${event.datetime}</b>
+                                            Trận động đất có độ lớn <b>${event.ml}</b> độ Richter, xảy ra tại vĩ độ <b>${event.lat}</b> , kinh độ <b>${event.long}</b>, thời gian ghi nhận sự kiện <b>${event.datetime}</b>
                                             </p>
                                             
                                             <a href="/"

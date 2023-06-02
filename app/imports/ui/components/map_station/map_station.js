@@ -250,7 +250,7 @@ Template.map_station.onRendered(() => {
         };
         const iconstation = {
             type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
-            url: "/img/broadcast1.png",
+            url: "/img/station.png",
             width: "16px",
             height: "16px"
         };
@@ -506,105 +506,140 @@ Template.map_station.onRendered(() => {
         const contentEvent = new CustomContent({
             outFields: ["*"],
             creator: (event) => {
-                const date = new Date(event.graphic.attributes.datetime)
-                const year = date.getFullYear();
-                const month = date.getMonth() + 1;
-                const day = date.getDate();
-                dateFormat = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()+", " + weekday[date.getUTCDay()] + " ngày " + day +"/"+ month+ "/" +year + " (GMT)";
-                return `
-                <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Thời gian</th>
-                            <th class="content_popup">Độ sâu</th>
-                            <th class="content_popup">Cường độ</th>
-                            <th class="content_popup">Vĩ độ</th>
-                            <th class="content_popup">Kinh độ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                    <td>${dateFormat}</td>
-                    <td>${event.graphic.attributes.md}</td>
-                    <td>${event.graphic.attributes.ml}</td>              
-                    <td>${event.graphic.attributes.lat}</td>
-                    <td>${event.graphic.attributes.long}</td>
-                    </tr>
-                    </tbody>
-                </table>`
-                
-            }
-        })
-        const contentEventStation = new CustomContent({
+              const date = new Date(event.graphic.attributes.datetime);
+              const year = date.getFullYear();
+              const month = date.getMonth() + 1;
+              const day = date.getDate();
+          
+              dateFormat = "Ngày " + day +"/"+ month+ "/" +year +", "+ ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây";
+              return `
+                  <table class="display" style="border-style: double">
+                      <thead>
+                          <tr style="border-bottom: groove">
+                              <th class="content_popup">Thời gian (GMT)</th>
+                              <th class="content_popup">Độ sâu</th>
+                              <th class="content_popup">Độ lớn (Ml)</th>
+                              <th class="content_popup">Vĩ độ</th>
+                              <th class="content_popup">Kinh độ</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                      <td>${dateFormat}</td>
+                      <td>${event.graphic.attributes.md}</td>
+                      <td>${event.graphic.attributes.ml}</td>              
+                      <td>${event.graphic.attributes.lat}</td>
+                      <td>${event.graphic.attributes.long}</td>
+                      </tr>
+                      </tbody>
+                  </table>`;
+            },
+          });
+          const contentEventStation = new CustomContent({
             outFields: ["*"],
             creator: (event) => {
-                const where = `event_id = ${event.graphic.attributes.id}`;
-                let query_eventStation = layerEventStaions.createQuery();
-                query_eventStation.where = where;
-                query_eventStation.outFields = "*";
-                return layerEventStaions.queryFeatures(query_eventStation)
-                    .then(function (response) {
-                        const dataSet = response.features
-                        const row_data = []
-                        dataSet.map(e => {
-                            row_data.push(` <tr>
-                    <td>${e.attributes.station_id}</td>
-                    <td>${e.attributes.ain}</td>
-                    <td>${e.attributes.amplit}</td>              
-                    <td>${e.attributes.caz7}</td>
-                    <td>${e.attributes.coda}</td>
-                    <td>${e.attributes.d}</td>
-                    <td>${e.attributes.dis}</td>
-                    <td>${e.attributes.event_id}</td>
-                    <td>${e.attributes.hrmm}</td>
-                    <td>${e.attributes.i}</td>
-                    <td>${e.attributes.peri}</td>
-                    <td>${e.attributes.phas}</td>
-                    <td>${e.attributes.secon}</td>
-                    <td>${e.attributes.sp}</td>
-                    <td>${e.attributes.tres}</td>
-                    <td>${e.attributes.velo}</td>
-                    <td>${e.attributes.ar}</td>
-                    <td>${e.attributes.azimu}</td>
-                    <td>${e.attributes.w}</td>
-                    <td>${e.attributes.ws}</td>
-                    </tr>`)
-                        });
-                       
-                        return `<div style="margin: 10px;"><b>Thông số từ các trạm đo</b></div>
-                    <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên Trạm đo</th>
-                            <th class="content_popup">Góc tới hạn (ain)</th>
-                            <th class="content_popup">Biên độ dao động từ 0 đến đỉnh trội (amplit)</th>
-                            <th class="content_popup">Góc back azimuth (caz7)</th>
-                            <th class="content_popup">Độ dài của dao động(coda)</th>
-                            <th class="content_popup">Dao động up hoặc down(d)</th>
-                            <th class="content_popup">Khoảng cách chấn tâm (dis)</th>
-                            <th class="content_popup">Id Sự kiện</th>
-                            <th class="content_popup">Giờ, phút sóng tới trạm</th>
-                            <th class="content_popup">Chỉ số chất lượng băng sóng(i)</th>
-                            <th class="content_popup">Chu kì (peri)</th>
-                            <th class="content_popup">Pha sóng pick trên băng ghi địa chấn(phas)</th>
-                            <th class="content_popup">Giây sóng tới trạm</th>
-                            <th class="content_popup">Thành phần sử dụng pick sóng(sp)</th>
-                            <th class="content_popup">Phần dư thời gian truyền sóng (tres)</th>
-                            <th class="content_popup">Vận tốc pha (velo)</th>
-                            <th class="content_popup">ar</th>
-                            <th class="content_popup">Góc azimuth</th>
-                            <th class="content_popup">Trọng số sử dụng pha sóng đã pick(w)</th>
-                            <th class="content_popup">W</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       ${row_data.join("")}
-                    </tbody>
-                </table>`
-                    });
-
-            }
-        });
+              const where = `event_id = ${event.graphic.attributes.id}`;
+              let query_eventStation = layerEventStaions.createQuery();
+              query_eventStation.where = where;
+              query_eventStation.outFields = "*";
+              return layerEventStaions
+                .queryFeatures(query_eventStation)
+                .then(function (response) {
+                  const dataSet = response.features;
+                  const row_data = [];
+                  if (dataSet.length == 0){
+                    row_data.push(` <tr>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>      
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>      
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>      
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>      
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>
+                      <td>Không có thông tin</td>      
+                      <td>Không có thông tin</td>
+                      </tr>`);
+                  }
+                  else {
+                  dataSet.map((e) => {
+                    for (const prop in e.attributes) {
+                      if (e.attributes[prop] == undefined ) {
+                       e.attributes[prop] = "Chưa có thông tin"
+                      }
+                      if (e.attributes[prop] == null ) {
+                        e.attributes[prop] = "Chưa có thông tin"
+                       }
+                       if (prop == undefined ) {
+                        e.attributes[prop] = "Chưa có thông tin"
+                       }
+                     }
+                    row_data.push(` <tr>
+                      <td>${e.attributes.station_id}</td>
+                      <td>${e.attributes.ain}</td>
+                      <td>${e.attributes.amplit}</td>              
+                      <td>${e.attributes.caz7}</td>
+                      <td>${e.attributes.coda}</td>
+                      <td>${e.attributes.d}</td>
+                      <td>${e.attributes.dis}</td>
+                      <td>${e.attributes.event_id}</td>
+                      <td>${e.attributes.hrmm}</td>
+                      <td>${e.attributes.i}</td>
+                      <td>${e.attributes.peri}</td>
+                      <td>${e.attributes.phas}</td>
+                      <td>${e.attributes.secon}</td>
+                      <td>${e.attributes.sp}</td>
+                      <td>${e.attributes.tres}</td>
+                      <td>${e.attributes.velo}</td>
+                      <td>${e.attributes.ar}</td>
+                      <td>${e.attributes.azimu}</td>
+                      <td>${e.attributes.w}</td>
+                      <td>${e.attributes.ws}</td>
+                      </tr>`);
+                  });}
+                  return `<div style="margin: 10px;"><b>Thông số từ các trạm đo</b></div>
+                      <table class="display" style="border-style: double">
+                      <thead>
+                          <tr style="border-bottom: groove">
+                              <th class="content_popup">Tên Trạm đo</th>
+                              <th class="content_popup">Góc tới hạn (ain)</th>
+                              <th class="content_popup">Biên độ dao động từ 0 đến đỉnh trội (amplit)</th>
+                              <th class="content_popup">Góc back azimuth (caz7)</th>
+                              <th class="content_popup">Độ dài của dao động(coda)</th>
+                              <th class="content_popup">Dao động up hoặc down(d)</th>
+                              <th class="content_popup">Khoảng cách chấn tâm (dis)</th>
+                              <th class="content_popup">Id Sự kiện</th>
+                              <th class="content_popup">Giờ, phút sóng tới trạm</th>
+                              <th class="content_popup">Chỉ số chất lượng băng sóng(i)</th>
+                              <th class="content_popup">Chu kì (peri)</th>
+                              <th class="content_popup">Pha sóng pick trên băng ghi địa chấn(phas)</th>
+                              <th class="content_popup">Giây sóng tới trạm</th>
+                              <th class="content_popup">Thành phần sử dụng pick sóng(sp)</th>
+                              <th class="content_popup">Phần dư thời gian truyền sóng (tres)</th>
+                              <th class="content_popup">Vận tốc pha (velo)</th>
+                              <th class="content_popup">ar</th>
+                              <th class="content_popup">Góc azimuth</th>
+                              <th class="content_popup">Trọng số sử dụng pha sóng đã pick(w)</th>
+                              <th class="content_popup">W</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                         ${row_data.join("")}
+                      </tbody>
+                  </table>`;
+                });
+            },
+          });
 
         const contentEmployee = new CustomContent({
             outFields: ["*"],
@@ -744,17 +779,6 @@ Template.map_station.onRendered(() => {
                         id.push(e.attributes.event_id)
 
                     })
-                    // Lọc số bị trùng
-                    // function check(arr) {
-                    //     var newArr = []
-                    //     for (var i = 0; i < arr.length; i++) {
-                    //         if (newArr.indexOf(arr[i]) === -1) {
-                    //             newArr.push(arr[i])
-                    //         }
-                    //     }
-                    //     return newArr
-                    // }
-                    // end
                     const id_event = id;
                     const id_query = []
                     id_event.map(e => {
@@ -928,7 +952,7 @@ Template.map_station.onRendered(() => {
             }, contentEmployee, contentDataloger, contentBaler, contentSensor]
         }
         const eventPopupTemplate = {
-            title: "Sự kiện động đất tại VN",
+            title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
             content: [contentEvent,contentEventStation],
         }
         // create new geojson layer using the blob url
@@ -956,7 +980,7 @@ Template.map_station.onRendered(() => {
             popupTemplate: stationPopupTemplate,
             listMode: 'show',
             renderer: renderstation,
-            title: 'Trạm đo',
+            title: 'Trạm quan trắc động đất',
             visible: true,
             labelsVisible: true,
             popupEnabled: true,
@@ -1020,9 +1044,7 @@ Template.map_station.onRendered(() => {
         let layerView;
         let layer
         view.when(function () {
-            map.addMany([layerEvent, layerEventStaions, layerStations]);
-
-
+            map.addMany([layerEvent, layerStations]);
             let flView = null;
             view.whenLayerView(layerStations).then((layerView) => {
                 floodLayerView = layerView;
@@ -1090,7 +1112,23 @@ Template.map_station.onRendered(() => {
                 $('#dulieu tbody').off('click', 'tr');
                 $('#dulieu tbody').on('click', 'tr', function () {
                     const data = $('#dulieu').DataTable().row(this).data();
+                    view.whenLayerView(data.layer).then(function (layerView) {
+                        console.log(highlightSelect,"highlightSelect")
+                        if (highlightSelect) {
+                            highlightSelect.remove();
+                            view.graphics.removeAll()
+                        }
+                      console.log(view)
+                        highlightSelect = layerView.highlight(data);
+                        view.popup.open({
+                            features : [data] 
+                        });
+                        view.goTo({
+                            geometry: data.geometry,
+                            zoom: 6,
+                        });
 
+                    });
                     async function id() {
                         let query = layerEventStaions.createQuery();
                         query.where = `station_id LIKE '%${data.attributes.id}%'`;
@@ -1127,8 +1165,8 @@ Template.map_station.onRendered(() => {
                       })
                  
                         view.whenLayerView(layerEvent).then((layerView) => {
-                            eventview = layerView;
-                            eventview.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
+                   
+                            layerView.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
                         })
                         document.getElementById('_content').innerHTML = `<table class="display" style="border-style: double">
                         <thead>
@@ -1146,20 +1184,15 @@ Template.map_station.onRendered(() => {
                     </table>`;
                     }
                     id();
-                    view.whenLayerView(data.layer).then(async function (layerView) {
-                        if (highlightSelect) {
-                            highlightSelect.remove();
-                        }
-                        highlightSelect = layerView.highlight(data);
-                        view.goTo({
-                            geometry: data.geometry,
-                            zoom: 6,
-                        });
-
-                    });
+                    
                 });
             });
-
+            view.on("click", async (event) => {
+                if (highlightSelect) {
+                  highlightSelect.remove();
+                }
+                
+              });
         // End add Layer
         // Start add Legend
         // view.ui.add(new Legend({view: view}), "bottom-left");

@@ -121,7 +121,67 @@ Template.map.onRendered(() => {
             });
           });
         }
-
+        // Thêm layer Trạm
+        function dataEventStation() {
+          return new Promise(function (resolve, reject) {
+              Meteor.call('layerEventStation', function (error, resulteventStation) {
+                  if (error) {
+                      reject(error)
+                  }
+                  resolve(resulteventStation.rows)
+              })
+          });
+      }
+      function dataStation() {
+          return new Promise(function (resolve, reject) {
+              Meteor.call('dataStation', function (error, resultdataStation) {
+                  if (error) {
+                      reject(error)
+                  }
+                  resolve(resultdataStation.rows)
+              })
+          });
+      }
+      function dataBalers() {
+          return new Promise(function (resolve, reject) {
+              Meteor.call('dataBaler', function (error, result) {
+                  if (error) {
+                      reject(error)
+                  }
+                  resolve(result.rows)
+              })
+          });
+      }
+      function dataDatalogers() {
+          return new Promise(function (resolve, reject) {
+              Meteor.call('dataDataloger', function (error, result) {
+                  if (error) {
+                      reject(error)
+                  }
+                  resolve(result.rows)
+              })
+          });
+      }
+      function dataSensors() {
+          return new Promise(function (resolve, reject) {
+              Meteor.call('dataSensor', function (error, result) {
+                  if (error) {
+                      reject(error)
+                  }
+                  resolve(result.rows)
+              })
+          });
+      }
+      function dataEmployes() {
+        return new Promise(function (resolve, reject) {
+            Meteor.call('dataEmployee', function (error, result) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(result.rows)
+            })
+        })
+    }
         // Fetch Data From Iris
         var d = new Date();
         var lastday = d.getDate() - 1
@@ -134,7 +194,7 @@ Template.map.onRendered(() => {
           ('0' + lastday).slice(-2)
         ].join('-');
         
-         const response = await fetch(`https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=100&output=text`)
+         const response = await fetch(`https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=200&output=text`)
          const dataIris = await response.text()
         const dtIris = [];
         dataIris.split(/\r?\n/).forEach((lines) => {
@@ -156,7 +216,11 @@ Template.map.onRendered(() => {
         const dataRealTime = await dataRealTimes();
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
-
+        const dataStations = await dataStation();
+        const dataEmployee = await dataEmployes();
+        const dataBaler = await dataBalers();
+        const dataDataloger = await dataDatalogers();
+        const dataSensor = await dataSensors();
         /**
          * init basemap
          */
@@ -255,12 +319,12 @@ Template.map.onRendered(() => {
           },
         };
         //Trạm
-        // const iconstation = {
-        //   type: "picture-marker", // autocasts as new PictureMarkerSymbol()
-        //   url: "/img/broadcast1.png",
-        //   width: "16px",
-        //   height: "16px",
-        // };
+        const iconstation = {
+          type: "picture-marker", // autocasts as new PictureMarkerSymbol()
+          url: "/img/station.png",
+          width: "16px",
+          height: "16px",
+        };
         const renderer = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym,
@@ -546,17 +610,22 @@ Template.map.onRendered(() => {
           ],
         };
         // Trạm
-        // const renderstation = {
-        //   type: "simple", // autocasts as new SimpleRenderer()
-        //   symbol: iconstation,
-        // };
+        const renderstation = {
+          type: "simple", // autocasts as new SimpleRenderer()
+          symbol: iconstation,
+        };
         // Start
         // Data from Database
         const dataGeojsonRealTime = [];
         const dataGeojsonRealTimeEvent = [];
         const dataGeojsonEvents = [];
         const dataGeojsonEventStations = [];
-        const dataGeojsonIris = []
+        const dataGeojsonIris = [];
+        const dataGeojsonStations = [];
+        const dataGeojsonEmployee = [];
+        const dataGeojsonBaler = [];
+        const dataGeojsonDataloger = [];
+        const dataGeojsonSensor = [];
         const eventGeojson = dataEvents.filter((e) => {
           return !(e.geometry === null);
         });
@@ -585,7 +654,29 @@ Template.map.onRendered(() => {
             dataGeojsonIris.push(turf.point([e.long, e.lat], e));
           }
         });
+          const stationsGeojson = dataStations.filter(e => {
+              return !(e.geometry === null);
+          })
+          dataEmployee.map(e => {
+              dataGeojsonEmployee.push(turf.point([1, 1], e))
+              
+          })
+          dataBaler.map(e => {
+              dataGeojsonBaler.push(turf.point([2, 2], e))
+            
+          })
+          dataDataloger.map(e => {
+              dataGeojsonDataloger.push(turf.point([3, 3], e))
+              
+          })
+          dataSensor.map(e => {
+              dataGeojsonSensor.push(turf.point([4, 4], e))
+              
+          })
+          stationsGeojson.map(e => {
+              dataGeojsonStations.push(turf.point([e.long, e.lat], e))
 
+          })
         // Tạo Turf featurecollection
         let collection = turf.featureCollection(dataGeojsonEvents);
         let collection_events_station = turf.featureCollection(
@@ -594,6 +685,12 @@ Template.map.onRendered(() => {
         let collection_realtime = turf.featureCollection(dataGeojsonRealTime);
         let collection_realtimeEvent = turf.featureCollection(dataGeojsonRealTimeEvent);
         let collection_dataIris = turf.featureCollection(dataGeojsonIris);
+        // Trạm
+        let collection_station = turf.featureCollection(dataGeojsonStations);
+        let collection_employee = turf.featureCollection(dataGeojsonEmployee);
+        let collection_baler = turf.featureCollection(dataGeojsonBaler);
+        let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
+        let collection_sensor = turf.featureCollection(dataGeojsonSensor);
         // create a new blob from geojson featurecollection
         const blob = new Blob([JSON.stringify(collection)], {
           type: "application/json",
@@ -619,13 +716,34 @@ Template.map.onRendered(() => {
             type: "application/json",
           }
         );
-      
+          // Trạm
+        const blob_station = new Blob([JSON.stringify(collection_station)], {
+            type: "application/json"
+        });
+        const blob_employee = new Blob([JSON.stringify(collection_employee)], {
+            type: "application/json"
+        });
+        const blob_baler = new Blob([JSON.stringify(collection_baler)], {
+            type: "application/json"
+        });
+        const blob_dataloger = new Blob([JSON.stringify(collection_dataloger)], {
+            type: "application/json"
+        });
+        const blob_sensor = new Blob([JSON.stringify(collection_sensor)], {
+            type: "application/json"
+        });
         // URL reference to the blob
         const url = URL.createObjectURL(blob);
         const url_event_station = URL.createObjectURL(blob_event_station);
         const url_dataIris = URL.createObjectURL(blob_dataIris);
         const url_realTime = URL.createObjectURL (blob_realTime)
         const url_realTimeEvent = URL.createObjectURL (blob_realTimeEvent)
+        // Trạm
+        const url_station = URL.createObjectURL(blob_station);
+        const url_employee = URL.createObjectURL(blob_employee);
+        const url_baler = URL.createObjectURL(blob_baler);
+        const url_dataloger = URL.createObjectURL(blob_dataloger);
+        const url_sensor = URL.createObjectURL(blob_sensor);
         // Khởi tạo layer
         const layerEventStaions = new GeoJSONLayer({
           url: url_event_station,
@@ -640,7 +758,38 @@ Template.map.onRendered(() => {
           labelsVisible: false,
           listMode: "hide",
         });
+      const layerEmployee = new GeoJSONLayer({
+          url: url_employee,
+          title: 'Employee',
+          visible: true,
+          labelsVisible: false,
+          listMode: "hide"
 
+      });
+      const layerBaler = new GeoJSONLayer({
+          url: url_baler,
+          title: 'Baler',
+          visible: true,
+          labelsVisible: false,
+          listMode: "hide"
+
+      });
+      const layerDataloger = new GeoJSONLayer({
+          url: url_dataloger,
+          title: 'Dataloger',
+          visible: true,
+          labelsVisible: false,
+          listMode: "hide"
+
+      });
+      const layerSensor = new GeoJSONLayer({
+          url: url_sensor,
+          title: 'Sensor',
+          visible: true,
+          labelsVisible: false,
+          listMode: "hide"
+
+      });
      
         const contentEvent = new CustomContent({
           outFields: ["*"],
@@ -649,7 +798,6 @@ Template.map.onRendered(() => {
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
             const day = date.getDate();
-        
             dateFormat = "Ngày " + day +"/"+ month+ "/" +year +", "+ ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây";
             return `
                 <table class="display" style="border-style: double">
@@ -685,6 +833,16 @@ Template.map.onRendered(() => {
               .queryFeatures(query_eventStation)
               .then(function (response) {
                 const dataSet = response.features;
+                const code_station = [];
+                dataSet.map(e=>{
+                  if (e.attributes.station_id != null) {
+                  code_station.push(`(id = '${e.attributes.station_id}')`)
+                  }
+                })
+                // Hiển thị các Trạm đo được lên bản đồ
+                view.whenLayerView(layerStations).then((layerView) => {               
+                  layerView.filter = code_station.length > 0 ? { where: code_station.join("OR") } : { where: "id = -1" };
+                })
                 const row_data = [];
                 if (dataSet.length == 0){
                   row_data.push(` <tr>
@@ -713,13 +871,13 @@ Template.map.onRendered(() => {
                 else {
                 dataSet.map((e) => {
                   for (const prop in e.attributes) {
-                    if (e.attributes[prop] === undefined ) {
+                    if (e.attributes[prop] == undefined ) {
                      e.attributes[prop] = "Chưa có thông tin"
                     }
-                    if (e.attributes[prop] === null ) {
+                    if (e.attributes[prop] == null ) {
                       e.attributes[prop] = "Chưa có thông tin"
                      }
-                     if (prop === undefined ) {
+                     if (prop == undefined ) {
                       e.attributes[prop] = "Chưa có thông tin"
                      }
                    }
@@ -792,6 +950,9 @@ Template.map.onRendered(() => {
             dateFormat = "Ngày " + day +"/"+ month+ "/" +year +", "+ ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây ";
             for (const prop in event.graphic.attributes) {
              if (event.graphic.attributes[prop] == undefined ) {
+              event.graphic.attributes[prop] = "Chưa có thông tin"
+             }
+             if (prop == undefined) {
               event.graphic.attributes[prop] = "Chưa có thông tin"
              }
             }
@@ -874,6 +1035,7 @@ Template.map.onRendered(() => {
                   })
           }
       })
+      
       const contentRealTime = new CustomContent({
         outFields: ["*"],
         creator: (event) => {
@@ -911,17 +1073,340 @@ Template.map.onRendered(() => {
                   </tbody>
               </table>`;
         },
-    })
+    })  
+        // Trạm
+        const contentEmployee = new CustomContent({
+          outFields: ["*"],
+          creator: (event) => {
+              const where = `station_id = '${event.graphic.attributes.id}'`;
+              let query_Station = layerEmployee.createQuery();
+              query_Station.where = where;
+              query_Station.outFields = "*";
+              return layerEmployee.queryFeatures(query_Station)
+                  .then(function (response) {
+                      const dataSet = response.features
+                      const row_data = []
+                      dataSet.map(e => {
+                          const date_start = new Date(e.attributes.start_date) 
+                          const date_end = new Date(e.attributes.end_date)
+                          const year_start = date_start.getFullYear();
+                          const month_start = date_start.getMonth() + 1;
+                          const day_start = date_start.getDate();
+                          const year_end = date_end.getFullYear();
+                          const month_end = date_end.getMonth() + 1;
+                          const day_end = date_end.getDate();
+                          dateFormat_start = weekday[date_start.getUTCDay()] + " ngày " + day_start +"/"+ month_start + "/" + year_start + " (GMT)";
+                          dateFormat_end = weekday[date_end.getUTCDay()] + " ngày " + day_end +"/"+ month_end + "/" + year_end + " (GMT)";
+                          if (e.attributes.start_date == null ){
+                              dateFormat_start = "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.end_date == null ){
+                              dateFormat_end = "Chưa có thông tin"
+                        
+                          }
+                          if (e.attributes.name == null ){
+                              e.attributes.name = "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.phone == null ){
+                              e.attributes.phone = "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.name2== null ){
+                              e.attributes.name2 = "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.phone2 == null ){
+                              e.attributes.phone2 = "Chưa có thông tin"
+                              
+                          }
+
+                          row_data.push(` <tr>
+                          <td>${e.attributes.name}</td>
+                          <td>${e.attributes.phone}</td>
+                          <td>${e.attributes.name2}</td>
+                          <td>${e.attributes.phone2}</td>
+                          <td>${dateFormat_start}</td>
+                          <td>${dateFormat_end}</td>
+                          </tr>`)
+                      });
+                      return `<div style="margin: 10px;"><b>Thông tin Quan trắc viên/Bảo vệ</b></div>
+                  <table class="display" style="border-style: double">
+                  <thead>
+                      <tr style="border-bottom: groove">
+                          <th class="content_popup">Tên nhân viên 1</th>
+                          <th class="content_popup">Số điện thoại 1</th>
+                          <th class="content_popup">Tên nhân viên 2</th>
+                          <th class="content_popup">Số điện thoại 2</th>
+                          <th class="content_popup">Ngày bắt đầu</th>
+                          <th class="content_popup">Ngày kết thúc</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    ${row_data.join("")}
+                  </tbody>
+              </table>`
+                  })
+          }
+      })
+      const contentBaler = new CustomContent({
+          outFields: ["*"],
+          creator: (event) => {
+          
+              const where = `station_id = '${event.graphic.attributes.id}'`;
+              let query_Station = layerBaler.createQuery();
+              query_Station.where = where;
+              query_Station.outFields = "*";
+              return layerBaler.queryFeatures(query_Station)
+                  .then(function (response) {
+                      const dataSet = response.features
+                      const row_data = []
+                      dataSet.map(e => {
+                          if (e.attributes.code == null ){
+                              e.attributes.code = "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.serial == null ){
+                              e.attributes.serial = "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.serial !== "Chưa có thông tin" &&  e.attributes.code !== "Chưa có thông tin" ){
+                              row_data.push(` <tr>
+                              <td>${e.attributes.code}</td>
+                              <td>${e.attributes.serial}</td>
+                              </tr>`)
+                              
+                          }
+                          
+                      });
+                      return `<div style="margin: 10px;"><b>Thông tin máy Baler</b></div>
+                  <table class="display" style="border-style: double">
+                  <thead>
+                      <tr style="border-bottom: groove">
+                          <th class="content_popup">Tên máy</th>
+                          <th class="content_popup">Serial</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    ${row_data.join("")}
+                  </tbody>
+              </table>`
+                  })
+          }
+      })
+      const contentDataloger = new CustomContent({
+          outFields: ["*"],
+          creator: (event) => {
+              const where = `station_id = '${event.graphic.attributes.id}'`;
+              let query_Station = layerDataloger.createQuery();
+              query_Station.where = where;
+              query_Station.outFields = "*";
+              async function id() {
+                  let query = layerEventStaions.createQuery();
+                  
+                  query.where = `station_id LIKE '%${event.graphic.attributes.id}%'`;
+                  query.outFields = "*";
+                  const id = [];
+                  const f = await layerEventStaions.queryFeatures(query)
+                  f.features.map(e => {
+                      id.push(e.attributes.event_id)
+
+                  })
+                  // Lọc số bị trùng
+                  // function check(arr) {
+                  //     var newArr = []
+                  //     for (var i = 0; i < arr.length; i++) {
+                  //         if (newArr.indexOf(arr[i]) === -1) {
+                  //             newArr.push(arr[i])
+                  //         }
+                  //     }
+                  //     return newArr
+                  // }
+                  // end
+                  // const id_event = id;
+                  // const id_query = []
+                  // id_event.map(e => {
+                  //     id_query.push(`(id = ${e})`)
+                  // });
+                
+                  // view.whenLayerView(layerEvent).then((layerView) => {
+                  //     eventview = layerView;
+                  //     eventview.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
+                  // })
+              }
+              id();
+              //
+              return layerDataloger.queryFeatures(query_Station)
+                  .then(function (response) {
+                      const dataSet = response.features
+                      const row_data = []
+                      dataSet.map(e => {
+                          if (e.attributes.dataloger == null ){
+                              e.attributes.dataloger= "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.serial == null ){
+                              e.attributes.serial = "Chưa có thông tin"
+                              
+                          }
+                          row_data.push(` <tr>
+                  <td>${e.attributes.dataloger}</td>
+                  <td>${e.attributes.serial}</td>
+      
+                  </tr>`)
+                      });
+                      return `<div style="margin: 10px;"><b>Thông tin bộ ghi dữ liệu Dataloger</b></div>
+                  <table class="display" style="border-style: double">
+                  <thead>
+                      <tr style="border-bottom: groove">
+                          <th class="content_popup">Tên máy</th>
+                          <th class="content_popup">Serial</th>
+                
+                      </tr>
+                  </thead>
+                  <tbody>
+                    ${row_data.join("")}
+                  </tbody>
+              </table>`
+                  })
+          }
+      })
+      const contentSensor = new CustomContent({
+          outFields: ["*"],
+          creator: (event) => {
+              const where = `id_stat = ${event.graphic.attributes.id_key}`;
+              let query_Station = layerSensor.createQuery();
+              query_Station.where = where;
+              query_Station.outFields = "*";
+              return layerSensor.queryFeatures(query_Station)
+                  .then(function (response) {
+                      const dataSet = response.features
+                      const row_data = []
+                      dataSet.map(e => {
+                          if (e.attributes.sensor1 == null ){
+                              e.attributes.sensor1= "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.serial1 == null ){
+                              e.attributes.serial1 = "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.sensor2 == null ){
+                              e.attributes.sensor2= "Chưa có thông tin"
+                              
+                          }
+                          if (e.attributes.serial2 == null ){
+                              e.attributes.serial2 = "Chưa có thông tin"
+                              
+                          }
+                          row_data.push(` <tr>
+                  <td>${e.attributes.sensor1}</td>
+                  <td>${e.attributes.serial1}</td>
+                  <td>${e.attributes.sensor2}</td>
+                  <td>${e.attributes.serial2}</td>
+                  </tr>`)
+                      });
+                      return `<div style="margin: 10px;"><b>Thông tin cảm biến</b></div>
+                  <table class="display" style="border-style: double">
+                  <thead>
+                      <tr style="border-bottom: groove">
+                          <th class="content_popup">Tên cảm biến 1</th>
+                          <th class="content_popup">Serial 1</th>
+                          <th class="content_popup">Tên cảm biến 2</th>
+                          <th class="content_popup">Serial 2</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    ${row_data.join("")}
+                  </tbody>
+              </table>`
+                  })
+          }
+      })
+      const stationPopupTemplate = {
+          "title": "Thông tin Trạm",
+          content: [{
+              "type": "fields",
+              "fieldInfos": [
+                  {
+                      "fieldName": "id",
+                      "label": "Tên trạm",
+                      "isEditable": true,
+                      "tooltip": "",
+                      "visible": true,
+                      "format": null,
+                      "stringFieldOption": "text-box"
+                  },
+                  {
+                      "fieldName": "network",
+                      "label": "Network",
+                      "isEditable": true,
+                      "tooltip": "",
+                      "visible": true,
+                      "format": null,
+                      "stringFieldOption": "text-box"
+                  },
+                  {
+                      "fieldName": "name",
+                      "label": "Vị trí",
+                      "isEditable": true,
+                      "tooltip": "",
+                      "visible": true,
+                      "format": null,
+                      "stringFieldOption": "text-box"
+                  },
+                  {
+                      "fieldName": "address",
+                      "label": "Địa chỉ",
+                      "isEditable": true,
+                      "tooltip": "",
+                      "visible": true,
+                      "format": null,
+                      "stringFieldOption": "text-box"
+                  },
+                  {
+                      "fieldName": "lat",
+                      "label": "Vĩ độ",
+                      "isEditable": true,
+                      "tooltip": "",
+                      "visible": true,
+                      "format": null,
+                      "stringFieldOption": "text-box"
+                  },
+                  {
+                      "fieldName": "long",
+                      "label": "Kinh độ",
+                      "isEditable": true,
+                      "tooltip": "",
+                      "visible": true,
+                      "format": null,
+                      "stringFieldOption": "text-box"
+                  },
+                  {
+                      "fieldName": "height",
+                      "label": "Độ cao",
+                      "isEditable": true,
+                      "tooltip": "",
+                      "visible": true,
+                      "format": null,
+                      "stringFieldOption": "text-box"
+                  },
+
+              ]
+          }, contentEmployee, contentDataloger, contentBaler, contentSensor]
+      }
+      // Kết thúc Content Trạm
         const popupIris = {
-          title: "Sự kiện động đất trên thế giới",
+          title: "Thông tin động đất toàn cầu ( Hiển thị dữ liệu trong một ngày gần nhất )",
           content: [contentIris],
         };
         const popupRealTime = {
-          title: "Sự kiện động đất (Real Time)",
+          title: "Thông báo nhanh động đất tại Việt Nam (Thử nghiệm)",
           content: [contentRealTime,contentRealTimeEvent],
         };
         const eventPopupTemplate = {
-          title: "Sự kiện động đất tại VN",
+          title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
           content: [contentEvent,contentEventStation],
         };
         // create new geojson layer using the blob url
@@ -931,7 +1416,7 @@ Template.map.onRendered(() => {
           listMode: "show",
           renderer: renderer,
           legendEnabled : false,
-          title: "Động đất trên thế giới ( Hiển thị dữ liệu trong một ngày gần nhất )",
+          title: "Thông tin động đất toàn cầu ( Hiển thị dữ liệu trong một ngày gần nhất )",
           visible: true,
           labelsVisible: false,
           popupEnabled: true,
@@ -941,7 +1426,7 @@ Template.map.onRendered(() => {
           popupTemplate: eventPopupTemplate,
           listMode: "show",
           renderer: renderer1,
-          title: "Động đất tại Việt Nam",
+          title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
           visible: true,
           labelsVisible: false,
           popupEnabled: true,
@@ -958,7 +1443,7 @@ Template.map.onRendered(() => {
           url: url_realTime,
           renderer: renderer_realtime,
           legendEnabled : false,
-          title: "Động đất tại Việt Nam (Real time)",
+          title: "Thông báo nhanh động đất tại Việt Nam (Thử nghiệm)",
           visible: true,
           labelsVisible: false,
           popupEnabled: true,
@@ -974,17 +1459,17 @@ Template.map.onRendered(() => {
         });
 
         // Thêm Layer Trạm
-        // const layerStations = new GeoJSONLayer({
-        //   url: url_station,
-        //   popupTemplate: stationPopupTemplate,
-        //   listMode: "show",
-        //   renderer: renderstation,
-        //   title: "Trạm",
-        //   visible: true,
-        //   labelsVisible: true,
-        //   popupEnabled: true,
-        // });
+        const layerStations = new GeoJSONLayer({
+          url: url_station,
+          popupTemplate: stationPopupTemplate,
+          listMode: 'hide',
+          renderer: renderstation,
+          title: 'Trạm quan trắc động đất',
+          visible: true,
+          labelsVisible: true,
+          popupEnabled: true,
 
+      });
         //End
 
         const depthSlider = new Slider({
@@ -1052,8 +1537,15 @@ Template.map.onRendered(() => {
             layerEventStaions,
             layerRealTime,
             layerIris,
+            layerStations
           ]);
           let flV = null;
+          // Truy vấn ẩn Trạm
+          view.whenLayerView(layerStations).then((layerView) => {
+            layer = layerView;
+            layer.filter = { where: "id = -1" }
+          });
+          // console.log(layerRealTime,"layerRealTime")
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv
             // start time of the time slider - 13/02/1918
@@ -1105,7 +1597,9 @@ Template.map.onRendered(() => {
             }
           });
           let flView = null;
+     
           view.whenLayerView(layerEvent).then((layerView) => {
+            
             flView = layerView;
             const start = layerEvent.timeInfo.fullTimeExtent.start;
             const end = layerEvent.timeInfo.fullTimeExtent.end;
@@ -1370,17 +1864,36 @@ Template.map.onRendered(() => {
           $("#dulieu tbody").on("click", "tr", function () {
             const data = $("#dulieu").DataTable().row(this).data();
             view.whenLayerView(data.layer).then(function (layerView) {
+              view.popup.open({
+                features : [data] 
+            });
               if (highlightSelect) {
                 highlightSelect.remove();
               }
-              console.log(layerView)
-              console.log(view,"view")
               highlightSelect = layerView.highlight(data);
+              // view.popup.open(eventPopupTemplate);
               view.goTo({
                 geometry: data.geometry,
                 zoom: 6,
               });
             });
+          });
+        });
+        view.on("click", async (event) => {
+          if (highlightSelect) {
+            highlightSelect.remove();
+          }
+          // Ẩn đi lớp Trạm đo
+   
+          view.hitTest(event.screenPoint)
+          .then(function (response) {
+          if (response.results.length <= 1) {
+            view.whenLayerView(layerStations).then((layerView) => {
+              layer = layerView;
+              layer.filter = { where: "id = -1" }
+            });
+          } 
+      
           });
         });
         // End add Layer
