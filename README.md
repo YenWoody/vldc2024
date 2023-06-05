@@ -1,5 +1,6 @@
 # Introduction
 - Vật lý địa cầu Project
+- ROOT_URL=http://222.252.30.117:3000 meteor
 
 # Ref
 - https://getbootstrap.com/docs/5.1/getting-started/javascript/#using-bootstrap-as-a-module
