@@ -49,6 +49,7 @@ Template.manageStation.onRendered(async () => {
     "scrollX": true,
     "pageLength": 10,
     "language": {
+      "sSearch" : "Tìm kiếm :",
       "emptyTable": "Dữ liệu chưa tải thành công",
       "info": "Hiển thị từ _START_ đến _END_ Trạm",
       "infoEmpty": "Hiển thị 0 Trạm",
@@ -161,7 +162,6 @@ Template.manageStation.onRendered(async () => {
         };
   
         reader.onerror = function(ex) {
-          console.log(ex);
         };
   
         reader.readAsBinaryString(file);
@@ -491,7 +491,6 @@ Template.manageStation.events({
     // We upload only one file, in case
     // there was multiple files selected
     var file = e.currentTarget.files[0];
-    console.log(file)
   }
 }
 

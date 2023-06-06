@@ -1086,6 +1086,7 @@ Template.map_station.onRendered(() => {
                     "scrollX": 'true',
                     "scrollY": "60vh",
                     "language": {
+                        "sSearch": "Tìm kiếm :",
                         "emptyTable": "Sử dụng bộ lọc để hiển thị dữ liệu",
                         "info": "Hiển thị từ _START_ đến _END_ Trạm",
                         "infoEmpty": "Hiển thị 0 Events",
@@ -1113,12 +1114,10 @@ Template.map_station.onRendered(() => {
                 $('#dulieu tbody').on('click', 'tr', function () {
                     const data = $('#dulieu').DataTable().row(this).data();
                     view.whenLayerView(data.layer).then(function (layerView) {
-                        console.log(highlightSelect,"highlightSelect")
                         if (highlightSelect) {
                             highlightSelect.remove();
                             view.graphics.removeAll()
                         }
-                      console.log(view)
                         highlightSelect = layerView.highlight(data);
                         view.popup.open({
                             features : [data] 

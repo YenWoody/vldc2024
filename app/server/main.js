@@ -115,7 +115,7 @@ const pool = new pg.Pool({
                   Trận động đất có độ lớn <b>${realtime.Mall}</b> độ Richter, xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
                   </p>
                    
-                  <a href="/"
+                  <a href="http://222.252.30.117:3000"
                       style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
               </td>
           </tr>
@@ -890,7 +890,7 @@ Meteor.methods({
                                             Trận động đất có độ lớn <b>${event.ml}</b> độ Richter, xảy ra tại vĩ độ <b>${event.lat}</b> , kinh độ <b>${event.long}</b>, thời gian ghi nhận sự kiện <b>${event.datetime}</b>
                                             </p>
                                             
-                                            <a href="/"
+                                            <a href="http://222.252.30.117:3000"
                                                 style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
                                         </td>
                                     </tr>

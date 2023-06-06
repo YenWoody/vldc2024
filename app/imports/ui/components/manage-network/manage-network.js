@@ -39,7 +39,6 @@ Template.manageNetwork.onRendered(async () => {
     });
   }
   const dt = await dataDevice()
- console.log(dt)
     $('#data_network').DataTable({
     data: dt,
     "paging": true,
@@ -47,6 +46,7 @@ Template.manageNetwork.onRendered(async () => {
     "scrollX": true,
     "pageLength": 10,
     "language": {
+      "sSearch": "Tìm kiếm :",
       "emptyTable": "Dữ liệu chưa tải thành công",
       "info": "Hiển thị từ _START_ đến _END_ network",
       "infoEmpty": "Hiển thị 0 network",
@@ -108,6 +108,7 @@ Template.manageNetwork.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ network",
                   "infoEmpty": "Hiển thị 0 network",
@@ -134,16 +135,17 @@ Template.manageNetwork.onRendered(async () => {
             
             
               }); 
+              Swal.fire(
+                {
+                  icon: 'success',
+                  heightAuto: false,
+                  title: "Chúc mừng!",
+                  text: "Thêm dữ liệu thành công!"
+              })
             }
           })
           document.getElementById("modal_add_network").style.display = "none"
-          Swal.fire(
-            {
-              icon: 'success',
-              heightAuto: false,
-              title: "Chúc mừng!",
-              text: "Thêm dữ liệu thành công!"
-          })
+          
         }
       })
     }
@@ -186,6 +188,7 @@ Template.manageNetwork.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ network",
                   "infoEmpty": "Hiển thị 0 network",
@@ -212,16 +215,17 @@ Template.manageNetwork.onRendered(async () => {
             
             
               }); 
+              Swal.fire(
+                {
+                  icon: 'success',
+                  heightAuto: false,
+                  title: "Chúc mừng!",
+                  text: "Lưu dữ liệu thành công"
+              })
             }
           })
           document.getElementById("_modal").style.display = "none"
-          Swal.fire(
-            {
-              icon: 'success',
-              heightAuto: false,
-              title: "Chúc mừng!",
-              text: "Lưu dữ liệu thành công"
-          })
+
         }
       })
     };
@@ -260,6 +264,7 @@ Template.manageNetwork.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ network",
                   "infoEmpty": "Hiển thị 0 network",
@@ -286,16 +291,17 @@ Template.manageNetwork.onRendered(async () => {
             
             
               }); 
+              Swal.fire(
+                {
+                  icon: 'success',
+                  heightAuto: false,
+                  title: "Chúc mừng!",
+                  text: "Xóa dữ liệu thành công!"
+              })
             }
           })
           document.getElementById("modal_delete_network").style.display = "none"
-          Swal.fire(
-            {
-              icon: 'success',
-              heightAuto: false,
-              title: "Chúc mừng!",
-              text: "Xóa dữ liệu thành công!"
-          })
+
         }
       })
 

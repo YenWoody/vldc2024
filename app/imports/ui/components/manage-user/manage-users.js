@@ -29,6 +29,7 @@ function callDatatable() {
       scrollX: true,
       pageLength: 10,
       language: {
+        sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
         info: "Hiển thị từ _START_ đến _END_ người dùng",
         infoEmpty: "Hiển thị 0 người dùng",
@@ -109,6 +110,7 @@ Template.manageUsers.onRendered(async () => {
     scrollX: true,
     pageLength: 10,
     language: {
+      sSearch: "Tìm kiếm :",
       emptyTable: "Dữ liệu chưa tải thành công",
       info: "Hiển thị từ _START_ đến _END_ người dùng",
       infoEmpty: "Hiển thị 0 người dùng",

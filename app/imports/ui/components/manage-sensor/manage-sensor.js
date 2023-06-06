@@ -47,6 +47,7 @@ Template.manageSensors.onRendered(async () => {
     "scrollX": true,
     "pageLength": 10,
     "language": {
+      "sSearch": "Tìm kiếm :",
       "emptyTable": "Dữ liệu chưa tải thành công",
       "info": "Hiển thị từ _START_ đến _END_ Sensor",
       "infoEmpty": "Hiển thị 0 Sensor",
@@ -122,6 +123,7 @@ Template.manageSensors.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ Sensor",
                   "infoEmpty": "Hiển thị 0 Sensor",
@@ -217,6 +219,7 @@ Template.manageSensors.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ Sensor",
                   "infoEmpty": "Hiển thị 0 Sensor",
@@ -295,6 +298,7 @@ Template.manageSensors.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ Sensor",
                   "infoEmpty": "Hiển thị 0 Sensor",

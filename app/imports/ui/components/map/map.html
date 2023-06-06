@@ -25,12 +25,12 @@
                     </select>
                 <br /><br />
             </li> -->
-           <li class="esri-layer-list__item">
+           <li class="esri-layer-list__item p-1">
                 <label for="depthSlider" style="padding-bottom: 15px;" >Độ sâu:</label>
                 <div id="depthSlider" style="height:60px!important"></div>
                 <br /><br />
            </li>
-            <li class="esri-layer-list__item">
+            <li class="esri-layer-list__item p-1">
                 <label for="magnitudeSlider" style="padding-bottom: 15px;">Cường độ:</label>
                 <div id="magnitudeSlider" style="height:60px!important" ></div>
                 <br /><br />
@@ -40,15 +40,22 @@
                 <div id="timeSlider"></div>
                 <br /><br />
             </li>
-            <h3 class ="title">Thời gian sự kiện động đất (real time)</h3>
+            <!-- <h3 class ="title">Thời gian sự kiện động đất (real time)</h3>
             <li class="esri-layer-list__item">
                 <div id="timeSlider_realtime"></div>
                 <br /><br />
-            </li>
-            <div class="d-grid gap-2 mx-auto">
+            </li> -->
+            <div class="d-flex justify-content-around gap-2 mx-auto">
+                <div class="col-6 d-grid p-4">
+                <button class="btn btn-warning text-white" id="filter">
+                    Xác nhận
+                </button>
+                </div>
+                <div class="col-6 d-grid p-4">
                 <button class="btn btn-warning text-white" id="clearFilter">
                     Xóa bộ lọc
                 </button>
+                </div>
               </div>
         </div>
     </div>

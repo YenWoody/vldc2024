@@ -47,6 +47,7 @@ Template.manageEvent.onRendered(async () => {
     "scrollX": true,
     "pageLength": 10,
     "language": {
+      "sSearch": "Tìm kiếm :",
       "emptyTable": "Dữ liệu chưa tải thành công",
       "info": "Hiển thị từ _START_ đến _END_ sự kiện",
       "infoEmpty": "Hiển thị 0 sự kiện",
@@ -147,6 +148,7 @@ Template.manageEvent.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ sự kiện",
                   "infoEmpty": "Hiển thị 0 sự kiện",
@@ -253,6 +255,7 @@ Template.manageEvent.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ sự kiệnm",
                   "infoEmpty": "Hiển thị 0 sự kiện",
@@ -333,6 +336,7 @@ Template.manageEvent.onRendered(async () => {
                 "scrollX": true,
                 "pageLength": 10,
                 "language": {
+                  "sSearch": "Tìm kiếm :",
                   "emptyTable": "Dữ liệu chưa tải thành công",
                   "info": "Hiển thị từ _START_ đến _END_ sự kiện",
                   "infoEmpty": "Hiển thị 0 sự kiện",

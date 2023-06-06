@@ -1062,7 +1062,7 @@ Template.map.onRendered(() => {
                   </thead>
                   <tbody>
                   <tr>
-                  <td>Ngày ${event.graphic.attributes.day} tháng ${event.graphic.attributes.month} năm ${event.graphic.attributes.year} - ${event.graphic.attributes.hour} giờ ${event.graphic.attributes.min} phút ${event.graphic.attributes.sec} giây </td>
+                  <td>Ngày ${event.graphic.attributes.day}/${event.graphic.attributes.month}/${event.graphic.attributes.year}, ${event.graphic.attributes.hour} giờ ${event.graphic.attributes.min} phút ${event.graphic.attributes.sec} giây </td>
                   <td>${event.graphic.attributes.lat}</td>
                   <td>${event.graphic.attributes.lon}</td>
                   <td>${event.graphic.attributes.dep}</td>              
@@ -1508,18 +1508,18 @@ Template.map.onRendered(() => {
           timeVisible: true, // show the time stamps on the timeslider
           loop: true
         });
-        const timeSlider_realtime = new TimeSlider({
-          container: "timeSlider_realtime",
-          playRate: 5,
-          stops: {
-            interval: {
-              value: 1,
-              unit: "days",
-            },
-          },
-          timeVisible: true, // show the time stamps on the timeslider
-          loop: true
-        });
+        // const timeSlider_realtime = new TimeSlider({
+        //   container: "timeSlider_realtime",
+        //   playRate: 5,
+        //   stops: {
+        //     interval: {
+        //       value: 1,
+        //       unit: "days",
+        //     },
+        //   },
+        //   timeVisible: true, // show the time stamps on the timeslider
+        //   loop: true
+        // });
         // LayerList
         const layerList = new LayerList({
           container: document.createElement("div"),
@@ -1545,32 +1545,44 @@ Template.map.onRendered(() => {
             layer = layerView;
             layer.filter = { where: "id = -1" }
           });
-          // console.log(layerRealTime,"layerRealTime")
+          // Tạo biến chứa dữ liệu của datetime event
+          const max_datetime_event = Math.max(...eventGeojson.map(e => e.datetime));
+          const min_datetime_event = Math.min(...eventGeojson.map(e => e.datetime));
+           // Tạo biến chứa dữ liệu của datetime realtime event
+           const max_datetime_realtime_event = Math.max(...realTimeGeojson.map(e => e.Reporting_time));
+           const min_datetime_realtime_event = Math.min(...realTimeGeojson.map(e => e.Reporting_time));
+          // Lấy dữ liệu thời gian cho bộ lọc Timeslider
+          let start_time;
+          let end_time;
+          if (max_datetime_event >= max_datetime_realtime_event){
+            end_time = new Date (max_datetime_event)
+          }
+          else {
+            end_time = new Date (max_datetime_realtime_event)
+          } 
+          if (min_datetime_event >= min_datetime_realtime_event) {
+            start_time = new Date (min_datetime_realtime_event)
+          }
+          else {
+            start_time = new Date (min_datetime_event)
+          }
+          end_time.setDate(end_time.getDate() + 1);
+          let flView = null;
+          // set time slider's full extent to
+          timeSlider.fullTimeExtent = {
+            start: start_time,
+            end: end_time,
+          };
+          // showing earthquakes with one day interval          
+          // Values property is set so that timeslider
+          // widget show the first day. We are setting
+          // the thumbs positions.
+          timeSlider.values = [start_time, end_time];
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv
-            // start time of the time slider - 13/02/1918
-            const start = layerRealTime.timeInfo.fullTimeExtent.start;
-            const end = layerRealTime.timeInfo.fullTimeExtent.end;
-            // set time slider's full extent to
-            timeSlider_realtime.fullTimeExtent = {
-              start: start,
-              end: end,
-            };
-            // showing earthquakes with one day interval
-            end.setDate(end.getDate() + 1);
-            // Values property is set so that timeslider
-            // widget show the first day. We are setting
-            // the thumbs positions.
-            timeSlider_realtime.values = [start, end];
-            timeSlider_realtime.watch("timeExtent", function () {
-              updateFilter_realtime();
-            });
-            depthSlider.on("thumb-drag", function () {
-              updateFilter_realtime();
-            });
-            magnitudeSlider.on("thumb-drag", function () {
-              updateFilter_realtime();
-            });
+            $("#filter").on('click',()=>{
+              updateFilter_realtime()
+            })
             function updateFilter_realtime() {
               depthMin = depthSlider.values[0];
               depthMax = depthSlider.values[1];
@@ -1585,9 +1597,9 @@ Template.map.onRendered(() => {
                   `(Mpd >= ${magnitudeMin} and Mpd <= ${magnitudeMax})`
                 );
               }
-              if (timeSlider_realtime) {
+              if (timeSlider) {
                 conditions.push(
-                  `(Reporting_time >= ${timeSlider_realtime.timeExtent.start.getTime()} AND Reporting_time <= ${timeSlider_realtime.timeExtent.end.getTime()})`
+                  `(Reporting_time >= ${timeSlider.timeExtent.start.getTime()} AND Reporting_time <= ${timeSlider.timeExtent.end.getTime()})`
                 );
               }
               flV.filter =
@@ -1596,36 +1608,26 @@ Template.map.onRendered(() => {
                   : null;
             }
           });
-          let flView = null;
-     
           view.whenLayerView(layerEvent).then((layerView) => {
             
             flView = layerView;
-            const start = layerEvent.timeInfo.fullTimeExtent.start;
-            const end = layerEvent.timeInfo.fullTimeExtent.end;
-            // set time slider's full extent to
-            timeSlider.fullTimeExtent = {
-              start: start,
-              end: end,
-            };
-            // showing earthquakes with one day interval
-            end.setDate(end.getDate() + 1);
-            // Values property is set so that timeslider
-            // widget show the first day. We are setting
-            // the thumbs positions.
-            timeSlider.values = [start, end];
             // watch for time slider timeExtent change
-            timeSlider.watch("timeExtent", function () {
-              updateFilter();
-            });
+            // timeSlider.watch("timeExtent", function () {
+            //   updateFilter();
+            // });
 
-            depthSlider.on("thumb-drag", function () {
-              updateFilter();
-            });
-            magnitudeSlider.on("thumb-drag", function () {
-              updateFilter();
-            });
+            // depthSlider.on("thumb-drag", function () {
+            //   console.log("test")
+            //   updateFilter();
+            // });
+            // magnitudeSlider.on("thumb-drag", function () {
+            //   updateFilter();
+            // });
+            $("#filter").on('click',()=>{
+              updateFilter()
 
+            })
+            
             const updateFilter = function () {
               depthMin = depthSlider.values[0];
               depthMax = depthSlider.values[1];
@@ -1650,7 +1652,7 @@ Template.map.onRendered(() => {
                   ? { where: conditions.join("AND") }
                   : null;
           
-              // Datatable
+              // // Datatable
               let query = layerEvent.createQuery();
               query.where = `md >= 0 and md <= 100`;
               query.outFields = "*";
@@ -1675,7 +1677,7 @@ Template.map.onRendered(() => {
                   return e;
                 });
            
-                const table = $("#dulieu").DataTable({
+               $("#dulieu").DataTable({
                   data: data,
                   paging: false,
                   destroy: true,
@@ -1689,7 +1691,10 @@ Template.map.onRendered(() => {
                   scrollX: "true",
                   scrollY: "60vh",
                   language: {
+                    sSearch: "Tìm kiếm :",
+                    emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
                     info: "Hiển thị từ _START_ đến _END_ sự kiện",
+                    infoEmpty: "Hiển thị 0 sự kiện",
                     infoFiltered: " ",
                   },
                   columns: [                    
@@ -1748,31 +1753,110 @@ Template.map.onRendered(() => {
 
               // End Datatable Event
             };
-
-            document
-              .getElementById("clearFilter")
-              .addEventListener("click", clearFilter);
-            function clearFilter() {
-              const start = layerEvent.timeInfo.fullTimeExtent.start;
-              const end = layerEvent.timeInfo.fullTimeExtent.end;
-              const start_realtime =  layerRealTime.timeInfo.fullTimeExtent.start;
-              const end_realtime = layerRealTime.timeInfo.fullTimeExtent.end;
+            $('#clearFilter').on('click',function clearFilter() {
               //  depthSlider.filter = null;
               //  magnitudeSlider.filter = null;
               flView.filter = null;
               flV.filter = null;
               depthSlider.values = [0, 100];
               magnitudeSlider.values = [0, 10];
-              timeSlider.values = [start, end];
-              timeSlider_realtime.values = [start_realtime, end_realtime];
+              timeSlider.values = [start_time, end_time];
               if (highlightSelect!= undefined){
                 highlightSelect.remove();
                 }
+              // Reload Datatable
+              let query = layerEvent.createQuery();
+              query.where = `md >= 0 and md <= 100`;
+              query.outFields = "*";        
+              layerEvent.queryFeatures(query).then(function (response) {
+                const dataSet = response.features
+                const data = dataSet.map((e) => {
+                  e.attributes.datetime = new Date(e.attributes.datetime);
+                  return e;
+                });
+                $("#dulieu").DataTable({
+                  data: data,
+                  paging: false,
+                  destroy: true,
+                  buttons: [
+                    {
+                      extend: "excel",
+                      split: ["copy", "csv"],
+                    },
+                  ],
+                  dom: "Bfrtip",
+                  scrollX: "true",
+                  scrollY: "60vh",
+                  language: {
+                    sSearch: "Tìm kiếm :",
+                    emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
+                    info: "Hiển thị từ _START_ đến _END_ sự kiện",
+                    infoEmpty: "Hiển thị 0 sự kiện",
+                    infoFiltered: " ",
+                  },
+                  columns: [                    
+                            { 
+                              data: "attributes.datetime",
+                              render: function ( data, type, row ) {
+                                const date = data
+                                const year = date.getFullYear();
+                              return year;
+                              }  
+                          },
+                          { 
+                            data: "attributes.datetime",
+                            render: function ( data, type, row ) {
+                              const date = data              
+                              const month = date.getMonth() + 1;
+                              return month;
+                            }  
+                        },
+                        { 
+                          data: "attributes.datetime",
+                          render: function ( data, type, row ) {
+                            const date = data
+                            const day = date.getDate();
+                          return day;
+                          }  
+                      },
+                      { 
+                        data: "attributes.datetime",
+                        render: function ( data, type, row ) {
+                          const date = data
+                        return date.getHours();
+                        }  
+                    },
+                    {
+                    data: "attributes.datetime",
+                    render: function ( data, type, row ) {
+                      const date = data
+                    return date.getMinutes();
+                    }  
+                    },
+                    {
+                      data: "attributes.datetime",
+                      render: function ( data, type, row ) {
+                        const date = data
+                        return date.getSeconds();
+                      }  
+                      },
+                    { data: "attributes.ml" },
+                    { data: "attributes.lat" },
+                    { data: "attributes.long" },
+                    { data: "attributes.md" },
+                  ],
+                });
+              });
+
+              // End Datatable Event
                 // $("#relationship-select option").prop("selected", false);
-            }
+            })
+
+          
             // Datatable Event
           });
-         
+
+
           // view.whenLayerView(layerStations).then((layerView) => {
           //   floodLayerView = layerView;
           // });
@@ -1802,9 +1886,11 @@ Template.map.onRendered(() => {
             scrollX: "true",
             scrollY: "60vh",
             language: {
+              sSearch: "Tìm kiếm :",
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
               infoEmpty: "Hiển thị 0 sự kiện",
+              infoFiltered: " ",
             },
             columns: [
               // { data: 'attributes.year' },
@@ -1955,7 +2041,7 @@ Template.map.onRendered(() => {
           content: document.getElementById("infoDiv"),
           group: "top-right",
         });
-        view.ui.add([layerListExpand,bgExpand, expand], "top-right");
+        view.ui.add([layerListExpand,expand,bgExpand], "top-right");
 
         let ccWidget = new CoordinateConversion({
           view: view,
