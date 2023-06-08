@@ -7,7 +7,6 @@ Template.changepass.events({
   'submit .changepassword-form' (event){
     event.preventDefault();
     const { target } = event;
-    console.log("test")
     const oldpassword = target.oldpassword.value;
     const newpassword = target.newpassword.value;
     Meteor.call('changePassword',oldpassword,newpassword,function(error){

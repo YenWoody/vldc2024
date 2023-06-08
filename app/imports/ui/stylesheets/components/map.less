@@ -39,14 +39,25 @@ th.sorting {
   background-color: white;
   padding: 0px;
   // width: 380px;
-  position: absolute;
+  position: relative;
   // top: -42px;
   right: 0px;
   font-size: 14px;
   font-family: 'Be Vietnam Pro';
   // display: none;
 }
+.esri-view-width-xsmall .esri-ui-top-right .esri-expand--auto .esri-expand__container--expanded, .esri-view-width-xsmall .esri-ui-bottom-right .esri-expand--auto .esri-expand__container--expanded {
+  width: 100%!important;
+  max-width: 75vw!important;
 
+}
+.esri-expand__container.esri-expand__container--expanded {
+  // width: 75vw!important;
+  position: relative!important;
+}
+.esri-expand__mask.esri-expand__mask--expanded {
+  display: none!important;
+}
 h3.title {
   font-size: 14px;
   font-weight: 650;
@@ -84,7 +95,7 @@ td.dataTables_empty {
 //   height: 440px!important;
 // }
 div#dulieu_wrapper {
-
+  height: calc(100vh - 120px);
     // padding: 10px;
     // border: solid gray 1px;
     // border-radius: 5px;

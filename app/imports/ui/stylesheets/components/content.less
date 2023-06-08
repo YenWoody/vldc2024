@@ -169,7 +169,7 @@ button#add-user {
 form.changepassword-form{
   border-color: white;
     background: #fff;
-    padding: 36px 0;
+    padding: 30px 15px;
     border-radius: 4px;
     margin: 30px 0;
     box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
@@ -286,11 +286,22 @@ a.button_station:hover {
 	color: rgba(255, 255, 255, 0.85);
 	box-shadow: rgb(132 180 228) 0 30px 0px 49px inset
 }
+@media only screen and (max-width: 800px) {
+  .col-md-12.pull-right {
+    display: grid!important;
+    justify-content: space-around!important;
+    justify-items: unset!important
+  }
+}
 @media only screen and (max-width: 500px) {
+
+  .manage-users.row {
+    padding: 10px!important;
+  }
   form.changepassword-form{
     border-color: white;
       background: #fff;
-      padding: 36px 0;
+      padding: 30px 15px;
       border-radius: 4px;
       margin: 30px 0;
       box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);

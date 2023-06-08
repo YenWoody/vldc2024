@@ -12,17 +12,17 @@
         {{> verify_form }}
         {{else}}
         <form class="changepassword-form rounded">
-            <h1 class="h3 mb-3 fw-normal">Vui lòng nhập mật khẩu</h1>
+            <h1 class="h3 mb-3 fw-normal text-center">Vui lòng nhập mật khẩu</h1>
         
             <div class="form-floating" style="width:80%">
-              <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="oldpassword">
-              <label for="floatingInput">Nhập mật khẩu cũ</label>
+              <input type="password" id="floatingInput" placeholder="Mật khẩu cũ" name="oldpassword"  style="width: 100%">
+     
             </div>
             <div class="form-floating" style="width:80%">
-              <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="newpassword">
-              <label for="floatingPassword">Nhập mật khẩu mới</label>
+              <input type="password" id="floatingPassword" placeholder="Mật khẩu mới" name="newpassword"  style="width:100%">
+         
             </div>
-            <button class="w-100 btn btn-lg btn-primary" style="margin-top: 30px;width: 32%!important;" type="submit">Xác Nhận</button>
+            <button class="btn btn-lg btn-primary" style="margin-top: 30px;" type="submit">Xác Nhận</button>
       
           </form>
           {{/if}}

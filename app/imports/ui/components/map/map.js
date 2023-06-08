@@ -1689,7 +1689,7 @@ Template.map.onRendered(() => {
                   ],
                   dom: "Bfrtip",
                   scrollX: "true",
-                  scrollY: "60vh",
+                  scrollY: "calc(100vh - 270px)",
                   language: {
                     sSearch: "Tìm kiếm :",
                     emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
@@ -1786,7 +1786,7 @@ Template.map.onRendered(() => {
                   ],
                   dom: "Bfrtip",
                   scrollX: "true",
-                  scrollY: "60vh",
+                  scrollY: "calc(100vh - 270px)",
                   language: {
                     sSearch: "Tìm kiếm :",
                     emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
@@ -1884,7 +1884,7 @@ Template.map.onRendered(() => {
             paging: false,
             destroy: true,
             scrollX: "true",
-            scrollY: "60vh",
+            scrollY: "calc(100vh - 270px)",
             language: {
               sSearch: "Tìm kiếm :",
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",

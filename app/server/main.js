@@ -12,10 +12,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Email } from 'meteor/email';
 // server.js
 const PG_HOST = '127.0.0.1'
-const PG_PORT = '5432'
+const PG_PORT = '5433'
 const PG_DATABASE = 'vldc'
-const PG_USER = 'pgadmin'
-const PG_PASSWORD = 'secure_password'
+const PG_USER = 'postgres'
+const PG_PASSWORD = '1'
 // const DIR_PATH = f
 const pool = new pg.Pool({
     host: PG_HOST,
@@ -867,8 +867,9 @@ Meteor.methods({
                 // Check user đăng kí nhận tin động đất
                const users =  Meteor.users.find({}).fetch()
                users.forEach((user)=>{
+                    console.log(event.ml,"event.ml")
                     if(user.mag){
-                        if (event.ml > user.mag[0] && event.ml< user.mag[1] ) {
+                        if (event.ml >= user.mag[0] && event.ml <= user.mag[1] ) {
                             const email = user.event_mail
                            
                             Email.send({
@@ -901,12 +902,9 @@ Meteor.methods({
                                 
                              });
                         }
-                        else {
-                            
-                        }
                     }
 
-               })
+                })
                 return insertEvent(event)
                 }).then(({ rowCount, rows }) => {
                     console.log('insert event', rowCount, rows)
