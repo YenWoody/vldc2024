@@ -48,6 +48,7 @@ Template.map_station.onRendered(() => {
         'esri/widgets/Sketch',
         "esri/layers/GraphicsLayer",
         "esri/layers/support/FeatureFilter",
+        "esri/layers/support/LabelClass",
         "dojo/domReady!"
     ]).then(async ([
         Map,
@@ -66,7 +67,8 @@ Template.map_station.onRendered(() => {
         CustomContent,
         Sketch,
         GraphicsLayer,
-        FeatureFilter
+        FeatureFilter,
+        LabelClass
     ]) => {
         function dataEventStation() {
             return new Promise(function (resolve, reject) {
@@ -248,12 +250,6 @@ Template.map_station.onRendered(() => {
                 width: 1,
             }
         };
-        const iconstation = {
-            type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
-            url: "/img/station.png",
-            width: "16px",
-            height: "16px"
-        };
         const renderer = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: defaultSym,
@@ -374,10 +370,37 @@ Template.map_station.onRendered(() => {
 
             ]
         };
+        const iconstation = {
+            type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
+            url: "/img/station.png",
+            width: "16px",
+            height: "16px"
+        };
         const renderstation = {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: iconstation,
         }
+        const labelClass = {  // autocasts as new LabelClass()
+            symbol: {
+              type: "text",  // autocasts as new TextSymbol()
+              color: "white",
+              haloColor: "blue",
+              haloSize: 1,
+              font: {  // autocast as new Font()
+                 family: "Ubuntu Mono",
+                 size: 14,
+                 weight: "bold"
+               }
+            },
+            labelPlacement: "above-center",
+            labelExpressionInfo: {
+              expression: 'DefaultValue($feature.id, "no data")'
+            },
+            maxScale: 0,
+            minScale: 8000000,
+          };
+          
+
         // Start
         // Data from Database
         const dataGeojsonEvents = [];
@@ -956,7 +979,25 @@ Template.map_station.onRendered(() => {
             content: [contentEvent,contentEventStation],
         }
         // create new geojson layer using the blob url
-
+        const labelClass_event = {  // autocasts as new LabelClass()
+            symbol: {
+              type: "text",  // autocasts as new TextSymbol()
+              color: "maroon",
+              haloColor: "white",
+              haloSize: 1,
+              font: {  // autocast as new Font()
+                 family: "Ubuntu Mono",
+                 size: 14,
+               
+               }
+            },
+            labelPlacement: "above-center",
+            labelExpressionInfo: {
+              expression: 'DefaultValue($feature.ml, "no data")'
+            },
+            maxScale: 0,
+            minScale: 8000000,
+          };
         const layerEvent = new GeoJSONLayer({
             url: url,
             popupTemplate: eventPopupTemplate,
@@ -964,7 +1005,6 @@ Template.map_station.onRendered(() => {
             renderer: renderer1,
             title: 'Sự kiện động đất tại VN',
             visible: true,
-            labelsVisible: false,
             popupEnabled: true,
             timeInfo: {
                 startField: "datetime", // name of the date field
@@ -974,6 +1014,7 @@ Template.map_station.onRendered(() => {
                     value: 5
                 }
             },
+            labelingInfo: [labelClass_event]
         });
         const layerStations = new GeoJSONLayer({
             url: url_station,
@@ -984,7 +1025,7 @@ Template.map_station.onRendered(() => {
             visible: true,
             labelsVisible: true,
             popupEnabled: true,
-
+            labelingInfo: [labelClass]
         });
         // Sketch
         const sketch = new Sketch({

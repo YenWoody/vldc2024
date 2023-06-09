@@ -47,6 +47,8 @@ Template.map.onRendered(() => {
     "esri/layers/WebTileLayer",
     "esri/widgets/LayerList",
     "esri/popup/content/CustomContent",
+    "esri/layers/support/LabelClass",
+     "dojo/domReady!"
   ])
     .then(
       async ([
@@ -66,6 +68,7 @@ Template.map.onRendered(() => {
         WebTileLayer,
         LayerList,
         CustomContent,
+        LabelClass
       ]) => {
 
         function dataRealTimes() {
@@ -318,13 +321,7 @@ Template.map.onRendered(() => {
             width: 1,
           },
         };
-        //Trạm
-        const iconstation = {
-          type: "picture-marker", // autocasts as new PictureMarkerSymbol()
-          url: "/img/station.png",
-          width: "16px",
-          height: "16px",
-        };
+
         const renderer = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym,
@@ -467,7 +464,7 @@ Template.map.onRendered(() => {
             },
           ],
         };
-        const renderer1 = {
+        const renderer_event = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym_VietNam,
           visualVariables: [
@@ -538,77 +535,14 @@ Template.map.onRendered(() => {
             },
           ],
         };
-        const renderer2 = {
-          type: "simple", // autocasts as new SimpleRenderer()
-          symbol: defaultSym,
-          visualVariables: [
-            {
-              type: "size",
-              field: "Mpd",
-              legendOptions: {
-                title: "Mức độ động đất",
-              },
-              stops: [
-                {
-                  value: 1,
-                  size: 3,
-                  label: "0-1",
-                  color: "black",
-                },
-                {
-                  value: 1.5,
-                  size: 5,
-                  label: "1.1-1.5",
-                },
-                {
-                  value: 2,
-                  size: 7,
-                  label: "1.6-2",
-                },
-                {
-                  value: 2.5,
-                  size: 10,
-                  label: "2.1-2.5",
-                },
-                {
-                  value: 3,
-                  size: 12,
-                  label: "2.6-3",
-                },
-                {
-                  value: 3.5,
-                  size: 13,
-                  label: "3.1-3.5",
-                },
-                {
-                  value: 4,
-                  size: 15,
-                  label: "3.51-4",
-                },
-                {
-                  value: 4.5,
-                  size: 17,
-                  label: "4.1-4.5",
-                },
-                {
-                  value: 5,
-                  size: 19,
-                  label: "4.6-5",
-                },
-                {
-                  value: 6,
-                  size: 22,
-                  label: "5.1-6",
-                },
-                {
-                  value: 7,
-                  size: 25,
-                  label: "6.1-7",
-                },
-              ],
-            },
-          ],
-        };
+        //Trạm
+          const iconstation = {
+                  type: "picture-marker", // autocasts as new PictureMarkerSymbol()
+                  url: "/img/station.png",
+                  width: "16px",
+                  height: "16px",
+                };
+          
         // Trạm
         const renderstation = {
           type: "simple", // autocasts as new SimpleRenderer()
@@ -1409,7 +1343,27 @@ Template.map.onRendered(() => {
           title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
           content: [contentEvent,contentEventStation],
         };
+        
         // create new geojson layer using the blob url
+        const labelClass_event_iris = {  // autocasts as new LabelClass()
+          symbol: {
+            type: "text",  // autocasts as new TextSymbol()
+            color: "maroon",
+            haloColor: "white",
+            haloSize: 1,
+            font: {  // autocast as new Font()
+               family: "Ubuntu Mono",
+               size: 14,
+             
+             }
+          },
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: 'DefaultValue($feature.magnitude, "no data")'
+          },
+          maxScale: 0,
+          minScale: 8000000,
+        };
         const layerIris = new GeoJSONLayer({
           url: url_dataIris,
           popupTemplate: popupIris,
@@ -1418,17 +1372,55 @@ Template.map.onRendered(() => {
           legendEnabled : false,
           title: "Thông tin động đất toàn cầu ( Hiển thị dữ liệu trong một ngày gần nhất )",
           visible: true,
-          labelsVisible: false,
           popupEnabled: true,
+          labelingInfo: [labelClass_event_iris]
         });
+        const labelClass_event = {  // autocasts as new LabelClass()
+          symbol: {
+            type: "text",  // autocasts as new TextSymbol()
+            color: "maroon",
+            haloColor: "white",
+            haloSize: 1,
+            font: {  // autocast as new Font()
+               family: "Ubuntu Mono",
+               size: 14,
+             
+             }
+          },
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: 'DefaultValue($feature.ml, "no data")'
+          },
+          maxScale: 0,
+          minScale: 8000000,
+        };
+        const labelClass_event_realtime = {  // autocasts as new LabelClass()
+          symbol: {
+            type: "text",  // autocasts as new TextSymbol()
+            color: "maroon",
+            haloColor: "white",
+            haloSize: 1,
+            font: {  // autocast as new Font()
+               family: "Ubuntu Mono",
+               size: 14,
+             
+             }
+          },
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: 'DefaultValue($feature.Mall, "no data")'
+          },
+          maxScale: 0,
+          minScale: 8000000,
+        };
         const layerEvent = new GeoJSONLayer({
           url: url,
           popupTemplate: eventPopupTemplate,
           listMode: "show",
-          renderer: renderer1,
+          renderer: renderer_event,
+          legendEnabled : false,
           title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
           visible: true,
-          labelsVisible: false,
           popupEnabled: true,
           timeInfo: {
             startField: "datetime", // name of the date field
@@ -1438,6 +1430,7 @@ Template.map.onRendered(() => {
               value: 5,
             },
           },
+          labelingInfo: [labelClass_event]
         });
         const layerRealTime = new GeoJSONLayer({
           url: url_realTime,
@@ -1445,7 +1438,6 @@ Template.map.onRendered(() => {
           legendEnabled : false,
           title: "Thông báo nhanh động đất tại Việt Nam (Thử nghiệm)",
           visible: true,
-          labelsVisible: false,
           popupEnabled: true,
           popupTemplate: popupRealTime,
           timeInfo: {
@@ -1456,8 +1448,28 @@ Template.map.onRendered(() => {
               value: 5,
             },
           },
+          labelingInfo: [labelClass_event_realtime]
         });
-
+        const labelClass = {  // autocasts as new LabelClass()
+          symbol: {
+            type: "text",  // autocasts as new TextSymbol()
+            color: "white",
+            haloColor: "blue",
+            haloSize: 1,
+            font: {  // autocast as new Font()
+               family: "Ubuntu Mono",
+               size: 14,
+               weight: "bold"
+             }
+          },
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: 'DefaultValue($feature.id, "no data")'
+          },
+          maxScale: 0,
+          minScale: 8000000,
+        };
+        
         // Thêm Layer Trạm
         const layerStations = new GeoJSONLayer({
           url: url_station,
@@ -1468,7 +1480,7 @@ Template.map.onRendered(() => {
           visible: true,
           labelsVisible: true,
           popupEnabled: true,
-
+          labelingInfo: [labelClass]
       });
         //End
 
