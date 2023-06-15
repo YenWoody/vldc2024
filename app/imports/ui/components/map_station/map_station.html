@@ -16,7 +16,7 @@
                 <span>Bộ lọc</span>
             </h3>
             
-            <li class="esri-layer-list__item">
+            <li class="esri-layer-list__item m-3">
                 <label for="relationship-select">Network:</label>
                 <select id="relationship-select" class="options">
                     <option value="all" selected >Chọn</option>
@@ -25,12 +25,20 @@
                     </select>
                 <br /><br />
             </li>
-        
-            <div class="d-grid gap-2 mx-auto">
-                <button class="btn btn-warning text-white" id="clearFilter">
-                    Xóa bộ lọc
-                </button>
-              </div>
+            <div class="d-flex justify-content-center mx-auto">
+                <div class="me-3 mb-3">
+                    <button class="btn btn-warning text-white" title="Lọc" id="filter"><i class="fa fa-search" aria-hidden="true"></i>
+                    
+                    </button>
+                </div>
+                <div class="ms-3 mb-3">
+                    <button class="btn btn-danger text-white" title="Xóa lọc" id="clearFilter">
+                        <i class="fa fa-ban" aria-hidden="true"></i>
+                      
+                    </button>
+                </div>
+            </div>
+          
             
         </div>
     </div>

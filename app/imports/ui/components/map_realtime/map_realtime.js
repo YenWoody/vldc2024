@@ -1,11 +1,11 @@
-import "./map.html";
+import "./map_realtime.html";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
 import datatables from "datatables.net";
 import datatables_bs from "datatables.net-bs";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
 import * as turf from "@turf/turf";
-Template.map.onCreated(() => {
+Template.map_realtime.onCreated(() => {
   setDefaultOptions({
     version: "4.22",
     css: true,
@@ -24,7 +24,7 @@ Meteor.startup(
     })
   }
 )
-Template.map.onRendered(() => {
+Template.map_realtime.onRendered(() => {
   document.addEventListener('DOMContentLoaded', function () {
     datatables(window, $);
     datatables_bs(window, $);
@@ -99,31 +99,7 @@ Template.map.onRendered(() => {
             );
           });
         }
-        function dataEventStation() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call(
-              "layerEventStation",
-              function (error, resulteventStation) {
-                if (error) {
-                  reject(error);
-                }
-             
-                resolve(resulteventStation.rows);
-              }
-            );
-          });
-        }
 
-        function dataEvent() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("layerEvent", function (error, resultEvent) {
-              if (error) {
-                reject(error);
-              }
-              resolve(resultEvent.rows);
-            });
-          });
-        }
         // Thêm layer Trạm
         function dataEventStation() {
           return new Promise(function (resolve, reject) {
@@ -186,53 +162,9 @@ Template.map.onRendered(() => {
         })
     }
         // Fetch Data From Iris
-        var d = new Date();
-        var lastday = d.getDate() - 1
-        if (lastday == 0 ){
-          lastday = 1
-        }
-        const getDate = [
-          d.getFullYear(),
-          ('0' + (d.getMonth() + 1)).slice(-2),
-          ('0' + lastday).slice(-2)
-        ].join('-');
-        
-         const response = await fetch(`https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=200&output=text`)
-         const dataIris = await response.text()
-        const dtIris = [];
-        dataIris.split(/\r?\n/).forEach((lines) => {
-          const line = lines.split(/[|]+/g);
-       
-          dtIris.push({
-            time: line[1],
-            lat: Number(line[2]),
-            long: Number(line[3]),
-            depth: line[4],
-            catalog: line[6],
-            magtype: line[9],
-            magnitude: line[10],
-            location: line[12],
-          });
-        });
-        const dataIris_final =  dtIris.map(e=>{
-          for (const prop in e) {
-            if (e[prop] == undefined ) {
-             e[prop] = "Chưa có thông tin"
-            }
-            if (e[prop] == null ) {
-              e[prop] = "Chưa có thông tin"
-             }
-            if (prop == undefined ) {
-              e[prop] = "Chưa có thông tin"
-             }
-           }
-           return e        
-          })
-        const waitDataIris = await Promise.all(dataIris_final);
+
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
-        const dataEventStations = await dataEventStation();
-        const dataEvents = await dataEvent();
         const dataStations = await dataStation();
         const dataEmployee = await dataEmployes();
         const dataBaler = await dataBalers();
@@ -311,14 +243,6 @@ Template.map.onRendered(() => {
         //   }
         // }
 
-        const defaultSym = {
-          type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-          color: [8, 174, 153, 0.5],
-          outline: {
-            color: [8, 174, 153, 0.9],
-            width: 1,
-          },
-        };
         const defaultSym_Realtime = {
           type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
           color: [14, 154, 225, 0.5],
@@ -327,86 +251,8 @@ Template.map.onRendered(() => {
             width: 1,
           },
         };
-        const defaultSym_VietNam = {
-          type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-          color: [232, 112, 0, 0.5],
-          outline: {
-            color: [238, 174, 15],
-            width: 1,
-          },
-        };
 
-        const renderer = {
-          type: "simple", // autocasts as new SimpleRenderer()
-          symbol: defaultSym,
-          visualVariables: [
-            {
-              type: "size",
-              field: "magnitude",
-              legendOptions: {
-                title: "Mức độ động đất",
-              },
-              stops: [
-                {
-                  value: 1,
-                  size: 3,
-                  label: "0-1",
-                  color: "black",
-                },
-                {
-                  value: 1.5,
-                  size: 5,
-                  label: "1.1-1.5",
-                },
-                {
-                  value: 2,
-                  size: 7,
-                  label: "1.6-2",
-                },
-                {
-                  value: 2.5,
-                  size: 10,
-                  label: "2.1-2.5",
-                },
-                {
-                  value: 3,
-                  size: 12,
-                  label: "2.6-3",
-                },
-                {
-                  value: 3.5,
-                  size: 13,
-                  label: "3.1-3.5",
-                },
-                {
-                  value: 4,
-                  size: 15,
-                  label: "3.6-4",
-                },
-                {
-                  value: 4.5,
-                  size: 17,
-                  label: "4.1-4.5",
-                },
-                {
-                  value: 5,
-                  size: 19,
-                  label: "4.6-5",
-                },
-                {
-                  value: 6,
-                  size: 22,
-                  label: "5.1-6",
-                },
-                {
-                  value: 7,
-                  size: 25,
-                  label: "6.1-7",
-                },
-              ],
-            },
-          ],
-        };
+
         const renderer_realtime = {
           type: "simple", // autocasts as new SimpleRenderer()
           symbol: defaultSym_Realtime,
@@ -478,77 +324,7 @@ Template.map.onRendered(() => {
             },
           ],
         };
-        const renderer_event = {
-          type: "simple", // autocasts as new SimpleRenderer()
-          symbol: defaultSym_VietNam,
-          visualVariables: [
-            {
-              type: "size",
-              field: "ml",
-              legendOptions: {
-                title: "Mức độ động đất",
-              },
-              stops: [
-                {
-                  value: 1,
-                  size: 3,
-                  label: "0-1",
-                  color: "black",
-                },
-                {
-                  value: 1.5,
-                  size: 5,
-                  label: "1.1-1.5",
-                },
-                {
-                  value: 2,
-                  size: 7,
-                  label: "1.6-2",
-                },
-                {
-                  value: 2.5,
-                  size: 10,
-                  label: "2.1-2.5",
-                },
-                {
-                  value: 3,
-                  size: 12,
-                  label: "2.6-3",
-                },
-                {
-                  value: 3.5,
-                  size: 13,
-                  label: "3.1-3.5",
-                },
-                {
-                  value: 4,
-                  size: 15,
-                  label: "3.6-4",
-                },
-                {
-                  value: 4.5,
-                  size: 17,
-                  label: "4.1-4.5",
-                },
-                {
-                  value: 5,
-                  size: 19,
-                  label: "4.6-5",
-                },
-                {
-                  value: 6,
-                  size: 22,
-                  label: "5.1-6",
-                },
-                {
-                  value: 7,
-                  size: 25,
-                  label: "6.1-7",
-                },
-              ],
-            },
-          ],
-        };
+
         //Trạm
           const iconstation = {
                   type: "picture-marker", // autocasts as new PictureMarkerSymbol()
@@ -566,17 +342,11 @@ Template.map.onRendered(() => {
         // Data from Database
         const dataGeojsonRealTime = [];
         const dataGeojsonRealTimeEvent = [];
-        const dataGeojsonEvents = [];
-        const dataGeojsonEventStations = [];
-        const dataGeojsonIris = [];
         const dataGeojsonStations = [];
         const dataGeojsonEmployee = [];
         const dataGeojsonBaler = [];
         const dataGeojsonDataloger = [];
         const dataGeojsonSensor = [];
-        const eventGeojson = dataEvents.filter((e) => {
-          return !(e.geometry === null);
-        });
         const realTimeGeojson = dataRealTime.filter((e)=>{
           return !(e.lat === null && e.lon === null );
 
@@ -589,19 +359,8 @@ Template.map.onRendered(() => {
         dataRealTimeEvent.map((e)=>{
           dataGeojsonRealTimeEvent.push(turf.point([0, 0], e));
         })
-        eventGeojson.map((e) => {
-          e.datetime = e.datetime.getTime();
-          dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-        
-        });
-        dataEventStations.map((e) => {
-          dataGeojsonEventStations.push(turf.point([0, 0], e));
-        });
-        waitDataIris.map((e) => {
-          if (isNaN(e.long) === false) {
-            dataGeojsonIris.push(turf.point([e.long, e.lat], e));
-          }
-        });
+
+
           const stationsGeojson = dataStations.filter(e => {
               return !(e.geometry === null);
           })
@@ -626,13 +385,9 @@ Template.map.onRendered(() => {
 
           })
         // Tạo Turf featurecollection
-        let collection = turf.featureCollection(dataGeojsonEvents);
-        let collection_events_station = turf.featureCollection(
-          dataGeojsonEventStations
-        );
+
         let collection_realtime = turf.featureCollection(dataGeojsonRealTime);
         let collection_realtimeEvent = turf.featureCollection(dataGeojsonRealTimeEvent);
-        let collection_dataIris = turf.featureCollection(dataGeojsonIris);
         // Trạm
         let collection_station = turf.featureCollection(dataGeojsonStations);
         let collection_employee = turf.featureCollection(dataGeojsonEmployee);
@@ -640,18 +395,8 @@ Template.map.onRendered(() => {
         let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
         let collection_sensor = turf.featureCollection(dataGeojsonSensor);
         // create a new blob from geojson featurecollection
-        const blob = new Blob([JSON.stringify(collection)], {
-          type: "application/json",
-        });
-        const blob_dataIris = new Blob([JSON.stringify(collection_dataIris)], {
-          type: "application/json",
-        });
-        const blob_event_station = new Blob(
-          [JSON.stringify(collection_events_station)],
-          {
-            type: "application/json",
-          }
-        );
+
+
         const blob_realTime = new Blob(
           [JSON.stringify(collection_realtime)],
           {
@@ -681,9 +426,7 @@ Template.map.onRendered(() => {
             type: "application/json"
         });
         // URL reference to the blob
-        const url = URL.createObjectURL(blob);
-        const url_event_station = URL.createObjectURL(blob_event_station);
-        const url_dataIris = URL.createObjectURL(blob_dataIris);
+
         const url_realTime = URL.createObjectURL (blob_realTime)
         const url_realTimeEvent = URL.createObjectURL (blob_realTimeEvent)
         // Trạm
@@ -693,13 +436,7 @@ Template.map.onRendered(() => {
         const url_dataloger = URL.createObjectURL(blob_dataloger);
         const url_sensor = URL.createObjectURL(blob_sensor);
         // Khởi tạo layer
-        const layerEventStaions = new GeoJSONLayer({
-          url: url_event_station,
-          title: "Events_Station",
-          visible: false,
-          labelsVisible: false,
-          listMode: "hide",
-        });
+
         const layerrealtimeEvent = new GeoJSONLayer({
           url: url_realTimeEvent,
           visible: false,
@@ -738,199 +475,9 @@ Template.map.onRendered(() => {
           listMode: "hide"
 
       });
-     
-        const contentEvent = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const date = new Date(event.graphic.attributes.datetime);
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            dateFormat = "Ngày " + day +"/"+ month+ "/" +year +", "+ ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây";
-            return `
-                <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Thời gian (GMT)</th>
-                            <th class="content_popup">Độ sâu</th>
-                            <th class="content_popup">Độ lớn (Ml)</th>
-                            <th class="content_popup">Vĩ độ</th>
-                            <th class="content_popup">Kinh độ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                    <td>${dateFormat}</td>
-                    <td>${event.graphic.attributes.md}</td>
-                    <td>${event.graphic.attributes.ml}</td>              
-                    <td>${event.graphic.attributes.lat}</td>
-                    <td>${event.graphic.attributes.long}</td>
-                    </tr>
-                    </tbody>
-                </table>`;
-          },
-        });
-        const contentEventStation = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `event_id = ${event.graphic.attributes.id}`;
-            let query_eventStation = layerEventStaions.createQuery();
-            query_eventStation.where = where;
-            query_eventStation.outFields = "*";
-            return layerEventStaions
-              .queryFeatures(query_eventStation)
-              .then(function (response) {
-                const dataSet = response.features;
-                const code_station = [];
-                dataSet.map(e=>{
-                  if (e.attributes.station_id != null) {
-                  code_station.push(`(id = '${e.attributes.station_id}')`)
-                  }
-                })
-                // Hiển thị các Trạm đo được lên bản đồ
-                view.whenLayerView(layerStations).then((layerView) => {               
-                  layerView.filter = code_station.length > 0 ? { where: code_station.join("OR") } : { where: "id = -1" };
-                })
-                const row_data = [];
-                if (dataSet.length == 0){
-                  row_data.push(` <tr>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>      
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>      
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>      
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>      
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>
-                    <td>Không có thông tin</td>      
-                    <td>Không có thông tin</td>
-                    </tr>`);
-                }
-                else {
-                dataSet.map((e) => {
-                  for (const prop in e.attributes) {
-                    if (e.attributes[prop] == undefined ) {
-                     e.attributes[prop] = "Chưa có thông tin"
-                    }
-                    if (e.attributes[prop] == null ) {
-                      e.attributes[prop] = "Chưa có thông tin"
-                     }
-                     if (prop == undefined ) {
-                      e.attributes[prop] = "Chưa có thông tin"
-                     }
-                   }
-                  row_data.push(` <tr>
-                    <td>${e.attributes.station_id}</td>
-                    <td>${e.attributes.ain}</td>
-                    <td>${e.attributes.amplit}</td>              
-                    <td>${e.attributes.caz7}</td>
-                    <td>${e.attributes.coda}</td>
-                    <td>${e.attributes.d}</td>
-                    <td>${e.attributes.dis}</td>
-                    <td>${e.attributes.event_id}</td>
-                    <td>${e.attributes.hrmm}</td>
-                    <td>${e.attributes.i}</td>
-                    <td>${e.attributes.peri}</td>
-                    <td>${e.attributes.phas}</td>
-                    <td>${e.attributes.secon}</td>
-                    <td>${e.attributes.sp}</td>
-                    <td>${e.attributes.tres}</td>
-                    <td>${e.attributes.velo}</td>
-                    <td>${e.attributes.ar}</td>
-                    <td>${e.attributes.azimu}</td>
-                    <td>${e.attributes.w}</td>
-                    <td>${e.attributes.ws}</td>
-                    </tr>`);
-                });}
-                return `<div style="margin: 10px;"><b>Thông số từ các trạm đo</b></div>
-                    <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Tên Trạm đo</th>
-                            <th class="content_popup">Góc tới hạn (ain)</th>
-                            <th class="content_popup">Biên độ dao động từ 0 đến đỉnh trội (amplit)</th>
-                            <th class="content_popup">Góc back azimuth (caz7)</th>
-                            <th class="content_popup">Độ dài của dao động(coda)</th>
-                            <th class="content_popup">Dao động up hoặc down(d)</th>
-                            <th class="content_popup">Khoảng cách chấn tâm (dis)</th>
-                            <th class="content_popup">Id Sự kiện</th>
-                            <th class="content_popup">Giờ, phút sóng tới trạm</th>
-                            <th class="content_popup">Chỉ số chất lượng băng sóng(i)</th>
-                            <th class="content_popup">Chu kì (peri)</th>
-                            <th class="content_popup">Pha sóng pick trên băng ghi địa chấn(phas)</th>
-                            <th class="content_popup">Giây sóng tới trạm</th>
-                            <th class="content_popup">Thành phần sử dụng pick sóng(sp)</th>
-                            <th class="content_popup">Phần dư thời gian truyền sóng (tres)</th>
-                            <th class="content_popup">Vận tốc pha (velo)</th>
-                            <th class="content_popup">ar</th>
-                            <th class="content_popup">Góc azimuth</th>
-                            <th class="content_popup">Trọng số sử dụng pha sóng đã pick(w)</th>
-                            <th class="content_popup">W</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       ${row_data.join("")}
-                    </tbody>
-                </table>`;
-              });
-          },
-        });
 
-       
-        const contentIris = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const date = new Date(event.graphic.attributes.time);
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-        
-            dateFormat = "Ngày " + day +"/"+ month+ "/" +year +", "+ ('0' + date.getHours()).slice(-2) +" giờ " + "" + date.getMinutes() + " phút " + date.getSeconds()+" giây ";
-            for (const prop in event.graphic.attributes) {
-             if (event.graphic.attributes[prop] == undefined ) {
-              event.graphic.attributes[prop] = "Chưa có thông tin"
-             }
-             if (prop == undefined) {
-              event.graphic.attributes[prop] = "Chưa có thông tin"
-             }
-            }
-            return `
-                <table class="display" style="border-style: double">
-                    <thead>
-                        <tr style="border-bottom: groove">
-                            <th class="content_popup">Thời gian (GMT)</th>
-                            <th class="content_popup">Địa điểm</th>
-                            <th class="content_popup">Độ sâu (km)</th>
-                            <th class="content_popup">Loại cường độ</th>
-                            <th class="content_popup">Cường độ</th>
-                            <th class="content_popup">Vĩ độ</th>
-                            <th class="content_popup">Kinh độ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                    <td>${dateFormat}</td>
-                    <td>${event.graphic.attributes.location}</td>
-                    <td>${event.graphic.attributes.depth}</td>
-                    <td>${event.graphic.attributes.magtype}</td>
-                    <td>${event.graphic.attributes.magnitude}</td>              
-                    <td>${event.graphic.attributes.lat}</td>
-                    <td>${event.graphic.attributes.long}</td>
-                    </tr>
-                    </tbody>
-                </table>`;
-          },
-        });
+
+
         const contentRealTimeEvent = new CustomContent({
           outFields: ["*"],
           creator: (event) => {
@@ -1165,40 +712,7 @@ Template.map.onRendered(() => {
               let query_Station = layerDataloger.createQuery();
               query_Station.where = where;
               query_Station.outFields = "*";
-              async function id() {
-                  let query = layerEventStaions.createQuery();
-                  
-                  query.where = `station_id LIKE '%${event.graphic.attributes.id}%'`;
-                  query.outFields = "*";
-                  const id = [];
-                  const f = await layerEventStaions.queryFeatures(query)
-                  f.features.map(e => {
-                      id.push(e.attributes.event_id)
 
-                  })
-                  // Lọc số bị trùng
-                  // function check(arr) {
-                  //     var newArr = []
-                  //     for (var i = 0; i < arr.length; i++) {
-                  //         if (newArr.indexOf(arr[i]) === -1) {
-                  //             newArr.push(arr[i])
-                  //         }
-                  //     }
-                  //     return newArr
-                  // }
-                  // end
-                  // const id_event = id;
-                  // const id_query = []
-                  // id_event.map(e => {
-                  //     id_query.push(`(id = ${e})`)
-                  // });
-                
-                  // view.whenLayerView(layerEvent).then((layerView) => {
-                  //     eventview = layerView;
-                  //     eventview.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
-                  // })
-              }
-              id();
               //
               return layerDataloger.queryFeatures(query_Station)
                   .then(function (response) {
@@ -1360,69 +874,16 @@ Template.map.onRendered(() => {
           }, contentEmployee, contentDataloger, contentBaler, contentSensor]
       }
       // Kết thúc Content Trạm
-        const popupIris = {
-          title: "Thông tin động đất toàn cầu ( Hiển thị dữ liệu trong một ngày gần nhất )",
-          content: [contentIris],
-        };
+
         const popupRealTime = {
           title: "Thông báo nhanh động đất tại Việt Nam (Thử nghiệm)",
           content: [contentRealTime,contentRealTimeEvent],
         };
-        const eventPopupTemplate = {
-          title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
-          content: [contentEvent,contentEventStation],
-        };
+
         
-        // create new geojson layer using the blob url
-        const labelClass_event_iris = {  // autocasts as new LabelClass()
-          symbol: {
-            type: "text",  // autocasts as new TextSymbol()
-            color: "maroon",
-            haloColor: "white",
-            haloSize: 1,
-            font: {  // autocast as new Font()
-               family: "Ubuntu Mono",
-               size: 14,
-             
-             }
-          },
-          labelPlacement: "above-center",
-          labelExpressionInfo: {
-            expression: 'DefaultValue($feature.magnitude, "no data")'
-          },
-          maxScale: 0,
-          minScale: 8000000,
-        };
-        const layerIris = new GeoJSONLayer({
-          url: url_dataIris,
-          popupTemplate: popupIris,
-          listMode: "show",
-          renderer: renderer,
-          legendEnabled : false,
-          title: "Thông tin động đất toàn cầu ( Hiển thị dữ liệu trong một ngày gần nhất )",
-          visible: true,
-          popupEnabled: true,
-          labelingInfo: [labelClass_event_iris]
-        });
-        const labelClass_event = {  // autocasts as new LabelClass()
-          symbol: {
-            type: "text",  // autocasts as new TextSymbol()
-            color: "maroon",
-            haloColor: "white",
-            haloSize: 1,
-            font: {  // autocast as new Font()
-               family: "Ubuntu Mono",
-               size: 14,
-             
-             }
-          },
-          labelPlacement: "above-center",
-          labelExpressionInfo: {
-            expression: 'DefaultValue($feature.ml, "no data")'
-          },
-          maxScale: 0,
-          minScale: 8000000,
-        };
+  
+
+
         const labelClass_event_realtime = {  // autocasts as new LabelClass()
           symbol: {
             type: "text",  // autocasts as new TextSymbol()
@@ -1442,25 +903,7 @@ Template.map.onRendered(() => {
           maxScale: 0,
           minScale: 8000000,
         };
-        const layerEvent = new GeoJSONLayer({
-          url: url,
-          popupTemplate: eventPopupTemplate,
-          listMode: "show",
-          renderer: renderer_event,
-          legendEnabled : false,
-          title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
-          visible: true,
-          popupEnabled: true,
-          timeInfo: {
-            startField: "datetime", // name of the date field
-            interval: {
-              // set time interval to one day
-              unit: "years",
-              value: 5,
-            },
-          },
-          labelingInfo: [labelClass_event]
-        });
+
         const layerRealTime = new GeoJSONLayer({
           url: url_realTime,
           renderer: renderer_realtime,
@@ -1574,10 +1017,7 @@ Template.map.onRendered(() => {
         let layerView;
         view.when(function () {
           map.addMany([
-            layerEvent,
-            layerEventStaions,
             layerRealTime,
-            layerIris,
             layerStations
           ]);
           let flV = null;
@@ -1586,40 +1026,24 @@ Template.map.onRendered(() => {
             layer = layerView;
             layer.filter = { where: "id = -1" }
           });
-          // Tạo biến chứa dữ liệu của datetime event
-          const max_datetime_event = Math.max(...eventGeojson.map(e => e.datetime));
-          const min_datetime_event = Math.min(...eventGeojson.map(e => e.datetime));
-           // Tạo biến chứa dữ liệu của datetime realtime event
-           const max_datetime_realtime_event = Math.max(...realTimeGeojson.map(e => e.Reporting_time));
-           const min_datetime_realtime_event = Math.min(...realTimeGeojson.map(e => e.Reporting_time));
-          // Lấy dữ liệu thời gian cho bộ lọc Timeslider
-          let start_time;
-          let end_time;
-          if (max_datetime_event >= max_datetime_realtime_event){
-            end_time = new Date (max_datetime_event)
-          }
-          else {
-            end_time = new Date (max_datetime_realtime_event)
-          } 
-          if (min_datetime_event >= min_datetime_realtime_event) {
-            start_time = new Date (min_datetime_realtime_event)
-          }
-          else {
-            start_time = new Date (min_datetime_event)
-          }
           let flView = null;
-          // set time slider's full extent to
-          timeSlider.fullTimeExtent = {
-            start: start_time,
-            end: end_time,
-          };
-          // showing earthquakes with one day interval          
-          // Values property is set so that timeslider
-          // widget show the first day. We are setting
-          // the thumbs positions.
-          timeSlider.values = [start_time, end_time];
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv
+           
+            // start time of the time slider - 13/02/1918
+            const start = layerRealTime.timeInfo.fullTimeExtent.start;
+            const end = layerRealTime.timeInfo.fullTimeExtent.end;
+            // set time slider's full extent to
+            timeSlider.fullTimeExtent = {
+              start: start,
+              end: end,
+            };
+            // showing earthquakes with one day interval
+           
+            // Values property is set so that timeslider
+            // widget show the first day. We are setting
+            // the thumbs positions.
+            timeSlider.values = [start, end];
             $("#filter").on('click',()=>{
               updateFilter_realtime()
             })
@@ -1646,74 +1070,28 @@ Template.map.onRendered(() => {
                 conditions.length > 0
                   ? { where: conditions.join("AND") }
                   : null;
-            }
-          });
-          view.whenLayerView(layerEvent).then((layerView) => {
-            
-            flView = layerView;
-            // watch for time slider timeExtent change
-            // timeSlider.watch("timeExtent", function () {
-            //   updateFilter();
-            // });
-
-            // depthSlider.on("thumb-drag", function () {
-            //   console.log("test")
-            //   updateFilter();
-            // });
-            // magnitudeSlider.on("thumb-drag", function () {
-            //   updateFilter();
-            // });
-            $("#filter").on('click',()=>{
-              updateFilter()
-
-            })
-            
-            const updateFilter = function () {
-              depthMin = depthSlider.values[0];
-              depthMax = depthSlider.values[1];
-              magnitudeMin = magnitudeSlider.values[0];
-              magnitudeMax = magnitudeSlider.values[1];
-              let conditions = [];
-              if (depthSlider) {
-                conditions.push(`(md >= ${depthMin} and md <= ${depthMax})`);
-              }
-              if (magnitudeSlider) {
-                conditions.push(
-                  `(ml >= ${magnitudeMin} and ml <= ${magnitudeMax})`
-                );
-              }
-              if (timeSlider) {
-                conditions.push(
-                  `(datetime > ${timeSlider.timeExtent.start.getTime()} AND datetime < ${timeSlider.timeExtent.end.getTime()})`
-                );
-              }
-              flView.filter =
-                conditions.length > 0
-                  ? { where: conditions.join("AND") }
-                  : null;
-          
-              // // Datatable
-              let query = layerEvent.createQuery();
-              query.where = `md >= 0 and md <= 1000`;
+                    // // Datatable
+              let query = layerRealTime.createQuery();
+              query.where = `Mall >= 0 and Mall <= 1000`;
               query.outFields = "*";
             
-              layerEvent.queryFeatures(query).then(function (response) {
+              layerRealTime.queryFeatures(query).then(function (response) {
                 
                 const dataSet = response.features.filter((item) => {
                   return (
-                    item.attributes.datetime >=
+                    item.attributes.Reporting_time >=
                       timeSlider.timeExtent.start.getTime() &&
-                    item.attributes.datetime <=
+                    item.attributes.Reporting_time <=
                       timeSlider.timeExtent.end.getTime() &&
-                    item.attributes.md >= depthMin &&
-                    item.attributes.md <= depthMax &&
-                    item.attributes.ml >= magnitudeMin &&
-                    item.attributes.ml <= magnitudeMax
+                    item.attributes.dep >= depthMin &&
+                    item.attributes.dep <= depthMax &&
+                    item.attributes.Mpd >= magnitudeMin &&
+                    item.attributes.Mpd <= magnitudeMax
                   );
                 });
 
                 const data = dataSet.map((e) => {
-                  e.attributes.datetime = new Date(e.attributes.datetime);
+                  e.attributes.Reporting_time = new Date(e.attributes.Reporting_time);
                   return e;
                 });
            
@@ -1739,7 +1117,7 @@ Template.map.onRendered(() => {
                   },
                   columns: [                    
                             { 
-                              data: "attributes.datetime",
+                              data: "attributes.Reporting_time",
                               render: function ( data, type, row ) {
                                 const date = data
                                 const year = date.getFullYear();
@@ -1747,7 +1125,7 @@ Template.map.onRendered(() => {
                               }  
                           },
                           { 
-                            data: "attributes.datetime",
+                            data: "attributes.Reporting_time",
                             render: function ( data, type, row ) {
                               const date = data              
                               const month = date.getMonth() + 1;
@@ -1755,7 +1133,7 @@ Template.map.onRendered(() => {
                             }  
                         },
                         { 
-                          data: "attributes.datetime",
+                          data: "attributes.Reporting_time",
                           render: function ( data, type, row ) {
                             const date = data
                             const day = date.getDate();
@@ -1763,55 +1141,55 @@ Template.map.onRendered(() => {
                           }  
                       },
                       { 
-                        data: "attributes.datetime",
+                        data: "attributes.Reporting_time",
                         render: function ( data, type, row ) {
                           const date = data
                         return date.getHours();
                         }  
                     },
                     {
-                    data: "attributes.datetime",
+                    data: "attributes.Reporting_time",
                     render: function ( data, type, row ) {
                       const date = data
                     return date.getMinutes();
                     }  
                     },
                     {
-                      data: "attributes.datetime",
+                      data: "attributes.Reporting_time",
                       render: function ( data, type, row ) {
                         const date = data
                         return date.getSeconds();
                       }  
                       },
-                    { data: "attributes.ml" },
+                    { data: "attributes.Mpd" },
                     { data: "attributes.lat" },
-                    { data: "attributes.long" },
-                    { data: "attributes.md" },
+                    { data: "attributes.lon" },
+                    { data: "attributes.dep" },
                   ],
                 });
               });
 
-              // End Datatable Event
-            };
+      
+            }
             $('#clearFilter').on('click',function clearFilter() {
               //  depthSlider.filter = null;
               //  magnitudeSlider.filter = null;
-              flView.filter = null;
+              
               flV.filter = null;
               depthSlider.values = [0, 1000];
               magnitudeSlider.values = [0, 10];
-              timeSlider.values = [start_time, end_time];
+              timeSlider.values = [start, end];
               if (highlightSelect!= undefined){
                 highlightSelect.remove();
                 }
               // Reload Datatable
-              let query = layerEvent.createQuery();
-              query.where = `md >= 0 and md <= 1000`;
+              let query = layerRealTime.createQuery();
+              query.where = `Mpd >= 0 and Mpd <= 1000`;
               query.outFields = "*";        
-              layerEvent.queryFeatures(query).then(function (response) {
+              layerRealTime.queryFeatures(query).then(function (response) {
                 const dataSet = response.features
                 const data = dataSet.map((e) => {
-                  e.attributes.datetime = new Date(e.attributes.datetime);
+                  e.attributes.Reporting_time = new Date(e.attributes.Reporting_time);
                   return e;
                 });
                 $("#dulieu").DataTable({
@@ -1836,7 +1214,7 @@ Template.map.onRendered(() => {
                   },
                   columns: [                    
                             { 
-                              data: "attributes.datetime",
+                              data: "attributes.Reporting_time",
                               render: function ( data, type, row ) {
                                 const date = data
                                 const year = date.getFullYear();
@@ -1844,7 +1222,7 @@ Template.map.onRendered(() => {
                               }  
                           },
                           { 
-                            data: "attributes.datetime",
+                            data: "attributes.Reporting_time",
                             render: function ( data, type, row ) {
                               const date = data              
                               const month = date.getMonth() + 1;
@@ -1852,7 +1230,7 @@ Template.map.onRendered(() => {
                             }  
                         },
                         { 
-                          data: "attributes.datetime",
+                          data: "attributes.Reporting_time",
                           render: function ( data, type, row ) {
                             const date = data
                             const day = date.getDate();
@@ -1860,30 +1238,30 @@ Template.map.onRendered(() => {
                           }  
                       },
                       { 
-                        data: "attributes.datetime",
+                        data: "attributes.Reporting_time",
                         render: function ( data, type, row ) {
                           const date = data
                         return date.getHours();
                         }  
                     },
                     {
-                    data: "attributes.datetime",
+                    data: "attributes.Reporting_time",
                     render: function ( data, type, row ) {
                       const date = data
                     return date.getMinutes();
                     }  
                     },
                     {
-                      data: "attributes.datetime",
+                      data: "attributes.Reporting_time",
                       render: function ( data, type, row ) {
                         const date = data
                         return date.getSeconds();
                       }  
                       },
-                    { data: "attributes.ml" },
+                    { data: "attributes.Mpd" },
                     { data: "attributes.lat" },
-                    { data: "attributes.long" },
-                    { data: "attributes.md" },
+                    { data: "attributes.lon" },
+                    { data: "attributes.dep" },
                   ],
                 });
               });
@@ -1892,8 +1270,6 @@ Template.map.onRendered(() => {
                 // $("#relationship-select option").prop("selected", false);
             })
 
-          
-            // Datatable Event
           });
 
 
@@ -1902,13 +1278,13 @@ Template.map.onRendered(() => {
           // });
         });
         // Datatable
-        let query = layerEvent.createQuery();
-        query.where = `md >= 0 and md <= 1000`;
+        let query = layerRealTime.createQuery();
+        query.where = `Mpd >= 0 and Mpd <= 1000`;
         query.outFields = "*";
-        layerEvent.queryFeatures(query).then(function (response) {
+        layerRealTime.queryFeatures(query).then(function (response) {
           const dataSet = response.features;
           const data = dataSet.map((e) => {
-            e.attributes.datetime = new Date(e.attributes.datetime);
+            e.attributes.Reporting_time = new Date(e.attributes.Reporting_time);
             return e;
           });
           
@@ -1936,7 +1312,7 @@ Template.map.onRendered(() => {
               // { data: 'attributes.year' },
               // { data: 'attributes.month' },
               { 
-                data: "attributes.datetime",
+                data: "attributes.Reporting_time",
                 render: function ( data, type, row ) {
                   const date = data
                   const year = date.getFullYear();
@@ -1944,7 +1320,7 @@ Template.map.onRendered(() => {
                 }  
             },
             { 
-              data: "attributes.datetime",
+              data: "attributes.Reporting_time",
               render: function ( data, type, row ) {
                 const date = data              
                 const month = date.getMonth() + 1;
@@ -1952,7 +1328,7 @@ Template.map.onRendered(() => {
               }  
           },
           { 
-            data: "attributes.datetime",
+            data: "attributes.Reporting_time",
             render: function ( data, type, row ) {
               const date = data
               const day = date.getDate();
@@ -1960,30 +1336,30 @@ Template.map.onRendered(() => {
             }  
         },
         { 
-          data: "attributes.datetime",
+          data: "attributes.Reporting_time",
           render: function ( data, type, row ) {
             const date = data
           return date.getHours();
           }  
       },
       {
-      data: "attributes.datetime",
+      data: "attributes.Reporting_time",
       render: function ( data, type, row ) {
         const date = data
       return date.getMinutes();
       }  
       },
       {
-        data: "attributes.datetime",
+        data: "attributes.Reporting_time",
         render: function ( data, type, row ) {
           const date = data
           return date.getSeconds();
         }  
         },
-              { data: "attributes.ml" },
+              { data: "attributes.Mpd" },
               { data: "attributes.lat" },
-              { data: "attributes.long" },
-              { data: "attributes.md" },
+              { data: "attributes.lon" },
+              { data: "attributes.dep" },
             ],
           });
           $("#dulieu tbody").off("click", "tr");
@@ -1999,7 +1375,7 @@ Template.map.onRendered(() => {
               highlightSelect = layerView.highlight(data);
               // view.popup.open(eventPopupTemplate);
               view.goTo({
-                geometry: data.geometry,
+                center: [Number(data.attributes.lon),Number(data.attributes.lat)],
                 zoom: 6,
               });
             });
@@ -2103,6 +1479,6 @@ Template.map.onRendered(() => {
     });
 });
 
-Template.map.helpers({});
+Template.map_realtime.helpers({});
 
-Template.map.events({});
+Template.map_realtime.events({});

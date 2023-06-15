@@ -38,7 +38,6 @@ th.sorting {
 #infoDiv {
   background-color: white;
   padding: 0px;
-  // width: 380px;
   position: relative;
   // top: -42px;
   right: 0px;
@@ -311,6 +310,33 @@ li.esri-layer-list__item {
         }
       }
     }
+  }
+}
+@media only screen and (max-width: 767px) {
+  div#dulieu_wrapper {
+    height: auto;
+    padding: unset;
+    border: unset;
+    border-radius: 0;
+}
+.footer-logo img {
+  background-color: white;
+    height: 65px;
+    border-radius: 80px;
+}
+}
+@media only screen and (min-width: 880px) {
+  #infoDiv {
+    background-color: white;
+    padding: 0px;
+    width: 40vw;
+    max-width: 300px;
+    position: relative;
+    // top: -42px;
+    right: 0px;
+    font-size: 14px;
+    font-family: 'Be Vietnam Pro';
+    // display: none;
   }
 }
 

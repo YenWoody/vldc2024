@@ -93,9 +93,8 @@ const pool = new pg.Pool({
                const users =  Meteor.users.find({}).fetch()
                users.forEach((user)=>{
                     if(user.mag){
-                        if (realtime.Mall > user.mag[0] && realtime.Mall< user.mag[1] ) {
-                            const email = user.event_mail
-                           
+                        if (Number(realtime.Mall) >= Number(user.mag[0]) && Number(realtime.Mall) <= Number(user.mag[1]) ) {
+                            const email = user.event_mail                          
                             Email.send({
                                 to: `${email}`,
                                 from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
@@ -867,9 +866,8 @@ Meteor.methods({
                 // Check user đăng kí nhận tin động đất
                const users =  Meteor.users.find({}).fetch()
                users.forEach((user)=>{
-                    console.log(event.ml,"event.ml")
                     if(user.mag){
-                        if (event.ml >= user.mag[0] && event.ml <= user.mag[1] ) {
+                        if (Number(event.ml) >= Number(user.mag[0]) && Number(event.ml) <= Number(user.mag[1]) ) {
                             const email = user.event_mail
                            
                             Email.send({

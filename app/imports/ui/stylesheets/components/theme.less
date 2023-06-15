@@ -92,9 +92,15 @@ footer a {
 footer a:hover {
     color: #fff
 }
+.row.mb-4 {
+    width: -webkit-fill-available;
+    float: left;
+    height: auto;
+}
 .footer {
     background-color: #414141!important;
     width: 100%;
+    clear: left;
     text-align: left;
     font-family: sans-serif;
     font-weight: bold;
@@ -149,7 +155,7 @@ footer a:hover {
     color: #ffffff;
     text-align: center;
     line-height: 35px;
-    margin-right: 3px;
+    // margin-right: 3px;
     margin-bottom: 5px;
   }
   
@@ -160,7 +166,7 @@ footer a:hover {
     // width: 30%;
   }
   
-  .footer .footer-center i {
+ .footer-info i {
     background-color: #33383b;
     color: #ffffff;
     font-size: 25px;
@@ -643,12 +649,12 @@ body.swal2-height-auto {
 .accounts-centered-dialog {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     z-index: 1001;
-    display: none!important;
+    // display: none!important;
     position: fixed;
     // right: 2px;
-    left: calc(50% -125px)!important;
+    left: calc(50% - 113px) !important;
     // margin-left: -258px / 2;
-    top: 90px;
+    top: calc(50vh - 50px);
     margin: 0px!important;
     /* margin-top: -40px; */
 }
@@ -657,6 +663,7 @@ body.swal2-height-auto {
 }
 /*Hover Nav Link*/
 .hover-nav a {
+    cursor: pointer;
 	letter-spacing: 0;
 	transition: 0.35s;
 }
@@ -677,7 +684,7 @@ body.swal2-height-auto {
 .hover-nav a:after, .hover-nav a:before {
 	-webkit-backface-visibility: hidden;
 	backface-visibility: hidden;
-	border: 1px solid rgba(255, 255, 255, 0);
+	// border: 1px solid rgba(255, 255, 255, 0);
 	content: " ";
 	display: block;
 	margin: 0 auto;
@@ -697,4 +704,7 @@ body.swal2-height-auto {
 
 .hover-nav a:hover:before {
 	width: 100%;
+}
+a.dropdown-item :hover {
+    background-color: wheat;
 }

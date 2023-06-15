@@ -227,21 +227,18 @@ Template.map_station.onRendered(() => {
         });
         networkElement.innerHTML = content.join("")
         // click event handler for network choices
-        networkElement.addEventListener("click", filterByNetwork);
-        function filterByNetwork(event) {
-
-            let selectedNetWork = event.target.selectedOptions[0].getAttribute("value");
-            if (selectedNetWork === "all") {
-                return floodLayerView.filter = null;
-            }
-            else {
-                floodLayerView.filter = {
-                    where: `network LIKE '%${selectedNetWork}%'`
-                };
-            }
-
-        }
-
+        $("#filter").on('click',()=>{
+            
+           let selectedNetWork = $( "#relationship-select option:selected" ).val()
+           if (selectedNetWork === "all") {
+               return floodLayerView.filter = null;
+           }
+           else {
+               floodLayerView.filter = {
+                   where: `network LIKE '%${selectedNetWork}%'`
+               };
+           }
+          })
         const defaultSym = {
             type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
             color: [238, 174, 15, 0.36],
@@ -1107,7 +1104,7 @@ Template.map_station.onRendered(() => {
         }
         // Datatable 
         let query = layerStations.createQuery();
-        query.where = `id_key >= 0 and id_key <= 10000`;
+        query.where = `id_key >= 0 and id_key <= 10000000`;
         query.outFields = "*";
         layerStations.queryFeatures(query)
             .then(function (response) {

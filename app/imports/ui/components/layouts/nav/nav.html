@@ -11,8 +11,7 @@
         }
     </style>
     {{#if userVerified }}
-    <nav class="navbar navbar-expand-lg navbar-light px-4" style="background-color: #202020;
-            opacity: 0.8;">
+    <nav class="navbar navbar-expand-lg navbar-light px-4" style="background-color: #414141 !important">
         <div class="container-fluid">
             <div class="navbar-brand">
                 <a href="/" class="logo"><img class ="head-logo" src="./assets/img/logo.png" alt="logo"></a>
@@ -24,10 +23,26 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav" style=" padding-left: 10px;">
-                    <a href="/" class="nav-link" onclick="window.location.href='/'"><span>Trang chủ</span></a>
-                    <a href="/station" class="nav-link" onclick="window.location.href='/station'">
+                    <a class="nav-link" onclick="window.location.href='/'"><span>Trang chủ</span></a>
+                    <a class="nav-link" onclick="window.location.href='/station'">
                         <span>Trạm quan trắc động đất</span>
                     </a>
+                    <!-- <a href="/station" class="nav-link" onclick="window.location.href='/map_realtime_vietnam'">
+                        <span>Trang dữ liệu thông báo nhanh động đất tại VN</span>
+                    </a>
+                    <a href="/station" class="nav-link" onclick="window.location.href='/map_event_vietnam'">
+                        <span>Trang dữ liệu động đất tại VN</span>
+                    </a> -->
+                    <li class="nav-item dropdown" style="display: grid;">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Dữ liệu riêng
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="overflow: auto;">
+                          <li><a class="dropdown-item" onclick="window.location.href='/map_realtime_vietnam'">Trang dữ liệu thông báo nhanh động đất tại VN</a></li>
+                          <li><a class="dropdown-item" onclick="window.location.href='/map_event_vietnam'">Trang dữ liệu động đất tại VN</a></li>              
+                          <li><a class="dropdown-item" onclick="window.location.href='/map_world'">Trang dữ liệu động đất trên thế giới</a></li>
+                        </ul>
+                      </li>
                     <a href="/dashboard" class="nav-link" onclick="window.location.href='/dashboard'"><span>Dashboard</span></a>
                 </ul>
                 <form class="d-flex">
