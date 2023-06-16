@@ -37,7 +37,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Dữ liệu riêng
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="overflow: auto;">
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                           <li><a class="dropdown-item" onclick="window.location.href='/map_realtime_vietnam'">Trang dữ liệu thông báo nhanh động đất tại VN</a></li>
                           <li><a class="dropdown-item" onclick="window.location.href='/map_event_vietnam'">Trang dữ liệu động đất tại VN</a></li>              
                           <li><a class="dropdown-item" onclick="window.location.href='/map_world'">Trang dữ liệu động đất trên thế giới</a></li>
@@ -45,7 +45,19 @@
                       </li>
                     <a href="/dashboard" class="nav-link" onclick="window.location.href='/dashboard'"><span>Dashboard</span></a>
                 </ul>
-                <form class="d-flex">
+                <ul class="navbar-nav ms-md-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-user-circle-o me-2 fa-2x"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li class="text-center"><span>Chào <b style="color :rgb(30, 132, 221)">{{currentUser.username}}</b> !</span></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="/changepass"><i class="fa fa-key me-2"></i>Đổi mật khẩu</a></li>
+                            <li><a class="dropdown-item header__references_logout" href="#!"><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- <form class="d-flex">
                     <div class="currentUser_div" id="currentUser_div">
                         <div style="display: grid; justify-items: center;"><b
                                 style="margin-top: 5px;color :rgb(30, 132, 221); font-size: 1.3em;">{{currentUser.username}}</b>
@@ -53,7 +65,7 @@
                                 <span class="text-white font-medium">Đăng xuất</span></a>
                         </div>
                     </div>
-                </form>
+                </form> -->
             </div>
         </div>
     </nav>
@@ -76,7 +88,18 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav" style=" padding-left: 10px;">
                     <a href="/" class="nav-link "><span>Trang chủ</span></a>
                     <a href="/station" class="nav-link "><span>Trạm đo động đất</span></a>
-                 
+                    <li class="nav-item dropdown" style="display: grid;">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Dữ liệu riêng
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="overflow: auto;">
+                          <li><a class="dropdown-item" onclick="window.location.href='/map_realtime_vietnam'">Trang dữ liệu thông báo nhanh động đất tại VN</a></li>
+                          <li><a class="dropdown-item" onclick="window.location.href='/map_event_vietnam'">Trang dữ liệu động đất tại VN</a></li>              
+                          <li><a class="dropdown-item" onclick="window.location.href='/map_world'">Trang dữ liệu động đất trên thế giới</a></li>
+                        </ul>
+                      </li>
+
+                    <a href="/dashboard" class="nav-link" onclick="window.location.href='/dashboard'"><span>Dashboard</span></a>
                 </ul>
                 <form class="d-flex">
                     <div class="currentUser_div" id="currentUser_div">
@@ -109,14 +132,7 @@
             
                 <form class="d-flex">
                         <!-- start -->
-            <div class="back color-1">
-                <div class="row columns">
-                    <ul class="menu align-center expanded text-left hover-nav-link pt-2">
-                        <li><a href="/login" data-hover="Đăng nhập"><span>Đăng nhập</span></a></li>
-                        <li><a href="/register" data-hover="Đăng ký"><span>Đăng ký</span></a></li>
-                    </ul>
-                </div>
-            </div>
+            <button type="button" class="btn btn-outline-primary text-white" onclick="window.location.href='/login'">Đăng nhập</button>
 	                <!-- // end -->
                 </form>
             </div>

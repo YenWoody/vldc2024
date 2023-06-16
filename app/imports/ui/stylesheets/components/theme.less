@@ -333,6 +333,9 @@ div#data_table {
     display: flex!important;
     align-items: flex-start;
 }
+.navbar-nav .dropdown-menu {
+    position: absolute!important;
+}
 .header__handler {
     //display: -webkit-inline-box;
     display: -webkit-inline-flex;
@@ -662,49 +665,3 @@ body.swal2-height-auto {
     height : 60px
 }
 /*Hover Nav Link*/
-.hover-nav a {
-    cursor: pointer;
-	letter-spacing: 0;
-	transition: 0.35s;
-}
-
-.hover-nav a:hover, .hover-nav a:active {
-	letter-spacing: 2px;
-	transition: 0.35s;
-}
-
-.hover-nav a:after {
-	bottom: -10px;
-}
-
-.hover-nav a:before {
-	top: -10px;
-}
-
-.hover-nav a:after, .hover-nav a:before {
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
-	// border: 1px solid rgba(255, 255, 255, 0);
-	content: " ";
-	display: block;
-	margin: 0 auto;
-	position: relative;
-	transition: all 280ms ease-in-out;
-	width: 0;
-}
-
-.hover-nav a:hover:after, .hover-nav a:hover:before {
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
-	border-color: #fff;
-	transition: all 350ms ease-in-out;
-	width: 100%;
-
-}
-
-.hover-nav a:hover:before {
-	width: 100%;
-}
-a.dropdown-item :hover {
-    background-color: wheat;
-}

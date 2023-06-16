@@ -1,16 +1,18 @@
 <template name="reset">
-    <div class="cotainer mt-4">
+    <div class="container mt-5">
         <div class="row">
           <div class="form-content">
             <div class="form-signin">
               <form class="reset-form">
-                <h1 class="h3 mb-3 fw-normal">Lấy lại mật khẩu bằng Email</h1> 
-                <div class="form-floating">
+                <h2 class="text-center">Lấy lại mật khẩu bằng Email</h2> 
+                <div class="form-floating mt-3">
                   <input type="text" class="form-control" id="floatingInput" placeholder="Email" name="email">
                   <label for="floatingInput">Email</label>
                 </div>
                 <button class="btn btn-lg btn-primary" type="submit">Xác nhận</button>
-                <p>Bạn chưa có tài khoản ?</p><a href="/register">Đăng kí ngay</a>
+                <div class="d-flex justify-content-evenly mt-3">
+                  <span class="ms-3">Bạn chưa có tài khoản ?</span><a class="me-3" href="/register">Đăng ký</a>
+                  </div>
               </form>
             </div>
           </div>
