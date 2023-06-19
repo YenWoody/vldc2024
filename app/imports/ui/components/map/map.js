@@ -2029,6 +2029,7 @@ Template.map.onRendered(() => {
           view: view,
           container: legendDiv,
         });
+
         // End Legend
 
         // basemap Gallery
@@ -2093,6 +2094,8 @@ Template.map.onRendered(() => {
        view.when().then(function(){
         // the webmap successfully loaded
         $(".preloader").fadeOut();
+        document.getElementById("legendDiv").style.display ="block"
+        document.getElementById("infoDiv").style.display ="block"
       })
       }
       
