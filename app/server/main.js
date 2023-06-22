@@ -93,7 +93,7 @@ const pool = new pg.Pool({
                const users =  Meteor.users.find({}).fetch()
                users.forEach((user)=>{
                     if(user.mag){
-                        if (Number(realtime.Mall) >= Number(user.mag[0]) && Number(realtime.Mall) <= Number(user.mag[1]) ) {
+                        if (Number(realtime.Mpd) >= Number(user.mag[0]) && Number(realtime.Mpd) <= Number(user.mag[1]) ) {
                             const email = user.event_mail                          
                             Email.send({
                                 to: `${email}`,
@@ -111,7 +111,7 @@ const pool = new pg.Pool({
                   <span
                       style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                   <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                  Trận động đất có độ lớn <b>${realtime.Mall}</b> độ Richter, xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
+                  Trận động đất có độ lớn <b>${realtime.Mpd}</b> độ Richter, xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
                   </p>
                    
                   <a href="http://222.252.30.117:3000"

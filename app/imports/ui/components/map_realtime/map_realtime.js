@@ -898,7 +898,7 @@ Template.map_realtime.onRendered(() => {
           },
           labelPlacement: "above-center",
           labelExpressionInfo: {
-            expression: 'DefaultValue($feature.Mall, "no data")'
+            expression: 'DefaultValue($feature.Mpd, "no data")'
           },
           maxScale: 0,
           minScale: 8000000,
@@ -1072,7 +1072,7 @@ Template.map_realtime.onRendered(() => {
                   : null;
                     // // Datatable
               let query = layerRealTime.createQuery();
-              query.where = `Mall >= 0 and Mall <= 1000`;
+              query.where = `Mpd >= 0 and Mpd <= 1000`;
               query.outFields = "*";
             
               layerRealTime.queryFeatures(query).then(function (response) {

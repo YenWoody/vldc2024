@@ -1437,7 +1437,7 @@ Template.map.onRendered(() => {
           },
           labelPlacement: "above-center",
           labelExpressionInfo: {
-            expression: 'DefaultValue($feature.Mall, "no data")'
+            expression: 'DefaultValue($feature.Mpd, "no data")'
           },
           maxScale: 0,
           minScale: 8000000,
