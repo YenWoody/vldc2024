@@ -265,10 +265,16 @@ Meteor.methods({
  
      },
     'deleteEvent': function (id) {
-       pool.query(
+        pool.query(
+            `DELETE FROM event_station
+                  WHERE event_id = ${id};`
+        ).then(()=>{
+        pool.query(
             `DELETE FROM event
                   WHERE id = ${id};`
         )
+        })
+    
 
     },
     'editDataloger': function (data) {
