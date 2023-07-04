@@ -92,6 +92,7 @@ const pool = new pg.Pool({
                // Check user đăng kí nhận tin động đất
                const users =  Meteor.users.find({}).fetch()
                users.forEach((user)=>{
+                try {
                     if(user.mag){
                         if (Number(realtime.Mpd) >= Number(user.mag[0]) && Number(realtime.Mpd) <= Number(user.mag[1]) ) {
                             const email = user.event_mail                          
@@ -126,7 +127,10 @@ const pool = new pg.Pool({
                              });
                         }                      
                     }
-
+                }
+                catch (e) {
+                    console.log(e,"Error")
+                }
                })
               if (realtime.event.length > 0) {
                 let values1 = []
@@ -243,7 +247,7 @@ Meteor.startup(function () {
             email : 'admin@gmail.com',
             password: 'admin123@',
             roles : 'admin',
-        });
+        }).then(()=>{
         const idAdmin = Meteor.users.findOne({username: 'admin'})
         Meteor.users.update(idAdmin._id, {
             $set: {
@@ -254,6 +258,8 @@ Meteor.startup(function () {
             }
             
         });
+    });
+        
     }
 });
 Meteor.methods({
@@ -872,6 +878,7 @@ Meteor.methods({
                 // Check user đăng kí nhận tin động đất
                const users =  Meteor.users.find({}).fetch()
                users.forEach((user)=>{
+                try {
                     if(user.mag){
                         if (Number(event.ml) >= Number(user.mag[0]) && Number(event.ml) <= Number(user.mag[1]) ) {
                             const email = user.event_mail
@@ -907,7 +914,10 @@ Meteor.methods({
                              });
                         }
                     }
-
+                }
+                catch (e) {
+                    console.log(e,"Error")
+                }
                 })
                 return insertEvent(event)
                 }).then(({ rowCount, rows }) => {
