@@ -7,45 +7,15 @@
         </button>
       </div>
       <div class="py-4 px-2 position-relative z-2 h-100 d-grid bg-white">
-        <div class="mb-1">
-          <h2 class="text-black text-center">Các sự kiện gần đây</h2>
-          <div class="d-grid">
-            <div class="d-flex bg-light bg-gradient">
-              <button
-                type="button"
-                class="w-50 m-2 btn btn-light active"
-                id="buttonRealtime"
-              >
-                Thông báo nhanh động đất
-              </button>
-              <button
-                type="button"
-                class="w-50 m-2 btn btn-light"
-                id="buttonGlobal"
-              >
-                Động đất toàn cầu (7 ngày gần đây)
-              </button>
-            </div>
-            <div class="my-auto d-flex justify-content-between">
-              <div>
-                <select class="form-select" id="softDatatable">
-                  <option value="date" selected>Sắp xếp theo Ngày</option>
-                  <option value="mag">Sắp xếp theo Cường độ</option>
-                </select>
-              </div>
-              <div id="buttons"></div>
-            </div>
-          </div>
-        </div>
+        <h2 class="text-black text-center">Các sự kiện gần đây</h2>
         <div class="position-relative h-100 w-100 overflow-auto">
           <table id="dulieu" class="display table table-striped h-100">
             <thead>
               <tr id="tieude">
                 <th>Ngày/Giờ</th>
-                <th>Vị trí</th>
+                <th>Độ lớn</th>
                 <th>Vĩ độ</th>
                 <th>Kinh độ</th>
-                <th>Độ lớn</th>
                 <th>Độ sâu</th>
               </tr>
             </thead>
@@ -161,7 +131,52 @@
                 </div>
               </div>
             </div>
-            <div id="popup"></div>
+            <!-- <div id="infoDiv" class="esri-widget" style="display: none">
+              <h3 class="title">
+                <span>Lọc sự kiện</span>
+              </h3>
+             
+              <li class="esri-layer-list__item p-1">
+                <label for="depthSlider" style="padding-bottom: 15px"
+                  >Độ sâu (km):</label
+                >
+                <div id="depthSlider" style="height: 60px !important"></div>
+                <br /><br />
+              </li>
+              <li class="esri-layer-list__item p-1">
+                <label for="magnitudeSlider" style="padding-bottom: 15px"
+                  >Cường độ:</label
+                >
+                <div id="magnitudeSlider" style="height: 60px !important"></div>
+                <br /><br />
+              </li>
+              <h3 class="title">Thời gian sự kiện động đất</h3>
+              <li class="esri-layer-list__item">
+                <div id="timeSlider"></div>
+                <br /><br />
+              </li>
+             
+              <div class="d-flex justify-content-center mx-auto">
+                <div class="m-3">
+                  <button
+                    class="btn btn-warning text-white"
+                    title="Lọc"
+                    id="filter"
+                  >
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div class="m-3">
+                  <button
+                    class="btn btn-danger text-white"
+                    title="Xóa lọc"
+                    id="clearFilter"
+                  >
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div> -->
           </div>
         </div>
       </div>

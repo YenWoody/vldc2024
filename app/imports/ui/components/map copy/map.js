@@ -238,74 +238,21 @@ Template.map.onRendered(() => {
         const dataSensor = await dataSensors();
         //DataTable
         function loadDataTable(data) {
-          const table = $("#dulieu").DataTable({
+          $("#dulieu").DataTable({
             data: data,
             paging: false,
             destroy: true,
-            searching: false,
-            // scrollX: "true",
-            scrollY: "calc(100vh - 450px)",
-            language: {
-              emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
-              info: "Hiển thị từ _START_ đến _END_ sự kiện",
-              infoEmpty: "Hiển thị 0 sự kiện",
-              infoFiltered: " ",
-            },
-            columns: [
-              {
-                data: "attributes.Reporting_time",
-                render: function (data, type, row) {
-                  const date = data.toLocaleString();
-                  const dataSplit = date.split(" ");
-                  return dataSplit[1] + " " + dataSplit[0];
-                },
-              },
-              {
-                data: "attributes.lat",
-                render: function (data, type, row) {
-                  return "Chưa có thông tin";
-                },
-              },
-              { data: "attributes.lat" },
-              { data: "attributes.lon" },
-              { data: "attributes.Mall" },
-              { data: "attributes.dep" },
-            ],
-          });
-
-          var buttons = new $.fn.dataTable.Buttons($("#dulieu").DataTable(), {
             buttons: [
               {
-                extend: "excelHtml5",
+                extend: "excel",
                 split: ["copy", "csv"],
               },
             ],
-          })
-            .container()
-            .appendTo($("#buttons"));
-          $("select#softDatatable").on("change", function () {
-            const value = $("#softDatatable").find(":selected").val();
-            value === "mag"
-              ? $("#dulieu")
-                  .DataTable()
-                  .order([[3, "asc"]])
-                  .draw()
-              : $("#dulieu")
-                  .DataTable()
-                  .order([[0, "asc"]])
-                  .draw();
-            console.log(value);
-          });
-        }
-        function loadDataTableGlobal(data) {
-          const table = $("#dulieu").DataTable({
-            data: data,
-            paging: false,
-            destroy: true,
-            searching: false,
+            dom: "Bfrtip",
             scrollX: "true",
-            scrollY: "calc(100vh - 450px)",
+            scrollY: "calc(100vh - 300px)",
             language: {
+              sSearch: "Tìm kiếm :",
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
               infoEmpty: "Hiển thị 0 sự kiện",
@@ -313,59 +260,21 @@ Template.map.onRendered(() => {
             },
             columns: [
               {
-                data: "attributes.time",
+                data: "attributes.datetime",
                 render: function (data, type, row) {
                   const date = data.toLocaleString();
                   const dataSplit = date.split(" ");
                   return dataSplit[1] + " " + dataSplit[0];
                 },
               },
-              { data: "attributes.location" },
+
+              { data: "attributes.ml" },
               { data: "attributes.lat" },
               { data: "attributes.long" },
-              { data: "attributes.magnitude" },
-              { data: "attributes.depth" },
+              { data: "attributes.md" },
             ],
-          });
-
-          var buttons = new $.fn.dataTable.Buttons($("#dulieu").DataTable(), {
-            buttons: [
-              {
-                extend: "excelHtml5",
-                split: ["copy", "csv"],
-              },
-            ],
-          })
-            .container()
-            .appendTo($("#buttons"));
-          $("select#softDatatable").on("change", function () {
-            const value = $("#softDatatable").find(":selected").val();
-            value === "mag"
-              ? $("#dulieu")
-                  .DataTable()
-                  .order([[4, "asc"]])
-                  .draw()
-              : $("#dulieu")
-                  .DataTable()
-                  .order([[0, "asc"]])
-                  .draw();
-            console.log(value);
           });
         }
-        $("#buttonRealtime").on("click", (e) => {
-          $("#buttonRealtime").hasClass("active")
-            ? {}
-            : ($("#buttonRealtime").addClass("active"),
-              loadDataRealtime(),
-              $("#buttonGlobal").removeClass("active"));
-        });
-        $("#buttonGlobal").on("click", (e) => {
-          $("#buttonGlobal").hasClass("active")
-            ? {}
-            : ($("#buttonGlobal").addClass("active"),
-              loadDataGlobal(),
-              $("#buttonRealtime").removeClass("active"));
-        });
         /**
          * init basemap
          */
@@ -1887,9 +1796,7 @@ Template.map.onRendered(() => {
                   e.attributes.datetime = new Date(e.attributes.datetime);
                   return e;
                 });
-                console.log(dataSet, "dataSet");
-                console.log(layerEvent, "layerEvent");
-                //load table when filter button clicked
+
                 loadDataTable(data);
               });
 
@@ -1916,7 +1823,6 @@ Template.map.onRendered(() => {
                   e.attributes.datetime = new Date(e.attributes.datetime);
                   return e;
                 });
-                //load table when filter cleared
                 loadDataTable(data);
               });
 
@@ -1932,78 +1838,36 @@ Template.map.onRendered(() => {
           // });
         });
         // Datatable
-        function loadDataGlobal() {
-          let query_Iris = layerIris.createQuery();
-          query_Iris.where = `magnitude >= 0 and magnitude <= 1000`;
-          query_Iris.outFields = "*";
-          layerIris.queryFeatures(query_Iris).then(function (response) {
-            const dataSet = response.features;
-            console.log(dataSet, "1916");
-            const data = dataSet.map((e) => {
-              e.attributes.time = new Date(e.attributes.time);
-              return e;
-            });
-            //load table when page loaded
-            loadDataTableGlobal(data);
+        let query = layerEvent.createQuery();
+        query.where = `md >= 0 and md <= 1000`;
+        query.outFields = "*";
+        layerEvent.queryFeatures(query).then(function (response) {
+          const dataSet = response.features;
+          const data = dataSet.map((e) => {
+            e.attributes.datetime = new Date(e.attributes.datetime);
+            return e;
+          });
 
-            $("#dulieu tbody").off("click", "tr");
-            $("#dulieu tbody").on("click", "tr", function () {
-              const dataRow = $("#dulieu").DataTable().row(this).data();
-              view.whenLayerView(dataRow.layer).then(function (layerView) {
-                view.popup.open({
-                  features: [dataRow],
-                });
-                if (highlightSelect) {
-                  highlightSelect.remove();
-                }
-                highlightSelect = layerView.highlight(dataRow);
-                // view.popup.open(eventPopupTemplate);
-                view.goTo({
-                  geometry: dataRow.geometry,
-                  zoom: 6,
-                });
+          loadDataTable(data);
+          $("#dulieu tbody").off("click", "tr");
+          $("#dulieu tbody").on("click", "tr", function () {
+            const data = $("#dulieu").DataTable().row(this).data();
+            view.whenLayerView(data.layer).then(function (layerView) {
+              view.popup.open({
+                features: [data],
+              });
+              if (highlightSelect) {
+                highlightSelect.remove();
+              }
+              highlightSelect = layerView.highlight(data);
+              // view.popup.open(eventPopupTemplate);
+              view.goTo({
+                geometry: data.geometry,
+                zoom: 6,
               });
             });
           });
-        }
-
-        function loadDataRealtime() {
-          let query = layerRealTime.createQuery();
-          query.where = `Mpd >= 0 and Mpd <= 1000`;
-          query.outFields = "*";
-
-          layerRealTime.queryFeatures(query).then(function (response) {
-            const dataSet = response.features;
-            const data = dataSet.map((e) => {
-              e.attributes.Reporting_time = new Date(
-                e.attributes.Reporting_time
-              );
-              return e;
-            });
-            //load table when page loaded
-            loadDataTable(data);
-
-            $("#dulieu tbody").off("click", "tr");
-            $("#dulieu tbody").on("click", "tr", function () {
-              const dataRow = $("#dulieu").DataTable().row(this).data();
-              view.whenLayerView(dataRow.layer).then(function (layerView) {
-                view.popup.open({
-                  features: [dataRow],
-                });
-                if (highlightSelect) {
-                  highlightSelect.remove();
-                }
-                highlightSelect = layerView.highlight(dataRow);
-                // view.popup.open(eventPopupTemplate);
-                view.goTo({
-                  geometry: dataRow.geometry,
-                  zoom: 6,
-                });
-              });
-            });
-          });
-        }
-        loadDataRealtime();
+        });
         view.on("click", async (event) => {
           if (highlightSelect) {
             highlightSelect.remove();
@@ -2095,6 +1959,7 @@ Template.map.onRendered(() => {
           // the webmap successfully loaded
           $(".preloader").fadeOut();
           document.getElementById("legendDiv").style.display = "block";
+          document.getElementById("infoDiv").style.display = "block";
         });
       }
     )
