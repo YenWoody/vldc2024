@@ -1,163 +1,170 @@
-import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
+import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 // Import needed templates
-import '../../ui/layouts/body/body.js';
-import '../../ui/layouts/dashboardpage/dashboardpage.js';
-import '../../ui/pages/home/home.js';
-import '../../ui/pages/event/event.js';
-import '../../ui/pages/map_event_vn/map_event_vn.js';
-import '../../ui/pages/map_realtime/map_realtime.js';
-import '../../ui/pages/map_world/map_world.js';
-import '../../ui/pages/station/station.js';
-import '../../ui/pages/not-found/not-found.js';
-import '../../ui/components/upload/upload.js';
-import '../../ui/pages/register/register.js';
-import '../../ui/components/register-event/register-event.js';
-import '../../ui/pages/changepass/changepass.js';
-import '../../ui/pages/login/login.js';
-import '../../ui/pages/reset/reset';
-import '../../ui/pages/verify/verify';
-import '../../ui/components/manage-user/manage-users';
-import '../../ui/components/manage-station/manage-station';
-import '../../ui/components/manage-device/manage-device';
-import '../../ui/components/manage-sensor/manage-sensor';
-import '../../ui/components/manage-baler/manage-baler';
-import '../../ui/components/manage-event/manage-event';
-import '../../ui/components/manage-network/manage-network';
+import "../../ui/layouts/body/body.js";
+import "../../ui/layouts/dashboardpage/dashboardpage.js";
+import "../../ui/pages/home/home.js";
+import "../../ui/pages/event/event.js";
+import "../../ui/pages/map_event_vn/map_event_vn.js";
+import "../../ui/pages/map_realtime/map_realtime.js";
+import "../../ui/pages/map_world/map_world.js";
+import "../../ui/pages/station/station.js";
+import "../../ui/pages/not-found/not-found.js";
+import "../../ui/components/upload/upload.js";
+import "../../ui/pages/register/register.js";
+import "../../ui/components/register-event/register-event.js";
+import "../../ui/pages/changepass/changepass.js";
+import "../../ui/pages/login/login.js";
+import "../../ui/pages/reset/reset";
+import "../../ui/pages/verify/verify";
+import "../../ui/pages/category/category";
+import "../../ui/components/category/category";
+import "../../ui/components/manage-user/manage-users";
+import "../../ui/components/manage-station/manage-station";
+import "../../ui/components/manage-device/manage-device";
+import "../../ui/components/manage-sensor/manage-sensor";
+import "../../ui/components/manage-baler/manage-baler";
+import "../../ui/components/manage-event/manage-event";
+import "../../ui/components/manage-network/manage-network";
 // Set up all routes in the app
-FlowRouter.route('/main', {
-  name: 'App.event',
+FlowRouter.route("/main", {
+  name: "App.event",
   action() {
-    this.render('BodyTemplate', 'home');
+    this.render("BodyTemplate", "home");
   },
 });
-FlowRouter.route('/dashboard', {
-  name: 'App.dashboard',
+FlowRouter.route("/dashboard", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate','');
+    this.render("dashboardTemplate", "");
   },
 });
-FlowRouter.route('/manage-user', {
-  name: 'App.manageUsers',
+FlowRouter.route("/manage-user", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'manageUsers');
+    this.render("dashboardTemplate", "manageUsers");
   },
 });
-FlowRouter.route('/manage-device', {
-  name: 'App.manageUsers',
+FlowRouter.route("/manage-device", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'manageDevice');
+    this.render("dashboardTemplate", "manageDevice");
   },
 });
-FlowRouter.route('/manage-sensor', {
-  name: 'App.manageSensor',
+FlowRouter.route("/manage-sensor", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'manageSensors');
+    this.render("dashboardTemplate", "manageSensors");
   },
 });
-FlowRouter.route('/manage-baler', {
-  name: 'App.manageBaler',
+FlowRouter.route("/manage-baler", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'manageBaler');
+    this.render("dashboardTemplate", "manageBaler");
   },
 });
-FlowRouter.route('/manage-station', {
-  name: 'App.manageStation',
+FlowRouter.route("/manage-station", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'manageStation');
+    this.render("dashboardTemplate", "manageStation");
   },
 });
-FlowRouter.route('/manage-network', {
-  name: 'App.manageNetwork',
+FlowRouter.route("/manage-network", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'manageNetwork');
+    this.render("dashboardTemplate", "manageNetwork");
   },
 });
-FlowRouter.route('/manage-event', {
-  name: 'App.manageevent',
+FlowRouter.route("/manage-event", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'manageEvent');
+    this.render("dashboardTemplate", "manageEvent");
   },
 });
-FlowRouter.route('/', {
-  name: 'App.home',
+FlowRouter.route("/", {
+  name: "home",
   action() {
-    this.render('BodyTemplate', 'event');
+    this.render("BodyTemplate", "event");
   },
 });
-FlowRouter.route('/map_event_vietnam', {
-  name: 'App.map_event_vietnam',
+FlowRouter.route("/category", {
+  name: "category",
   action() {
-    this.render('BodyTemplate', 'map_event_vietnam');
+    this.render("BodyTemplate", "categoryPage");
   },
 });
-FlowRouter.route('/map_realtime_vietnam', {
-  name: 'App.map_realtime_vietnam',
+FlowRouter.route("/map_event_vietnam", {
+  name: "App.map_event_vietnam",
   action() {
-    this.render('BodyTemplate', 'map_realtime_vietnam');
+    this.render("BodyTemplate", "map_event_vietnam");
   },
 });
-FlowRouter.route('/map_world', {
-  name: 'App.map_world',
+FlowRouter.route("/map_realtime_vietnam", {
+  name: "App.map_realtime_vietnam",
   action() {
-    this.render('BodyTemplate', 'map_event_world');
+    this.render("BodyTemplate", "map_realtime_vietnam");
+  },
+});
+FlowRouter.route("/map_world", {
+  name: "App.map_world",
+  action() {
+    this.render("BodyTemplate", "map_event_world");
   },
 });
 /// Reload the page when the route changes
-FlowRouter.route('/station', {
-  name: 'App.station',
+FlowRouter.route("/station", {
+  name: "station",
   action() {
-    this.render('BodyTemplate', 'station');
+    this.render("BodyTemplate", "station");
   },
 });
- 
-FlowRouter.route('/upload', {
-  name: 'App.upload',
+
+FlowRouter.route("/upload", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate','uploadForm');
+    this.render("dashboardTemplate", "uploadForm");
   },
 });
-FlowRouter.route('/register-event', {
-  name: 'App.registerEvent',
+FlowRouter.route("/register-event", {
+  name: "dashboard",
   action() {
-    this.render('dashboardTemplate', 'registerEvent');
+    this.render("dashboardTemplate", "registerEvent");
   },
 });
 // 404 page
-FlowRouter.route('*', {
+FlowRouter.route("*", {
   action() {
-    this.render('BodyTemplate', 'App_notFound',
-  );
+    this.render("BodyTemplate", "App_notFound");
   },
 });
 
-FlowRouter.route('/register', {
-  name: 'App.register',
+FlowRouter.route("/register", {
+  name: "App.register",
   action() {
-    this.render('BodyTemplate', 'register_form');
+    this.render("BodyTemplate", "register_form");
   },
 });
-FlowRouter.route('/changepass', {
-  name: 'App.changepass',
+FlowRouter.route("/changepass", {
+  name: "App.changepass",
   action() {
-    this.render('dashboardTemplate', 'changepass_form');
+    this.render("dashboardTemplate", "changepass_form");
   },
 });
-FlowRouter.route('/login', {
-  name: 'App.login',
+FlowRouter.route("/login", {
+  name: "App.login",
   action() {
-    this.render('BodyTemplate', 'login_form');
+    this.render("BodyTemplate", "login_form");
   },
 });
 
-FlowRouter.route('/reset', {
-  name: 'App.reset',
+FlowRouter.route("/reset", {
+  name: "App.reset",
   action() {
-    this.render('BodyTemplate', 'reset_form');
+    this.render("BodyTemplate", "reset_form");
   },
 });
-FlowRouter.route('/verify', {
-  name: 'App.verify',
+FlowRouter.route("/verify", {
+  name: "App.verify",
   action() {
-    this.render('BodyTemplate', 'verify_form');
+    this.render("BodyTemplate", "verify_form");
   },
 });

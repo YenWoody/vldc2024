@@ -1,11 +1,11 @@
-import "./map.html";
+import "./category.html";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
 import datatables from "datatables.net";
 import datatables_bs from "datatables.net-bs";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
 import * as turf from "@turf/turf";
-Template.map.onCreated(() => {
+Template.category.onCreated(() => {
   setDefaultOptions({
     version: "4.22",
     css: true,
@@ -22,7 +22,7 @@ Template.map.onCreated(() => {
 Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
-Template.map.onRendered(() => {
+Template.category.onRendered(() => {
   document.addEventListener("DOMContentLoaded", function () {});
 
   loadModules([
@@ -109,6 +109,16 @@ Template.map.onRendered(() => {
           });
         }
 
+        function dataEvent() {
+          return new Promise(function (resolve, reject) {
+            Meteor.call("layerEvent", function (error, resultEvent) {
+              if (error) {
+                reject(error);
+              }
+              resolve(resultEvent.rows);
+            });
+          });
+        }
         // Thêm layer Trạm
         function dataEventStation() {
           return new Promise(function (resolve, reject) {
@@ -174,59 +184,16 @@ Template.map.onRendered(() => {
           });
         }
         // Fetch Data From Iris
-        var now = new Date();
-        const oneWeekago = new Date(now.setDate(now.getDate() - 7));
-        var lastday = oneWeekago.getDate();
-        if (lastday == 0) {
-          lastday = 1;
-        }
 
-        const getDate = [
-          oneWeekago.getFullYear(),
-          ("0" + (oneWeekago.getMonth() + 1)).slice(-2),
-          ("0" + lastday).slice(-2),
-        ].join("-");
-        const response = await fetch(
-          `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=200&output=text`
-        );
-        const dataIris = await response.text();
-        const dtIris = [];
-        dataIris.split(/\r?\n/).forEach((lines) => {
-          const line = lines.split(/[|]+/g);
-
-          dtIris.push({
-            time: line[1],
-            lat: Number(line[2]),
-            long: Number(line[3]),
-            depth: line[4],
-            catalog: line[6],
-            magtype: line[9],
-            magnitude: line[10],
-            location: line[12],
-          });
-        });
-        const dataIris_final = dtIris.map((e) => {
-          for (const prop in e) {
-            if (e[prop] == undefined) {
-              e[prop] = "Chưa có thông tin";
-            }
-            if (e[prop] == null) {
-              e[prop] = "Chưa có thông tin";
-            }
-            if (prop == undefined) {
-              e[prop] = "Chưa có thông tin";
-            }
-          }
-          return e;
-        });
-        const waitDataIris = await Promise.all(dataIris_final);
+        // const waitDataIris = await Promise.all(dataIris_final);
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
         const dataEventStations = await dataEventStation();
-
+        const dataEvents = await dataEvent();
         const dataStations = await dataStation();
         const dataEmployee = await dataEmployes();
         const dataBaler = await dataBalers();
+        console.log(dataBaler, "dataBaler");
         const dataDataloger = await dataDatalogers();
         const dataSensor = await dataSensors();
         //DataTable
@@ -237,7 +204,7 @@ Template.map.onRendered(() => {
             destroy: true,
             searching: false,
             // scrollX: "true",
-            scrollY: "calc(100vh - 360px)",
+            scrollY: "calc(100vh - 450px)",
             language: {
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
@@ -248,6 +215,7 @@ Template.map.onRendered(() => {
               {
                 data: "attributes.Reporting_time",
                 render: function (data, type, row) {
+                  console.log(data, "data");
                   const date = data.toLocaleString();
                   const dataSplit = date.split(" ");
                   return dataSplit[1] + " " + dataSplit[0];
@@ -263,6 +231,13 @@ Template.map.onRendered(() => {
               { data: "attributes.lon" },
               { data: "attributes.Mall" },
               { data: "attributes.dep" },
+              {
+                data: null,
+                className: "dt-center editor-edit",
+                defaultContent:
+                  '<button class= "btn btn-sm download"><i class="fa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
             ],
           });
 
@@ -282,16 +257,18 @@ Template.map.onRendered(() => {
                   .DataTable()
                   .order([[0, "asc"]])
                   .draw();
+            console.log(value);
           });
         }
-        function loadDataTableGlobal(data) {
+        function loadDataTableProcessedEvent(data) {
           const table = $("#dulieu").DataTable({
             data: data,
             paging: false,
             destroy: true,
             searching: false,
             scrollX: "true",
-            scrollY: "calc(100vh - 360px)",
+            scrollY: "calc(100vh - 450px)",
+            select: true,
             language: {
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
@@ -300,23 +277,40 @@ Template.map.onRendered(() => {
             },
             columns: [
               {
-                data: "attributes.time",
+                data: "attributes.datetime",
                 render: function (data, type, row) {
-                  const date = data.toLocaleString();
+                  const date = new Date(data).toLocaleString();
                   const dataSplit = date.split(" ");
                   return dataSplit[1] + " " + dataSplit[0];
                 },
               },
-              { data: "attributes.location" },
+              {
+                data: "attributes.location",
+                render: function (data, type, row) {
+                  return data ? data : "Chưa có thông tin";
+                },
+              },
               { data: "attributes.lat" },
               { data: "attributes.long" },
-              { data: "attributes.magnitude" },
-              { data: "attributes.depth" },
+              { data: "attributes.ml" },
+              { data: "attributes.md" },
+              {
+                data: null,
+                className: "dt-center editor-edit",
+                defaultContent:
+                  '<button class= "btn btn-sm download"><i class="fa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
             ],
           });
 
           var buttons = new $.fn.dataTable.Buttons($("#dulieu").DataTable(), {
-            buttons: [{ text: "Tải về", extend: "excelHtml5" }],
+            buttons: [
+              {
+                text: "Tải về",
+                extend: "excelHtml5",
+              },
+            ],
           })
             .container()
             .appendTo($("#buttons"));
@@ -331,6 +325,7 @@ Template.map.onRendered(() => {
                   .DataTable()
                   .order([[0, "asc"]])
                   .draw();
+            console.log(value);
           });
         }
         $("#buttonRealtime").on("click", (e) => {
@@ -338,13 +333,13 @@ Template.map.onRendered(() => {
             ? {}
             : ($("#buttonRealtime").addClass("activeButton"),
               loadDataRealtime(),
-              $("#buttonGlobal").removeClass("activeButton"));
+              $("#buttonProcessedEvent").removeClass("activeButton"));
         });
-        $("#buttonGlobal").on("click", (e) => {
-          $("#buttonGlobal").hasClass("activeButton")
+        $("#buttonProcessedEvent").on("click", (e) => {
+          $("#buttonProcessedEvent").hasClass("activeButton")
             ? {}
-            : ($("#buttonGlobal").addClass("activeButton"),
-              loadDataGlobal(),
+            : ($("#buttonProcessedEvent").addClass("activeButton"),
+              loadProcessedEvent(),
               $("#buttonRealtime").removeClass("activeButton"));
         });
         /**
@@ -666,7 +661,7 @@ Template.map.onRendered(() => {
         // Data from Database
         const dataGeojsonRealTime = [];
         const dataGeojsonRealTimeEvent = [];
-
+        const dataGeojsonEvents = [];
         const dataGeojsonEventStations = [];
         const dataGeojsonIris = [];
         const dataGeojsonStations = [];
@@ -674,7 +669,9 @@ Template.map.onRendered(() => {
         const dataGeojsonBaler = [];
         const dataGeojsonDataloger = [];
         const dataGeojsonSensor = [];
-
+        const eventGeojson = dataEvents.filter((e) => {
+          return !(e.geometry === null);
+        });
         const realTimeGeojson = dataRealTime.filter((e) => {
           return !(e.lat === null && e.lon === null);
         });
@@ -685,15 +682,18 @@ Template.map.onRendered(() => {
         dataRealTimeEvent.map((e) => {
           dataGeojsonRealTimeEvent.push(turf.point([0, 0], e));
         });
-
+        eventGeojson.map((e) => {
+          e.datetime = e.datetime.getTime();
+          dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+        });
         dataEventStations.map((e) => {
           dataGeojsonEventStations.push(turf.point([0, 0], e));
         });
-        waitDataIris.map((e) => {
-          if (isNaN(e.long) === false) {
-            dataGeojsonIris.push(turf.point([e.long, e.lat], e));
-          }
-        });
+        // waitDataIris.map((e) => {
+        //   if (isNaN(e.long) === false) {
+        //     dataGeojsonIris.push(turf.point([e.long, e.lat], e));
+        //   }
+        // });
         const stationsGeojson = dataStations.filter((e) => {
           return !(e.geometry === null);
         });
@@ -713,6 +713,7 @@ Template.map.onRendered(() => {
           dataGeojsonStations.push(turf.point([e.long, e.lat], e));
         });
         // Tạo Turf featurecollection
+        let collection = turf.featureCollection(dataGeojsonEvents);
         let collection_events_station = turf.featureCollection(
           dataGeojsonEventStations
         );
@@ -720,7 +721,7 @@ Template.map.onRendered(() => {
         let collection_realtimeEvent = turf.featureCollection(
           dataGeojsonRealTimeEvent
         );
-        let collection_dataIris = turf.featureCollection(dataGeojsonIris);
+        // let collection_dataIris = turf.featureCollection(dataGeojsonIris);
         // Trạm
         let collection_station = turf.featureCollection(dataGeojsonStations);
         let collection_employee = turf.featureCollection(dataGeojsonEmployee);
@@ -728,10 +729,12 @@ Template.map.onRendered(() => {
         let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
         let collection_sensor = turf.featureCollection(dataGeojsonSensor);
         // create a new blob from geojson featurecollection
-
-        const blob_dataIris = new Blob([JSON.stringify(collection_dataIris)], {
+        const blob = new Blob([JSON.stringify(collection)], {
           type: "application/json",
         });
+        // const blob_dataIris = new Blob([JSON.stringify(collection_dataIris)], {
+        //   type: "application/json",
+        // });
         const blob_event_station = new Blob(
           [JSON.stringify(collection_events_station)],
           {
@@ -767,8 +770,9 @@ Template.map.onRendered(() => {
           type: "application/json",
         });
         // URL reference to the blob
+        const url = URL.createObjectURL(blob);
         const url_event_station = URL.createObjectURL(blob_event_station);
-        const url_dataIris = URL.createObjectURL(blob_dataIris);
+        // const url_dataIris = URL.createObjectURL(blob_dataIris);
         const url_realTime = URL.createObjectURL(blob_realTime);
         const url_realTimeEvent = URL.createObjectURL(blob_realTimeEvent);
         // Trạm
@@ -1188,38 +1192,19 @@ Template.map.onRendered(() => {
         // Kết thúc Content Trạm
 
         // create new geojson layer using the blob url
-        const labelClass_event_iris = {
-          // autocasts as new LabelClass()
-          symbol: {
-            type: "text", // autocasts as new TextSymbol()
-            color: "maroon",
-            haloColor: "white",
-            haloSize: 1,
-            font: {
-              // autocast as new Font()
-              family: "Ubuntu Mono",
-              size: 14,
-            },
-          },
-          labelPlacement: "above-center",
-          labelExpressionInfo: {
-            expression: 'DefaultValue($feature.magnitude, "no data")',
-          },
-          maxScale: 0,
-          minScale: 8000000,
-        };
-        const layerIris = new GeoJSONLayer({
-          url: url_dataIris,
-          listMode: "show",
-          renderer: renderer,
-          legendEnabled: false,
-          title:
-            "Thông tin động đất toàn cầu ( Hiển thị dữ liệu trong một ngày gần nhất )",
-          visible: true,
-          popupEnabled: false,
-          labelingInfo: [labelClass_event_iris],
-          outFields: ["*"],
-        });
+
+        // const layerIris = new GeoJSONLayer({
+        //   url: url_dataIris,
+        //   listMode: "show",
+        //   renderer: renderer,
+        //   legendEnabled: false,
+        //   title:
+        //     "Thông tin động đất toàn cầu ( Hiển thị dữ liệu trong một ngày gần nhất )",
+        //   visible: true,
+        //   popupEnabled: false,
+        //   labelingInfo: [labelClass_event_iris],
+        //   outFields: ["*"],
+        // });
         const labelClass_event = {
           // autocasts as new LabelClass()
           symbol: {
@@ -1260,7 +1245,26 @@ Template.map.onRendered(() => {
           maxScale: 0,
           minScale: 8000000,
         };
+        const layerEvent = new GeoJSONLayer({
+          url: url,
 
+          listMode: "show",
+          renderer: renderer_event,
+          legendEnabled: false,
+          title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
+          visible: true,
+          popupEnabled: false,
+          timeInfo: {
+            startField: "datetime", // name of the date field
+            interval: {
+              // set time interval to one day
+              unit: "years",
+              value: 5,
+            },
+          },
+          labelingInfo: [labelClass_event],
+          outFields: ["*"],
+        });
         const layerRealTime = new GeoJSONLayer({
           url: url_realTime,
           renderer: renderer_realtime,
@@ -1352,6 +1356,7 @@ Template.map.onRendered(() => {
           },
           timeVisible: true, // show the time stamps on the timeslider
           loop: true,
+          layout: "auto",
         });
         // const timeSlider_realtime = new TimeSlider({
         //   container: "timeSlider_realtime",
@@ -1376,9 +1381,10 @@ Template.map.onRendered(() => {
         let layerView;
         view.when(function () {
           map.addMany([
+            layerEvent,
             layerEventStaions,
             layerRealTime,
-            layerIris,
+
             layerStations,
           ]);
           let flV = null;
@@ -1387,40 +1393,239 @@ Template.map.onRendered(() => {
             layer = layerView;
             layer.filter = { where: "id = -1" };
           });
+          // Tạo biến chứa dữ liệu của datetime event
+          const max_datetime_event = Math.max(
+            ...eventGeojson.map((e) => e.datetime)
+          );
+          const min_datetime_event = Math.min(
+            ...eventGeojson.map((e) => e.datetime)
+          );
+          // Tạo biến chứa dữ liệu của datetime realtime event
+          const max_datetime_realtime_event = Math.max(
+            ...realTimeGeojson.map((e) => e.Reporting_time)
+          );
+          const min_datetime_realtime_event = Math.min(
+            ...realTimeGeojson.map((e) => e.Reporting_time)
+          );
+          // Lấy dữ liệu thời gian cho bộ lọc Timeslider
+          let start_time;
+          let end_time;
+          if (max_datetime_event >= max_datetime_realtime_event) {
+            end_time = new Date(max_datetime_event);
+          } else {
+            end_time = new Date(max_datetime_realtime_event);
+          }
+          if (min_datetime_event >= min_datetime_realtime_event) {
+            start_time = new Date(min_datetime_realtime_event);
+          } else {
+            start_time = new Date(min_datetime_event);
+          }
+          let flView = null;
+          // set time slider's full extent to
+          timeSlider.fullTimeExtent = {
+            start: start_time,
+            end: end_time,
+          };
+          // showing earthquakes with one day interval
+          // Values property is set so that timeslider
+          // widget show the first day. We are setting
+          // the thumbs positions.
+          timeSlider.values = [start_time, end_time];
+
+          view.whenLayerView(layerRealTime).then(function (lv) {
+            flV = lv;
+            $("#filter").on("click", () => {
+              $("#buttonRealtime").hasClass("activeButton")
+                ? updateFilter_realtime()
+                : "";
+            });
+            function updateFilter_realtime() {
+              console.log("chạy");
+              depthMin = depthSlider.values[0];
+              depthMax = depthSlider.values[1];
+              magnitudeMin = magnitudeSlider.values[0];
+              magnitudeMax = magnitudeSlider.values[1];
+              let conditions = [];
+              if (depthSlider) {
+                conditions.push(`(dep >= ${depthMin} and dep <= ${depthMax})`);
+              }
+              if (magnitudeSlider) {
+                conditions.push(
+                  `(Mpd >= ${magnitudeMin} and Mpd <= ${magnitudeMax})`
+                );
+              }
+              if (timeSlider) {
+                conditions.push(
+                  `(Reporting_time >= ${timeSlider.timeExtent.start.getTime()} AND Reporting_time <= ${timeSlider.timeExtent.end.getTime()})`
+                );
+              }
+              flV.filter =
+                conditions.length > 0
+                  ? { where: conditions.join("AND") }
+                  : null;
+              let query = layerRealTime.createQuery();
+              query.where = `Mpd >= 0 and Mpd <= 1000`;
+              query.outFields = "*";
+
+              layerRealTime.queryFeatures(query).then(function (response) {
+                const dataSet = response.features.filter((item) => {
+                  return (
+                    item.attributes.Reporting_time >=
+                      timeSlider.timeExtent.start.getTime() &&
+                    item.attributes.Reporting_time <=
+                      timeSlider.timeExtent.end.getTime() &&
+                    item.attributes.dep >= depthMin &&
+                    item.attributes.dep <= depthMax &&
+                    item.attributes.Mpd >= magnitudeMin &&
+                    item.attributes.Mpd <= magnitudeMax
+                  );
+                });
+
+                const data = dataSet.map((e) => {
+                  e.attributes.Reporting_time = new Date(
+                    e.attributes.Reporting_time
+                  );
+                  return e;
+                });
+                //load table when filter button clicked
+                loadDataTable(data);
+              });
+            }
+          });
+
+          view.whenLayerView(layerEvent).then((layerView) => {
+            flView = layerView;
+            // watch for time slider timeExtent change
+            // timeSlider.watch("timeExtent", function () {
+            //   updateFilter();
+            // });
+
+            // depthSlider.on("thumb-drag", function () {
+            //   console.log("test")
+            //   updateFilter();
+            // });
+            // magnitudeSlider.on("thumb-drag", function () {
+            //   updateFilter();
+            // });
+            $("#filter").on("click", () => {
+              $("#buttonProcessedEvent").hasClass("activeButton")
+                ? updateFilter()
+                : "";
+            });
+
+            const updateFilter = function () {
+              depthMin = depthSlider.values[0];
+              depthMax = depthSlider.values[1];
+              magnitudeMin = magnitudeSlider.values[0];
+              magnitudeMax = magnitudeSlider.values[1];
+              let conditions = [];
+              if (depthSlider) {
+                conditions.push(`(md >= ${depthMin} and md <= ${depthMax})`);
+              }
+              if (magnitudeSlider) {
+                conditions.push(
+                  `(ml >= ${magnitudeMin} and ml <= ${magnitudeMax})`
+                );
+              }
+              if (timeSlider) {
+                conditions.push(
+                  `(datetime > ${timeSlider.timeExtent.start.getTime()} AND datetime < ${timeSlider.timeExtent.end.getTime()})`
+                );
+              }
+              flView.filter =
+                conditions.length > 0
+                  ? { where: conditions.join("AND") }
+                  : null;
+
+              // // Datatable
+              let query = layerEvent.createQuery();
+              query.where = `md >= 0 and md <= 1000`;
+              query.outFields = "*";
+
+              layerEvent.queryFeatures(query).then(function (response) {
+                const dataSet = response.features.filter((item) => {
+                  return (
+                    item.attributes.datetime >=
+                      timeSlider.timeExtent.start.getTime() &&
+                    item.attributes.datetime <=
+                      timeSlider.timeExtent.end.getTime() &&
+                    item.attributes.md >= depthMin &&
+                    item.attributes.md <= depthMax &&
+                    item.attributes.ml >= magnitudeMin &&
+                    item.attributes.ml <= magnitudeMax
+                  );
+                });
+
+                const data = dataSet.map((e) => {
+                  e.attributes.datetime = new Date(e.attributes.datetime);
+                  return e;
+                });
+                //load table when filter button clicked
+                loadDataTableProcessedEvent(data);
+              });
+
+              // End Datatable Event
+            };
+            $("#clearFilter").on("click", function clearFilter() {
+              //  depthSlider.filter = null;
+              //  magnitudeSlider.filter = null;
+              flView.filter = null;
+              flV.filter = null;
+              depthSlider.values = [0, 1000];
+              magnitudeSlider.values = [0, 10];
+              timeSlider.values = [start_time, end_time];
+              if (highlightSelect != undefined) {
+                highlightSelect.remove();
+              }
+
+              $("#buttonProcessedEvent").hasClass("activeButton")
+                ? loadProcessedEvent()
+                : loadDataRealtime();
+
+              // End Datatable Event
+              // $("#relationship-select option").prop("selected", false);
+            });
+
+            // Datatable Event
+          });
 
           // view.whenLayerView(layerStations).then((layerView) => {
           //   floodLayerView = layerView;
           // });
         });
+        console.log(layerEvent, "layerEvent");
         // Datatable
-        function loadDataGlobal() {
-          let query_Iris = layerIris.createQuery();
-          query_Iris.where = `magnitude >= 0 and magnitude <= 1000`;
-          query_Iris.outFields = "*";
-          layerIris.queryFeatures(query_Iris).then(function (response) {
-            const dataSet = response.features;
-            const data = dataSet.map((e) => {
-              e.attributes.time = new Date(e.attributes.time);
-              return e;
-            });
-            //load table when page loaded
-            loadDataTableGlobal(data);
+        function loadProcessedEvent() {
+          let query_ProcessedEvent = layerEvent.createQuery();
+          query_ProcessedEvent.where = `md >= 0 and md <= 1000`;
+          query_ProcessedEvent.outFields = "*";
+          layerEvent
+            .queryFeatures(query_ProcessedEvent)
+            .then(function (response) {
+              const dataSet = response.features;
+              console.log(dataSet, "1916");
+              const data = dataSet.map((e) => {
+                e.attributes.time = new Date(e.attributes.time);
+                return e;
+              });
+              //load table when page loaded
+              loadDataTableProcessedEvent(data);
 
-            $("#dulieu tbody").off("click", "tr");
-            $("#dulieu tbody").on("click", "tr", function () {
-              const dataRow = $("#dulieu").DataTable().row(this).data();
-              view.whenLayerView(dataRow.layer).then(function (layerView) {
-                if (highlightSelect) {
-                  highlightSelect.remove();
-                }
-                highlightSelect = layerView.highlight(dataRow);
-                view.goTo({
-                  geometry: dataRow.geometry,
-                  zoom: 6,
+              $("#dulieu tbody").off("click", "tr");
+              $("#dulieu tbody").on("click", "tr", function () {
+                const dataRow = $("#dulieu").DataTable().row(this).data();
+                view.whenLayerView(dataRow.layer).then(function (layerView) {
+                  if (highlightSelect) {
+                    highlightSelect.remove();
+                  }
+                  highlightSelect = layerView.highlight(dataRow);
+                  view.goTo({
+                    geometry: dataRow.geometry,
+                    zoom: 6,
+                  });
                 });
               });
             });
-          });
         }
 
         function loadDataRealtime() {
@@ -1455,7 +1660,7 @@ Template.map.onRendered(() => {
             });
           });
         }
-        loadDataRealtime();
+        loadProcessedEvent();
         // Highlight điểm click trên FeatureLayer
         function hightlightPoint(layer, point) {
           view.whenLayerView(layer).then(function (layerView) {
@@ -1533,6 +1738,7 @@ Template.map.onRendered(() => {
                       // Hiển thị các Trạm đo được lên bản đồ
 
                       dataSet.map((e) => {
+                        console.log(e.attributes, "e.attributes");
                         if (e.attributes.Sta != null) {
                           code_station.push(`(code = '${e.attributes.Sta}')`);
                         }
@@ -1563,6 +1769,7 @@ Template.map.onRendered(() => {
                             ? { where: code_station.join("OR") }
                             : { where: "code = -1" };
                       });
+                      console.log(row_data, "row_data");
                       const wavePicData = `
                         <table >
                     
@@ -1585,9 +1792,9 @@ Template.map.onRendered(() => {
                       $("#wavePickTable").html(wavePicData);
                       // $("#shortData").html(shortData);
                     });
-                } else if (result.graphic.layer === layerIris) {
-                  hightlightPoint(layerIris, result.graphic);
-                  const date = new Date(result.graphic.attributes.time);
+                } else if (result.graphic.layer === layerEvent) {
+                  hightlightPoint(layerEvent, result.graphic);
+                  const date = new Date(result.graphic.attributes.datetime);
 
                   const time = date.toLocaleString();
 
@@ -1596,27 +1803,92 @@ Template.map.onRendered(() => {
                   $("#time").html(fullTime);
                   $("#lat").html(result.graphic.attributes.lat);
                   $("#long").html(result.graphic.attributes.long);
-                  $("#depth").html(result.graphic.attributes.depth);
-
-                  $(".mag").html(
-                    result.graphic.attributes.magnitude +
-                      " " +
-                      `(${result.graphic.attributes.magtype})`
-                  );
-                  $("#magCollapse").html(
-                    `<table>
-                    <tr>
-                    <td class="fw-bold">${result.graphic.attributes.magtype}</td>
-                    <td colspan="3" class="mag">${result.graphic.attributes.magnitude}</td>
-                  </tr></table>`
-                  );
+                  $("#depth").html(result.graphic.attributes.md);
+                  $(".mag").html(result.graphic.attributes.ml + " " + "(ml)");
                   $("#location").html(
                     result.graphic.attributes.location
                       ? result.graphic.attributes.location
                       : "Chưa có thông tin"
                   );
-
+                  $("#magCollapse").html(
+                    `<table>
+                    <tr>
+                    <td class="fw-bold">Ml</td>
+                    <td colspan="3" class="mag">${result.graphic.attributes.ml}</td>
+                  </tr></table>`
+                  );
                   $("#wavePickTable").html("Chưa có thông tin");
+                  const where = `event_id = ${result.graphic.attributes.id}`;
+                  let query_eventStation = layerEventStaions.createQuery();
+                  query_eventStation.where = where;
+                  query_eventStation.outFields = "*";
+                  return layerEventStaions
+                    .queryFeatures(query_eventStation)
+                    .then(function (response) {
+                      const dataSet = response.features;
+                      const code_station = [];
+                      dataSet.map((e) => {
+                        if (e.attributes.station_id != null) {
+                          code_station.push(
+                            `(code = '${e.attributes.station_id}')`
+                          );
+                        }
+                      });
+                      // Hiển thị các Trạm đo được lên bản đồ
+                      view.whenLayerView(layerStations).then((layerView) => {
+                        layerView.filter =
+                          code_station.length > 0
+                            ? { where: code_station.join("OR") }
+                            : { where: "code = -1" };
+                      });
+                      const row_data = [];
+                      if (dataSet.length == 0) {
+                        $("#wavePickTable").html("Chưa có thông tin");
+                      } else {
+                        dataSet.map((e) => {
+                          for (const prop in e.attributes) {
+                            if (!e.attributes[prop]) {
+                              e.attributes[prop] = "Chưa có thông tin";
+                            }
+
+                            if (!prop) {
+                              e.attributes[prop] = "Chưa có thông tin";
+                            }
+                          }
+                          row_data.push(` <tr>
+                          <td>${e.attributes.station_id}</td>
+                          <td>${e.attributes.ain}</td>
+                          <td>${e.attributes.amplit}</td>              
+                          <td>${e.attributes.caz7}</td>
+                          <td>${e.attributes.dis}</td>
+                          <td>${e.attributes.i}</td>
+                          <td>${e.attributes.peri}</td>
+                          <td>${e.attributes.secon}</td>
+                          <td>${e.attributes.sp}</td>
+                          </tr>`);
+                        });
+                      }
+                      const pickWaveTable = `<table>
+                    
+                              <tr>
+                                  <th class="content_popup">Mã trạm</th>
+                                  <th class="content_popup">Góc tới</th>
+                                  <th class="content_popup">Biên độ dao động trội</th>
+                                  <th class="content_popup">Góc Azimut</th>
+                                  <th class="content_popup">Khoảng cách chấn tâm</th>
+                                  <th class="content_popup">Pha sóng</th>
+                                  <th class="content_popup">Chu kỳ </th>
+                                  <th class="content_popup">Thời gian sóng tới trạm</th>
+                                  <th class="content_popup">Kênh sử dụng</th>
+                                
+                              </tr>
+               
+                          <tbody>
+                             ${row_data.join("")}
+                          </tbody>
+                      </table>`;
+                      $("#wavePickTable").html(pickWaveTable);
+                    });
                 }
               });
               // do something with the result graphic
@@ -1671,8 +1943,33 @@ Template.map.onRendered(() => {
         //   content: basemapGallery,
         //   group: "top-right",
         // });
-        view.on("click", (event) => {});
+        $("#dulieu").on("click", "td.editor-edit", function (e) {
+          e.preventDefault();
+          const table = $("#dulieu").DataTable();
 
+          const getParentRow = $(this).closest("tr");
+          let dataTableHeaderElements = table.columns().header();
+          let headers = [];
+          for (let i = 0; i < dataTableHeaderElements.length; i++) {
+            headers.push($(dataTableHeaderElements[i]).text());
+          }
+
+          const rowData = {};
+          headers.map((e, i) => {
+            if (i < headers.length - 1) {
+              rowData[e] = getParentRow[0].cells[i].innerText;
+            }
+          });
+
+          window.saveFile = function saveFile() {
+            let opts = [{ sheetid: "Sheet1", header: true }];
+            let res = alasql(
+              'SELECT * INTO XLSX("Dữ liệu sự kiện động đất.xlsx",?) FROM ?',
+              [opts, [[rowData]]]
+            );
+          };
+          saveFile();
+        });
         const legendExpand = new Expand({
           view: view,
           content: legendDiv,
@@ -1688,14 +1985,6 @@ Template.map.onRendered(() => {
           expandTooltip: "Danh sách lớp dữ liệu",
           group: "top-right",
         });
-
-        // const expand = new Expand({
-        //   view: view,
-        //   expandIconClass: "esri-icon-filter",
-        //   expandTooltip: "Bộ lọc sự kiện",
-        //   content: document.getElementById("infoDiv"),
-        //   group: "top-right",
-        // });
         view.ui.add([layerListExpand, legendExpand], "top-right");
         // document.getElementById("infoDiv").style.display = "block";
         view.when().then(function () {
@@ -1711,9 +2000,16 @@ Template.map.onRendered(() => {
     });
 });
 
-Template.map.helpers({});
+Template.category.helpers({});
 
-Template.map.events({
+Template.category.events({
+  "click  #sidebarCollapse": () => {
+    $("#sidebarCollapse").toggleClass("active");
+    $("#iconArrow").hasClass("fa-caret-left")
+      ? $("#iconArrow").addClass("fa-caret-right").removeClass("fa-caret-left")
+      : $("#iconArrow").addClass("fa-caret-left").removeClass("fa-caret-right");
+    $("#leftSideBar").toggleClass("active");
+  },
   "click #closebtn": () => {
     document.getElementById("popup").style.width = "0";
     document.getElementById("map").style.marginRight = "0";
@@ -1733,12 +2029,5 @@ Template.map.events({
   "click #shakemapHeading": (e) => {
     $("#pointShakemap").toggleClass("fa-plus-circle");
     $("#pointShakemap").toggleClass("fa-minus-circle");
-  },
-  "click  #sidebarCollapse": () => {
-    $("#sidebarCollapse").toggleClass("active");
-    $("#iconArrow").hasClass("fa-caret-left")
-      ? $("#iconArrow").addClass("fa-caret-right").removeClass("fa-caret-left")
-      : $("#iconArrow").addClass("fa-caret-left").removeClass("fa-caret-right");
-    $("#leftSideBar").toggleClass("active");
   },
 });

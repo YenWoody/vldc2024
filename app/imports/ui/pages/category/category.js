@@ -1,12 +1,12 @@
 import { Meteor } from "meteor/meteor";
 import { Template } from "meteor/templating";
-import "./event.html";
-import "../../components/map/map";
+import "./category.html";
+import "../../components/category/category";
 import "../login/login";
 import "../../components/layouts/sidebar/sidebar";
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
-Template.event.helpers({
+Template.categoryPage.helpers({
   userUnVerified() {
     // const user = Meteor.user();
     // return user.emails[0].verified;
@@ -25,4 +25,4 @@ Template.event.helpers({
     return getUser();
   },
 });
-Template.event.onRendered(function () {});
+Template.categoryPage.onRendered(function () {});

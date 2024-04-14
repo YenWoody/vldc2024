@@ -334,26 +334,26 @@ Meteor.methods({
     ) {
       pool.query(
         `UPDATE "dataloger"
-                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}', "station_id" = '${data.station_id}'
+                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}', "station_code" = '${data.station_code}'
                 WHERE "id" = ${data.key};`
       );
     }
     if (isNaN(Date.parse(data.start_date))) {
       pool.query(
         `UPDATE "dataloger"
-                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}', "end_date" = '${data.end_date}' , "station_id" = '${data.station_id}'
+                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}', "end_date" = '${data.end_date}' , "station_code" = '${data.station_code}'
                 WHERE "id" = ${data.key};`
       );
     } else if (isNaN(Date.parse(data.end_date))) {
       pool.query(
         `UPDATE "dataloger"
-                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}',"start_date" = '${data.start_date}' , "station_id" = '${data.station_id}'
+                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}',"start_date" = '${data.start_date}' , "station_code" = '${data.station_code}'
                 WHERE "id" = ${data.key};`
       );
     } else {
       pool.query(
         `UPDATE "dataloger"
-            SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}',"start_date" = '${data.start_date}', "end_date" = '${data.end_date}' , "station_id" = '${data.station_id}'
+            SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}',"start_date" = '${data.start_date}', "end_date" = '${data.end_date}' , "station_code" = '${data.station_code}'
             WHERE "id" = ${data.key};`
       );
     }
@@ -364,19 +364,19 @@ Meteor.methods({
       isNaN(Date.parse(data.end_date))
     ) {
       pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","station_id") VALUES ('${data.serial}','${data.dataloger}','${data.station_id}')`
+        `INSERT INTO "dataloger" ("serial","dataloger","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.station_code}')`
       );
     } else if (isNaN(Date.parse(data.start_date))) {
       pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","end_date","station_id") VALUES ('${data.serial}','${data.dataloger}','${data.end_date}','${data.station_id}')`
+        `INSERT INTO "dataloger" ("serial","dataloger","end_date","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.end_date}','${data.station_code}')`
       );
     } else if (isNaN(Date.parse(data.end_date))) {
       pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","start_date","station_id") VALUES ('${data.serial}','${data.dataloger}','${data.start_date}','${data.station_id}')`
+        `INSERT INTO "dataloger" ("serial","dataloger","start_date","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.start_date}','${data.station_code}')`
       );
     } else {
       pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","start_date","end_date","station_id") VALUES ('${data.serial}','${data.dataloger}','${data.start_date}','${data.end_date}','${data.station_id}')`
+        `INSERT INTO "dataloger" ("serial","dataloger","start_date","end_date","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.start_date}','${data.end_date}','${data.station_code}')`
       );
     }
   },
@@ -405,13 +405,13 @@ Meteor.methods({
   editBaler: function (data) {
     pool.query(
       `UPDATE "baler"
-            SET "serial" = '${data.serial}', "code" = '${data.code}',"station_id" = '${data.station_id}'
+            SET "serial" = '${data.serial}', "code" = '${data.code}',"station_code" = '${data.station_code}'
             WHERE "id" = ${data.key};`
     );
   },
   insertBaler: function (data) {
     pool.query(
-      `INSERT INTO "baler" ("code","serial","station_id") VALUES ('${data.code}','${data.serial}','${data.station_id}')`
+      `INSERT INTO "baler" ("code","serial","station_code") VALUES ('${data.code}','${data.serial}','${data.station_code}')`
     );
   },
   deleteBaler: function (id) {
@@ -423,13 +423,13 @@ Meteor.methods({
   editSensor: function (data) {
     pool.query(
       `UPDATE "sensor"
-                SET "serial1" = '${data.serial1}', "sensor1" = '${data.sensor1}',"serial2" = '${data.serial2}', "sensor2" = '${data.sensor2}', "station_id" = '${data.station_id}'
+                SET "serial1" = '${data.serial1}', "sensor1" = '${data.sensor1}',"serial2" = '${data.serial2}', "sensor2" = '${data.sensor2}', "station_code" = '${data.station_code}'
                 WHERE "id" = ${data.key};`
     );
   },
   insertSensor: function (data) {
     pool.query(
-      `INSERT INTO "sensor" ("serial1","sensor1","sensor2","serial2","station_id") VALUES ('${data.serial1}','${data.sensor1}','${data.sensor2}','${data.serial2}','${data.station_id}')`
+      `INSERT INTO "sensor" ("serial1","sensor1","sensor2","serial2","station_code") VALUES ('${data.serial1}','${data.sensor1}','${data.sensor2}','${data.serial2}','${data.station_code}')`
     );
   },
   deleteSensor: function (id) {
@@ -597,6 +597,42 @@ Meteor.methods({
 
     return result;
   },
+  dataBattery: () => {
+    const result = pool
+      .query(
+        `SELECT *
+          FROM battery;`
+      )
+      .then((data) => {
+        return data;
+      });
+
+    return result;
+  },
+  dataInternet: () => {
+    const result = pool
+      .query(
+        `SELECT *
+          FROM internet;`
+      )
+      .then((data) => {
+        return data;
+      });
+
+    return result;
+  },
+  dataLand: () => {
+    const result = pool
+      .query(
+        `SELECT *
+          FROM land;`
+      )
+      .then((data) => {
+        return data;
+      });
+
+    return result;
+  },
   dataNetwork: () => {
     const result = pool
       .query(
@@ -720,64 +756,116 @@ Meteor.methods({
       }
     }
     function insertstation(data) {
-      data.map((e) => {
+      data.map(async (e) => {
         let station = [];
         let baler = [];
         let employee = [];
         let dataloger = [];
         let sensor = [];
+        let battery = [];
+        let internet = [];
+        let land = [];
+        let network = [];
         station.push({
-          id: e.Station,
+          code: e["Mã trạm"],
           name: e["Tên trạm"],
-          lat: e.Lat,
-          long: e.Long,
-          height: e.Height,
-          network: e.Network,
+          lat: e["Vĩ độ"],
+          long: e["Kinh độ"],
+          height: e["Độ cao"],
+          network: e["Mã mạng trạm"],
+          type: e["Loại trạm"],
+          status: e["Trạng thái"],
+          active_date: e["Năm hoạt động"],
+          tunnel_type: e["Loại hầm"],
           address: e["Địa chỉ"],
         });
         baler.push({
-          code: e.Baler,
-          serial: e["Serial 4"],
-          station_id: e.Station,
+          code: e["Bộ lưu trữ số liệu"],
+          serial: e["Serial bộ lưu trữ số liệu"],
+          status: e["Tình trạng bộ lưu trữ số liệu"],
+
+          station_code: e["Mã trạm"],
+        });
+        network.push({
+          code: e["Mã mạng trạm"],
+        });
+        battery.push({
+          code: e["Ắc quy"],
+          start_date: e["Năm trang bị ắc quy"],
+          status: e["Tình trạng ắc quy"],
+          charger: e["Bộ nạp"],
+          start_charger: e["Năm trang bị bộ nạp"],
+          status_charger: e["Tình trạng bộ nạp"],
+          sun_battery: e["Pin mặt trời"],
+          power_cable: e["Cáp nguồn"],
+          station_code: e["Mã trạm"],
         });
         employee.push({
-          name: e["Quan trắc viên/Bảo vệ 1"],
-          phone: e["Số điện thoại 1"],
-          name2: e["Quan trắc viên/Bảo vệ 2"],
-          phone2: e["Số điện thoại 2"],
-          start_date: e["Start date"],
-          end_date: e["End date"],
-          station_id: e.Station,
+          name_guard: e["Họ và tên bảo vệ"],
+          phone_guard: e["Số điện thoại bảo vệ"],
+          name_observer: e["Họ và tên quan trắc viên"],
+          phone_observer: e["Số điện thoại quan trắc viên"],
+          person_incharge: e["Họ và tên phụ trách"],
+          phone_person_incharge: e["Số điện thoại phụ trách"],
+          station_code: e["Mã trạm"],
         });
         dataloger.push({
-          serial: e["Serial 1"],
-          dataloger: e.Dataloger,
-          start_date: e["Start date"],
-          end_date: e["End date"],
-          station_id: e.Station,
+          code: e["Máy ghi"],
+          serial: e["Serial máy ghi"],
+          status: e["Tình trạng máy ghi"],
+
+          station_code: e["Mã trạm"],
+        });
+        internet.push({
+          code: e["Internet"],
+          ip: e["Địa chỉ IP"],
+          cable_internet: e["Cáp mạng"],
+          station_code: e["Mã trạm"],
+        });
+        land.push({
+          total_area: e["Tổng diện tích"],
+          work_house: e["Nhà làm việc"],
+          active_year: e["Năm sử dụng nhà làm việc"],
+          status: e["Tình trạng nhà làm việc"],
+          tunnel: e["Hầm đặt máy"],
+          active_date_tunnel: e["Năm sử dụng hầm đặt máy"],
+          status_tunnel: e["Tình trạng hầm đặt máy"],
+          yard: e["Sân vườn"],
+          gate: e["Hàng rào, cổng"],
+          document: e["Giấy tờ nhà đất"],
+
+          station_code: e["Mã trạm"],
         });
         sensor.push({
-          sensor1: e["Sensor 1"],
-          serial1: e["Serial 2"],
-          sensor2: e["Sensor 2"],
-          serial2: e["Serial 3"],
-          start_date: e["Start date"],
-          end_date: e["End date"],
-          dataloger_id: e["Serial 1"],
-          station_id: e.Station,
+          sensor_speed: e["Đầu đo vận tốc"],
+          serial_speed: e["Serial đầu đo vận tốc"],
+          status_speed: e["Tình trạng đầu đo vận tốc"],
+          remote_control: e["Bộ điều khiển"],
+          serial_control: e["Serial bộ điều khiển"],
+          status_control: e["Tình trạng bộ điều khiển"],
+          sensor_accelerator: e["Đầu đo gia tốc"],
+          serial_accelerator: e["Serial đầu đo gia tốc"],
+          status_accelerator: e["Tình trạng đầu đo gia tốc"],
+          cable_sensor_speed: e["Cáp đầu đo vận tốc"],
+          cable_sensor_accelerator: e["Cáp đầu đo gia tốc"],
+          station_code: e["Mã trạm"],
         });
 
         let values = [];
         let s1 = "";
         let s2 = "";
         let cols = [
-          "id",
+          "code",
           "name",
           "lat",
           "long",
           "height",
           "geometry",
           "network",
+          "type",
+          "status",
+          "active_date",
+          "tunnel_type",
           "address",
         ];
 
@@ -807,7 +895,13 @@ Meteor.methods({
             if (rowCount === 1) {
               function insertbaler(baler) {
                 let values = [];
-                let cols = ["code", "serial", "station_id", "id_stat"];
+                let cols = [
+                  "code",
+                  "serial",
+                  "status",
+                  "station_code",
+                  "id_stat",
+                ];
                 let baler_full = baler
                   .map((es) => {
                     es.id_stat = rows[0].id_key;
@@ -827,16 +921,17 @@ Meteor.methods({
               }
               insertbaler(baler)
                 .then(() => {
-                  function insertemployee(employee) {
+                  function insertEmployee(employee) {
                     let values = [];
                     let cols = [
-                      "name",
-                      "phone",
-                      "name2",
-                      "phone2",
-                      "start_date",
-                      "end_date",
-                      "station_id",
+                      "name_guard",
+                      "phone_guard",
+                      "name_observer",
+                      "phone_observer",
+                      "person_incharge",
+                      "phone_person_incharge",
+                      "station_code",
+
                       "id_stat",
                     ];
                     let employee_full = employee
@@ -854,17 +949,17 @@ Meteor.methods({
                       values
                     );
                   }
-                  insertemployee(employee);
+                  insertEmployee(employee);
                 })
                 .then(() => {
                   function insertdataloger(dataloger) {
                     let values = [];
                     let cols = [
+                      "code",
                       "serial",
-                      "dataloger",
-                      "start_date",
-                      "end_date",
-                      "station_id",
+                      "status",
+
+                      "station_code",
                       "id_stat",
                     ];
                     let dataloger_full = dataloger
@@ -886,19 +981,23 @@ Meteor.methods({
                   insertdataloger(dataloger);
                 })
                 .then(() => {
-                  function insertsensor(sensor) {
+                  function insertSensor(sensor) {
                     let values = [];
 
                     let cols = [
-                      "sensor1",
-                      "serial1",
-                      "sensor2",
-                      "serial2",
-                      "start_date",
-                      "end_date",
-                      "dataloger_id",
+                      "sensor_speed",
+                      "serial_speed",
+                      "status_speed",
+                      "remote_control",
+                      "serial_control",
+                      "status_control",
+                      "sensor_accelerator",
+                      "serial_accelerator",
+                      "status_accelerator",
+                      "cable_sensor_speed",
+                      "cable_sensor_accelerator",
+                      "station_code",
                       "id_stat",
-                      "station_id",
                     ];
                     let sensor_full = sensor
                       .map((es) => {
@@ -915,7 +1014,138 @@ Meteor.methods({
                       values
                     );
                   }
-                  insertsensor(sensor);
+                  insertSensor(sensor);
+                })
+                .then(() => {
+                  function insertInternet(internet) {
+                    let values = [];
+                    let cols = [
+                      "code",
+                      "ip",
+                      "cable_internet",
+                      "station_code",
+                      "id_stat",
+                    ];
+                    let internet_full = internet
+                      .map((es) => {
+                        es.id_stat = rows[0].id_key;
+                        return `(${cols
+                          .map((e) => `$${values.push(es[e])}`)
+                          .join(", ")})`;
+                      })
+                      .join(", ");
+
+                    return pool.query(
+                      `INSERT INTO "internet"
+                                (${cols.map((e) => `"${e}"`).join(", ")})
+                                VALUES ${internet_full}`,
+                      values
+                    );
+                  }
+                  insertInternet(internet);
+                })
+                .then(() => {
+                  function insertLand(land) {
+                    let values = [];
+                    let cols = [
+                      "total_area",
+                      "work_house",
+                      "active_year",
+                      "status",
+                      "tunnel",
+                      "active_date_tunnel",
+                      "status_tunnel",
+                      "yard",
+                      "gate",
+                      "document",
+
+                      "station_code",
+                      "id_stat",
+                    ];
+                    let land_full = land
+                      .map((es) => {
+                        es.id_stat = rows[0].id_key;
+                        return `(${cols
+                          .map((e) => `$${values.push(es[e])}`)
+                          .join(", ")})`;
+                      })
+                      .join(", ");
+
+                    return pool.query(
+                      `INSERT INTO "land"
+                                (${cols.map((e) => `"${e}"`).join(", ")})
+                                VALUES ${land_full}`,
+                      values
+                    );
+                  }
+                  insertLand(land);
+                })
+                .then(() => {
+                  function insertBattery(battery) {
+                    let values = [];
+                    let cols = [
+                      "code",
+                      "start_date",
+                      "status",
+                      "charger",
+                      "start_charger",
+                      "status_charger",
+                      "sun_battery",
+                      "power_cable",
+
+                      "station_code",
+                      "id_stat",
+                    ];
+                    let battery_full = battery
+                      .map((es) => {
+                        es.id_stat = rows[0].id_key;
+                        return `(${cols
+                          .map((e) => `$${values.push(es[e])}`)
+                          .join(", ")})`;
+                      })
+                      .join(", ");
+
+                    return pool.query(
+                      `INSERT INTO "battery"
+                                (${cols.map((e) => `"${e}"`).join(", ")})
+                                VALUES ${battery_full}`,
+                      values
+                    );
+                  }
+                  insertBattery(battery);
+                })
+                .then(() => {
+                  function insertNetwork(network) {
+                    let values = [];
+                    let cols = ["code"];
+                    let s1 = "";
+                    let s2 = "";
+                    cols.forEach((col, ind) => {
+                      if (ind > 0) {
+                        s1 += ", ";
+                        s2 += ", ";
+                      }
+                      s1 += `"${col}"`;
+                      s2 += `$${
+                        network[0][col] != undefined
+                          ? values.push(network[0][col])
+                          : 1
+                      }`;
+                    });
+                    return pool.query(
+                      `INSERT INTO "network"
+                            (${s1})
+                            SELECT ${s2}
+                            WHERE NOT EXISTS (SELECT 1 FROM "network" WHERE "code" = '${
+                              network[0].code != undefined
+                                ? network[0].code
+                                : "VN"
+                            }')
+                            RETURNING "id"`,
+                      values[0] != undefined ? values : ["VN"]
+                    );
+                  }
+                  insertNetwork(network);
                 });
             }
           });
@@ -1129,7 +1359,7 @@ Meteor.methods({
       let s2 = "";
       let cols = [
         "event_id",
-        "station_id",
+        "station_code",
         "sp",
         "i",
         "phas",
@@ -1155,7 +1385,7 @@ Meteor.methods({
           s2 += ", ";
         }
         s1 += `"${col}"`;
-        if (col === "station_id") {
+        if (col === "station_code") {
           s2 += `(SELECT "id" FROM "station" WHERE "id" = $${values.push(
             event_station.stat
           )} LIMIT 1)`;

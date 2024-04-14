@@ -5,6 +5,22 @@
   position: relative !important;
   padding-top: 0 !important;
 }
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
 ‍‍‍.esri-component .esri-attribution .esri-widget {
   display: none !important;
 }
@@ -15,14 +31,74 @@
   overflow: unset !important;
 }
 .esri-attribution__powered-by {
-  display: none;
+  display: none !important;
 }
-
+//Timeslider
+.esri-time-slider__previous {
+  display: none !important;
+}
+.esri-time-slider__min {
+  display: none !important;
+}
+.esri-time-slider__slider {
+  padding: 20px !important;
+}
+.esri-time-slider__layout--compact .esri-time-slider__row:nth-child(1),
+.esri-time-slider__layout--compact .esri-time-slider__row:nth-child(3) {
+  padding: 5px;
+  height: 100% !important;
+}
+.esri-time-slider__animation {
+  display: none !important;
+}
+.esri-time-slider__next {
+  display: none !important;
+}
+.esri-time-slider__max {
+  display: none !important;
+}
+.download:hover {
+  color: #0ae !important;
+}
+.heading-table {
+  background-color: #ddebf7;
+}
+.heading {
+  background-color: #f8cbac;
+}
+.form-select {
+  font-size: 14px !important;
+}
+.font-button {
+  font-size: 14px !important;
+}
+button.dt-button.buttons-excel.buttons-html5 {
+  border-radius: 10px !important;
+}
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: #f5f5f5;
 }
-
+#magCollapse.p-1.collapsing {
+  -webkit-transition: none !important;
+  transition: none !important;
+  display: none !important;
+}
+#wavePickCollapse.collapsing {
+  -webkit-transition: none !important;
+  transition: none !important;
+  display: none !important;
+}
+#wavePictureCollapse.collapsing {
+  -webkit-transition: none !important;
+  transition: none !important;
+  display: none !important;
+}
+#shakemapCollapse.collapsing {
+  -webkit-transition: none !important;
+  transition: none !important;
+  display: none !important;
+}
 ::-webkit-scrollbar {
   width: 5px;
   height: 8px;
@@ -498,12 +574,10 @@ footer a:hover {
   border-radius: 80px;
 }
 #bando {
-  // border: groove;
-  /* border-bottom: gray; */
-  height: calc(100vh - 90px);
+  height: calc(100vh - 70px);
 }
 .activeButton {
-  background-color: grey !important;
+  background-color: #0d70d3 !important;
   color: white !important;
 }
 .content.content--fluid {

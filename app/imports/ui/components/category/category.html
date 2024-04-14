@@ -1,4 +1,4 @@
-<template name="map">
+<template name="category">
   <div class="container-fluid p-0 mb-4 position-relative">
     <nav id="leftSideBar" class="shadow position-absolute z-3 active h-100">
       <div class="custom-menu mt-3">
@@ -6,27 +6,80 @@
           <i class="fa fa-caret-right" id="iconArrow"></i>
         </button>
       </div>
-      <div class="pb-4 pt-2 px-2 position-relative z-2 h-100 bg-white">
+      <div
+        class="pb-4 pt-2 px-2 position-relative z-2 bg-white overflow-auto h-100"
+      >
         <div class="mb-1">
           <h3 class="text-black text-center">Các sự kiện gần đây</h3>
           <div class="d-grid">
-            <div class="d-flex mb-2" style="background-color: #b4c7e7">
+            <div class="d-flex mb-2 rounded" style="background-color: #b4c7e7">
               <button
                 type="button"
-                class="w-50 m-2 p-0 btn btn-light activeButton"
+                class="w-50 m-2 btn btn-light activeButton p-0"
+                id="buttonProcessedEvent"
+              >
+                Danh mục đã chuẩn hóa
+              </button>
+              <button
+                type="button"
+                class="w-50 m-2 btn btn-light p-0"
                 id="buttonRealtime"
               >
-                Thông báo nhanh động đất
-              </button>
-              <button
-                type="button"
-                class="w-50 m-2 p-0 btn btn-light"
-                id="buttonGlobal"
-              >
-                Động đất toàn cầu (7 ngày gần đây)
+                Danh mục báo tin nhanh
               </button>
             </div>
-            <div class="my-auto d-flex justify-content-between">
+            <div id="infoDiv" class="border-top border-bottom mb-2 card">
+              <div class="d-flex">
+                <div class="m-1 w-50 card">
+                  <p class="title rounded-top">
+                    <span>Lọc sự kiện</span>
+                  </p>
+                  <div class="d-grid">
+                    <label for="depthSlider" class="text-dark my-2 ms-2"
+                      >Độ sâu (km):</label
+                    >
+                    <div id="depthSlider" style="height: 50px !important"></div>
+                  </div>
+                  <div class="d-grid">
+                    <label for="magnitudeSlider" class="text-dark my-2 ms-2"
+                      >Cường độ:</label
+                    >
+                    <div
+                      id="magnitudeSlider"
+                      class="mb-1"
+                      style="height: 50px !important"
+                    ></div>
+                  </div>
+                </div>
+                <div class="m-1 w-50 card">
+                  <p class="title rounded-top">Thời gian sự kiện động đất</p>
+                  <div class="m-1">
+                    <div id="timeSlider"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-center mx-auto">
+                <div class="m-2">
+                  <button
+                    class="btn btn-primary fw-bold text-white font-button"
+                    id="filter"
+                  >
+                    <i class="fa fa-search" aria-hidden="true"></i> Lọc
+                  </button>
+                </div>
+                <div class="m-2">
+                  <button
+                    class="btn btn-danger fw-bold text-white font-button"
+                    id="clearFilter"
+                  >
+                    <i class="fa fa-ban" aria-hidden="true"></i> Bỏ lọc
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="my-auto d-flex justify-content-between align-items-center"
+            >
               <div>
                 <select class="form-select" id="softDatatable">
                   <option value="date" selected>Sắp xếp theo Ngày</option>
@@ -37,7 +90,7 @@
             </div>
           </div>
         </div>
-        <div class="position-relative h-100 w-100 overflow-auto">
+        <div class="position-relative w-100 overflow-auto">
           <table id="dulieu" class="display table table-striped h-100">
             <thead>
               <tr id="tieude">
@@ -47,6 +100,7 @@
                 <th>Kinh độ</th>
                 <th>Độ lớn</th>
                 <th>Độ sâu</th>
+                <th>Số liệu</th>
               </tr>
             </thead>
           </table>

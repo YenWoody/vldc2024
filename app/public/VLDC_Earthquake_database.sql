@@ -1,14 +1,19 @@
 ﻿CREATE TABLE "station" (
   "id_key" SERIAL PRIMARY KEY,
-  "id" varchar,  
+  "code" varchar,
   "name" varchar,
   "lat" float,
   "long" float,
   "height" float,
   "geometry" geometry,
   "network" varchar,
+  "type" varchar,
+  "tunnel_type" varchar,
+  "active_date" varchar,
+  "status" varchar,
   "address" varchar
 );
+
 -- Key là số thứ tự tự thêm vào khi import dữ liệu Trạm
 -- Baler/Serial	
 CREATE TABLE "baler" (
@@ -16,50 +21,94 @@ CREATE TABLE "baler" (
   "id_stat" integer,
   "code" varchar,
   "serial" varchar,
-  "station_id" varchar
+  "status" varchar,
+  "station_code" varchar
 );
--- Network
-CREATE TABLE "network" (
+
+-- Acquy	
+CREATE TABLE "battery" (
   "id" SERIAL PRIMARY KEY,
-  "code" varchar
+  "id_stat" integer,
+  "code" varchar,
+  "start_date" varchar,
+  "status" varchar,
+  "charger" varchar,
+  "start_charger" varchar,
+  "status_charger" varchar,
+  "sun_battery" varchar,
+  "power_cable" varchar,
+  "station_code" varchar
 );
+
+-- Network
+CREATE TABLE "network" ("id" SERIAL PRIMARY KEY, "code" varchar);
+
 -- Quan trắc viên/Bảo vệ
 CREATE TABLE "employee" (
   "id" SERIAL PRIMARY KEY,
   "id_stat" integer,
-  "name" varchar,
-  "phone" varchar,
-  "name2" varchar,
-  "phone2" varchar,
-  "title" varchar,
-  "start_date" date,
-  "end_date" date,
-  "station_id" varchar
+  "name_guard" varchar,
+  "phone_guard" varchar,
+  "name_observer" varchar,
+  "phone_observer" varchar,
+  "person_incharge" varchar,
+  "phone_person_incharge" varchar,
+  "station_code" varchar
 );
 
 -- Dataloger	
 CREATE TABLE "dataloger" (
   "id" SERIAL PRIMARY KEY,
   "id_stat" integer,
+  "code" varchar,
   "serial" varchar,
-  "dataloger" varchar,
-  "start_date" date,
-  "end_date" date,
-  "station_id" varchar
+  "status" varchar,
+  "station_code" varchar
+);
+
+-- Internet
+CREATE TABLE "internet" (
+  "id" SERIAL PRIMARY KEY,
+  "id_stat" integer,
+  "code" varchar,
+  "ip" varchar,
+  "cable_internet" varchar,
+  "station_code" varchar
+);
+
+-- Land Infomation
+CREATE TABLE "land" (
+  "id" SERIAL PRIMARY KEY,
+  "id_stat" integer,
+  "total_area" varchar,
+  "work_house" varchar,
+  "active_year" varchar,
+  "status" varchar,
+  "tunnel" varchar,
+  "active_date_tunnel" varchar,
+  "status_tunnel" varchar,
+  "yard" varchar,
+  "gate" varchar,
+  "document" varchar,
+  "station_code" varchar
 );
 
 -- Sensor 1,2/Date/Serial		
 CREATE TABLE "sensor" (
   "id" SERIAL PRIMARY KEY,
   "id_stat" integer,
-  "sensor1" varchar,
-  "serial1" varchar,
-  "sensor2" varchar,
-  "serial2" varchar,
-  "start_date" date,
-  "end_date" date,
-  "dataloger_id" int,
-  "station_id" varchar
+  "sensor_speed" varchar,
+  "serial_speed" varchar,
+  "status_speed" varchar,
+  "remote_control" varchar,
+  "serial_control" varchar,
+  "status_control" varchar,
+  "sensor_accelerator" varchar,
+  "serial_accelerator" varchar,
+  "status_accelerator" varchar,
+  "cable_sensor_speed" varchar,
+  "cable_sensor_accelerator" varchar,
+  "station_code" varchar
 );
 
 CREATE TABLE "raw_data" (
@@ -67,7 +116,7 @@ CREATE TABLE "raw_data" (
   "name" varchar,
   "path" varchar,
   "year" int,
-  "station_id" varchar
+  "station_code" varchar
 );
 
 CREATE TABLE "event" (
@@ -90,7 +139,7 @@ CREATE TABLE "event" (
 CREATE TABLE "event_station" (
   "id" SERIAL PRIMARY KEY,
   "event_id" int,
-  "station_id" varchar,
+  "station_code" varchar,
   "sp" varchar,
   "i" varchar,
   "phas" varchar,
@@ -110,6 +159,7 @@ CREATE TABLE "event_station" (
   "dis" float,
   "caz7" float
 );
+
 CREATE TABLE IF NOT EXISTS "realtime" (
   "id" serial PRIMARY KEY,
   "filename" text UNIQUE,
@@ -130,7 +180,6 @@ CREATE TABLE IF NOT EXISTS "realtime" (
   "process_time" text
 );
 
-
 CREATE TABLE IF NOT EXISTS "realtime_event" (
   "id" serial PRIMARY KEY,
   "realtime_id" integer,
@@ -144,16 +193,14 @@ CREATE TABLE IF NOT EXISTS "realtime_event" (
   "Dis" decimal,
   "Parr" timestamp with time zone
 );
--- ALTER TABLE "baler" ADD FOREIGN KEY ("station_id") REFERENCES "station" ("id");
 
--- ALTER TABLE "employee" ADD FOREIGN KEY ("station_id") REFERENCES "station" ("id");
-
--- ALTER TABLE "dataloger" ADD FOREIGN KEY ("station_id") REFERENCES "station" ("id");
-
+-- ALTER TABLE "baler" ADD FOREIGN KEY ("station_code") REFERENCES "station" ("id");
+-- ALTER TABLE "employee" ADD FOREIGN KEY ("station_code") REFERENCES "station" ("id");
+-- ALTER TABLE "dataloger" ADD FOREIGN KEY ("station_code") REFERENCES "station" ("id");
 -- ALTER TABLE "sensor" ADD FOREIGN KEY ("dataloger_id") REFERENCES "dataloger" ("id");
-
--- ALTER TABLE "raw_data" ADD FOREIGN KEY ("station_id") REFERENCES "station" ("id");
-
--- ALTER TABLE "event_station" ADD FOREIGN KEY ("station_id") REFERENCES "station" ("id");
-
-ALTER TABLE "event_station" ADD FOREIGN KEY ("event_id") REFERENCES "event" ("id");
+-- ALTER TABLE "raw_data" ADD FOREIGN KEY ("station_code") REFERENCES "station" ("id");
+-- ALTER TABLE "event_station" ADD FOREIGN KEY ("station_code") REFERENCES "station" ("id");
+ALTER TABLE
+  "event_station"
+ADD
+  FOREIGN KEY ("event_id") REFERENCES "event" ("id");
