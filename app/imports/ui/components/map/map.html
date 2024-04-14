@@ -6,14 +6,14 @@
           <i class="fa fa-caret-right" id="iconArrow"></i>
         </button>
       </div>
-      <div class="py-4 px-2 position-relative z-2 h-100 d-grid bg-white">
+      <div class="pb-4 pt-2 px-2 position-relative z-2 h-100 d-grid bg-white">
         <div class="mb-1">
           <h2 class="text-black text-center">Các sự kiện gần đây</h2>
           <div class="d-grid">
-            <div class="d-flex bg-light bg-gradient">
+            <div class="d-flex mb-2" style="background-color: #b4c7e7">
               <button
                 type="button"
-                class="w-50 m-2 btn btn-light active"
+                class="w-50 m-2 btn btn-light activeButton"
                 id="buttonRealtime"
               >
                 Thông báo nhanh động đất
@@ -55,113 +55,456 @@
     </nav>
     <div class="col-md-12">
       <div id="bando">
-        <div class="bg-light p-0 h-100">
+        <div
+          class="bg-light p-0 h-100"
+          id="map"
+          style="transition: margin-right 0.5s"
+        >
           <div id="viewDiv">
             <div id="legendDiv" style="display: none">
               <h3 class="titleLegend">
                 <span>Chú thích</span>
               </h3>
-              <div class="esri-legend__service" tabindex="0">
+              <div class="m-2">
                 <h3 class="esri-widget__heading esri-legend__service-label">
-                  Thông báo nhanh động đất tại Việt Nam (Thử nghiệm)
+                  Lớp dữ liệu
                 </h3>
-                <div class="esri-legend__layer">
-                  <div
-                    class="esri-legend__layer-table esri-legend__layer-table--size-ramp"
-                  >
-                    <div class="esri-legend__layer-body">
-                      <div class="esri-legend__layer-row">
-                        <div
-                          class="esri-legend__layer-cell esri-legend__layer-cell--symbols"
-                        >
-                          <div class="esri-legend__symbol">
-                            <span
-                              style="
-                                height: 30px;
-                                width: 30px;
-                                background-color: #83c7e8;
-                                border-radius: 50%;
-                                display: inline-block;
-                              "
-                            ></span>
-                          </div>
-                        </div>
-                        <div
-                          class="esri-legend__layer-cell esri-legend__layer-cell--info"
-                        ></div>
-                      </div>
+                <div class="row">
+                  <div class="col-4">
+                    <div class="text-center">
+                      <span
+                        style="
+                          height: 30px;
+                          width: 30px;
+                          background-color: #83c7e8;
+                          border-radius: 50%;
+                          display: inline-block;
+                        "
+                      ></span>
                     </div>
+                    <div class="text-center">Động đất toàn cầu</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-center">
+                      <span
+                        style="
+                          height: 30px;
+                          width: 30px;
+                          background-color: #80d1c4;
+                          border-radius: 50%;
+                          display: inline-block;
+                        "
+                      ></span>
+                    </div>
+
+                    <div class="text-center">
+                      Thông tin động đất (đã chuẩn hóa)
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-center">
+                      <span
+                        style="
+                          height: 30px;
+                          width: 30px;
+                          background-color: #f3b77f;
+                          border-radius: 50%;
+                          display: inline-block;
+                        "
+                      ></span>
+                    </div>
+                    <div class="text-center">Thông báo nhanh động đất</div>
                   </div>
                 </div>
               </div>
-              <div class="esri-legend__service" tabindex="0">
+              <div class="m-2">
                 <h3 class="esri-widget__heading esri-legend__service-label">
-                  Thông báo nhanh động đất toàn cầu
+                  Trạm địa chấn
                 </h3>
-                <div class="esri-legend__layer">
-                  <div
-                    class="esri-legend__layer-table esri-legend__layer-table--size-ramp"
-                  >
-                    <div class="esri-legend__layer-body">
-                      <div class="esri-legend__layer-row">
-                        <div
-                          class="esri-legend__layer-cell esri-legend__layer-cell--symbols"
-                        >
-                          <div class="esri-legend__symbol">
-                            <span
-                              style="
-                                height: 30px;
-                                width: 30px;
-                                background-color: #80d1c4;
-                                border-radius: 50%;
-                                display: inline-block;
-                              "
-                            ></span>
-                          </div>
-                        </div>
-                        <div
-                          class="esri-legend__layer-cell esri-legend__layer-cell--info"
-                        ></div>
-                      </div>
-                    </div>
+                <div class="row">
+                  <div class="col-4 d-flex align-items-center">
+                    <img src="/img/station.png" class="w-25" />
+
+                    <span class="text-center ms-1">Trạm quốc gia</span>
+                  </div>
+                  <div class="col-4 d-flex align-items-center">
+                    <img src="/img/other-station.png" class="w-25" />
+
+                    <span class="text-center ms-1">Trạm khác</span>
+                  </div>
+                  <div class="col-4 d-flex align-items-center">
+                    <img src="/img/stop-station.png" class="w-25" />
+
+                    <span class="text-center ms-1">Trạm dừng hoạt động</span>
                   </div>
                 </div>
               </div>
-              <div class="esri-legend__service" tabindex="0">
+              <div class="m-2 overflow-auto">
                 <h3 class="esri-widget__heading esri-legend__service-label">
-                  Thông tin động đất tại Việt Nam (đã chuẩn hoá)
+                  Độ lớn
                 </h3>
-                <div class="esri-legend__layer">
+                <div class="row overflow-auto mx-auto" style="width: 450px">
                   <div
-                    class="esri-legend__layer-table esri-legend__layer-table--size-ramp"
+                    class="col d-grid justify-content-center align-items-end"
                   >
-                    <div class="esri-legend__layer-body">
-                      <div class="esri-legend__layer-row">
-                        <div
-                          class="esri-legend__layer-cell esri-legend__layer-cell--symbols"
-                        >
-                          <div class="esri-legend__symbol">
-                            <span
-                              style="
-                                height: 30px;
-                                width: 30px;
-                                background-color: #f3b77f;
-                                border-radius: 50%;
-                                display: inline-block;
-                              "
-                            ></span>
-                          </div>
-                        </div>
-                        <div
-                          class="esri-legend__layer-cell esri-legend__layer-cell--info"
-                        ></div>
-                      </div>
-                    </div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="8"
+                      height="8"
+                    >
+                      <g transform="matrix(1,0,0,1,4,4)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="3.3333333333333335"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">1</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                    >
+                      <g transform="matrix(1,0,0,1,6,6)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="5.333333333333333"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">2</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                    >
+                      <g transform="matrix(1,0,0,1,8,8)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="7.333333333333334"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">3</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                    >
+                      <g transform="matrix(1,0,0,1,10,10)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="9.333333333333334"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">4</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                    >
+                      <g transform="matrix(1,0,0,1,12,12)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="11.333333333333332"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">5</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="28"
+                      height="28"
+                    >
+                      <g transform="matrix(1,0,0,1,14,14)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="13.333333333333334"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">6</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                    >
+                      <g transform="matrix(1,0,0,1,16,16)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="15.333333333333332"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">7</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="36"
+                      height="36"
+                    >
+                      <g transform="matrix(1,0,0,1,18,18)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="17.333333333333332"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">8</span>
+                  </div>
+                  <div
+                    class="col d-grid justify-content-center align-items-end"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="41"
+                      height="41"
+                    >
+                      <g transform="matrix(1,0,0,1,20.5,20.5)">
+                        <circle
+                          fill="rgba(232, 112, 0, 0.5)"
+                          fill-rule="evenodd"
+                          stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-dasharray="none"
+                          stroke-miterlimit="4"
+                          cx="0"
+                          cy="0"
+                          r="19.333333333333336"
+                        ></circle>
+                      </g>
+                    </svg>
+
+                    <span class="text-center">> 8</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div id="popup"></div>
+          </div>
+        </div>
+        <div id="popup">
+          <div class="m-2 d-flex align-items-center">
+            <button
+              class="bg-white me-2"
+              id="closebtn"
+              style="border: unset !important"
+            >
+              <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </button>
+            <span class="user-select-none">Thông tin chi tiết</span>
+          </div>
+          <div class="my-2">
+            <div
+              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+            >
+              Tóm tắt
+            </div>
+            <div class="mb-2">
+              <table>
+                <tr>
+                  <td class="fw-bold">Thời gian</td>
+                  <td id="time">Chưa có thông tin</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Vĩ độ</td>
+                  <td id="lat">Chưa có thông tin</td>
+                  <td class="fw-bold">Độ lớn</td>
+                  <td class="mag">Chưa có thông tin</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Kinh độ</td>
+                  <td id="long">Chưa có thông tin</td>
+                  <td class="fw-bold">Độ sâu</td>
+                  <td id="depth">Chưa có thông tin</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Vị trí</td>
+                  <td colspan="3" id="location">Chưa có thông tin</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="my-2">
+            <div
+              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+              data-bs-toggle="collapse"
+              data-bs-target="#magCollapse"
+              aria-expanded="false"
+              aria-controls="magCollapse"
+              id="magHeading"
+            >
+              <i id="point" class="fa fa-plus-circle me-1"> </i>
+              Độ lớn
+            </div>
+
+            <div class="collapse p-1" id="magCollapse"></div>
+          </div>
+          <div class="my-2">
+            <div
+              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+              data-bs-toggle="collapse"
+              data-bs-target="#wavePickCollapse"
+              aria-expanded="false"
+              aria-controls="wavePickCollapse"
+              id="wavePickHeading"
+            >
+              <i id="pointWavePick" class="fa fa-plus-circle me-1"> </i>
+              Thông tin pick sóng
+            </div>
+
+            <div class="collapse" id="wavePickCollapse">
+              <div
+                id="wavePickTable"
+                style="max-height: 50vh"
+                class="overflow-auto p-1 text-center"
+              >
+                Chưa có thông tin
+              </div>
+            </div>
+          </div>
+          <div class="my-2">
+            <div
+              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+              data-bs-toggle="collapse"
+              data-bs-target="#wavePictureCollapse"
+              aria-expanded="false"
+              aria-controls="wavePictureCollapse"
+              id="wavePictureHeading"
+            >
+              <i id="pointWavePicture" class="fa fa-plus-circle me-1"> </i>
+              Hình ảnh băng sóng
+            </div>
+
+            <div class="collapse" id="wavePictureCollapse">
+              <div class="text-center">Chưa có thông tin</div>
+            </div>
+          </div>
+          <div class="my-2">
+            <div
+              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+              data-bs-toggle="collapse"
+              data-bs-target="#shakemapCollapse"
+              aria-expanded="false"
+              aria-controls="shakemapCollapse"
+              id="shakemapHeading"
+            >
+              <i id="pointShakemap" class="fa fa-plus-circle me-1"> </i>
+              Bản đồ shakemap
+            </div>
+
+            <div class="collapse" id="shakemapCollapse">
+              <div class="text-center">Chưa có thông tin</div>
+            </div>
           </div>
         </div>
       </div>

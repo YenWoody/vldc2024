@@ -1,72 +1,84 @@
-
 .hover-nav-link a:before {
-	color: #fff;
-	content: attr(data-hover);
-	position: absolute;
-	opacity: 0;
-	text-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
-	-webkit-transform: scale(1.1) translateX(10px) translateY(-10px) rotate(4deg);
-	-moz-transform: scale(1.1) translateX(10px) translateY(-10px) rotate(4deg);
-	transform: scale(1.1) translateX(10px) translateY(-10px) rotate(4deg);
-	-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
-	-moz-transition: -moz-transform 0.3s, opacity 0.3s;
-	transition: transform 0.3s, opacity 0.3s;
-	pointer-events: none;
-    border-bottom: 1px solid white;
+  color: #fff;
+  content: attr(data-hover);
+  position: absolute;
+  opacity: 0;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
+  -webkit-transform: scale(1.1) translateX(10px) translateY(-10px) rotate(4deg);
+  -moz-transform: scale(1.1) translateX(10px) translateY(-10px) rotate(4deg);
+  transform: scale(1.1) translateX(10px) translateY(-10px) rotate(4deg);
+  -webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+  -moz-transition: -moz-transform 0.3s, opacity 0.3s;
+  transition: transform 0.3s, opacity 0.3s;
+  pointer-events: none;
+  border-bottom: 1px solid white;
 }
 
-.hover-nav-link a:hover:before, .hover-nav-link a:focus:before {
-	-webkit-transform: scale(1) translateX(0px) translateY(0px) rotate(0deg);
-	-moz-transform: scale(1) translateX(0px) translateY(0px) rotate(0deg);
-	transform: scale(1) translateX(0px) translateY(0px) rotate(0deg);
-	opacity: 1;
+.hover-nav-link a:hover:before,
+.hover-nav-link a:focus:before {
+  -webkit-transform: scale(1) translateX(0px) translateY(0px) rotate(0deg);
+  -moz-transform: scale(1) translateX(0px) translateY(0px) rotate(0deg);
+  transform: scale(1) translateX(0px) translateY(0px) rotate(0deg);
+  opacity: 1;
 }
 .hover-nav-link li a span {
-    color: white
+  color: white;
 }
 ::marker {
-    color: white;
+  color: white;
 }
 nav.navbar.navbar-expand-lg.navbar-light.px-4 {
-	background-color : #414141 !important;
-	opacity : 1!important
+  background-color: #b4c7e7 !important;
+  opacity: 1 !important;
 }
 .hover-nav a {
-    cursor: pointer;
-	letter-spacing: 0;
-	transition: 0.35s;
+  cursor: pointer;
+  letter-spacing: 0;
+  transition: 0.35s;
 }
 .navbar-light .navbar-nav .nav-link {
-    // margin-left: 10px;
-    color: rgb(255 255 255);
+  // margin-left: 10px;
+  color: rgb(255 255 255);
 }
-.hover-nav a:hover, .hover-nav a:active {
-	letter-spacing: 2px;
-	transition: 0.35s;
+.hover-nav a:hover,
+.hover-nav a:active {
+  letter-spacing: 2px;
+  transition: 0.35s;
 }
 
 // .hover-nav a:after, .hover-nav a:before {
 // 	right : -10px
 // }
 .dropdown-toggle::after {
-	display: inline-block!important;
-    position: unset!important;
-    -webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
+  display: inline-block !important;
+  position: unset !important;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 .hover-nav a:hover:before {
-	width: 100%;
+  width: 100%;
 }
 a.dropdown-item :hover {
-    background-color: wheat;
+  background-color: wheat;
 }
-.navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
-color : #59ccff
+.navbar-light .navbar-nav .nav-link:focus,
+.navbar-light .navbar-nav .nav-link:hover {
+  color: #004f72;
+}
+.navbar-light .navbar-nav .nav-link {
+  color: rgb(255 255 255);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.navbar-light .navbar-toggler {
+  background-color: rgb(255 255 255);
+  border-color: rgb(255 255 255);
 }
 @media only screen and (max-width: 500px) {
-	ul.dropdown-menu {
-		overflow: auto;
-		max-width: 80vw;
-	}
+  ul.dropdown-menu {
+    overflow: auto;
+    max-width: 80vw;
+  }
 }

@@ -5,8 +5,41 @@
   position: relative !important;
   padding-top: 0 !important;
 }
-.esri-component.esri-attribution.esri-widget {
+‍‍‍.esri-component .esri-attribution .esri-widget {
+  display: none !important;
+}
+.esri-view .esri-view-surface--inset-outline:focus::after {
+  outline: none !important;
+}
+.esri-view .esri-view-user-storage {
+  overflow: unset !important;
+}
+.esri-attribution__powered-by {
   display: none;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0ae;
+
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    color-stop(0.5, rgba(255, 255, 255, 0.2)),
+    color-stop(0.5, transparent),
+    to(transparent)
+  );
 }
 // .dataTables_scrollBody {
 //   overflow: unset !important;
@@ -257,7 +290,7 @@ footer a:hover {
 //   height: auto;
 // }
 .footer {
-  background-color: #414141 !important;
+  background-color: #b4c7e7 !important;
   width: 100%;
   clear: left;
   text-align: left;
@@ -460,16 +493,19 @@ footer a:hover {
   //width: 1200px
 }
 .head-logo {
-  height: 65px;
+  height: 55px;
   background-color: white;
   border-radius: 80px;
 }
 #bando {
   // border: groove;
   /* border-bottom: gray; */
-  height: calc(100vh - 120px);
+  height: calc(100vh - 90px);
 }
-
+.activeButton {
+  background-color: grey !important;
+  color: white !important;
+}
 .content.content--fluid {
   width: auto;
   margin: 0 40px;

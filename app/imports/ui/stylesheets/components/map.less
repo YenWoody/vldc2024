@@ -34,7 +34,23 @@ th.sorting {
   padding-left: 0px;
   padding-right: 0px;
 }
-
+#popup {
+  .closebtn {
+    position: relative;
+    top: 0;
+    left: 10px;
+  }
+  height: 100%;
+  width: 0;
+  max-width: 450px;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
 #infoDiv {
   background-color: white;
   padding: 0px;
@@ -120,7 +136,7 @@ div#stationtable_wrapper {
 
 .content_popup {
   text-align: center;
-  border: groove;
+  background-color: lightsteelblue;
 }
 
 .geometry-options {
@@ -179,7 +195,8 @@ h3.titleLegend {
 }
 
 #legendDiv {
-  width: 230px;
+  max-width: 475px;
+  width: 50vw;
 }
 
 div.esri-legend__service {

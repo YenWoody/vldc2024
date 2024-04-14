@@ -1,63 +1,125 @@
 <template name="nav">
-
-    <style>
-        .navbar-light .navbar-nav .nav-link {
-            color: rgb(255 255 255);
-        }
-
-        .navbar-light .navbar-toggler {
-            background-color: rgb(255 255 255);
-            border-color: rgb(255 255 255);
-        }
-    </style>
-    {{#if userVerified }}
-    <nav class="navbar navbar-expand-lg navbar-light px-4" style="background-color: #414141 !important">
-        <div class="container-fluid">
-            <div class="navbar-brand">
-                <a href="/" class="logo"><img class ="head-logo" src="./assets/img/logo.png" alt="logo"></a>
-            </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav" style=" padding-left: 10px;">
-                    <a class="nav-link" onclick="window.location.href='/'"><span>Trang chủ</span></a>
-                    <a class="nav-link" onclick="window.location.href='/station'">
-                        <span>Trạm quan trắc động đất</span>
-                    </a>
-                    <!-- <a href="/station" class="nav-link" onclick="window.location.href='/map_realtime_vietnam'">
+  {{#if userVerified }}
+  <nav
+    class="navbar navbar-expand-lg navbar-light py-1 px-4"
+    style="background-color: #b4c7e7 !important"
+  >
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="/" class="logo"
+          ><img class="head-logo" src="./assets/img/logo.png" alt="logo"
+        /></a>
+      </div>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul
+          class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
+          style="padding-left: 10px"
+        >
+          <a class="nav-link" onclick="window.location.href='/'"
+            ><span>Trang chủ</span></a
+          >
+          <a class="nav-link" onclick="window.location.href='/station'">
+            <span>Trạm quan trắc động đất</span>
+          </a>
+          <!-- <a href="/station" class="nav-link" onclick="window.location.href='/map_realtime_vietnam'">
                         <span>Trang dữ liệu thông báo nhanh động đất tại VN</span>
                     </a>
                     <a href="/station" class="nav-link" onclick="window.location.href='/map_event_vietnam'">
                         <span>Trang dữ liệu động đất tại VN</span>
                     </a> -->
-                    <li class="nav-item dropdown" style="display: grid;">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Dữ liệu riêng
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <li><a class="dropdown-item" onclick="window.location.href='/map_realtime_vietnam'">Trang dữ liệu thông báo nhanh động đất tại VN</a></li>
-                          <li><a class="dropdown-item" onclick="window.location.href='/map_event_vietnam'">Trang dữ liệu động đất tại VN</a></li>              
-                          <li><a class="dropdown-item" onclick="window.location.href='/map_world'">Trang dữ liệu động đất trên thế giới</a></li>
-                        </ul>
-                      </li>
-                    <a href="/dashboard" class="nav-link" onclick="window.location.href='/dashboard'"><span>Dashboard</span></a>
-                </ul>
-                <ul class="navbar-nav ms-md-0">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-user-circle-o me-2 fa-2x"></i></a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li class="text-center"><span>Chào <b style="color :rgb(30, 132, 221)">{{currentUser.username}}</b> !</span></li>
-                            <li><hr class="m-1" /></li>
-                            <li><a class="dropdown-item" href="/changepass"><i class="fa fa-key me-2"></i>Đổi mật khẩu</a></li>
-                            <li><a class="dropdown-item header__references_logout" href="#!"><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <!-- <form class="d-flex">
+          <li class="nav-item dropdown" style="display: grid">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Dữ liệu riêng
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <a
+                  class="dropdown-item"
+                  onclick="window.location.href='/map_realtime_vietnam'"
+                  >Trang dữ liệu thông báo nhanh động đất tại VN</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  onclick="window.location.href='/map_event_vietnam'"
+                  >Trang dữ liệu động đất tại VN</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  onclick="window.location.href='/map_world'"
+                  >Trang dữ liệu động đất trên thế giới</a
+                >
+              </li>
+            </ul>
+          </li>
+          <a
+            href="/dashboard"
+            class="nav-link"
+            onclick="window.location.href='/dashboard'"
+            ><span>Dashboard</span></a
+          >
+        </ul>
+        <ul class="navbar-nav ms-md-0">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="fa fa-user-circle-o me-2 fa-2x"></i
+            ></a>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="navbarDropdown"
+            >
+              <li class="text-center">
+                <span
+                  >Chào
+                  <b style="color: rgb(30, 132, 221)"
+                    >{{currentUser.username}}</b
+                  >
+                  !</span
+                >
+              </li>
+              <li><hr class="m-1" /></li>
+              <li>
+                <a class="dropdown-item" href="/changepass"
+                  ><i class="fa fa-key me-2"></i>Đổi mật khẩu</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item header__references_logout" href="#!"
+                  ><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng
+                  xuất</a
+                >
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <!-- <form class="d-flex">
                     <div class="currentUser_div" id="currentUser_div">
                         <div style="display: grid; justify-items: center;"><b
                                 style="margin-top: 5px;color :rgb(30, 132, 221); font-size: 1.3em;">{{currentUser.username}}</b>
@@ -66,80 +128,148 @@
                         </div>
                     </div>
                 </form> -->
-            </div>
-        </div>
-    </nav>
-   
+      </div>
+    </div>
+  </nav>
 
-    {{else}}
-    {{#if isUserLogged}}
-    <nav class="navbar navbar-expand-lg navbar-light px-4" style="background-color: #202020;
-            opacity: 0.8;">
-        <div class="container-fluid">
-            <div class="navbar-brand">
-                <a href="/" class="logo"><img class ="head-logo"  src="./assets/img/logo.png" alt="logo"></a>
-            </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav" style=" padding-left: 10px;">
-                    <a href="/" class="nav-link "><span>Trang chủ</span></a>
-                    <a href="/station" class="nav-link "><span>Trạm đo động đất</span></a>
-                    <li class="nav-item dropdown" style="display: grid;">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Dữ liệu riêng
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown" style="overflow: auto;">
-                          <li><a class="dropdown-item" onclick="window.location.href='/map_realtime_vietnam'">Trang dữ liệu thông báo nhanh động đất tại VN</a></li>
-                          <li><a class="dropdown-item" onclick="window.location.href='/map_event_vietnam'">Trang dữ liệu động đất tại VN</a></li>              
-                          <li><a class="dropdown-item" onclick="window.location.href='/map_world'">Trang dữ liệu động đất trên thế giới</a></li>
-                        </ul>
-                      </li>
+  {{else}} {{#if isUserLogged}}
+  <nav
+    class="navbar navbar-expand-lg navbar-light px-4"
+    style="background-color: #202020; opacity: 0.8"
+  >
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="/" class="logo"
+          ><img class="head-logo" src="./assets/img/logo.png" alt="logo"
+        /></a>
+      </div>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul
+          class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
+          style="padding-left: 10px"
+        >
+          <a href="/" class="nav-link"><span>Trang chủ</span></a>
+          <a href="/station" class="nav-link"><span>Trạm đo động đất</span></a>
+          <li class="nav-item dropdown" style="display: grid">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Dữ liệu riêng
+            </a>
+            <ul
+              class="dropdown-menu"
+              aria-labelledby="navbarDropdown"
+              style="overflow: auto"
+            >
+              <li>
+                <a
+                  class="dropdown-item"
+                  onclick="window.location.href='/map_realtime_vietnam'"
+                  >Trang dữ liệu thông báo nhanh động đất tại VN</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  onclick="window.location.href='/map_event_vietnam'"
+                  >Trang dữ liệu động đất tại VN</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  onclick="window.location.href='/map_world'"
+                  >Trang dữ liệu động đất trên thế giới</a
+                >
+              </li>
+            </ul>
+          </li>
 
-                    <a href="/dashboard" class="nav-link" onclick="window.location.href='/dashboard'"><span>Dashboard</span></a>
-                </ul>
-                <form class="d-flex">
-                    <div class="currentUser_div" id="currentUser_div">
-                        <div style="display: grid; justify-items: center;"><b
-                                style="margin-top: 5px;color :rgb(30, 132, 221); font-size: 1.3em;">{{currentUser.username}}</b>
-                            <a class="header__references_logout" href="#">
-                                <span class="text-white font-medium">Đăng xuất</span></a>
-                        </div>
-                    </div>
-                </form>
+          <a
+            href="/dashboard"
+            class="nav-link"
+            onclick="window.location.href='/dashboard'"
+            ><span>Dashboard</span></a
+          >
+        </ul>
+        <form class="d-flex">
+          <div class="currentUser_div" id="currentUser_div">
+            <div style="display: grid; justify-items: center">
+              <b
+                style="
+                  margin-top: 5px;
+                  color: rgb(30, 132, 221);
+                  font-size: 1.3em;
+                "
+                >{{currentUser.username}}</b
+              >
+              <a class="header__references_logout" href="#">
+                <span class="text-white font-medium">Đăng xuất</span></a
+              >
             </div>
-        </div>
-    </nav>
-    <!-- hello-->
-    
-    {{else}}
-    <nav class="navbar navbar-expand-lg navbar-light px-4" style="background-color: #202020;
-            opacity: 0.8;">
-        <div class="container-fluid">
-            <div class="navbar-brand">
-                <a href="/" class="logo"><img class ="head-logo"  src="./assets/img/logo.png" alt="logo"></a>
-            </div>
-            <!-- <span class="text-white">Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</span> -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            
-                <form class="d-flex">
-                        <!-- start -->
-            <button type="button" class="btn btn-outline-primary text-white" onclick="window.location.href='/login'">Đăng nhập</button>
-	                <!-- // end -->
-                </form>
-            </div>
-        </div>
-    </nav>
-    {{/if}}
-    {{/if}}
+          </div>
+        </form>
+      </div>
+    </div>
+  </nav>
+  <!-- hello-->
 
-    
+  {{else}}
+  <nav
+    class="navbar navbar-expand-lg navbar-light px-4"
+    style="background-color: #202020; opacity: 0.8"
+  >
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="/" class="logo"
+          ><img class="head-logo" src="./assets/img/logo.png" alt="logo"
+        /></a>
+      </div>
+      <!-- <span class="text-white">Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</span> -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div
+        class="collapse navbar-collapse justify-content-end"
+        id="navbarSupportedContent"
+      >
+        <form class="d-flex">
+          <!-- start -->
+          <button
+            type="button"
+            class="btn btn-outline-primary text-white"
+            onclick="window.location.href='/login'"
+          >
+            Đăng nhập
+          </button>
+          <!-- // end -->
+        </form>
+      </div>
+    </div>
+  </nav>
+  {{/if}} {{/if}}
 </template>
