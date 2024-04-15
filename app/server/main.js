@@ -490,8 +490,9 @@ Meteor.methods({
     if (isNaN(data.long)) {
       data.long = null;
     }
+
     pool.query(
-      `INSERT INTO "station" ("id","name","lat","long","height","geometry","network","address","id_key") VALUES ('${data.id}','${data.name}',${data.lat},${data.long},${data.height},ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326),'${data.network}','${data.address}',${data.id_key} )`
+      `INSERT INTO "station" ("code","name","network","lat","long","address","status","height","type","tunnel_type","active_date","geometry","id_key") VALUES ('${data.code}','${data.name}','${data.network}',${data.lat},${data.long},'${data.address}','${data.status}',${data.height},'${data.type}','${data.tunnel_type}',${data.active_date},ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326),${data.id_key} )`
     );
   },
   getMaxEventId: function () {
@@ -530,7 +531,7 @@ Meteor.methods({
     }
     pool.query(
       `UPDATE "station"
-            SET "id" = '${data.id}', "network" = '${data.network}',"address" = '${data.address}',"name" = '${data.name}',"height" = ${data.height},"lat" = ${data.lat}, "long" = ${data.long}, "geometry" = ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326)
+            SET "code" = '${data.code}', "name" = '${data.name}',"network" = '${data.network}',"lat" = ${data.lat},"long" = ${data.long}, "address" = '${data.address}',"status" = '${data.status}',"height" = ${data.height},"type" = '${data.type}',"tunnel_type" = '${data.tunnel_type}',"active_date" = ${data.active_date}, "geometry" = ST_SetSRID(ST_Point(${data.long},${data.lat}), 4326)
             WHERE "id_key" = ${data.id_key};`
     );
   },

@@ -5,6 +5,34 @@
     }
   }
 }
+div#data_users_wrapper,
+#data_tram_wrapper {
+  overflow: auto;
+}
+.content_body_modal {
+  overflow: auto;
+  max-height: 60vh;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+table.dataTable td {
+  text-align: start !important;
+  box-shadow: unset !important;
+}
+
+table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
+  text-align: left;
+}
+.form-floating {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: flex;
+  position: relative;
+  align-items: center;
+}
 .topbar {
   .dropdown-menu {
     .with-arrow {

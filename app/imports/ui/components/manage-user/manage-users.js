@@ -3,17 +3,18 @@ import "./manage-users.html";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import "../not_access/not_access";
 import { loadCss } from "esri-loader";
-import datatables from "datatables.net";
+import DataTable from "datatables.net-dt";
+import "datatables.net-responsive-dt";
 let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.manageUsers.onCreated(function () {
+  loadCss(
+    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
+  );
+  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
   this.subscribe("users");
   Meteor.subscribe("allUsers");
-  loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
-  );
-  // datatables(window, $);
   Meteor.users.find({}).fetch(); // will return all users
 });
 
@@ -22,8 +23,9 @@ function callDatatable() {
     if (error) {
       console.log(error);
     }
-    $("#data_users").DataTable({
+    let table = new DataTable("#data_users", {
       data: resultdata,
+      responsive: true,
       paging: true,
       destroy: true,
       scrollX: true,
@@ -34,7 +36,7 @@ function callDatatable() {
         info: "Hiển thị từ _START_ đến _END_ người dùng",
         infoEmpty: "Hiển thị 0 người dùng",
         lengthMenu: "Hiển thị _MENU_ người dùng mỗi trang",
-        infoFiltered: "(Lọc từ tổng số _MAX_ Trạm)",
+        infoFiltered: "(Lọc từ tổng số _MAX_ người dùng)",
       },
       columns: [
         { data: "username" },
@@ -65,7 +67,17 @@ function callDatatable() {
             }
           },
         },
-        { data: "createdAt" },
+        {
+          data: "createdAt",
+          render: function (data) {
+            const date = new Date(data);
+
+            const time = date.toLocaleString();
+
+            const fullTime = time.split(" ")[1] + " " + time.split(" ")[0];
+            return fullTime;
+          },
+        },
         {
           data: null,
           className: "dt-center editor-edit",
@@ -85,84 +97,8 @@ function callDatatable() {
   });
 }
 Template.manageUsers.onRendered(async () => {
-
-  document.addEventListener('DOMContentLoaded', function () {
-    datatables(window, $);
-    // datatables_bs(window, $);
-  });
-
   $("#dashboard-title").html("Quản lí người dùng");
-  function dataUsers() {
-    return new Promise(function (resolve, reject) {
-      Meteor.call("findUsers", function (error, resultdata) {
-        if (error) {
-          reject(error);
-        }
-        resolve(resultdata);
-      });
-    });
-  }
-  const dataUser = await dataUsers();
-  $("#data_users").DataTable({
-    data: dataUser,
-    paging: true,
-    destroy: true,
-    scrollX: true,
-    pageLength: 10,
-    language: {
-      sSearch: "Tìm kiếm :",
-      emptyTable: "Dữ liệu chưa tải thành công",
-      info: "Hiển thị từ _START_ đến _END_ người dùng",
-      infoEmpty: "Hiển thị 0 người dùng",
-      lengthMenu: "Hiển thị _MENU_ người dùng mỗi trang",
-      infoFiltered: "(Lọc từ tổng số _MAX_ Trạm)",
-    },
-    columns: [
-      { data: "username" },
-      { data: "emails[0].address" },
-      { data: "emails[0].verified" },
-      {
-        data: "roles",
-        render: function (data, type) {
-          let color = "green";
-          if (data === "admin") {
-            color = "white";
-            return (
-              '<span class="badge bg-danger" style="font-size : 12px;color:' +
-              color +
-              '">' +
-              data +
-              "</span>"
-            );
-          } else if (data === "user") {
-            color = "white";
-            return (
-              '<span class="badge bg-info" style="font-size : 12px;color:' +
-              color +
-              '">' +
-              data +
-              "</span>"
-            );
-          }
-        },
-      },
-      { data: "createdAt" },
-      {
-        data: null,
-        className: "dt-center editor-edit",
-        defaultContent:
-          '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-        orderable: false,
-      },
-      {
-        data: null,
-        className: "dt-center editor-delete",
-        defaultContent:
-          '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg "/></button>',
-        orderable: false,
-      },
-    ],
-  });
+  callDatatable();
 
   $("#data_users").on("click", "td.editor-edit", function (e) {
     const data = $("#data_users").DataTable().row(this).data();
@@ -180,7 +116,7 @@ Template.manageUsers.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          callDatatable()
+          callDatatable();
           Swal.fire({
             icon: "success",
             heightAuto: false,
@@ -217,7 +153,7 @@ Template.manageUsers.onRendered(async () => {
             title: "Chúc mừng!",
             text: "Xóa người dùng thành công!",
           });
-          callDatatable()
+          callDatatable();
         }
       });
     };
@@ -407,7 +343,7 @@ Template.manageUsers.events({
               });
             } // Output error if registration fails
           } else {
-            callDatatable()
+            callDatatable();
             document.getElementById("_add-user").style.display = "none";
             Swal.fire({
               icon: "success",

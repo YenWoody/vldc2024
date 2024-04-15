@@ -23,8 +23,6 @@ Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
 Template.map.onRendered(() => {
-  document.addEventListener("DOMContentLoaded", function () {});
-
   loadModules([
     "esri/Map",
     "esri/views/MapView",

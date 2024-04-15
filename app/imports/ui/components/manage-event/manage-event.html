@@ -1,10 +1,10 @@
 <template name="manageEvent">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+    @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
-    input[type=email]:focus,
-    input[type=password]:focus,
-    input[type=text]:focus {
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
       box-shadow: 0 0 5px rgba(3, 221, 255, 0.8);
       border: 1px solid rgba(3, 221, 255, 0.8);
     }
@@ -52,7 +52,11 @@
     }
 
     .login-btn:hover {
-      background-image: linear-gradient(to right, rgba(255, 0, 111, 0.8), rgba(247, 2, 43, 0.8)) !important;
+      background-image: linear-gradient(
+        to right,
+        rgba(255, 0, 111, 0.8),
+        rgba(247, 2, 43, 0.8)
+      ) !important;
       color: #fff !important;
     }
 
@@ -74,25 +78,20 @@
       color: #02b502;
     }
     .mb-3 {
-    display: flex;
-    align-items: center;
-}
-
+      display: flex;
+      align-items: center;
+    }
   </style>
-  {{#if rolesCheck}}
-  {{> not_access}}
-  {{else}}
-  {{#if userUnVerified}}
-  {{> verify_form }}
-  {{else}}
+  {{#if rolesCheck}} {{> not_access}} {{else}} {{#if userUnVerified}} {{>
+  verify_form }} {{else}}
 
   <div class="manage-users row shadow">
- 
-    <div   style="display: grid;
-    justify-items: center;">
-      <button type="submit" class="btn btn-success" id="add-event"><i class="bi bi-plus-circle-dotted me-2"></i>Thêm sự kiện mới</button>
+    <div style="display: grid; justify-items: center">
+      <button type="submit" class="btn btn-success" id="add-event">
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm sự kiện mới
+      </button>
     </div>
-    <table id="data_event" class="display" style="width:100%">
+    <table id="data_event" class="display" style="width: 100%">
       <thead>
         <tr>
           <th>ID</th>
@@ -106,119 +105,241 @@
         </tr>
       </thead>
     </table>
-
   </div>
   <div id="modal_edit_event" class="_modal">
-    <div class="_main" style="
-    display: grid;
-   
-    max-height: 700px;
-    overflow: auto;
-    width: 30%;
-    /* justify-items: center; */
-    /* align-content: stretch; */">
-    <div class="_container">
-      <div class="_title">
-        <h3>Sửa dữ liệu sự kiện động đất</h3>
+    <div
+      class="_main"
+      style="
+        display: grid;
+
+        max-height: 700px;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container">
+        <div class="_title">
+          <h3>Sửa dữ liệu sự kiện động đất</h3>
+        </div>
+        <hr />
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >ID:</label
+              >
+              <div class="col-lg-8"><span id="stt_event"></span></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Thời gian:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="datetime-local"
+                  value=""
+                  min="2011-06-07T00:00"
+                  id="time_event"
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Lat:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  placeholder="Ví dụ"
+                  id="lat_event"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Long:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  id="long_event"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Md:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  id="md_event"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Ml:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  id="ml_event"
+                  value=""
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="_footer mt-5">
+          <button class="btn btn-info save" id="save_edit_event">
+            Xác nhận
+          </button>
+          <button id="close-modal" class="close-modal">Đóng</button>
+        </div>
       </div>
-      <hr />
-      <div class="modal-body">
-      <form>
-        <div class="mb-3">
-          <label for="recipient-name" class="col-lg-4 col-form-label">ID:</label>
-          <div class="col-lg-8"><span id="stt_event"></span></div>
-        </div>
-        <div class="mb-3">
-          <label for="recipient-name" class="col-lg-4 col-form-label">Thời gian:</label>
-          <div class="col-lg-8"><input type="datetime-local"
-            value=""
-            min="2011-06-07T00:00" id="time_event" ></div>
-        </div>
-        <div class="mb-3">
-          <label for="recipient-name" class="col-lg-4 col-form-label">Lat:</label>
-          <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" placeholder="Ví dụ" id="lat_event" value=""></div>
-        </div>
-        <div class="mb-3">
-          <label for="recipient-name" class="col-lg-4 col-form-label">Long:</label>
-          <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" id="long_event" value=""></div>
-        </div>
-        <div class="mb-3">
-          <label for="recipient-name" class="col-lg-4 col-form-label">Md:</label>
-          <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" id="md_event" value=""></div>
-        </div>
-        <div class="mb-3">
-          <label for="recipient-name" class="col-lg-4 col-form-label">Ml:</label>
-          <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" id="ml_event" value=""></div>
-        </div>
-      </form>
     </div>
-      <div class="_footer mt-5">
-        <button class="btn btn-info save" id = "save_edit_event" >Xác nhận</button>
-        <button id="close-modal" class="close-modal">Đóng</button>
-      </div>
-    </div>
-  </div>
   </div>
   <div id="modal_add_event" class="_modal">
-    <div class="_main" style="
-      display: grid;
-    
-      max-height: 700px;
-      overflow: auto;
-      width: 30%;
-      /* justify-items: center; */
-      /* align-content: stretch; */">
+    <div
+      class="_main"
+      style="
+        display: grid;
+
+        max-height: 700px;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
       <div class="_container">
         <div class="_title">
           <h3>Thêm dữ liệu sự kiện động đất</h3>
         </div>
         <hr />
         <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">ID:</label>
-            <div class="col-lg-8"><span id="stt_event_"></span></div>
-          </div>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Thời gian:</label>
-            <div class="col-lg-8"><input type="datetime-local"
-              value=""
-              min="2011-06-07T00:00" id="time_event_" ></div>
-          </div>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Lat:</label>
-            <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" placeholder="Ví dụ" id="lat_event_" value=""></div>
-          </div>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Long:</label>
-            <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" id="long_event_" value=""></div>
-          </div>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Md:</label>
-            <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" id="md_event_" value=""></div>
-          </div>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Ml:</label>
-            <div class="col-lg-8"><input type="number" class="form-control" pattern="[0-9]" title="Nhập dạng số" id="ml_event_" value=""></div>
-          </div>
-        </form>
-      </div>
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >ID:</label
+              >
+              <div class="col-lg-8"><span id="stt_event_"></span></div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Thời gian:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="datetime-local"
+                  value=""
+                  min="2011-06-07T00:00"
+                  id="time_event_"
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Lat:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  placeholder="Ví dụ"
+                  id="lat_event_"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Long:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  id="long_event_"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Md:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  id="md_event_"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Ml:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  id="ml_event_"
+                  value=""
+                />
+              </div>
+            </div>
+          </form>
+        </div>
         <div class="_footer mt-5">
-          <button class="btn btn-info save" id = "save_add_event" >Xác nhận</button>
+          <button class="btn btn-info save" id="save_add_event">
+            Xác nhận
+          </button>
           <button id="close-modal" class="close-modal">Đóng</button>
         </div>
       </div>
     </div>
-
   </div>
   <div id="modal_delete_event" class="_modal">
-    <div class="_main" style="
+    <div
+      class="_main"
+      style="
         display: grid;
         overflow: auto;
         width: 30%;
         height: 300px;
         /* justify-items: center; */
-        /* align-content: stretch; */">
+        /* align-content: stretch; */
+      "
+    >
       <div class="_container">
         <div class="_title">
           <h3>Xóa dữ liệu động đất</h3>
@@ -233,11 +354,9 @@
         </div>
       </div>
     </div>
-  
   </div>
-  <!-- <script type="text/javascript"
-  src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.js"></script> -->
-
-  {{/if}}
-  {{/if}}
+  <!--Bootstrap Datatable-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"></script>
+  {{/if}} {{/if}}
 </template>

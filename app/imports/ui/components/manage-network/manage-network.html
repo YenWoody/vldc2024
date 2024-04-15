@@ -1,10 +1,10 @@
 <template name="manageNetwork">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+    @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
-    input[type=email]:focus,
-    input[type=password]:focus,
-    input[type=text]:focus {
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
       box-shadow: 0 0 5px rgba(3, 221, 255, 0.8);
       border: 1px solid rgba(3, 221, 255, 0.8);
     }
@@ -17,11 +17,11 @@
       box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
     }
     td.dt-center.editor-edit {
-    cursor: pointer;
-}
-td.dt-center.editor-delete {
-    cursor: pointer;
-}
+      cursor: pointer;
+    }
+    td.dt-center.editor-delete {
+      cursor: pointer;
+    }
     .control-label {
       text-align: left !important;
       padding-bottom: 4px;
@@ -57,7 +57,11 @@ td.dt-center.editor-delete {
     }
 
     .login-btn:hover {
-      background-image: linear-gradient(to right, rgba(255, 0, 111, 0.8), rgba(247, 2, 43, 0.8)) !important;
+      background-image: linear-gradient(
+        to right,
+        rgba(255, 0, 111, 0.8),
+        rgba(247, 2, 43, 0.8)
+      ) !important;
       color: #fff !important;
     }
 
@@ -79,24 +83,20 @@ td.dt-center.editor-delete {
       color: #02b502;
     }
     .mb-3 {
-    display: flex;
-    align-items: center;
-}
-
+      display: flex;
+      align-items: center;
+    }
   </style>
-  {{#if rolesCheck}}
-  {{> not_access}}
-  {{else}}
-  {{#if userUnVerified}}
-  {{> verify_form }}
-  {{else}}
+  {{#if rolesCheck}} {{> not_access}} {{else}} {{#if userUnVerified}} {{>
+  verify_form }} {{else}}
 
   <div class="manage-users row shadow">
-    <div   style="display: grid;
-    justify-items: center;">
-      <button type="submit" class="btn btn-success" id="add-station"><i class="bi bi-plus-circle-dotted me-2"></i>Thêm network mới</button>
+    <div style="display: grid; justify-items: center">
+      <button type="submit" class="btn btn-success" id="add-station">
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm network mới
+      </button>
     </div>
-    <table id="data_network" class="display" style="width:100%">
+    <table id="data_network" class="display" style="width: 100%">
       <thead>
         <tr>
           <th>ID</th>
@@ -106,78 +106,109 @@ td.dt-center.editor-delete {
         </tr>
       </thead>
     </table>
-
   </div>
   <div id="_modal" class="_modal">
-    <div class="_main" style="
-      display: grid;
-     
-      max-height: 700px;
-      overflow: auto;
-      width: 30%;
-      /* justify-items: center; */
-      /* align-content: stretch; */">
+    <div
+      class="_main"
+      style="
+        display: grid;
+
+        max-height: 700px;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
       <div class="_container">
         <div class="_title">
           <h3>Sửa dữ liệu của network</h3>
         </div>
         <hr />
         <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Network:</label>
-            <div class="col-lg-8"><input type="text" class="form-control" id="network" placeholder="Tên mạng" value=""></div>
-          </div>
-        </form>
-      </div>
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Network:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="network"
+                  placeholder="Tên mạng"
+                  value=""
+                />
+              </div>
+            </div>
+          </form>
+        </div>
         <div class="_footer mt-5">
-          <button class="btn btn-info save" id = "save_edit_network" >Xác nhận</button>
+          <button class="btn btn-info save" id="save_edit_network">
+            Xác nhận
+          </button>
           <button id="close-modal" class="close-modal">Đóng</button>
         </div>
       </div>
     </div>
-
   </div>
   <div id="modal_add_network" class="_modal">
-    <div class="_main" style="
-      display: grid;
-  
-      max-height: 700px;
-      overflow: auto;
-      width: 30%;
-      /* justify-items: center; */
-      /* align-content: stretch; */">
+    <div
+      class="_main"
+      style="
+        display: grid;
+
+        max-height: 700px;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
       <div class="_container">
         <div class="_title">
           <h3>Thêm dữ liệu của network</h3>
         </div>
         <hr />
         <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-lg-4 col-form-label">Network:</label>
-            <div class="col-lg-8"><input type="text" class="form-control" placeholder="Tên mạng" id="network_" value=""></div>
-          </div>
-    
-    
-        </form>
-      </div>
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >Network:</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Tên mạng"
+                  id="network_"
+                  value=""
+                />
+              </div>
+            </div>
+          </form>
+        </div>
         <div class="_footer mt-5">
-          <button class="btn btn-info save" id = "save_add_network" >Xác nhận</button>
+          <button class="btn btn-info save" id="save_add_network">
+            Xác nhận
+          </button>
           <button id="close-modal" class="close-modal">Đóng</button>
         </div>
       </div>
     </div>
-
   </div>
   <div id="modal_delete_network" class="_modal">
-    <div class="_main" style="
+    <div
+      class="_main"
+      style="
         display: grid;
         overflow: auto;
         width: 30%;
         height: 300px;
         /* justify-items: center; */
-        /* align-content: stretch; */">
+        /* align-content: stretch; */
+      "
+    >
       <div class="_container">
         <div class="_title">
           <h3>Xóa dữ liệu của network</h3>
@@ -187,13 +218,16 @@ td.dt-center.editor-delete {
           <h4 id="content_delete"></h4>
         </div>
         <div class="_footer">
-          <button class="btn btn-info save" id="delete_network">Xác nhận</button>
+          <button class="btn btn-info save" id="delete_network">
+            Xác nhận
+          </button>
           <button id="close-modal" class="close-modal">Hủy</button>
         </div>
       </div>
     </div>
-  
   </div>
-  {{/if}}
-  {{/if}}
+  <!--Bootstrap Datatable-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"></script>
+  {{/if}} {{/if}}
 </template>
