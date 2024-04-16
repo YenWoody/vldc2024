@@ -14,85 +14,92 @@ Template.manageSensors.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
-  // datatables(window, $);
-  // datatables_bs(window, $);
+  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
-Template.manageSensors.onRendered(async () => {
-  document.addEventListener("DOMContentLoaded", function () {
-    datatables(window, $);
-    // datatables_bs(window, $);
-  });
+function loadDatatable() {
+  Meteor.call("dataSensor", function (error, resultdata) {
+    if (error) {
+      console.log(error);
+    }
 
-  $("#dashboard-title").html("Quản lí các thiết bị");
-  function dataDevice() {
-    return new Promise(function (resolve, reject) {
-      Meteor.call("dataSensor", function (error, resultdata) {
-        if (error) {
-          reject(error);
-        }
-        resolve(resultdata.rows);
-      });
+    const dt = resultdata.rows;
+
+    $("#data_Sensor").DataTable().clear().destroy();
+    new DataTable("data_Sensor", {
+      data: dt,
+      paging: true,
+      destroy: true,
+      scrollX: true,
+      pageLength: 10,
+      language: {
+        sSearch: "Tìm kiếm :",
+        emptyTable: "Dữ liệu chưa tải thành công",
+        info: "Hiển thị từ _START_ đến _END_ dữ liệu",
+        infoEmpty: "Hiển thị 0 dữ liệu",
+        lengthMenu: "Hiển thị _MENU_ Sensor mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ dữ liệu)",
+      },
+      columns: [
+        { data: "id" },
+        { data: "sensor_speed" },
+        { data: "serial_speed" },
+        { data: "status_speed" },
+        { data: "remote_control" },
+        { data: "serial_control" },
+        { data: "status_control" },
+        { data: "sensor_accelerator" },
+        { data: "serial_accelerator" },
+        { data: "status_accelerator" },
+        { data: "cable_sensor_speed" },
+        { data: "cable_sensor_accelerator" },
+        { data: "station_code" },
+        {
+          data: null,
+          className: "dt-center editor-edit",
+          defaultContent:
+            '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
+          orderable: false,
+        },
+        {
+          data: null,
+          className: "dt-center editor-delete",
+          defaultContent:
+            '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
+          orderable: false,
+        },
+      ],
     });
-  }
-  const dt = await dataDevice();
-
-  $("#data_Sensor").DataTable({
-    data: dt,
-    paging: true,
-    destroy: true,
-    scrollX: true,
-    pageLength: 10,
-    language: {
-      sSearch: "Tìm kiếm :",
-      emptyTable: "Dữ liệu chưa tải thành công",
-      info: "Hiển thị từ _START_ đến _END_ Sensor",
-      infoEmpty: "Hiển thị 0 Sensor",
-      lengthMenu: "Hiển thị _MENU_ Sensor mỗi trang",
-      infoFiltered: "(Lọc từ tổng số _MAX_ Sensor)",
-    },
-    columns: [
-      { data: "id" },
-      { data: "sensor1" },
-      { data: "serial1" },
-      { data: "sensor2" },
-      { data: "serial2" },
-      { data: "station_id" },
-      {
-        data: null,
-        className: "dt-center editor-edit",
-        defaultContent:
-          '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-        orderable: false,
-      },
-      {
-        data: null,
-        className: "dt-center editor-delete",
-        defaultContent:
-          '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-        orderable: false,
-      },
-    ],
   });
+}
+Template.manageSensors.onRendered(async () => {
+  $("#dashboard-title").html("Quản lí các thiết bị");
+
+  loadDatatable();
   document.getElementById("add-station").onclick = async function () {
     // document.getElementById('stt_Sensor_').innerHTML = maxKey + 1;
     document.getElementById("modal_add_Sensor").style.display = "block";
     document.getElementById("save_add_Sensor").onclick = function () {
-      const sensor_station_ = document.getElementById("sensor_station_").value;
-      const sensor1 = document.getElementById("sensor1_").value;
-      const serial1 = document.getElementById("serial1_").value;
-      const sensor2 = document.getElementById("sensor2_").value;
-      const serial2 = document.getElementById("serial2_").value;
-
+      function checkEmpty(data) {
+        return data ? data : "Chưa có thông tin";
+      }
       const insert = {
-        station_id: sensor_station_,
-        sensor1: sensor1,
-        serial1: serial1,
-        sensor2: sensor2,
-        serial2: serial2,
+        sensor_speed: checkEmpty($("#sensor_speed_a").val()),
+        serial_speed: checkEmpty($("#serial_speed_a").val()),
+        status_speed: checkEmpty($("#status_speed_a").val()),
+        remote_control: checkEmpty($("#remote_control_a").val()),
+        serial_control: checkEmpty($("#serial_control_a").val()),
+        status_control: checkEmpty($("#status_control_a").val()),
+        sensor_accelerator: checkEmpty($("#sensor_accelerator_a").val()),
+        serial_accelerator: checkEmpty($("#serial_accelerator_a").val()),
+        status_accelerator: checkEmpty($("#status_accelerator_a").val()),
+        cable_sensor_speed: checkEmpty($("#cable_sensor_speed_a").val()),
+        cable_sensor_accelerator: checkEmpty(
+          $("#cable_sensor_accelerator_a").val()
+        ),
+        station_code: checkEmpty($("#station_code_a").val()),
       };
       Meteor.call("insertSensor", insert, (error) => {
         if (error) {
@@ -103,49 +110,7 @@ Template.manageSensors.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataSensor", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_Sensor").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ Sensor",
-                  infoEmpty: "Hiển thị 0 Sensor",
-                  lengthMenu: "Hiển thị _MENU_ Sensor mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ Sensor)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "sensor1" },
-                  { data: "serial1" },
-                  { data: "sensor2" },
-                  { data: "serial2" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          loadDatatable();
           document.getElementById("modal_add_Sensor").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -161,26 +126,45 @@ Template.manageSensors.onRendered(async () => {
   $("#data_Sensor").on("click", "td.editor-edit", function (e) {
     e.preventDefault();
     const data = $("#data_Sensor").DataTable().row(this).data();
+    console.log(data, "data");
     document.getElementById("_modal").style.display = "block";
-    document.getElementById("sensor1").value = data.sensor1;
-    document.getElementById("serial1").value = data.serial1;
-    document.getElementById("sensor2").value = data.sensor2;
-    document.getElementById("serial2").value = data.serial2;
-    document.getElementById("sensor_station").value = data.station_id;
+    const keys = [
+      "sensor_speed",
+      "serial_speed",
+      "status_speed",
+      "remote_control",
+      "serial_control",
+      "status_control",
+      "sensor_accelerator",
+      "serial_accelerator",
+      "status_accelerator",
+      "cable_sensor_speed",
+      "cable_sensor_accelerator",
+      "station_code",
+    ];
+    keys.forEach((e) => {
+      document.getElementById(e).value = data[e];
+    });
+    function checkEmpty(data) {
+      return data ? data : "Chưa có thông tin";
+    }
     document.getElementById("save_edit_Sensor").onclick = function () {
-      const sensor1 = document.getElementById("sensor1").value;
-      const sensor2 = document.getElementById("sensor2").value;
-      let serial1 = document.getElementById("serial1").value;
-      let serial2 = document.getElementById("serial2").value;
-
-      const sensor_station = document.getElementById("sensor_station").value;
       const insert = {
-        key: data.id,
-        sensor1: sensor1,
-        serial1: serial1,
-        sensor2: sensor2,
-        serial2: serial2,
-        station_id: sensor_station,
+        key: data.id_stat,
+        sensor_speed: checkEmpty($("#sensor_speed").val()),
+        serial_speed: checkEmpty($("#serial_speed").val()),
+        status_speed: checkEmpty($("#status_speed").val()),
+        remote_control: checkEmpty($("#remote_control").val()),
+        serial_control: checkEmpty($("#serial_control").val()),
+        status_control: checkEmpty($("#status_control").val()),
+        sensor_accelerator: checkEmpty($("#sensor_accelerator").val()),
+        serial_accelerator: checkEmpty($("#serial_accelerator").val()),
+        status_accelerator: checkEmpty($("#status_accelerator").val()),
+        cable_sensor_speed: checkEmpty($("#cable_sensor_speed").val()),
+        cable_sensor_accelerator: checkEmpty(
+          $("#cable_sensor_accelerator").val()
+        ),
+        station_code: checkEmpty($("#station_code").val()),
       };
       Meteor.call("editSensor", insert, (error) => {
         if (error) {
@@ -191,49 +175,7 @@ Template.manageSensors.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataSensor", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_Sensor").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ Sensor",
-                  infoEmpty: "Hiển thị 0 Sensor",
-                  lengthMenu: "Hiển thị _MENU_ Sensor mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ Sensor)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "sensor1" },
-                  { data: "serial1" },
-                  { data: "sensor2" },
-                  { data: "serial2" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          loadDatatable();
           document.getElementById("_modal").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -252,7 +194,7 @@ Template.manageSensors.onRendered(async () => {
     document.getElementById("modal_delete_Sensor").style.display = "block";
     document.getElementById(
       "content_delete"
-    ).innerHTML = `Sau khi xác nhận dữ liệu Sensor "${data.sensor1}" - "${data.sensor2}"  sẽ bị xóa và không khôi phục lại được!`;
+    ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
     document.getElementById("delete_Sensor").onclick = function () {
       Meteor.call("deleteSensor", data.id, (error) => {
         if (error) {
@@ -263,49 +205,7 @@ Template.manageSensors.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataSensor", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_Sensor").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ Sensor",
-                  infoEmpty: "Hiển thị 0 Sensor",
-                  lengthMenu: "Hiển thị _MENU_ Sensor mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ Sensor)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "sensor1" },
-                  { data: "serial1" },
-                  { data: "sensor2" },
-                  { data: "serial2" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          loadDatatable();
           document.getElementById("modal_delete_Sensor").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -329,6 +229,69 @@ Template.manageSensors.events({
 Template.manageSensors.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+  },
+  editSensor: () => {
+    const t = [
+      { id: "sensor_speed", text: "Đầu đo vận tốc", type: "text" },
+      { id: "serial_speed", text: "Serial đầu đo vận tốc", type: "text" },
+      { id: "status_speed", text: "Tình trạng đầu đo vận tốc", type: "text" },
+      { id: "remote_control", text: "Bộ điều khiển", type: "text" },
+      { id: "serial_control", text: "Serial bộ điều khiển", type: "text" },
+      { id: "status_control", text: "Tình trạng bộ điều khiển", type: "text" },
+      { id: "sensor_accelerator", text: "Đầu đo gia tốc", type: "text" },
+      { id: "serial_accelerator", text: "Serial đầu đo gia tốc", type: "text" },
+      {
+        id: "status_accelerator",
+        text: "Tình trạng đầu đo gia tốc",
+        type: "text",
+      },
+      { id: "cable_sensor_speed", text: "Cáp đầu đo vận tốc", type: "text" },
+      {
+        id: "cable_sensor_accelerator",
+        text: "Cáp đầu đo gia tốc",
+        type: "text",
+      },
+      { id: "station_code", text: "Mã trạm", type: "text" },
+    ];
+    return t;
+  },
+  addSensor: () => {
+    const t = [
+      { id: "sensor_speed_a", text: "Đầu đo vận tốc", type: "text" },
+      { id: "serial_speed_a", text: "Serial đầu đo vận tốc", type: "text" },
+      { id: "status_speed_a", text: "Tình trạng đầu đo vận tốc", type: "text" },
+      { id: "remote_control_a", text: "Bộ điều khiển", type: "text" },
+      { id: "serial_control_a", text: "Serial bộ điều khiển", type: "text" },
+      {
+        id: "status_control_a",
+        text: "Tình trạng bộ điều khiển",
+        type: "text",
+      },
+      { id: "sensor_accelerator_a", text: "Đầu đo gia tốc", type: "text" },
+      {
+        id: "serial_accelerator_a",
+        text: "Serial đầu đo gia tốc",
+        type: "text",
+      },
+      {
+        id: "status_accelerator_a",
+        text: "Tình trạng đầu đo gia tốc",
+        type: "text",
+      },
+      { id: "cable_sensor_speed_a", text: "Cáp đầu đo vận tốc", type: "text" },
+      {
+        id: "cable_sensor_accelerator_a",
+        text: "Cáp đầu đo gia tốc",
+        type: "text",
+      },
+      { id: "station_code_a", text: "Mã trạm", type: "text" },
+    ];
+    return t;
+  },
+  check: (a, b) => {
+    if (a === b) {
+      return true;
+    }
   },
   isUserLogged() {
     return isUserLogged();

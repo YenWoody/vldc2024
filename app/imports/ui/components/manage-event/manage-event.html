@@ -86,12 +86,16 @@
   verify_form }} {{else}}
 
   <div class="manage-users row shadow">
-    <div style="display: grid; justify-items: center">
+    <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-event">
         <i class="bi bi-plus-circle-dotted me-2"></i>Thêm sự kiện mới
       </button>
     </div>
-    <table id="data_event" class="display" style="width: 100%">
+    <table
+      id="data_event"
+      class="table table-striped overflow-auto"
+      style="width: 100%"
+    >
       <thead>
         <tr>
           <th>ID</th>
@@ -106,13 +110,11 @@
       </thead>
     </table>
   </div>
-  <div id="modal_edit_event" class="_modal">
+  <div id="modal_edit_event" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0 d-grid"
       style="
-        display: grid;
-
-        max-height: 700px;
+        max-height: 90vh;
         overflow: auto;
         width: 30%;
         /* justify-items: center; */
@@ -120,23 +122,22 @@
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h3>Sửa dữ liệu sự kiện động đất</h3>
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Sửa dữ liệu sự kiện động đất</h3>
         </div>
-        <hr />
         <div class="modal-body">
           <form>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >ID:</label
               >
-              <div class="col-lg-8"><span id="stt_event"></span></div>
+              <div class="col-8 col-lg-8"><span id="stt_event"></span></div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Thời gian:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="datetime-local"
                   value=""
@@ -146,10 +147,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Lat:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -162,10 +163,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Long:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -177,10 +178,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Md:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -192,10 +193,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Ml:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -208,22 +209,22 @@
             </div>
           </form>
         </div>
-        <div class="_footer mt-5">
+        <div class="modal-footer mt-3 w-100">
           <button class="btn btn-info save" id="save_edit_event">
             Xác nhận
           </button>
-          <button id="close-modal" class="close-modal">Đóng</button>
+          <button id="close-modal" class="close-modal btn btn-danger">
+            Đóng
+          </button>
         </div>
       </div>
     </div>
   </div>
-  <div id="modal_add_event" class="_modal">
+  <div id="modal_add_event" class="_modal modal">
     <div
-      class="_main"
+      class="_main d-grid p-0"
       style="
-        display: grid;
-
-        max-height: 700px;
+        max-height: 90vh;
         overflow: auto;
         width: 30%;
         /* justify-items: center; */
@@ -231,23 +232,22 @@
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h3>Thêm dữ liệu sự kiện động đất</h3>
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Thêm dữ liệu sự kiện động đất</h3>
         </div>
-        <hr />
         <div class="modal-body">
           <form>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >ID:</label
               >
-              <div class="col-lg-8"><span id="stt_event_"></span></div>
+              <div class="col-8 col-lg-8"><span id="stt_event_"></span></div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Thời gian:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="datetime-local"
                   value=""
@@ -257,10 +257,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Lat:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -273,10 +273,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Long:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -288,10 +288,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Md:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -303,10 +303,10 @@
               </div>
             </div>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Ml:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -319,11 +319,13 @@
             </div>
           </form>
         </div>
-        <div class="_footer mt-5">
+        <div class="modal-footer w-100 mt-2">
           <button class="btn btn-info save" id="save_add_event">
             Xác nhận
           </button>
-          <button id="close-modal" class="close-modal">Đóng</button>
+          <button id="close-modal" class="close-modal btn btn-danger">
+            Đóng
+          </button>
         </div>
       </div>
     </div>

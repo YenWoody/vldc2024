@@ -15,67 +15,61 @@ Template.manageBaler.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
-  // datatables(window, $);
-  // datatables_bs(window, $);
+  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
-Template.manageBaler.onRendered(async () => {
-  document.addEventListener("DOMContentLoaded", function () {
-    datatables(window, $);
-    // datatables_bs(window, $);
-  });
+function callDatatable() {
+  Meteor.call("dataBaler", function (error, resultdata) {
+    if (error) {
+      reject(error);
+    }
 
-  $("#dashboard-title").html("Quản lí các thiết bị");
-  function dataDevice() {
-    return new Promise(function (resolve, reject) {
-      Meteor.call("dataBaler", function (error, resultdata) {
-        if (error) {
-          reject(error);
-        }
-        resolve(resultdata.rows);
-      });
+    const dt = resultdata.rows;
+
+    $("#data_baler").DataTable().clear().destroy();
+    new DataTable("#data_baler", {
+      data: dt,
+      paging: true,
+      destroy: true,
+      scrollX: true,
+      pageLength: 10,
+      language: {
+        sSearch: "Tìm kiếm :",
+        emptyTable: "Dữ liệu chưa tải thành công",
+        info: "Hiển thị từ _START_ đến _END_ baler",
+        infoEmpty: "Hiển thị 0 baler",
+        lengthMenu: "Hiển thị _MENU_ baler mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ baler)",
+      },
+      columns: [
+        { data: "id" },
+        { data: "code" },
+        { data: "serial" },
+        { data: "status" },
+        { data: "station_code" },
+        {
+          data: null,
+          className: "dt-center editor-edit",
+          defaultContent:
+            '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
+          orderable: false,
+        },
+        {
+          data: null,
+          className: "dt-center editor-delete",
+          defaultContent:
+            '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
+          orderable: false,
+        },
+      ],
     });
-  }
-  const dt = await dataDevice();
-
-  $("#data_baler").DataTable({
-    data: dt,
-    paging: true,
-    destroy: true,
-    scrollX: true,
-    pageLength: 10,
-    language: {
-      sSearch: "Tìm kiếm :",
-      emptyTable: "Dữ liệu chưa tải thành công",
-      info: "Hiển thị từ _START_ đến _END_ baler",
-      infoEmpty: "Hiển thị 0 baler",
-      lengthMenu: "Hiển thị _MENU_ baler mỗi trang",
-      infoFiltered: "(Lọc từ tổng số _MAX_ baler)",
-    },
-    columns: [
-      { data: "id" },
-      { data: "code" },
-      { data: "serial" },
-      { data: "station_id" },
-      {
-        data: null,
-        className: "dt-center editor-edit",
-        defaultContent:
-          '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-        orderable: false,
-      },
-      {
-        data: null,
-        className: "dt-center editor-delete",
-        defaultContent:
-          '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-        orderable: false,
-      },
-    ],
   });
+}
+Template.manageBaler.onRendered(async () => {
+  $("#dashboard-title").html("Quản lí các thiết bị");
+  callDatatable();
   document.getElementById("add-station").onclick = async function () {
     // document.getElementById('stt_baler_').innerHTML = maxKey + 1;
     document.getElementById("modal_add_baler").style.display = "block";
@@ -98,47 +92,7 @@ Template.manageBaler.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataBaler", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_baler").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ baler",
-                  infoEmpty: "Hiển thị 0 baler",
-                  lengthMenu: "Hiển thị _MENU_ baler mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ baler)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "code" },
-                  { data: "serial" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          callDatatable();
           document.getElementById("modal_add_baler").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -178,47 +132,7 @@ Template.manageBaler.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataBaler", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_baler").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ baler",
-                  infoEmpty: "Hiển thị 0 baler",
-                  lengthMenu: "Hiển thị _MENU_ baler mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ baler)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "code" },
-                  { data: "serial" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          callDatatable();
           document.getElementById("_modal").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -248,47 +162,7 @@ Template.manageBaler.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataBaler", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_baler").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ baler",
-                  infoEmpty: "Hiển thị 0 baler",
-                  lengthMenu: "Hiển thị _MENU_ baler mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ baler)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "code" },
-                  { data: "serial" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          callDatatable();
           document.getElementById("modal_delete_baler").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -312,6 +186,33 @@ Template.manageBaler.events({
 Template.manageBaler.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+  },
+  editBaler: () => {
+    const t = [
+      { id: "code", text: "Mã máy ghi", type: "text" },
+      { id: "serial", text: "Serial", type: "text" },
+      { id: "status", text: "Tình trạng", type: "text" },
+      { id: "station_code", text: "Trạm", type: "text" },
+    ];
+    return t;
+  },
+  addBaler: () => {
+    const t = [
+      "code",
+      "serial",
+      "status",
+      "station_code",
+      { id: "code_a", text: "Mã máy ghi", type: "text" },
+      { id: "serial_a", text: "Serial", type: "text" },
+      { id: "status_a", text: "Tình trạng", type: "text" },
+      { id: "station_code_a", text: "Trạm", type: "text" },
+    ];
+    return t;
+  },
+  check: (a, b) => {
+    if (a === b) {
+      return true;
+    }
   },
   isUserLogged() {
     return isUserLogged();

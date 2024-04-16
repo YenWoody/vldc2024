@@ -84,7 +84,7 @@
     <button type="submit" class="btn btn-success" id="add-user">Thêm thành viên mới</button>
   </div> -->
   <div class="manage-users row shadow">
-    <div style="display: grid; justify-items: center">
+    <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-user">
         <i class="bi bi-person-plus me-2"></i>Thêm thành viên mới
       </button>
@@ -103,9 +103,9 @@
       </thead>
     </table>
   </div>
-  <div id="modal_edit_user" class="_modal">
+  <div id="modal_edit_user" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
         overflow: auto;
@@ -115,12 +115,11 @@
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h3>Phân quyền người dùng</h3>
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Phân quyền người dùng</h3>
         </div>
-        <hr />
-        <div class="_content" id="_content">
-          <form id="_role" style="display: grid; justify-items: center">
+        <div class="_content text-center mt-3" id="_content">
+          <form id="_role">
             <select
               name="role"
               id="role"
@@ -132,8 +131,7 @@
             <br />
           </form>
         </div>
-        <hr />
-        <div class="_footer">
+        <div class="modal-footer w-100 mt-2">
           <button class="btn btn-info save" id="submit-role">Xác nhận</button>
           <button id="close-modal_" class="btn btn-danger close-modal">
             Đóng
@@ -172,17 +170,20 @@
       </div>
     </div>
   </div>
-  <div id="_add-user" class="_modal">
+  <div id="_add-user" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="display: grid; max-height: 90vh; width: 40%; overflow: auto"
     >
-      <div class="_container">
-        <div class="_title">
-          <h3>Thêm người dùng mới</h3>
+      <div class="w-100">
+        <div class="modal-header bg-primary justify-content: center">
+          <h3 class="text-light text-center">Thêm người dùng mới</h3>
         </div>
-        <hr />
-        <div class="_content" id="_content">
+        <div
+          class="_content p-3 overflow-auto"
+          id="_content"
+          style="max-height: calc(90vh - 150px)"
+        >
           <form>
             <div class="form-floating">
               <input
@@ -323,19 +324,17 @@
                 >Email</label
               >
             </div>
-
-            <hr />
-            <div class="_footer mt-2">
-              <button class="btn btn-info save" type="submit">Xác nhận</button>
-              <button
-                id="close-modal_"
-                class="btn btn-danger close-modal"
-                style="float: right"
-              >
-                Đóng
-              </button>
-            </div>
           </form>
+        </div>
+        <div class="modal-footer w-100">
+          <button class="btn btn-info save" type="submit">Xác nhận</button>
+          <button
+            id="close-modal_"
+            class="btn btn-danger close-modal"
+            style="float: right"
+          >
+            Đóng
+          </button>
         </div>
       </div>
     </div>

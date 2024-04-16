@@ -91,12 +91,12 @@
   verify_form }} {{else}}
 
   <div class="manage-users row shadow">
-    <div style="display: grid; justify-items: center">
+    <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-station">
         <i class="bi bi-plus-circle-dotted me-2"></i>Thêm network mới
       </button>
     </div>
-    <table id="data_network" class="display" style="width: 100%">
+    <table id="data_network" class="table table-striped" style="width: 100%">
       <thead>
         <tr>
           <th>ID</th>
@@ -107,9 +107,9 @@
       </thead>
     </table>
   </div>
-  <div id="_modal" class="_modal">
+  <div id="_modal" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
 
@@ -121,17 +121,16 @@
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h3>Sửa dữ liệu của network</h3>
+        <div class="_title modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Sửa dữ liệu của network</h3>
         </div>
-        <hr />
         <div class="modal-body">
           <form>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Network:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -143,18 +142,18 @@
             </div>
           </form>
         </div>
-        <div class="_footer mt-5">
+        <div class="modal-footer w-100 mt-2">
           <button class="btn btn-info save" id="save_edit_network">
             Xác nhận
           </button>
-          <button id="close-modal" class="close-modal">Đóng</button>
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
         </div>
       </div>
     </div>
   </div>
-  <div id="modal_add_network" class="_modal">
+  <div id="modal_add_network" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
 
@@ -166,17 +165,17 @@
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h3>Thêm dữ liệu của network</h3>
+        <div class="_title modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Thêm dữ liệu của network</h3>
         </div>
         <hr />
         <div class="modal-body">
           <form>
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >Network:</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -188,18 +187,18 @@
             </div>
           </form>
         </div>
-        <div class="_footer mt-5">
+        <div class="modal-footer mt-2 w-100">
           <button class="btn btn-info save" id="save_add_network">
             Xác nhận
           </button>
-          <button id="close-modal" class="close-modal">Đóng</button>
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
         </div>
       </div>
     </div>
   </div>
-  <div id="modal_delete_network" class="_modal">
+  <div id="modal_delete_network" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
         overflow: auto;
@@ -210,18 +209,17 @@
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h3>Xóa dữ liệu của network</h3>
+        <div class="_title modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Xóa dữ liệu của network</h3>
         </div>
-        <hr />
         <div class="modal-body">
           <h4 id="content_delete"></h4>
         </div>
-        <div class="_footer">
+        <div class="modal-footer w-100 mt-2">
           <button class="btn btn-info save" id="delete_network">
             Xác nhận
           </button>
-          <button id="close-modal" class="close-modal">Hủy</button>
+          <button id="close-modal" class="btn btn-danger">Hủy</button>
         </div>
       </div>
     </div>

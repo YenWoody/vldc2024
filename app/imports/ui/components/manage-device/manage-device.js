@@ -15,86 +15,73 @@ Template.manageDevice.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
-  // datatables(window, $);
-  // datatables_bs(window, $);
+  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
-Template.manageDevice.onRendered(async () => {
-  document.addEventListener("DOMContentLoaded", function () {
-    datatables(window, $);
-    // datatables_bs(window, $);
-  });
-
-  $("#dashboard-title").html("Quản lí các thiết bị");
-  function dataDevice() {
-    return new Promise(function (resolve, reject) {
-      Meteor.call("dataDataloger", function (error, resultdata) {
-        if (error) {
-          reject(error);
-        }
-        resolve(resultdata.rows);
+function loadDatatable() {
+  Meteor.call("dataDataloger", function (error, resultdata) {
+    if (error) {
+      console.log(error);
+    } else {
+      const dt = resultdata.rows;
+      $("#data_dataloger").DataTable().clear().destroy();
+      new DataTable("#data_dataloger", {
+        data: dt,
+        paging: true,
+        destroy: true,
+        scrollX: true,
+        pageLength: 10,
+        language: {
+          sSearch: "Tìm kiếm :",
+          emptyTable: "Dữ liệu chưa tải thành công",
+          info: "Hiển thị từ _START_ đến _END_ Dataloger",
+          infoEmpty: "Hiển thị 0 Dataloger",
+          lengthMenu: "Hiển thị _MENU_ Dataloger mỗi trang",
+          infoFiltered: "(Lọc từ tổng số _MAX_ Dataloger)",
+        },
+        columns: [
+          { data: "id" },
+          { data: "code" },
+          { data: "serial" },
+          { data: "status" },
+          { data: "station_code" },
+          {
+            data: null,
+            className: "dt-center editor-edit",
+            defaultContent:
+              '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
+            orderable: false,
+          },
+          {
+            data: null,
+            className: "dt-center editor-delete",
+            defaultContent:
+              '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
+            orderable: false,
+          },
+        ],
       });
-    });
-  }
-  const dt = await dataDevice();
-
-  $("#data_dataloger").DataTable({
-    data: dt,
-    paging: true,
-    destroy: true,
-    scrollX: true,
-    pageLength: 10,
-    language: {
-      sSearch: "Tìm kiếm :",
-      emptyTable: "Dữ liệu chưa tải thành công",
-      info: "Hiển thị từ _START_ đến _END_ Dataloger",
-      infoEmpty: "Hiển thị 0 Dataloger",
-      lengthMenu: "Hiển thị _MENU_ Dataloger mỗi trang",
-      infoFiltered: "(Lọc từ tổng số _MAX_ Dataloger)",
-    },
-    columns: [
-      { data: "id" },
-      { data: "dataloger" },
-      { data: "serial" },
-      { data: "start_date" },
-      { data: "end_date" },
-      { data: "station_id" },
-      {
-        data: null,
-        className: "dt-center editor-edit",
-        defaultContent:
-          '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-        orderable: false,
-      },
-      {
-        data: null,
-        className: "dt-center editor-delete",
-        defaultContent:
-          '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-        orderable: false,
-      },
-    ],
+    }
   });
+}
+Template.manageDevice.onRendered(async () => {
+  $("#dashboard-title").html("Quản lí thiết bị máy ghi");
+  loadDatatable();
   document.getElementById("add-station").onclick = async function () {
     // document.getElementById('stt_dataloger_').innerHTML = maxKey + 1;
     document.getElementById("modal_add_dataloger").style.display = "block";
+
     document.getElementById("save_add_dataloger").onclick = function () {
-      const dataloger_station_ =
-        document.getElementById("dataloger_station_").value;
-      const dataloger_ = document.getElementById("dataloger_").value;
-      const serial_dataloger_ =
-        document.getElementById("serial_dataloger_").value;
-      const start_date_ = document.getElementById("start_date_").value;
-      const end_date_ = parseFloat(document.getElementById("end_date_").value);
+      function checkEmpty(data) {
+        return data ? data : "Chưa có thông tin";
+      }
       const insert = {
-        station_id: dataloger_station_,
-        dataloger: dataloger_,
-        serial: serial_dataloger_,
-        start_date: start_date_,
-        end_date: end_date_,
+        code: checkEmpty($("#code_a").val()),
+        serial: checkEmpty($("#serial_a").val()),
+        status: checkEmpty($("#status_a").val()),
+        station_code: checkEmpty($("#station_code_a").val()),
       };
 
       Meteor.call("insertDataloger", insert, (error) => {
@@ -106,49 +93,7 @@ Template.manageDevice.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataDataloger", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_dataloger").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ Dataloger",
-                  infoEmpty: "Hiển thị 0 Dataloger",
-                  lengthMenu: "Hiển thị _MENU_ Dataloger mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ Dataloger)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "dataloger" },
-                  { data: "serial" },
-                  { data: "start_date" },
-                  { data: "end_date" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          loadDatatable();
           document.getElementById("modal_add_dataloger").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -165,48 +110,25 @@ Template.manageDevice.onRendered(async () => {
     e.preventDefault();
 
     const data = $("#data_dataloger").DataTable().row(this).data();
-    if (data.end_date != null) {
-      const end_dateISOString = [
-        data.start_date.getFullYear(),
-        ("0" + (data.end_date.getMonth() + 1)).slice(-2),
-        ("0" + data.end_date.getDate()).slice(-2),
-      ].join("-");
-      document.getElementById("end_date").value = end_dateISOString;
-    } else {
-      document.getElementById("end_date").value = null;
-    }
 
-    if (data.start_date != null) {
-      const start_dateISOString = [
-        data.start_date.getFullYear(),
-        ("0" + (data.start_date.getMonth() + 1)).slice(-2),
-        ("0" + data.start_date.getDate()).slice(-2),
-      ].join("-");
-      document.getElementById("start_date").value = start_dateISOString;
-    } else {
-      document.getElementById("start_date").value = null;
-    }
     document.getElementById("_modal").style.display = "block";
-    document.getElementById("dataloger").value = data.dataloger;
-    document.getElementById("serial_dataloger").value = data.serial;
-    document.getElementById("dataloger_station").value = data.station_id;
-    document.getElementById("save_edit_dataloger").onclick = function () {
-      const dataloger = document.getElementById("dataloger").value;
-      let serial_dataloger = document.getElementById("serial_dataloger").value;
-      const start_date = document.getElementById("start_date").value;
-      const end_date = document.getElementById("end_date").value;
-      if (!serial_dataloger) {
-        serial_dataloger = null;
+    var keyNames = ["id", "code", "serial", "status", "station_code"];
+    keyNames.forEach((e) => {
+      if (e == "id") {
+        $(`#${e}`).html(data[e]);
       }
-      const dataloger_station =
-        document.getElementById("dataloger_station").value;
+      document.getElementById(e).value = data[e];
+    });
+    function checkEmpty(data) {
+      return data ? data : "Chưa có thông tin";
+    }
+    document.getElementById("save_edit_dataloger").onclick = function () {
       const insert = {
         key: data.id,
-        dataloger: dataloger,
-        serial: serial_dataloger,
-        start_date: start_date,
-        end_date: end_date,
-        station_id: dataloger_station,
+        code: checkEmpty($("#code").val()),
+        serial: checkEmpty($("#serial").val()),
+        status: checkEmpty($("#status").val()),
+        station_code: checkEmpty($("#station_code").val()),
       };
       Meteor.call("editDataloger", insert, (error) => {
         if (error) {
@@ -217,49 +139,7 @@ Template.manageDevice.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataDataloger", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_dataloger").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ Dataloger",
-                  infoEmpty: "Hiển thị 0 Dataloger",
-                  lengthMenu: "Hiển thị _MENU_ Dataloger mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ Dataloger)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "dataloger" },
-                  { data: "serial" },
-                  { data: "start_date" },
-                  { data: "end_date" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          loadDatatable();
           document.getElementById("_modal").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -278,7 +158,7 @@ Template.manageDevice.onRendered(async () => {
     document.getElementById("modal_delete_dataloger").style.display = "block";
     document.getElementById(
       "content_delete"
-    ).innerHTML = `Sau khi xác nhận dữ liệu Dataloger "${data.dataloger}" sẽ bị xóa và không khôi phục lại được!`;
+    ).innerHTML = `Sau khi xác nhận dữ liệu Dataloger "${data.code}" sẽ bị xóa và không khôi phục lại được!`;
     document.getElementById("delete_dataloger").onclick = function () {
       Meteor.call("deleteDataloger", data.id, (error) => {
         if (error) {
@@ -289,49 +169,7 @@ Template.manageDevice.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("dataDataloger", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_dataloger").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ Dataloger",
-                  infoEmpty: "Hiển thị 0 Dataloger",
-                  lengthMenu: "Hiển thị _MENU_ Dataloger mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ Dataloger)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "dataloger" },
-                  { data: "serial" },
-                  { data: "start_date" },
-                  { data: "end_date" },
-                  { data: "station_id" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          loadDatatable();
           document.getElementById("modal_delete_dataloger").style.display =
             "none";
           Swal.fire({
@@ -356,6 +194,31 @@ Template.manageDevice.events({
 Template.manageDevice.helpers({
   stations: () => {
     return datadataloger;
+  },
+  editDataloger: () => {
+    const t = [
+      { id: "id", text: "STT", type: "id" },
+      { id: "code", text: "Mã máy ghi", type: "text" },
+      { id: "serial", text: "Serial", type: "text" },
+      { id: "status", text: "Tình trạng", type: "text" },
+      { id: "station_code", text: "Trạm", type: "text" },
+    ];
+    return t;
+  },
+  addDataloger: () => {
+    const t = [
+      { id: "id_a", text: "STT", type: "id" },
+      { id: "code_a", text: "Mã máy ghi", type: "text" },
+      { id: "serial_a", text: "Serial", type: "text" },
+      { id: "status_a", text: "Tình trạng", type: "text" },
+      { id: "station_code_a", text: "Trạm", type: "text" },
+    ];
+    return t;
+  },
+  check: (a, b) => {
+    if (a === b) {
+      return true;
+    }
   },
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();

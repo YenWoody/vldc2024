@@ -17,17 +17,13 @@ Template.manageNetwork.onCreated(function () {
   Meteor.users.find({}).fetch(); // will return all users
   // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
+  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
   // datatables(window, $);
   // datatables_bs(window, $);
 });
 Template.manageNetwork.onRendered(async () => {
-  document.addEventListener("DOMContentLoaded", function () {
-    datatables(window, $);
-    // datatables_bs(window, $);
-  });
-
   $("#dashboard-title").html("Quản lí các mạng trạm");
   function dataDevice() {
     return new Promise(function (resolve, reject) {
@@ -90,6 +86,7 @@ Template.manageNetwork.onRendered(async () => {
             text: error.reason,
           });
         } else {
+          $("#data_network").DataTable().clear().destroy();
           Meteor.call("dataNetwork", function (error, resultdata) {
             if (error) {
               console.log(error);
@@ -161,6 +158,7 @@ Template.manageNetwork.onRendered(async () => {
             text: error.reason,
           });
         } else {
+          $("#data_network").DataTable().clear().destroy();
           Meteor.call("dataNetwork", function (error, resultdata) {
             if (error) {
               console.log(error);
@@ -229,6 +227,7 @@ Template.manageNetwork.onRendered(async () => {
             text: error.reason,
           });
         } else {
+          $("#data_network").DataTable().clear().destroy();
           Meteor.call("dataNetwork", function (error, resultdata) {
             if (error) {
               console.log(error);

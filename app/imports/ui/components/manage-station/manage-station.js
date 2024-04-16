@@ -13,13 +13,10 @@ Template.manageStation.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
     "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
   loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
-  // datatables(window, $);
-  // datatables_bs(window, $);
 });
 function callDatatable() {
   Meteor.call("dataStation", function (error, resultdataStation) {

@@ -328,57 +328,16 @@ Meteor.methods({
       });
   },
   editDataloger: function (data) {
-    if (
-      isNaN(Date.parse(data.start_date)) &&
-      isNaN(Date.parse(data.end_date))
-    ) {
-      pool.query(
-        `UPDATE "dataloger"
-                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}', "station_code" = '${data.station_code}'
-                WHERE "id" = ${data.key};`
-      );
-    }
-    if (isNaN(Date.parse(data.start_date))) {
-      pool.query(
-        `UPDATE "dataloger"
-                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}', "end_date" = '${data.end_date}' , "station_code" = '${data.station_code}'
-                WHERE "id" = ${data.key};`
-      );
-    } else if (isNaN(Date.parse(data.end_date))) {
-      pool.query(
-        `UPDATE "dataloger"
-                SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}',"start_date" = '${data.start_date}' , "station_code" = '${data.station_code}'
-                WHERE "id" = ${data.key};`
-      );
-    } else {
-      pool.query(
-        `UPDATE "dataloger"
-            SET "serial" = '${data.serial}', "dataloger" = '${data.dataloger}',"start_date" = '${data.start_date}', "end_date" = '${data.end_date}' , "station_code" = '${data.station_code}'
+    pool.query(
+      `UPDATE "dataloger"
+            SET "serial" = '${data.serial}', "code" = '${data.code}',"status" = '${data.status}', "station_code" = '${data.station_code}'
             WHERE "id" = ${data.key};`
-      );
-    }
+    );
   },
   insertDataloger: function (data) {
-    if (
-      isNaN(Date.parse(data.start_date)) &&
-      isNaN(Date.parse(data.end_date))
-    ) {
-      pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.station_code}')`
-      );
-    } else if (isNaN(Date.parse(data.start_date))) {
-      pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","end_date","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.end_date}','${data.station_code}')`
-      );
-    } else if (isNaN(Date.parse(data.end_date))) {
-      pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","start_date","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.start_date}','${data.station_code}')`
-      );
-    } else {
-      pool.query(
-        `INSERT INTO "dataloger" ("serial","dataloger","start_date","end_date","station_code") VALUES ('${data.serial}','${data.dataloger}','${data.start_date}','${data.end_date}','${data.station_code}')`
-      );
-    }
+    pool.query(
+      `INSERT INTO "dataloger" ("serial","code","status","station_code") VALUES ('${data.serial}','${data.code}','${data.status}','${data.station_code}')`
+    );
   },
   deleteDataloger: function (id) {
     pool.query(
@@ -423,13 +382,24 @@ Meteor.methods({
   editSensor: function (data) {
     pool.query(
       `UPDATE "sensor"
-                SET "serial1" = '${data.serial1}', "sensor1" = '${data.sensor1}',"serial2" = '${data.serial2}', "sensor2" = '${data.sensor2}', "station_code" = '${data.station_code}'
+                SET "sensor_speed" = '${data.sensor_speed}', "serial_speed" = '${data.serial_speed}',"status_speed" = '${data.status_speed}', "remote_control" = '${data.remote_control}',"serial_control" = '${data.serial_control}', "status_control" = '${data.status_control}',"sensor_accelerator" = '${data.sensor_accelerator}', "serial_accelerator" = '${data.serial_accelerator}',"status_accelerator" = '${data.status_accelerator}', "cable_sensor_speed" = '${data.cable_sensor_speed}',"cable_sensor_accelerator" = '${data.cable_sensor_accelerator}', "station_code" = '${data.station_code}'
                 WHERE "id" = ${data.key};`
     );
   },
   insertSensor: function (data) {
     pool.query(
-      `INSERT INTO "sensor" ("serial1","sensor1","sensor2","serial2","station_code") VALUES ('${data.serial1}','${data.sensor1}','${data.sensor2}','${data.serial2}','${data.station_code}')`
+      `INSERT INTO "sensor" ( "sensor_speed",
+      "serial_speed",
+      "status_speed",
+      "remote_control",
+      "serial_control",
+      "status_control",
+      "sensor_accelerator",
+      "serial_accelerator",
+      "status_accelerator",
+      "cable_sensor_speed",
+      "cable_sensor_accelerator",
+      "station_code") VALUES ('${data.sensor_speed}','${data.serial_speed}','${data.status_speed}','${data.remote_control}','${data.serial_control}','${data.status_control}','${data.sensor_accelerator}','${data.serial_accelerator}','${data.status_accelerator}','${data.cable_sensor_speed}','${data.cable_sensor_accelerator}','${data.station_code}')`
     );
   },
   deleteSensor: function (id) {
@@ -814,7 +784,6 @@ Meteor.methods({
           code: e["Máy ghi"],
           serial: e["Serial máy ghi"],
           status: e["Tình trạng máy ghi"],
-
           station_code: e["Mã trạm"],
         });
         internet.push({
@@ -959,7 +928,6 @@ Meteor.methods({
                       "code",
                       "serial",
                       "status",
-
                       "station_code",
                       "id_stat",
                     ];

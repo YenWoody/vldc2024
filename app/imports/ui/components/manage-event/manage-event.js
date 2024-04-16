@@ -4,7 +4,6 @@ import "../not_access/not_access";
 import { $ } from "meteor/jquery";
 
 import DataTable from "datatables.net-dt";
-import "datatables.net-responsive-dt";
 import { loadCss } from "esri-loader";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 let state = false;
@@ -17,68 +16,64 @@ Template.manageEvent.onCreated(function () {
   Meteor.users.find({}).fetch(); // will return all users
   // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
+  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
   // datatables(window, $);
   // datatables_bs(window, $);
 });
-Template.manageEvent.onRendered(async () => {
-  document.addEventListener("DOMContentLoaded", function () {
-    datatables(window, $);
-    // datatables_bs(window, $);
-  });
-  $("#dashboard-title").html("Quản lí sự kiện động đất");
-  function dataEvent() {
-    return new Promise(function (resolve, reject) {
-      Meteor.call("layerEvent", function (error, resultdata) {
-        if (error) {
-          reject(error);
-        }
-        resolve(resultdata.rows);
+function loadDatatable() {
+  Meteor.call("layerEvent", function (error, resultdata) {
+    if (error) {
+      console.log(error);
+    } else {
+      const dataEvents = resultdata.rows;
+      const data = dataEvents.filter((e) => {
+        return !(e.geometry === null);
       });
-    });
-  }
-  const dataEvents = await dataEvent();
-  const data = dataEvents.filter((e) => {
-    return !(e.geometry === null);
+      let table = new DataTable("#data_event", {
+        data: data,
+        paging: true,
+        destroy: true,
+        scrollX: true,
+        pageLength: 10,
+        language: {
+          sSearch: "Tìm kiếm :",
+          emptyTable: "Dữ liệu chưa tải thành công",
+          info: "Hiển thị từ _START_ đến _END_ sự kiện",
+          infoEmpty: "Hiển thị 0 sự kiện",
+          lengthMenu: "Hiển thị _MENU_ sự kiện mỗi trang",
+          infoFiltered: "(Lọc từ tổng số _MAX_ sự kiện)",
+        },
+        columns: [
+          { data: "id" },
+          { data: "datetime" },
+          { data: "lat" },
+          { data: "long" },
+          { data: "md" },
+          { data: "ml" },
+          {
+            data: null,
+            className: "dt-center editor-edit",
+            defaultContent:
+              '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
+            orderable: false,
+          },
+          {
+            data: null,
+            className: "dt-center editor-delete",
+            defaultContent:
+              '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg "/></button>',
+            orderable: false,
+          },
+        ],
+      });
+    }
   });
-  $("#data_event").DataTable({
-    data: data,
-    paging: true,
-    destroy: true,
-    scrollX: true,
-    pageLength: 10,
-    language: {
-      sSearch: "Tìm kiếm :",
-      emptyTable: "Dữ liệu chưa tải thành công",
-      info: "Hiển thị từ _START_ đến _END_ sự kiện",
-      infoEmpty: "Hiển thị 0 sự kiện",
-      lengthMenu: "Hiển thị _MENU_ sự kiện mỗi trang",
-      infoFiltered: "(Lọc từ tổng số _MAX_ sự kiện)",
-    },
-    columns: [
-      { data: "id" },
-      { data: "datetime" },
-      { data: "lat" },
-      { data: "long" },
-      { data: "md" },
-      { data: "ml" },
-      {
-        data: null,
-        className: "dt-center editor-edit",
-        defaultContent:
-          '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-        orderable: false,
-      },
-      {
-        data: null,
-        className: "dt-center editor-delete",
-        defaultContent:
-          '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg "/></button>',
-        orderable: false,
-      },
-    ],
-  });
+}
+Template.manageEvent.onRendered(async () => {
+  $("#dashboard-title").html("Quản lí sự kiện động đất");
+  loadDatatable();
   document.getElementById("add-event").onclick = async function () {
     function data() {
       return new Promise(function (resolve, reject) {
@@ -137,51 +132,8 @@ Template.manageEvent.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("layerEvent", function (error, resultdata) {
-            if (error) {
-            } else {
-              const data = resultdata.rows.filter((e) => {
-                return !(e.geometry === null);
-              });
-              $("#data_event").DataTable({
-                data: data,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ sự kiện",
-                  infoEmpty: "Hiển thị 0 sự kiện",
-                  lengthMenu: "Hiển thị _MENU_ sự kiện mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ sự kiện)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "datetime" },
-                  { data: "lat" },
-                  { data: "long" },
-                  { data: "md" },
-                  { data: "ml" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-xs"><i class="fa fa-pencil fa-lg"/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-xs"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          $("#data_event").DataTable().clear().destroy();
+          loadDatatable();
           document.getElementById("modal_add_event").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -238,52 +190,8 @@ Template.manageEvent.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("layerEvent", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              const data = resultdata.rows.filter((e) => {
-                return !(e.geometry === null);
-              });
-              $("#data_event").DataTable({
-                data: data,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ sự kiệnm",
-                  infoEmpty: "Hiển thị 0 sự kiện",
-                  lengthMenu: "Hiển thị _MENU_ sự kiện mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ sự kiện)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "datetime" },
-                  { data: "lat" },
-                  { data: "long" },
-                  { data: "md" },
-                  { data: "ml" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-xs"><i class="fa fa-pencil fa-lg"/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-xs"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          $("#data_event").DataTable().clear().destroy();
+          loadDatatable();
           document.getElementById("modal_edit_event").style.display = "none";
           Swal.fire({
             icon: "success",
@@ -313,52 +221,8 @@ Template.manageEvent.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          Meteor.call("layerEvent", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              const data = resultdata.rows.filter((e) => {
-                return !(e.geometry === null);
-              });
-              $("#data_event").DataTable({
-                data: data,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ sự kiện",
-                  infoEmpty: "Hiển thị 0 sự kiện",
-                  lengthMenu: "Hiển thị _MENU_ sự kiện mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ sự kiện)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "datetime" },
-                  { data: "lat" },
-                  { data: "long" },
-                  { data: "md" },
-                  { data: "ml" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-xs"><i class="fa fa-pencil fa-lg"/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-xs"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-            }
-          });
+          $("#data_event").DataTable().clear().destroy();
+          loadDatatable();
           document.getElementById("modal_delete_event").style.display = "none";
           Swal.fire({
             icon: "success",

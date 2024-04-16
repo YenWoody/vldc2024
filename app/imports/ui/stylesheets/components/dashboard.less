@@ -5,9 +5,14 @@
     }
   }
 }
-div#data_users_wrapper,
-#data_tram_wrapper {
-  overflow: auto;
+table.dataTable th.dt-type-numeric,
+table.dataTable th.dt-type-date,
+table.dataTable td.dt-type-numeric,
+table.dataTable td.dt-type-date {
+  text-align: unset !important;
+}
+.dt-container.dt-bootstrap5.dt-empty-footer {
+  overflow: auto !important;
 }
 .content_body_modal {
   overflow: auto;

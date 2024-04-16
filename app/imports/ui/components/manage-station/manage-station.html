@@ -92,7 +92,7 @@
 
   <div class="manage-users row shadow">
     <div
-      class="col-md-12 pull-right"
+      class="col-md-12 pull-right mb-3"
       style="
         display: flex;
         justify-items: center;
@@ -134,32 +134,21 @@
       </thead>
     </table>
   </div>
-  <div id="_modal" class="_modal">
-    <div
-      class="_main"
-      style="
-        display: grid;
-
-        max-height: 90vh;
-
-        width: 30%;
-        /* justify-items: center; */
-        /* align-content: stretch; */
-      "
-    >
-      <div class="container w-100">
-        <div class="_title">
-          <h3>Sửa dữ liệu của trạm</h3>
+  <div id="_modal" class="_modal modal">
+    <div class="_main p-0 d-grid" style="max-height: 90vh; width: 30%">
+      <div class="w-100">
+        <div class="modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Sửa dữ liệu của trạm</h3>
         </div>
-        <hr />
+
         <div class="modal-body content_body_modal">
           <form>
             {{#each item in editStation}} {{#if check item.type "text"}}
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -171,10 +160,10 @@
             {{else}} {{#if check item.type "select"}}
 
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -186,10 +175,10 @@
             {{ else }} {{#if check item.type "number"}}
 
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -205,7 +194,7 @@
           </form>
         </div>
       </div>
-      <div class="_footer mt-5">
+      <div class="modal-footer mt-2 w-100">
         <button class="btn btn-info save" id="save_edit_station">
           Xác nhận
         </button>
@@ -213,32 +202,30 @@
       </div>
     </div>
   </div>
-  <div id="modal_add_station" class="_modal">
+  <div id="modal_add_station" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0 d-grid"
       style="
-        display: grid;
-
-        max-height: 700px;
+        max-height: 90vh;
 
         width: 30%;
         /* justify-items: center; */
         /* align-content: stretch; */
       "
     >
-      <div class="container w-100">
-        <div class="_title text-center">
-          <h3>Thêm dữ liệu của trạm</h3>
+      <div class="w-100">
+        <div class="modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Thêm dữ liệu của trạm</h3>
         </div>
-        <hr />
+
         <div class="modal-body content_body_modal">
           <form>
             {{#each item in addStation}} {{#if check item.type "text"}}
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
-                >{{item.text}}</label
-              >
-              <div class="col-lg-8">
+              <div class="col-4 col-lg-4 col-form-label">
+                <label for="recipient-name">{{item.text}}</label>
+              </div>
+              <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -250,10 +237,10 @@
             {{else}} {{#if check item.type "select"}}
 
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -265,10 +252,10 @@
             {{ else }} {{#if check item.type "number"}}
 
             <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-lg-8">
+              <div class="col-8 col-lg-8">
                 <input
                   type="number"
                   class="form-control"
@@ -283,7 +270,7 @@
             {{/if}} {{/if}}{{/if}}{{/each}}
           </form>
         </div>
-        <div class="_footer mt-5 text-center">
+        <div class="modal-footer mt-2 w-100">
           <button class="btn btn-info save" id="save_add_station">
             Xác nhận
           </button>
@@ -306,7 +293,7 @@
       "
     >
       <div class="_container">
-        <div class="_title">
+        <div class="_title bg-primary">
           <h3>Thêm dữ liệu của trạm bằng tệp Excel</h3>
         </div>
         <hr />
@@ -319,7 +306,7 @@
             </label>
           </form>
         </div>
-        <div class="_footer mt-5">
+        <div class="modal-footer mt-3 w-100">
           <button class="btn btn-info save" id="save_add_station">
             Xác nhận
           </button>
