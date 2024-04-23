@@ -4,20 +4,20 @@
 table {
   width: 100%;
 }
-td, th {
-  border: 1px solid #EDEDED;
+td,
+th {
+  border: 1px solid #ededed;
   text-align: center;
   padding: 3px;
   font-size: 12px;
 }
 tr:nth-child(even) {
-  background-color: #EDEDED;
+  background-color: #ededed;
 }
 input.form-control.input-sm {
-  width: 150px!important;
-
+  width: 150px !important;
 }
-#changepassword_form{
+#changepassword_form {
   display: none;
 }
 .currentUser_div {
@@ -32,20 +32,18 @@ label {
   float: left;
 }
 #upload {
-    background-color: white;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    align-content: center;
-    border-radius: 0.375rem;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  align-content: center;
+  border-radius: 0.375rem;
 }
-.upload-progress {
-margin: 30px;
-}
+
 .uploaded-files {
-height: 100%;
-overflow: overlay;
-width: 100%;
+  height: 100%;
+  overflow: overlay;
+  width: 100%;
 }
 // Dashboard Css
 .chartist-tooltip {
@@ -53,47 +51,52 @@ width: 100%;
   display: inline-block;
   opacity: 0;
   min-width: 5em;
-  padding: .5em;
-  background: #F4C63D;
-  color: #453D3F;
-  font-family: Oxygen,Helvetica,Arial,sans-serif;
+  padding: 0.5em;
+  background: #f4c63d;
+  color: #453d3f;
+  font-family: Oxygen, Helvetica, Arial, sans-serif;
   font-weight: 700;
   text-align: center;
   pointer-events: none;
   z-index: 1;
-  -webkit-transition: opacity .2s linear;
-  -moz-transition: opacity .2s linear;
-  -o-transition: opacity .2s linear;
-  transition: opacity .2s linear; }
-  .chartist-tooltip:before {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    margin-left: -15px;
-    border: 15px solid transparent;
-    border-top-color: #F4C63D; }
-  .chartist-tooltip.tooltip-show {
-    opacity: 1; }
-
-.ct-area, .ct-line {
-  pointer-events: none; }
-
-/*# sourceMappingURL=chartist-plugin-tooltip.css.map */
-.star-wrap{
-    display: grid;
-    justify-items: center;
-    background: white;
-    overflow: hidden;
-    max-width: 1900px;
-    height: 100vh;
-    margin: auto;
-    position: relative;
+  -webkit-transition: opacity 0.2s linear;
+  -moz-transition: opacity 0.2s linear;
+  -o-transition: opacity 0.2s linear;
+  transition: opacity 0.2s linear;
+}
+.chartist-tooltip:before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -15px;
+  border: 15px solid transparent;
+  border-top-color: #f4c63d;
+}
+.chartist-tooltip.tooltip-show {
+  opacity: 1;
 }
 
-.star{
+.ct-area,
+.ct-line {
+  pointer-events: none;
+}
+
+/*# sourceMappingURL=chartist-plugin-tooltip.css.map */
+.star-wrap {
+  display: grid;
+  justify-items: center;
+  background: white;
+  overflow: hidden;
+  max-width: 1900px;
+  height: 100vh;
+  margin: auto;
+  position: relative;
+}
+
+.star {
   border: 2px solid white;
   border-radius: 50%;
   width: 0;
@@ -104,7 +107,7 @@ width: 100%;
 
 .earth-moon-wrap {
   position: relative;
-  z-index: 1
+  z-index: 1;
 }
 .earth {
   border: groove;
@@ -112,16 +115,13 @@ width: 100%;
   height: 300px;
   border-radius: 50%;
   overflow: hidden;
-  background: url(/img/earth.jpg)
-    50%
-    50% /
-    cover;
+  background: url(/img/earth.jpg) 50% 50% / cover;
   animation: earthRotate 9s infinite linear;
 }
 
 .moon {
   position: absolute;
-  left : -40px;
+  left: -40px;
   top: 50%;
   transform: translateY(-50%);
   animation: moonRotate 6s infinite linear;
@@ -166,18 +166,18 @@ button#add-user {
 #role_user:hover .tooltiptext {
   visibility: visible;
 }
-form.changepassword-form{
+form.changepassword-form {
   border-color: white;
-    background: #fff;
-    padding: 30px 15px;
-    border-radius: 4px;
-    margin: 30px 0;
-    box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  background: #fff;
+  padding: 30px 15px;
+  border-radius: 4px;
+  margin: 30px 0;
+  box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .give-flex {
   display: flex;
@@ -194,13 +194,11 @@ form.changepassword-form{
   padding: 15px;
 }
 
-
-@keyframes star{
-  50%{
-    opacity: 0
+@keyframes star {
+  50% {
+    opacity: 0;
   }
 }
-
 
 @keyframes earthRotate {
   100% {
@@ -213,14 +211,14 @@ form.changepassword-form{
     z-index: -1;
   }
   50% {
-    transform: translate(320px, -50%) scale(.5);
+    transform: translate(320px, -50%) scale(0.5);
   }
   70% {
     transform: translate(350px, -50%);
   }
 }
 #home_background {
-  padding: 0px!important
+  padding: 0px !important;
 }
 ///
 .wrap {
@@ -251,63 +249,62 @@ a.button_event {
   position: absolute;
   background-color: white;
   z-index: 1;
-	transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
-	font-size: 20px;
-	margin: 20px auto;
-	max-width: 180px;
-	text-decoration: none;
-	border-radius: 25px;
-	padding: 20px;
-	color: rgba(30, 22, 54, 0.6);
-	box-shadow: rgba(30, 22, 54, 0.4) 0 0px 0px 2px inset;
+  transition: all 200ms cubic-bezier(0.39, 0.5, 0.15, 1.36);
+  font-size: 20px;
+  margin: 20px auto;
+  max-width: 180px;
+  text-decoration: none;
+  border-radius: 25px;
+  padding: 20px;
+  color: rgba(30, 22, 54, 0.6);
+  box-shadow: rgba(30, 22, 54, 0.4) 0 0px 0px 2px inset;
 }
 
 a.button_event:hover {
-	color: rgba(255, 255, 255, 0.85);
-	box-shadow: rgb(132 180 228) 0 30px 0px 49px inset
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: rgb(132 180 228) 0 30px 0px 49px inset;
 }
 
 a.button_station {
   position: absolute;
   background-color: white;
   z-index: 1;
-	transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
-	margin: 20px auto;
+  transition: all 200ms cubic-bezier(0.39, 0.5, 0.15, 1.36);
+  margin: 20px auto;
   font-size: 20px;
-	max-width: 180px;
-	text-decoration: none;
-	border-radius: 25px;
-	padding: 20px;
-	color: rgba(30, 22, 54, 0.6);
-	box-shadow: rgba(30, 22, 54, 0.4) 0 0px 0px 2px inset;
+  max-width: 180px;
+  text-decoration: none;
+  border-radius: 25px;
+  padding: 20px;
+  color: rgba(30, 22, 54, 0.6);
+  box-shadow: rgba(30, 22, 54, 0.4) 0 0px 0px 2px inset;
 }
 
 a.button_station:hover {
-	color: rgba(255, 255, 255, 0.85);
-	box-shadow: rgb(132 180 228) 0 30px 0px 49px inset
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: rgb(132 180 228) 0 30px 0px 49px inset;
 }
 @media only screen and (max-width: 800px) {
   .col-md-12.pull-right {
-    display: grid!important;
-    justify-content: space-around!important;
-    justify-items: unset!important
+    display: grid !important;
+    justify-content: space-around !important;
+    justify-items: unset !important;
   }
 }
 @media only screen and (max-width: 500px) {
-
   .manage-users.row {
-    padding: 10px!important;
+    padding: 10px !important;
   }
-  form.changepassword-form{
+  form.changepassword-form {
     border-color: white;
-      background: #fff;
-      padding: 30px 15px;
-      border-radius: 4px;
-      margin: 30px 0;
-      box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    background: #fff;
+    padding: 30px 15px;
+    border-radius: 4px;
+    margin: 30px 0;
+    box-shadow: 0px 0 2px 0 rgb(0 0 0 / 25%);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }

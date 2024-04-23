@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import "./manage-baler.html";
+import "./manage-internet.html";
 import "../not_access/not_access";
 import { $ } from "meteor/jquery";
 
@@ -11,7 +11,7 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageBaler.onCreated(function () {
+Template.manageInternet.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
@@ -21,15 +21,15 @@ Template.manageBaler.onCreated(function () {
   loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
 function callDatatable() {
-  Meteor.call("dataBaler", function (error, resultdata) {
+  Meteor.call("dataInternet", function (error, resultdata) {
     if (error) {
       reject(error);
     }
 
     const dt = resultdata.rows;
 
-    $("#data_baler").DataTable().clear().destroy();
-    new DataTable("#data_baler", {
+    $("#data_internet").DataTable().clear().destroy();
+    new DataTable("#data_internet", {
       data: dt,
       paging: true,
       destroy: true,
@@ -38,55 +38,56 @@ function callDatatable() {
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
-        info: "Hiển thị từ _START_ đến _END_ máy ghi",
-        infoEmpty: "Hiển thị 0 máy ghi",
-        lengthMenu: "Hiển thị _MENU_ máy ghi mỗi trang",
-        infoFiltered: "(Lọc từ tổng số _MAX_ máy ghi)",
+        info: "Hiển thị từ _START_ đến _END_ ",
+        infoEmpty: "Hiển thị 0 ",
+        lengthMenu: "Hiển thị _MENU_  mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ )",
       },
       columns: [
         { data: "id" },
         { data: "code" },
-        { data: "serial" },
-        { data: "status" },
+        { data: "ip" },
+        { data: "cable_internet" },
         { data: "station_code" },
         {
           data: null,
           className: "dt-center control",
           defaultContent: `<div class="btn-group btn-group-sm">
-              <button type="button" class="btn btn-primary btn-sm me-2 editor-edit"             data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
-              <button type="button" class="btn btn-danger btn-sm editor-delete"             data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
-            </div>`,
+          <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+          <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+        </div>`,
           orderable: false,
         },
       ],
     });
   });
 }
-Template.manageBaler.onRendered(async () => {
+Template.manageInternet.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
-  $("#dashboard-title").html("Quản lí các thiết bị");
+  $("#dashboard-title").html("Quản lí Internet");
   callDatatable();
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
   }
+  const keyNames = ["code", "ip", "cable_internet", "station_code"];
+  function checkEmpty(data) {
+    return data ? data : "Chưa có thông tin";
+  }
   document.getElementById("add-station").onclick = async function () {
-    // document.getElementById('stt_baler_').innerHTML = maxKey + 1;
-    document.getElementById("modal_add_baler").style.display = "block";
-    document.getElementById("save_add_baler").onclick = function () {
-      const insert = {
-        code: checkEmpty($("#code_a").val()),
-        serial: checkEmpty($("#serial_a").val()),
-        status: checkEmpty($("#status_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
-      };
-
-      Meteor.call("insertBaler", insert, (error) => {
+    // document.getElementById('stt_internet_').innerHTML = maxKey + 1;
+    document.getElementById("modal_add_internet").style.display = "block";
+    document.getElementById("save_add_internet").onclick = function () {
+      let insert = {};
+      keyNames.forEach((e) => {
+        insert[e] = checkEmpty($(`#${e}_a`).val());
+      });
+      Meteor.call("insertInternet", insert, (error) => {
         if (error) {
           Swal.fire({
             icon: "error",
@@ -96,7 +97,7 @@ Template.manageBaler.onRendered(async () => {
           });
         } else {
           callDatatable();
-          document.getElementById("modal_add_baler").style.display = "none";
+          document.getElementById("modal_add_internet").style.display = "none";
           Swal.fire({
             icon: "success",
             heightAuto: false,
@@ -109,24 +110,21 @@ Template.manageBaler.onRendered(async () => {
   };
   // Edit Record
 
-  $("#data_baler ").on("click", "td.control", function (e) {
+  $("#data_internet ").on("click", "td.control", function (e) {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
-      const data = $("#data_baler").DataTable().row(this).data();
+      const data = $("#data_internet").DataTable().row(this).data();
       document.getElementById("_modal").style.display = "block";
-      var keyNames = ["code", "serial", "status", "station_code"];
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
-      document.getElementById("save_edit_baler").onclick = function () {
-        const insert = {
-          key: data.id,
-          code: checkEmpty($("#code").val()),
-          serial: checkEmpty($("#serial").val()),
-          status: checkEmpty($("#status").val()),
-          station_code: checkEmpty($("#station_code").val()),
-        };
-        Meteor.call("editBaler", insert, (error) => {
+      document.getElementById("save_edit_internet").onclick = function () {
+        let insert = {};
+        keyNames.forEach((e) => {
+          insert[e] = checkEmpty($(`#${e}`).val());
+        });
+        insert.id = data.id;
+        Meteor.call("editInternet", insert, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -147,14 +145,10 @@ Template.manageBaler.onRendered(async () => {
         });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
-      const data = $("#data_baler").DataTable().row(this).data();
-      document.getElementById("modal_delete_baler").style.display = "block";
-      document.getElementById(
-        "content_delete"
-      ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
-
-      document.getElementById("delete_baler").onclick = function () {
-        Meteor.call("deleteBaler", data.id, (error) => {
+      const data = $("#data_internet").DataTable().row(this).data();
+      document.getElementById("modal_delete_internet").style.display = "block";
+      document.getElementById("delete_internet").onclick = function () {
+        Meteor.call("deleteInternet", data.id, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -164,7 +158,7 @@ Template.manageBaler.onRendered(async () => {
             });
           } else {
             callDatatable();
-            document.getElementById("modal_delete_baler").style.display =
+            document.getElementById("modal_delete_internet").style.display =
               "none";
             Swal.fire({
               icon: "success",
@@ -179,32 +173,32 @@ Template.manageBaler.onRendered(async () => {
   });
 });
 
-Template.manageBaler.events({
+Template.manageInternet.events({
   "click #close-modal": function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_baler").style.display = "none";
-    document.getElementById("modal_delete_baler").style.display = "none";
+    document.getElementById("modal_add_internet").style.display = "none";
+    document.getElementById("modal_delete_internet").style.display = "none";
   },
 });
-Template.manageBaler.helpers({
+Template.manageInternet.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
   },
-  editBaler: () => {
+  editinternet: () => {
     const t = [
-      { id: "code", text: "Mã máy ghi", type: "text" },
-      { id: "serial", text: "Serial", type: "text" },
-      { id: "status", text: "Tình trạng", type: "text" },
-      { id: "station_code", text: "Trạm", type: "text" },
+      { id: "code", text: "Loại mạng", type: "text" },
+      { id: "ip", text: "IP", type: "text" },
+      { id: "cable_internet", text: "Cáp mạng", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "text" },
     ];
     return t;
   },
-  addBaler: () => {
+  addinternet: () => {
     const t = [
-      { id: "code_a", text: "Mã máy ghi", type: "text" },
-      { id: "serial_a", text: "Serial", type: "text" },
-      { id: "status_a", text: "Tình trạng", type: "text" },
-      { id: "station_code_a", text: "Trạm", type: "text" },
+      { id: "code_a", text: "Loại mạng", type: "text" },
+      { id: "ip_a", text: "IP", type: "text" },
+      { id: "cable_internet_a", text: "Cáp mạng", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "text" },
     ];
     return t;
   },

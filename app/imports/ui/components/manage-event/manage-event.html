@@ -105,7 +105,6 @@
           <th>Md</th>
           <th>Ml</th>
           <th></th>
-          <th></th>
         </tr>
       </thead>
     </table>
@@ -330,29 +329,31 @@
       </div>
     </div>
   </div>
-  <div id="modal_delete_event" class="_modal">
+  <div id="modal_delete_event" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
         overflow: auto;
         width: 30%;
-        height: 300px;
+        max-height: 500px;
         /* justify-items: center; */
         /* align-content: stretch; */
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h3>Xóa dữ liệu động đất</h3>
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Xóa dữ liệu động đất</h3>
         </div>
         <hr />
         <div class="modal-body">
           <h4 id="content_delete_event"></h4>
         </div>
-        <div class="_footer">
+        <div class="modal-footer mt-2">
           <button class="btn btn-info save" id="delete_event">Xác nhận</button>
-          <button id="close-modal" class="close-modal">Hủy</button>
+          <button id="close-modal" class="close-modal btn btn-danger">
+            Hủy
+          </button>
         </div>
       </div>
     </div>

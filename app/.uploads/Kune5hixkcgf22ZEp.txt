@@ -1,0 +1,4 @@
+01/01/2010 - 31/12/2011 | Quanterra Q330HRS | Streckeisen STS-2N | Episensor FBA/EST-2.5			
+01/01/2010 - 15/11/2015 | 102.6524E | 22.6592N | 265 m			
+31/12/2011 - 20/05/2016 | Guralp CMG-6TD			
+20/05/2016 - 02/06/2019 | Quanterra Q330HR | Metrozet PBB-200 | Episensor FBA/EST-2.5			

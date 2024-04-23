@@ -25,7 +25,6 @@ function callDatatable() {
     }
     let table = new DataTable("#data_users", {
       data: resultdata,
-      responsive: true,
       paging: true,
       destroy: true,
       scrollX: true,
@@ -80,16 +79,15 @@ function callDatatable() {
         },
         {
           data: null,
-          className: "dt-center editor-edit",
-          defaultContent:
-            '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-          orderable: false,
-        },
-        {
-          data: null,
-          className: "dt-center editor-delete",
-          defaultContent:
-            '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg "/></button>',
+          className: "dt-center control",
+          defaultContent: `<div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+          <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+        </div>`,
           orderable: false,
         },
       ],
@@ -97,67 +95,73 @@ function callDatatable() {
   });
 }
 Template.manageUsers.onRendered(async () => {
+  $(document).ready(function () {
+    $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
+  });
   $("#dashboard-title").html("Quản lí người dùng");
   callDatatable();
 
-  $("#data_users").on("click", "td.editor-edit", function (e) {
-    const data = $("#data_users").DataTable().row(this).data();
-    document.getElementById("modal_edit_user").style.display = "block";
-    document.getElementById("submit-role").onclick = function () {
-      let role = $("[name=role]").val();
+  $("#data_users ").on("click", "td.control", function (e) {
+    e.preventDefault();
+    if ($(e.target).hasClass("editor-edit")) {
+      const data = $("#data_users").DataTable().row(this).data();
+      document.getElementById("modal_edit_user").style.display = "block";
+      document.getElementById("submit-role").onclick = function () {
+        let role = $("[name=role]").val();
 
+        const id = data._id;
+        Meteor.call("update-role", id, role, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            callDatatable();
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Thay đổi quyền thành công!",
+            });
+            document.getElementById("modal_edit_user").style.display = "none";
+          }
+        });
+      };
+    } else if ($(e.target).hasClass("editor-delete")) {
+      const data = $("#data_users").DataTable().row(this).data();
       const id = data._id;
-      Meteor.call("update-role", id, role, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          callDatatable();
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Thay đổi quyền thành công!",
-          });
-          document.getElementById("modal_edit_user").style.display = "none";
-        }
-      });
-    };
+      document.getElementById("_delete_user").style.display = "block";
+      const username = data.username;
+      document.getElementById(
+        "confirm_username"
+      ).innerHTML = `Bạn có muốn xóa tài khoản ${username}?`;
+      document.getElementById("delete_user").onclick = function () {
+        Meteor.call("delete-user", id, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            document.getElementById("_delete_user").style.display = "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Xóa người dùng thành công!",
+            });
+            callDatatable();
+          }
+        });
+      };
+    }
   });
-  $("#data_users").on("click", "td.editor-delete", function (e) {
-    const data = $("#data_users").DataTable().row(this).data();
-    const id = data._id;
-    document.getElementById("_delete_user").style.display = "block";
-    const username = data.username;
-    document.getElementById(
-      "confirm_username"
-    ).innerHTML = `Bạn có muốn xóa tài khoản ${username}?`;
-    document.getElementById("delete_user").onclick = function () {
-      Meteor.call("delete-user", id, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          document.getElementById("_delete_user").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Xóa người dùng thành công!",
-          });
-          callDatatable();
-        }
-      });
-    };
-  });
+
   let password = document.getElementById("floatingPassword");
   let checkpassword = document.getElementById("checkPassword");
   let passwordStrength = document.getElementById("password-strength");

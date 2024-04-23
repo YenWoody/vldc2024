@@ -23,52 +23,54 @@ Template.manageNetwork.onCreated(function () {
   // datatables(window, $);
   // datatables_bs(window, $);
 });
-Template.manageNetwork.onRendered(async () => {
-  $("#dashboard-title").html("Quản lí các mạng trạm");
-  function dataDevice() {
-    return new Promise(function (resolve, reject) {
-      Meteor.call("dataNetwork", function (error, resultdata) {
-        if (error) {
-          reject(error);
-        }
-        resolve(resultdata.rows);
-      });
+function callDatatable() {
+  Meteor.call("dataNetwork", function (error, resultdata) {
+    if (error) {
+      reject(error);
+    }
+    const dt = resultdata.rows;
+
+    $("#data_network").DataTable().clear().destroy();
+    new DataTable("#data_network", {
+      data: dt,
+      paging: true,
+      destroy: true,
+      scrollX: true,
+      pageLength: 10,
+      language: {
+        sSearch: "Tìm kiếm :",
+        emptyTable: "Dữ liệu chưa tải thành công",
+        info: "Hiển thị từ _START_ đến _END_ network",
+        infoEmpty: "Hiển thị 0 network",
+        lengthMenu: "Hiển thị _MENU_ network mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ network)",
+      },
+      columns: [
+        { data: "id" },
+        { data: "code" },
+        {
+          data: null,
+          className: "dt-center control",
+          defaultContent: `<div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+          <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+        </div>`,
+          orderable: false,
+        },
+      ],
     });
-  }
-  const dt = await dataDevice();
-  $("#data_network").DataTable({
-    data: dt,
-    paging: true,
-    destroy: true,
-    scrollX: true,
-    pageLength: 10,
-    language: {
-      sSearch: "Tìm kiếm :",
-      emptyTable: "Dữ liệu chưa tải thành công",
-      info: "Hiển thị từ _START_ đến _END_ network",
-      infoEmpty: "Hiển thị 0 network",
-      lengthMenu: "Hiển thị _MENU_ network mỗi trang",
-      infoFiltered: "(Lọc từ tổng số _MAX_ network)",
-    },
-    columns: [
-      { data: "id" },
-      { data: "code" },
-      {
-        data: null,
-        className: "dt-center editor-edit",
-        defaultContent:
-          '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-        orderable: false,
-      },
-      {
-        data: null,
-        className: "dt-center editor-delete",
-        defaultContent:
-          '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-        orderable: false,
-      },
-    ],
   });
+}
+Template.manageNetwork.onRendered(async () => {
+  $(document).ready(function () {
+    $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
+  });
+  $("#dashboard-title").html("Quản lí các mạng trạm");
+  callDatatable();
   document.getElementById("add-station").onclick = async function () {
     // document.getElementById('stt_network_').innerHTML = maxKey + 1;
     document.getElementById("modal_add_network").style.display = "block";
@@ -86,198 +88,80 @@ Template.manageNetwork.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          $("#data_network").DataTable().clear().destroy();
-          Meteor.call("dataNetwork", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_network").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ network",
-                  infoEmpty: "Hiển thị 0 network",
-                  lengthMenu: "Hiển thị _MENU_ network mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ network)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "code" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-              Swal.fire({
-                icon: "success",
-                heightAuto: false,
-                title: "Chúc mừng!",
-                text: "Thêm dữ liệu thành công!",
-              });
-            }
-          });
+          callDatatable();
           document.getElementById("modal_add_network").style.display = "none";
+          Swal.fire({
+            icon: "success",
+            heightAuto: false,
+            title: "Chúc mừng!",
+            text: "Lưu dữ liệu thành công",
+          });
         }
       });
     };
   };
   // Edit Record
-  $("#data_network").on("click", "td.editor-edit", function (e) {
+  $("#data_network ").on("click", "td.control", function (e) {
     e.preventDefault();
-    const data = $("#data_network").DataTable().row(this).data();
-    document.getElementById("_modal").style.display = "block";
-    document.getElementById("network").value = data.code;
-    document.getElementById("save_edit_network").onclick = function () {
-      const network1 = document.getElementById("network").value;
-      const insert = {
-        key: data.id,
-        code: network1,
+    if ($(e.target).hasClass("editor-edit")) {
+      const data = $("#data_network").DataTable().row(this).data();
+      document.getElementById("_modal").style.display = "block";
+      document.getElementById("network").value = data.code;
+      document.getElementById("save_edit_network").onclick = function () {
+        const network1 = document.getElementById("network").value;
+        const insert = {
+          key: data.id,
+          code: network1,
+        };
+        Meteor.call("editNetwork", insert, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            callDatatable();
+            document.getElementById("_modal").style.display = "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Lưu dữ liệu thành công",
+            });
+          }
+        });
       };
-      Meteor.call("editNetwork", insert, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          $("#data_network").DataTable().clear().destroy();
-          Meteor.call("dataNetwork", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_network").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ network",
-                  infoEmpty: "Hiển thị 0 network",
-                  lengthMenu: "Hiển thị _MENU_ network mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ network)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "code" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-              Swal.fire({
-                icon: "success",
-                heightAuto: false,
-                title: "Chúc mừng!",
-                text: "Lưu dữ liệu thành công",
-              });
-            }
-          });
-          document.getElementById("_modal").style.display = "none";
-        }
-      });
-    };
-  });
-
-  // Delete a record
-  $("#data_network").on("click", "td.editor-delete", function (e) {
-    const data = $("#data_network").DataTable().row(this).data();
-    document.getElementById("modal_delete_network").style.display = "block";
-    document.getElementById(
-      "content_delete"
-    ).innerHTML = `Sau khi xác nhận dữ liệu network "${data.code}" sẽ bị xóa và không khôi phục lại được!`;
-    document.getElementById("delete_network").onclick = function () {
-      Meteor.call("deleteNetwork", data.id, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          $("#data_network").DataTable().clear().destroy();
-          Meteor.call("dataNetwork", function (error, resultdata) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_network").DataTable({
-                data: resultdata.rows,
-                paging: true,
-                destroy: true,
-                scrollX: true,
-                pageLength: 10,
-                language: {
-                  sSearch: "Tìm kiếm :",
-                  emptyTable: "Dữ liệu chưa tải thành công",
-                  info: "Hiển thị từ _START_ đến _END_ network",
-                  infoEmpty: "Hiển thị 0 network",
-                  lengthMenu: "Hiển thị _MENU_ network mỗi trang",
-                  infoFiltered: "(Lọc từ tổng số _MAX_ network)",
-                },
-                columns: [
-                  { data: "id" },
-                  { data: "code" },
-                  {
-                    data: null,
-                    className: "dt-center editor-edit",
-                    defaultContent:
-                      '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-                    orderable: false,
-                  },
-                  {
-                    data: null,
-                    className: "dt-center editor-delete",
-                    defaultContent:
-                      '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
-                    orderable: false,
-                  },
-                ],
-              });
-              Swal.fire({
-                icon: "success",
-                heightAuto: false,
-                title: "Chúc mừng!",
-                text: "Xóa dữ liệu thành công!",
-              });
-            }
-          });
-          document.getElementById("modal_delete_network").style.display =
-            "none";
-        }
-      });
-    };
+    } else if ($(e.target).hasClass("editor-delete")) {
+      const data = $("#data_network").DataTable().row(this).data();
+      document.getElementById("modal_delete_network").style.display = "block";
+      document.getElementById(
+        "content_delete"
+      ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
+      document.getElementById("delete_network").onclick = function () {
+        Meteor.call("deleteNetwork", data.id, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            callDatatable();
+            document.getElementById("modal_delete_network").style.display =
+              "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Xóa dữ liệu thành công!",
+            });
+          }
+        });
+      };
+    }
   });
 });
 

@@ -1341,8 +1341,6 @@ Template.map_station.onRendered(() => {
         const elementNetwork = ["<option value='all'>Tất cả</option>"];
 
         dataNetworks.map((e, i) => {
-          console.log(i);
-
           elementNetwork.push(
             ` <option value="${e.code.trim()}">${e.code}</option>`
           );
@@ -1363,11 +1361,12 @@ Template.map_station.onRendered(() => {
           let query = layerStations.createQuery();
           query.where =
             selectedNetWork === "all"
-              ? "network LIKE '%'"
+              ? "id_key >= 0 and id_key <= 10000000"
               : `network LIKE '%${selectedNetWork}%'`;
 
           return layerStations.queryFeatures(query).then(function (response) {
             const dataSet = response.features;
+            console.log(dataSet, "dataSet");
             loadDataTable(dataSet);
           });
         });

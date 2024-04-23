@@ -25,6 +25,11 @@ import "../../ui/components/manage-sensor/manage-sensor";
 import "../../ui/components/manage-baler/manage-baler";
 import "../../ui/components/manage-event/manage-event";
 import "../../ui/components/manage-network/manage-network";
+import "../../ui/components/manage-land/manage-land";
+import "../../ui/components/manage-employee/manage-employee";
+import "../../ui/components/manage-battery/manage-battery";
+import "../../ui/components/manage-internet/manage-internet";
+import "../../ui/components/machine-history/machine-history";
 // Set up all routes in the app
 FlowRouter.route("/main", {
   name: "App.event",
@@ -48,6 +53,36 @@ FlowRouter.route("/manage-device", {
   name: "dashboard",
   action() {
     this.render("dashboardTemplate", "manageDevice");
+  },
+});
+FlowRouter.route("/manage-land", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageLand");
+  },
+});
+FlowRouter.route("/manage-battery", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageBattery");
+  },
+});
+FlowRouter.route("/manage-internet", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageInternet");
+  },
+});
+FlowRouter.route("/manage-employee", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageEmployee");
+  },
+});
+FlowRouter.route("/machine-history", {
+  name: "machine-history",
+  action() {
+    this.render("dashboardTemplate", "uploadMachineHistory");
   },
 });
 FlowRouter.route("/manage-sensor", {

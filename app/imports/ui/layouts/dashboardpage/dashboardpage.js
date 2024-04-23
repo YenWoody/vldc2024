@@ -33,7 +33,6 @@ Template.dashboardTemplate.helpers({
     } else if (Meteor.user() && Meteor.user().roles === "admin") return false; // look at the current user
   },
 });
-Meteor.startup(function () {});
 Template.dashboardTemplate.onRendered(function () {
   var fullHeight = function () {
     $(".js-fullheight").css("height", $(window).height());
@@ -42,9 +41,110 @@ Template.dashboardTemplate.onRendered(function () {
     });
   };
   fullHeight();
+  if (window.innerWidth < 768) {
+    $("#sidebar").addClass("active");
+  }
   $("#sidebarCollapse").on("click", function () {
     $("#sidebar").toggleClass("active");
   });
 });
-Template.dashboardTemplate.onCreated(function () {});
-Template.dashboardTemplate.events({});
+Template.dashboardTemplate.helpers({
+  checkScreenSize() {
+    let active = "fa-times";
+    if (window.innerWidth < 768) {
+      active = "fa-bars";
+    } else {
+      active = "fa-times";
+    }
+    return active;
+  },
+  activeListClass(list) {
+    const active = FlowRouter._current.path === list.link;
+    return active && "active-navbar";
+  },
+  activeListClassRegisterEvent() {
+    const active = FlowRouter._current.path === "/register-event";
+    return active && "active-navbar";
+  },
+  listMenu: () => {
+    return [
+      {
+        content: "Tải dữ liệu sự kiện động đất",
+        link: "/upload",
+        class: "fa fa-upload me-2",
+      },
+      {
+        content: "Tải lịch sử đặt máy",
+        link: "/machine-history",
+        class: "fa fa-upload me-2",
+      },
+      {
+        content: "Quản lý người dùng",
+        link: "/manage-user",
+        class: "fa fa-user me-2",
+      },
+      {
+        content: "Quản lý trạm đo",
+        link: "/manage-station",
+        class: "bi bi-inboxes-fill me-2",
+      },
+      {
+        content: "Quản lý sự kiện động đất",
+        link: "/manage-event",
+        class: "fa fa-globe me-2",
+      },
+      {
+        content: "Quản lý mạng trạm",
+        link: "/manage-network",
+        class: "bi bi-hdd-network-fill me-2",
+      },
+      {
+        content: "Quản lý thiết bị Dataloger",
+        link: "/manage-device",
+        class: "bi bi-hdd-rack-fill me-2",
+      },
+      {
+        content: "Quản lý thiết bị cảm biến",
+        link: "/manage-sensor",
+        class: "bi bi-easel-fill me-2",
+      },
+      {
+        content: "Quản lý thiết bị máy ghi",
+        link: "/manage-baler",
+        class: "fa fa-microchip me-2",
+      },
+      {
+        content: "Quản lý thông tin đất, nhà",
+        link: "/manage-land",
+        class: "fa fa-home fa-lg me-2",
+      },
+      {
+        content: "Quản lý Internet",
+        link: "/manage-internet",
+        class: "fa fa-info-circle fa-lg me-2",
+      },
+      {
+        content: "Quản lý lưu trữ năng lượng",
+        link: "/manage-battery",
+        class: "fa fa-battery-full me-2",
+      },
+      {
+        content: "Quản lý nhân sự",
+        link: "/manage-employee",
+        class: "fa fa-users me-2",
+      },
+    ];
+  },
+});
+Template.dashboardTemplate.events({
+  "click #sidebarCollapse": (e) => {
+    $("#button_sidebar").toggleClass("fa-bars");
+    $("#button_sidebar").toggleClass("fa-times");
+  },
+  "mouseenter .sidebar-item"(event) {
+    $(event.target).find(".item-span").addClass("active-sidebar");
+  },
+  "mouseleave .sidebar-item"(event) {
+    $(event.target).find(".item-span").removeClass("active-sidebar");
+  },
+});

@@ -10,6 +10,7 @@ import os from "os";
 import { check } from "meteor/check";
 import { Accounts } from "meteor/accounts-base";
 import { Email } from "meteor/email";
+import FilesMachineHistory from "../lib/files.machine_history";
 // server.js
 const PG_HOST = "localhost";
 const PG_PORT = "5432";
@@ -314,8 +315,8 @@ Meteor.methods({
   findUsers: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
   },
-  deleteEvent: function (id) {
-    pool
+  deleteEvent: async function (id) {
+    return await pool
       .query(
         `DELETE FROM event_station
                   WHERE event_id = ${id};`
@@ -327,67 +328,141 @@ Meteor.methods({
         );
       });
   },
-  editDataloger: function (data) {
-    pool.query(
+  editDataloger: async function (data) {
+    return await pool.query(
       `UPDATE "dataloger"
             SET "serial" = '${data.serial}', "code" = '${data.code}',"status" = '${data.status}', "station_code" = '${data.station_code}'
             WHERE "id" = ${data.key};`
     );
   },
-  insertDataloger: function (data) {
-    pool.query(
+  insertDataloger: async function (data) {
+    return await pool.query(
       `INSERT INTO "dataloger" ("serial","code","status","station_code") VALUES ('${data.serial}','${data.code}','${data.status}','${data.station_code}')`
     );
   },
-  deleteDataloger: function (id) {
-    pool.query(
+  deleteDataloger: async function (id) {
+    return await pool.query(
       `DELETE FROM dataloger
                   WHERE id = ${id};`
     );
   },
-  editNetwork: function (data) {
-    pool.query(
+  editNetwork: async function (data) {
+    return await pool.query(
       `UPDATE "network"
             SET "code" = '${data.code}'
             WHERE "id" = ${data.key};`
     );
   },
-  insertNetwork: function (data) {
-    pool.query(`INSERT INTO "network" ("code") VALUES ('${data.code}')`);
+  insertNetwork: async function (data) {
+    return await pool.query(
+      `INSERT INTO "network" ("code") VALUES ('${data.code}')`
+    );
   },
-  deleteNetwork: function (id) {
-    pool.query(
+  deleteNetwork: async function (id) {
+    return await pool.query(
       `DELETE FROM network
               WHERE id = ${id};`
     );
   },
-  editBaler: function (data) {
-    pool.query(
+  editBaler: async function (data) {
+    return await pool.query(
       `UPDATE "baler"
-            SET "serial" = '${data.serial}', "code" = '${data.code}',"station_code" = '${data.station_code}'
+            SET "serial" = '${data.serial}',"status" = '${data.status}', "code" = '${data.code}',"station_code" = '${data.station_code}'
             WHERE "id" = ${data.key};`
     );
   },
-  insertBaler: function (data) {
-    pool.query(
-      `INSERT INTO "baler" ("code","serial","station_code") VALUES ('${data.code}','${data.serial}','${data.station_code}')`
+  insertBaler: async function (data) {
+    return await pool.query(
+      `INSERT INTO "baler" ("code","serial","status","station_code") VALUES ('${data.code}','${data.serial}','${data.status}','${data.station_code}')`
     );
   },
-  deleteBaler: function (id) {
-    pool.query(
+  deleteBaler: async function (id) {
+    return await pool.query(
       `DELETE FROM baler
               WHERE id = ${id};`
     );
   },
-  editSensor: function (data) {
-    pool.query(
+  editLand: async function (data) {
+    return await pool.query(
+      `UPDATE "land"
+            SET "total_area" = '${data.total_area}',"work_house" = '${data.work_house}', "active_year" = '${data.active_year}',"status" = '${data.status}',"tunnel" = '${data.tunnel}',"active_date_tunnel" = '${data.active_date_tunnel}', "status_tunnel" = '${data.status_tunnel}',"yard" = '${data.yard}',"gate" = '${data.gate}', "document" = '${data.document}',"station_code" = '${data.station_code}'
+            WHERE "id" = ${data.id};`
+    );
+  },
+  insertLand: async function (data) {
+    return await pool.query(
+      `INSERT INTO "land" ("total_area","work_house","active_year","status","tunnel","active_date_tunnel","status_tunnel","yard","gate","document","station_code") VALUES ('${data.total_area}','${data.work_house}','${data.active_year}','${data.status}','${data.tunnel}','${data.active_date_tunnel}','${data.status_tunnel}','${data.yard}','${data.gate}','${data.document}','${data.station_code}')`
+    );
+  },
+  deleteLand: async function (id) {
+    return await pool.query(
+      `DELETE FROM land
+              WHERE id = ${id};`
+    );
+  },
+  editEmployee: async function (data) {
+    return await pool.query(
+      `UPDATE "employee"
+            SET "name_guard" = '${data.name_guard}',"phone_guard" = '${data.phone_guard}', "name_observer" = '${data.name_observer}',"phone_observer" = '${data.phone_observer}',"person_incharge" = '${data.person_incharge}', "phone_person_incharge" = '${data.phone_person_incharge}',"station_code" = '${data.station_code}'
+            WHERE "id" = ${data.id};`
+    );
+  },
+  insertEmployee: async function (data) {
+    return await pool.query(
+      `INSERT INTO "employee" ("name_guard","phone_guard","name_observer","phone_observer","person_incharge","phone_person_incharge","station_code") VALUES ('${data.name_guard}','${data.phone_guard}','${data.name_observer}','${data.phone_observer}','${data.person_incharge}','${data.phone_person_incharge}','${data.station_code}')`
+    );
+  },
+  deleteEmployee: async function (id) {
+    return await pool.query(
+      `DELETE FROM employee
+              WHERE id = ${id};`
+    );
+  },
+  editInternet: async function (data) {
+    return await pool.query(
+      `UPDATE "internet"
+            SET "code" = '${data.code}',"ip" = '${data.ip}', "cable_internet" = '${data.cable_internet}',"station_code" = '${data.station_code}'
+            WHERE "id" = ${data.id};`
+    );
+  },
+  insertInternet: async function (data) {
+    return await pool.query(
+      `INSERT INTO "internet" ("code","ip","cable_internet","station_code") VALUES ('${data.code}','${data.ip}','${data.cable_internet}','${data.station_code}')`
+    );
+  },
+  deleteInternet: async function (id) {
+    return await pool.query(
+      `DELETE FROM internet
+              WHERE id = ${id};`
+    );
+  },
+  editBattery: async function (data) {
+    return await pool.query(
+      `UPDATE "battery"
+            SET "code" = '${data.code}',"start_date" = '${data.start_date}', "status" = '${data.status}',"charger" = '${data.charger}', "start_charger" = '${data.start_charger}',"status_charger" = '${data.status_charger}',"sun_battery" = '${data.sun_battery}',"power_cable" = '${data.power_cable}',"station_code" = '${data.station_code}'
+            WHERE "id" = ${data.id};`
+    );
+  },
+  insertBattery: async function (data) {
+    return await pool.query(
+      `INSERT INTO "battery" ("code","start_date","status","charger","start_charger","status_charger","sun_battery","power_cable","station_code") VALUES ('${data.code}','${data.start_date}','${data.status}','${data.charger}','${data.start_charger}','${data.status_charger}','${data.sun_battery}','${data.power_cable}','${data.station_code}')`
+    );
+  },
+  deleteBattery: async function (id) {
+    return await pool.query(
+      `DELETE FROM battery
+              WHERE id = ${id};`
+    );
+  },
+  editSensor: async function (data) {
+    return await pool.query(
       `UPDATE "sensor"
                 SET "sensor_speed" = '${data.sensor_speed}', "serial_speed" = '${data.serial_speed}',"status_speed" = '${data.status_speed}', "remote_control" = '${data.remote_control}',"serial_control" = '${data.serial_control}', "status_control" = '${data.status_control}',"sensor_accelerator" = '${data.sensor_accelerator}', "serial_accelerator" = '${data.serial_accelerator}',"status_accelerator" = '${data.status_accelerator}', "cable_sensor_speed" = '${data.cable_sensor_speed}',"cable_sensor_accelerator" = '${data.cable_sensor_accelerator}', "station_code" = '${data.station_code}'
                 WHERE "id" = ${data.key};`
     );
   },
-  insertSensor: function (data) {
-    pool.query(
+  insertSensor: async function (data) {
+    return await pool.query(
       `INSERT INTO "sensor" ( "sensor_speed",
       "serial_speed",
       "status_speed",
@@ -402,8 +477,8 @@ Meteor.methods({
       "station_code") VALUES ('${data.sensor_speed}','${data.serial_speed}','${data.status_speed}','${data.remote_control}','${data.serial_control}','${data.status_control}','${data.sensor_accelerator}','${data.serial_accelerator}','${data.status_accelerator}','${data.cable_sensor_speed}','${data.cable_sensor_accelerator}','${data.station_code}')`
     );
   },
-  deleteSensor: function (id) {
-    pool.query(
+  deleteSensor: async function (id) {
+    return await pool.query(
       `DELETE FROM sensor
                   WHERE id = ${id};`
     );
@@ -505,7 +580,13 @@ Meteor.methods({
             WHERE "id_key" = ${data.id_key};`
     );
   },
-
+  importTxtStation: function (data, key) {
+    pool.query(
+      `UPDATE "station"
+            SET "machineHistory" = '${data}'
+            WHERE "id_key" = ${key};`
+    );
+  },
   layerEvent: () => {
     const result = pool
       .query(
@@ -901,7 +982,6 @@ Meteor.methods({
                       "person_incharge",
                       "phone_person_incharge",
                       "station_code",
-
                       "id_stat",
                     ];
                     let employee_full = employee
@@ -1027,7 +1107,6 @@ Meteor.methods({
                       "yard",
                       "gate",
                       "document",
-
                       "station_code",
                       "id_stat",
                     ];
@@ -1061,7 +1140,6 @@ Meteor.methods({
                       "status_charger",
                       "sun_battery",
                       "power_cable",
-
                       "station_code",
                       "id_stat",
                     ];
@@ -1373,6 +1451,9 @@ Meteor.methods({
   },
   remove: function (file) {
     Files.remove({ _id: `${file}` });
+  },
+  remove_MachineHistory: function (file) {
+    FilesMachineHistory.remove({ _id: `${file}` });
   },
   verify: (username) => {
     let info = Accounts.findUserByUsername(username);

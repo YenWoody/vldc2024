@@ -53,16 +53,15 @@ function callDatatable() {
           { data: "status" },
           {
             data: null,
-            className: "dt-center editor-edit",
-            defaultContent:
-              '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-            orderable: false,
-          },
-          {
-            data: null,
-            className: "dt-center editor-delete",
-            defaultContent:
-              '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
+            className: "dt-center control",
+            defaultContent: `<div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+            <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+          </div>`,
             orderable: false,
           },
         ],
@@ -71,6 +70,9 @@ function callDatatable() {
   });
 }
 Template.manageStation.onRendered(async () => {
+  $(document).ready(function () {
+    $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
+  });
   $("#dashboard-title").html("Quản lí các trạm đo");
   callDatatable();
 
@@ -207,108 +209,106 @@ Template.manageStation.onRendered(async () => {
     };
   };
   // Edit Record
-  $("#data_tram").on("click", "td.editor-edit", function (e) {
+  $("#data_tram ").on("click", "td.control", function (e) {
     e.preventDefault();
-
-    const data = $("#data_tram").DataTable().row(this).data();
-    var keyNames = [
-      "id_key",
-      "code",
-      "name",
-      "network",
-      "lat",
-      "long",
-      "address",
-      "type",
-      "tunnel_type",
-      "active_date",
-      "status",
-      "height",
-    ];
-    document.getElementById("_modal").style.display = "block";
-    keyNames.forEach((e) => {
-      if (e == "id_key") {
-        $(`#${e}`).prop("disabled", true);
+    if ($(e.target).hasClass("editor-edit")) {
+      const data = $("#data_tram").DataTable().row(this).data();
+      var keyNames = [
+        "id_key",
+        "code",
+        "name",
+        "network",
+        "lat",
+        "long",
+        "address",
+        "type",
+        "tunnel_type",
+        "active_date",
+        "status",
+        "height",
+      ];
+      document.getElementById("_modal").style.display = "block";
+      keyNames.forEach((e) => {
+        if (e == "id_key") {
+          $(`#${e}`).prop("disabled", true);
+        }
+        document.getElementById(e).value = data[e];
+      });
+      function checkEmpty(data) {
+        return data ? data : "Chưa có thông tin";
       }
-      document.getElementById(e).value = data[e];
-    });
-    function checkEmpty(data) {
-      return data ? data : "Chưa có thông tin";
-    }
-    document.getElementById("save_edit_station").onclick = function () {
-      const insert = {
-        id_key: $("#id_key").val(),
-        code: checkEmpty($("#code").val()),
-        name: checkEmpty($("#name").val()),
-        lat: parseFloat($("#lat").val()),
-        long: parseFloat($("#long").val()),
-        height: parseFloat($("#height").val()),
-        network: checkEmpty($("#network").val()),
-        type: checkEmpty($("#type").val()),
-        status: checkEmpty($("#status").val()),
-        active_date: checkEmpty($("#active_date").val()),
-        tunnel_type: checkEmpty($("#tunnel_type").val()),
-        address: checkEmpty($("#address").val()),
+      document.getElementById("save_edit_station").onclick = function () {
+        const insert = {
+          id_key: $("#id_key").val(),
+          code: checkEmpty($("#code").val()),
+          name: checkEmpty($("#name").val()),
+          lat: parseFloat($("#lat").val()),
+          long: parseFloat($("#long").val()),
+          height: parseFloat($("#height").val()),
+          network: checkEmpty($("#network").val()),
+          type: checkEmpty($("#type").val()),
+          status: checkEmpty($("#status").val()),
+          active_date: checkEmpty($("#active_date").val()),
+          tunnel_type: checkEmpty($("#tunnel_type").val()),
+          address: checkEmpty($("#address").val()),
+        };
+        Meteor.call("editStation", insert, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            Meteor.call("dataStation", function (error, resultdataStation) {
+              if (error) {
+                console.log(error);
+              } else {
+                $("#data_tram").DataTable().clear().destroy();
+                callDatatable();
+              }
+            });
+            document.getElementById("_modal").style.display = "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Lưu dữ liệu thành công",
+            });
+          }
+        });
       };
-      Meteor.call("editStation", insert, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          Meteor.call("dataStation", function (error, resultdataStation) {
-            if (error) {
-              console.log(error);
-            } else {
-              $("#data_tram").DataTable().clear().destroy();
-              callDatatable();
-            }
-          });
-          document.getElementById("_modal").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Lưu dữ liệu thành công",
-          });
-        }
-      });
-    };
-  });
-
-  // Delete a record
-  $("#data_tram").on("click", "td.editor-delete", function (e) {
-    const data = $("#data_tram").DataTable().row(this).data();
-    document.getElementById("modal_delete_station").style.display = "block";
-    document.getElementById(
-      "content_delete"
-    ).innerHTML = `Sau khi xác nhận dữ liệu trạm "${data.name}" sẽ bị xóa và không khôi phục lại được!`;
-    document.getElementById("delete_station").onclick = function () {
-      Meteor.call("deleteStation", data.id_key, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          $("#data_tram").DataTable().clear().destroy();
-          callDatatable();
-          document.getElementById("modal_delete_station").style.display =
-            "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Xóa dữ liệu thành công!",
-          });
-        }
-      });
-    };
+    } else if ($(e.target).hasClass("editor-delete")) {
+      const data = $("#data_tram").DataTable().row(this).data();
+      document.getElementById("modal_delete_station").style.display = "block";
+      document.getElementById(
+        "content_delete"
+      ).innerHTML = `Sau khi xác nhận dữ liệu trạm "${data.name}" sẽ bị xóa và không khôi phục lại được!`;
+      document.getElementById("delete_station").onclick = function () {
+        Meteor.call("deleteStation", data.id_key, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            $("#data_tram").DataTable().clear().destroy();
+            callDatatable();
+            document.getElementById("modal_delete_station").style.display =
+              "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Xóa dữ liệu thành công!",
+            });
+          }
+        });
+      };
+    }
   });
 });
 

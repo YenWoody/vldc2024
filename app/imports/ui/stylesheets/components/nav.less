@@ -28,7 +28,7 @@
   color: white;
 }
 nav.navbar.navbar-expand-lg.navbar-light.px-4 {
-  background-color: #b4c7e7 !important;
+  background-color: #3d77b1 !important;
   opacity: 1 !important;
 }
 .hover-nav a {
@@ -64,20 +64,69 @@ a.dropdown-item :hover {
 }
 .navbar-light .navbar-nav .nav-link:focus,
 .navbar-light .navbar-nav .nav-link:hover {
-  color: #c55a11;
+  color: #ffd000;
 }
 .active-navbar {
-  color: #c55a11;
+  color: #ffd000 !important;
 }
 .navbar-light .navbar-nav .nav-link {
   color: rgb(255 255 255);
   font-size: 17px;
   font-weight: 600;
 }
+.menu-bar {
+  width: 30px;
+  height: 40px;
+  margin-top: 20px;
+  cursor: pointer;
+}
 
+.bar {
+  height: 5px;
+  width: 100%;
+  background-color: white;
+  display: block;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+
+.bar1 {
+  transform: translateY(-4px);
+}
+
+.bar3 {
+  transform: translateY(4px);
+}
+
+.nav {
+  transition: 0.3s ease;
+  display: none;
+}
+
+.change {
+  display: block;
+}
+
+.change .bar1 {
+  transform: translateY(4px) rotateZ(-45deg);
+}
+
+.change .bar2 {
+  opacity: 0;
+}
+
+.change .bar3 {
+  transform: translateY(-6px) rotateZ(45deg);
+}
+
+.change-bg {
+  width: 520px;
+  height: 460px;
+  transform: translate(-60%, -30%);
+}
 .navbar-light .navbar-toggler {
-  background-color: rgb(255 255 255);
-  border-color: rgb(255 255 255);
+  background-color: #3d77b1;
+  border-color: #3d77b1;
 }
 @media only screen and (max-width: 500px) {
   ul.dropdown-menu {

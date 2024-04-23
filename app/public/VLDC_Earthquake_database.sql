@@ -11,7 +11,8 @@
   "tunnel_type" varchar,
   "active_date" varchar,
   "status" varchar,
-  "address" varchar
+  "address" varchar,
+  "machineHistory" varchar
 );
 
 -- Key là số thứ tự tự thêm vào khi import dữ liệu Trạm

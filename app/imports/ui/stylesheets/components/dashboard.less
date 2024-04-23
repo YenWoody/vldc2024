@@ -11,6 +11,9 @@ table.dataTable td.dt-type-numeric,
 table.dataTable td.dt-type-date {
   text-align: unset !important;
 }
+td.dt-center.control {
+  text-align: center !important;
+}
 .dt-container.dt-bootstrap5.dt-empty-footer {
   overflow: auto !important;
 }
@@ -18,10 +21,19 @@ table.dataTable td.dt-type-date {
   overflow: auto;
   max-height: 60vh;
 }
+button.swal2-confirm.swal2-styled {
+  background-color: #3d77b1;
+}
+#file-upload-button {
+  background-color: #44bef1;
+}
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+.active-sidebar {
+  color: #ffd000 !important;
 }
 table.dataTable td {
   text-align: start !important;
@@ -97,8 +109,12 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
         span {
           color: #414141;
         }
+        span:hover {
+          color: #ffd000;
+        }
         &:hover {
           background: #75757524;
+          color: #ffd000;
         }
       }
     }
@@ -114,7 +130,7 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
     position: absolute;
     right: 0;
     z-index: 0;
-    margin-right: -20px;
+    margin-right: -28px;
     -webkit-transition: 0.3s;
     -o-transition: 0.3s;
     transition: 0.3s;
@@ -124,9 +140,13 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
       border-radius: 50%;
       position: relative;
       i {
-        margin-right: -40px;
-        font-size: 14px;
+        margin-top: 3px;
+        margin-right: -30px;
+        font-size: 18px;
         color: black;
+      }
+      i:hover {
+        color: #3d77b1;
       }
     }
     .btn.btn-primary {
@@ -139,6 +159,7 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
         left: 0;
         right: 0;
         bottom: 0;
+        box-shadow: 5px -4px 5px rgba(0, 0, 0, 0.1) !important;
         content: "";
         -webkit-transform: rotate(45deg);
         -ms-transform: rotate(45deg);
@@ -175,7 +196,6 @@ a[data-toggle="collapse"] {
   }
 }
 #content {
-  background-color: whitesmoke;
   width: 100%;
   min-height: 100vh;
   -webkit-transition: all 0.3s;

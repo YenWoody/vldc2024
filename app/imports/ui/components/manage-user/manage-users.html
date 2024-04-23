@@ -98,7 +98,6 @@
           <th>Chức vụ</th>
           <th>Thời gian đăng kí</th>
           <th></th>
-          <th></th>
         </tr>
       </thead>
     </table>
@@ -131,7 +130,7 @@
             <br />
           </form>
         </div>
-        <div class="modal-footer w-100 mt-2">
+        <div class="modal-footer w-100 mt-4">
           <button class="btn btn-info save" id="submit-role">Xác nhận</button>
           <button id="close-modal_" class="btn btn-danger close-modal">
             Đóng
@@ -140,9 +139,9 @@
       </div>
     </div>
   </div>
-  <div id="_delete_user" class="_modal">
+  <div id="_delete_user" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
         overflow: auto;
@@ -152,21 +151,21 @@
       "
     >
       <div class="_container">
-        <div class="_title">
-          <h2 id="confirm_username"></h2>
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light" id="confirm_username"></h3>
         </div>
-        <hr />
-        <div class="_content" id="_content">
-          <h4>Sau khi xóa sẽ không thể khôi phục được tài khoản!</h4>
-          <!-- <button class="w-100 btn btn-lg btn-primary" style="margin-top: 20px;" id="delete_user">Xác nhận</button> -->
+        <div class="modal-body">
+          <div class="_content" id="_content">
+            <h5>Sau khi xóa sẽ không thể khôi phục được tài khoản!</h5>
+            <!-- <button class="w-100 btn btn-lg btn-primary" style="margin-top: 20px;" id="delete_user">Xác nhận</button> -->
+          </div>
         </div>
-        <hr />
-        <div class="_footer">
-          <button class="btn btn-info save" id="delete_user">Xác nhận</button>
-          <button id="close-modal_" class="btn btn-danger close-modal">
-            Đóng
-          </button>
-        </div>
+      </div>
+      <div class="modal-footer mt-2">
+        <button class="btn btn-info save" id="delete_user">Xác nhận</button>
+        <button id="close-modal_" class="btn btn-danger close-modal">
+          Đóng
+        </button>
       </div>
     </div>
   </div>

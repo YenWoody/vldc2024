@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import "./manage-baler.html";
+import "./manage-employee.html";
 import "../not_access/not_access";
 import { $ } from "meteor/jquery";
 
@@ -11,7 +11,7 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageBaler.onCreated(function () {
+Template.manageEmployee.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
@@ -21,15 +21,15 @@ Template.manageBaler.onCreated(function () {
   loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
 function callDatatable() {
-  Meteor.call("dataBaler", function (error, resultdata) {
+  Meteor.call("dataEmployee", function (error, resultdata) {
     if (error) {
       reject(error);
     }
 
     const dt = resultdata.rows;
 
-    $("#data_baler").DataTable().clear().destroy();
-    new DataTable("#data_baler", {
+    $("#data_employee").DataTable().clear().destroy();
+    new DataTable("#data_employee", {
       data: dt,
       paging: true,
       destroy: true,
@@ -38,55 +38,66 @@ function callDatatable() {
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
-        info: "Hiển thị từ _START_ đến _END_ máy ghi",
-        infoEmpty: "Hiển thị 0 máy ghi",
-        lengthMenu: "Hiển thị _MENU_ máy ghi mỗi trang",
-        infoFiltered: "(Lọc từ tổng số _MAX_ máy ghi)",
+        info: "Hiển thị từ _START_ đến _END_ ",
+        infoEmpty: "Hiển thị 0 ",
+        lengthMenu: "Hiển thị _MENU_  mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ )",
       },
+
       columns: [
         { data: "id" },
-        { data: "code" },
-        { data: "serial" },
-        { data: "status" },
+        { data: "name_guard" },
+        { data: "phone_guard" },
+        { data: "name_observer" },
+        { data: "phone_observer" },
+        { data: "person_incharge" },
+        { data: "phone_person_incharge" },
         { data: "station_code" },
         {
           data: null,
           className: "dt-center control",
           defaultContent: `<div class="btn-group btn-group-sm">
-              <button type="button" class="btn btn-primary btn-sm me-2 editor-edit"             data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
-              <button type="button" class="btn btn-danger btn-sm editor-delete"             data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
-            </div>`,
+          <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+          <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+        </div>`,
           orderable: false,
         },
       ],
     });
   });
 }
-Template.manageBaler.onRendered(async () => {
+Template.manageEmployee.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
-  $("#dashboard-title").html("Quản lí các thiết bị");
+  $("#dashboard-title").html("Quản lí thông tin nhân sự");
   callDatatable();
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
   }
+  var keyNames = [
+    "name_guard",
+    "phone_guard",
+    "name_observer",
+    "phone_observer",
+    "person_incharge",
+    "phone_person_incharge",
+    "station_code",
+  ];
   document.getElementById("add-station").onclick = async function () {
-    // document.getElementById('stt_baler_').innerHTML = maxKey + 1;
-    document.getElementById("modal_add_baler").style.display = "block";
-    document.getElementById("save_add_baler").onclick = function () {
-      const insert = {
-        code: checkEmpty($("#code_a").val()),
-        serial: checkEmpty($("#serial_a").val()),
-        status: checkEmpty($("#status_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
-      };
+    // document.getElementById('stt_employee_').innerHTML = maxKey + 1;
+    document.getElementById("modal_add_employee").style.display = "block";
+    document.getElementById("save_add_employee").onclick = function () {
+      let insert = {};
+      keyNames.forEach((e) => {
+        insert[e] = checkEmpty($(`#${e}_a`).val());
+      });
 
-      Meteor.call("insertBaler", insert, (error) => {
+      Meteor.call("insertEmployee", insert, (error) => {
         if (error) {
           Swal.fire({
             icon: "error",
@@ -96,7 +107,7 @@ Template.manageBaler.onRendered(async () => {
           });
         } else {
           callDatatable();
-          document.getElementById("modal_add_baler").style.display = "none";
+          document.getElementById("modal_add_employee").style.display = "none";
           Swal.fire({
             icon: "success",
             heightAuto: false,
@@ -109,24 +120,22 @@ Template.manageBaler.onRendered(async () => {
   };
   // Edit Record
 
-  $("#data_baler ").on("click", "td.control", function (e) {
+  $("#data_employee ").on("click", "td.control", function (e) {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
-      const data = $("#data_baler").DataTable().row(this).data();
+      const data = $("#data_employee").DataTable().row(this).data();
       document.getElementById("_modal").style.display = "block";
-      var keyNames = ["code", "serial", "status", "station_code"];
+
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
-      document.getElementById("save_edit_baler").onclick = function () {
-        const insert = {
-          key: data.id,
-          code: checkEmpty($("#code").val()),
-          serial: checkEmpty($("#serial").val()),
-          status: checkEmpty($("#status").val()),
-          station_code: checkEmpty($("#station_code").val()),
-        };
-        Meteor.call("editBaler", insert, (error) => {
+      document.getElementById("save_edit_employee").onclick = function () {
+        let insert = {};
+        keyNames.forEach((e) => {
+          insert[e] = checkEmpty($(`#${e}`).val());
+        });
+        insert.id = data.id;
+        Meteor.call("editEmployee", insert, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -147,14 +156,14 @@ Template.manageBaler.onRendered(async () => {
         });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
-      const data = $("#data_baler").DataTable().row(this).data();
-      document.getElementById("modal_delete_baler").style.display = "block";
+      const data = $("#data_employee").DataTable().row(this).data();
+      document.getElementById("modal_delete_employee").style.display = "block";
       document.getElementById(
         "content_delete"
       ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
 
-      document.getElementById("delete_baler").onclick = function () {
-        Meteor.call("deleteBaler", data.id, (error) => {
+      document.getElementById("delete_employee").onclick = function () {
+        Meteor.call("deleteEmployee", data.id, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -164,7 +173,7 @@ Template.manageBaler.onRendered(async () => {
             });
           } else {
             callDatatable();
-            document.getElementById("modal_delete_baler").style.display =
+            document.getElementById("modal_delete_employee").style.display =
               "none";
             Swal.fire({
               icon: "success",
@@ -179,32 +188,38 @@ Template.manageBaler.onRendered(async () => {
   });
 });
 
-Template.manageBaler.events({
+Template.manageEmployee.events({
   "click #close-modal": function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_baler").style.display = "none";
-    document.getElementById("modal_delete_baler").style.display = "none";
+    document.getElementById("modal_add_employee").style.display = "none";
+    document.getElementById("modal_delete_employee").style.display = "none";
   },
 });
-Template.manageBaler.helpers({
+Template.manageEmployee.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
   },
-  editBaler: () => {
+  editemployee: () => {
     const t = [
-      { id: "code", text: "Mã máy ghi", type: "text" },
-      { id: "serial", text: "Serial", type: "text" },
-      { id: "status", text: "Tình trạng", type: "text" },
-      { id: "station_code", text: "Trạm", type: "text" },
+      { id: "name_guard", text: "Họ tên bảo vệ ", type: "text" },
+      { id: "phone_guard", text: "SĐT bảo vệ", type: "text" },
+      { id: "name_observer", text: "Họ và tên quan trắc viên", type: "text" },
+      { id: "phone_observer", text: "SĐT quan trắc viên", type: "text" },
+      { id: "person_incharge", text: "Họ và tên phụ trách ", type: "text" },
+      { id: "phone_person_incharge", text: "SĐT phụ trách", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "text" },
     ];
     return t;
   },
-  addBaler: () => {
+  addemployee: () => {
     const t = [
-      { id: "code_a", text: "Mã máy ghi", type: "text" },
-      { id: "serial_a", text: "Serial", type: "text" },
-      { id: "status_a", text: "Tình trạng", type: "text" },
-      { id: "station_code_a", text: "Trạm", type: "text" },
+      { id: "name_guard_a", text: "Họ tên bảo vệ ", type: "text" },
+      { id: "phone_guard_a", text: "SĐT bảo vệ", type: "text" },
+      { id: "name_observer_a", text: "Họ và tên quan trắc viên", type: "text" },
+      { id: "phone_observer_a", text: "SĐT quan trắc viên", type: "text" },
+      { id: "person_incharge_a", text: "Họ và tên phụ trách ", type: "text" },
+      { id: "phone_person_incharge_a", text: "SĐT phụ trách", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "text" },
     ];
     return t;
   },

@@ -49,16 +49,15 @@ function loadDatatable() {
           { data: "station_code" },
           {
             data: null,
-            className: "dt-center editor-edit",
-            defaultContent:
-              '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-            orderable: false,
-          },
-          {
-            data: null,
-            className: "dt-center editor-delete",
-            defaultContent:
-              '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
+            className: "dt-center control",
+            defaultContent: `<div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+            <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+          </div>`,
             orderable: false,
           },
         ],
@@ -67,6 +66,9 @@ function loadDatatable() {
   });
 }
 Template.manageDevice.onRendered(async () => {
+  $(document).ready(function () {
+    $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
+  });
   $("#dashboard-title").html("Quản lí thiết bị máy ghi");
   loadDatatable();
   document.getElementById("add-station").onclick = async function () {
@@ -106,81 +108,79 @@ Template.manageDevice.onRendered(async () => {
     };
   };
   // Edit Record
-  $("#data_dataloger").on("click", "td.editor-edit", function (e) {
+  $("#data_dataloger ").on("click", "td.control", function (e) {
     e.preventDefault();
+    if ($(e.target).hasClass("editor-edit")) {
+      const data = $("#data_dataloger").DataTable().row(this).data();
 
-    const data = $("#data_dataloger").DataTable().row(this).data();
-
-    document.getElementById("_modal").style.display = "block";
-    var keyNames = ["id", "code", "serial", "status", "station_code"];
-    keyNames.forEach((e) => {
-      if (e == "id") {
-        $(`#${e}`).html(data[e]);
+      document.getElementById("_modal").style.display = "block";
+      var keyNames = ["id", "code", "serial", "status", "station_code"];
+      keyNames.forEach((e) => {
+        if (e == "id") {
+          $(`#${e}`).html(data[e]);
+        }
+        document.getElementById(e).value = data[e];
+      });
+      function checkEmpty(data) {
+        return data ? data : "Chưa có thông tin";
       }
-      document.getElementById(e).value = data[e];
-    });
-    function checkEmpty(data) {
-      return data ? data : "Chưa có thông tin";
-    }
-    document.getElementById("save_edit_dataloger").onclick = function () {
-      const insert = {
-        key: data.id,
-        code: checkEmpty($("#code").val()),
-        serial: checkEmpty($("#serial").val()),
-        status: checkEmpty($("#status").val()),
-        station_code: checkEmpty($("#station_code").val()),
+      document.getElementById("save_edit_dataloger").onclick = function () {
+        const insert = {
+          key: data.id,
+          code: checkEmpty($("#code").val()),
+          serial: checkEmpty($("#serial").val()),
+          status: checkEmpty($("#status").val()),
+          station_code: checkEmpty($("#station_code").val()),
+        };
+        Meteor.call("editDataloger", insert, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            loadDatatable();
+            document.getElementById("_modal").style.display = "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Lưu dữ liệu thành công",
+            });
+          }
+        });
       };
-      Meteor.call("editDataloger", insert, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          loadDatatable();
-          document.getElementById("_modal").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Lưu dữ liệu thành công",
-          });
-        }
-      });
-    };
-  });
-
-  // Delete a record
-  $("#data_dataloger").on("click", "td.editor-delete", function (e) {
-    const data = $("#data_dataloger").DataTable().row(this).data();
-    document.getElementById("modal_delete_dataloger").style.display = "block";
-    document.getElementById(
-      "content_delete"
-    ).innerHTML = `Sau khi xác nhận dữ liệu Dataloger "${data.code}" sẽ bị xóa và không khôi phục lại được!`;
-    document.getElementById("delete_dataloger").onclick = function () {
-      Meteor.call("deleteDataloger", data.id, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          loadDatatable();
-          document.getElementById("modal_delete_dataloger").style.display =
-            "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Xóa dữ liệu thành công!",
-          });
-        }
-      });
-    };
+    } else if ($(e.target).hasClass("editor-delete")) {
+      const data = $("#data_dataloger").DataTable().row(this).data();
+      document.getElementById("modal_delete_dataloger").style.display = "block";
+      document.getElementById(
+        "content_delete"
+      ).innerHTML = `Sau khi xác nhận dữ liệu Dataloger "${data.code}" sẽ bị xóa và không khôi phục lại được!`;
+      document.getElementById("delete_dataloger").onclick = function () {
+        Meteor.call("deleteDataloger", data.id, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            loadDatatable();
+            document.getElementById("modal_delete_dataloger").style.display =
+              "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Xóa dữ liệu thành công!",
+            });
+          }
+        });
+      };
+    }
   });
 });
 

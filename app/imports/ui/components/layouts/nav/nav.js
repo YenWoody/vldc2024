@@ -108,7 +108,10 @@ Template.nav.helpers({
 });
 
 Template.nav.events({
-  "click .header__references_logout"() {
+  "click .header__references_logout": () => {
     Meteor.logout();
+  },
+  "click .menu-bar": () => {
+    $(".menu-bar").toggleClass("change");
   },
 });

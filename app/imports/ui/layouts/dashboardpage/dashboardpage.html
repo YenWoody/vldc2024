@@ -21,106 +21,45 @@
             id="sidebarCollapse"
             class="btn btn-primary z-1"
           >
-            <i class="fa fa-bars"></i>
+            <i id="button_sidebar" class="fa fa-2x  {{checkScreenSize}}"></i>
           </button>
         </div>
         <div class="p-4 position-relative z-2">
           <ul class="list-unstyled components mb-5">
             <li class="sidebar-item">
               <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
+                class="sidebar-link waves-effect waves-dark sidebar-link {{activeListClassRegisterEvent}}"
                 aria-expanded="false"
                 href="{{pathFor 'register-event'}}"
               >
-                <span class="fa fa-bell me-2"></span>Đăng ký nhận sự kiện động
-                đất
+                <span
+                  class="item-span fa fa-bell me-2 {{activeListClassRegisterEvent}}"
+                ></span
+                >Đăng ký nhận sự kiện động đất
               </a>
             </li>
-            {{#if rolesCheck}} {{else}}
+            {{#if rolesCheck}} {{else}} {{#each item in listMenu}}
             <li class="sidebar-item">
               <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'upload'}}"
+                class="sidebar-link waves-effect waves-dark sidebar-link {{activeListClass item}}"
+                href="{{item.link}}"
                 aria-expanded="false"
               >
-                <span class="fa fa-upload me-2"></span>Tải dữ liệu sự kiện động
-                đất
+                <span
+                  class="item-span {{item.class}} {{activeListClass item}}"
+                ></span
+                >{{item.content}}
               </a>
             </li>
-            <li class="sidebar-item">
-              <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'manage-user'}}"
-                aria-expanded="false"
-              >
-                <span class="fa fa-users me-2"></span>Quản lý người dùng
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'manage-station'}}"
-                aria-expanded="false"
-              >
-                <span class="bi bi-inboxes-fill me-2"></span>Quản lý trạm đo
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'manage-event'}}"
-                aria-expanded="false"
-              >
-                <span class="fa fa-globe me-2"></span>Quản lý sự kiện động đất
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'manage-network'}}"
-                aria-expanded="false"
-              >
-                <span class="bi bi-hdd-network-fill me-2"></span>Quản lý mạng
-                trạm
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'manage-device'}}"
-                aria-expanded="false"
-              >
-                <span class="bi bi-hdd-rack-fill me-2"></span>Quản lý thiết bị
-                Dataloger
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'manage-sensor'}}"
-                aria-expanded="false"
-              >
-                <span class="bi bi-easel-fill me-2"></span>Quản lý thiết bị
-                Sensor
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a
-                class="sidebar-link waves-effect waves-dark sidebar-link"
-                href="{{pathFor 'manage-baler'}}"
-                aria-expanded="false"
-              >
-                <span class="fa fa-microchip me-2"></span>Quản lý thiết bị Baler
-              </a>
-            </li>
-            {{/if}}
+            {{/each}} {{/if}}
           </ul>
         </div>
       </nav>
-
-      <!-- Page Content  -->
-      <div id="content" class="p-3 container-fluid">
-        <div class="page-breadcrumb bg-white shadow mb-4 me-4 ms-4 rounded">
+      <div class="bg-light container-fluid p-0">
+        <div
+          class="page-breadcrumb d-flex ps-5 shadow bg-white mb-3"
+          style="height: 90px"
+        >
           <div class="row align-items-center">
             <div class="col-12">
               <h4 class="page-title fw-bold m-2" id="dashboard-title">
@@ -129,7 +68,9 @@
             </div>
           </div>
         </div>
-        {{> yield}}
+
+        <!-- Page Content  -->
+        <div id="content" class="px-3 pt-3 container-fluid">{{> yield}}</div>
       </div>
     </div>
     <script src="plugins/js/custom.js"></script>

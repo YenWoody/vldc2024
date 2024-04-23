@@ -1,4 +1,4 @@
-<template name="manageSensors">
+<template name="manageLand">
   <style>
     @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
@@ -93,24 +93,23 @@
   <div class="manage-users row shadow">
     <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-station">
-        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm Sensor mới
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm dữ liệu
       </button>
     </div>
-    <table id="data_Sensor" class="display" style="width: 100%">
+    <table id="data_land" class="table table-striped" style="width: 100%">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Đầu đo vận tốc</th>
-          <th>Serial đầu đo vận tốc</th>
-          <th>Tình trạng đầu đo vận tốc</th>
-          <th>Bộ điều khiển</th>
-          <th>Serial bộ điều khiển</th>
-          <th>Tình trạng bộ điều khiển</th>
-          <th>Đầu đo gia tốc</th>
-          <th>Serial đầu đo gia tốc</th>
-          <th>Tình trạng đầu đo gia tốc</th>
-          <th>Cáp đầu đo vận tốc</th>
-          <th>Cáp đầu đo gia tốc</th>
+          <th>Tổng diện tích</th>
+          <th>Nhà làm việc</th>
+          <th>Năm sử dụng nhà làm việc</th>
+          <th>Tình trạng nhà làm việc</th>
+          <th>Hầm đặt máy</th>
+          <th>Năm sử dụng hầm đặt máy</th>
+          <th>Tình trạng hầm đặt máy</th>
+          <th>Sân vườn</th>
+          <th>Hàng rào, cổng</th>
+          <th>Giấy tờ nhà đất</th>
           <th>Mã trạm</th>
           <th></th>
         </tr>
@@ -132,29 +131,19 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Sửa dữ liệu của Sensor</h3>
+          <h3 class="text-light">Sửa dữ liệu đất</h3>
         </div>
-
         <div
           class="modal-body overflow-auto"
-          style="height: calc(90vh - 160px)"
+          style="max-height: calc(90vh - 160px)"
         >
           <form>
-            {{#each item in editSensor}} {{#if check item.type "id"}}
+            {{#each item in editland}} {{#if check item.type "text"}}
             <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
+              <label for="recipient-name" class="col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-8">
-                <span id="{{item.id}}"></span>
-              </div>
-            </div>
-            {{else}} {{#if check item.type "text"}}
-            <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
-                >{{item.text}}</label
-              >
-              <div class="col-8">
+              <div class="col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -164,11 +153,11 @@
                 />
               </div>
             </div>
-            {{/if}} {{/if}} {{/each}}
+            {{/if}} {{/each}}
           </form>
         </div>
-        <div class="modal-footer w-100 mt-2">
-          <button class="btn btn-info save" id="save_edit_Sensor">
+        <div class="modal-footer mt-2">
+          <button class="btn btn-info save" id="save_edit_land">
             Xác nhận
           </button>
           <button id="close-modal" class="btn btn-danger">Đóng</button>
@@ -176,13 +165,13 @@
       </div>
     </div>
   </div>
-  <div id="modal_add_Sensor" class="_modal modal">
+  <div id="modal_add_land" class="_modal modal">
     <div
       class="_main p-0"
       style="
         display: grid;
 
-        max-height: 90vh;
+        max-height: 700px;
         overflow: auto;
         width: 30%;
         /* justify-items: center; */
@@ -191,29 +180,19 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Thêm dữ liệu của Sensor</h3>
+          <h3 class="text-light">Thêm dữ liệu</h3>
         </div>
-
         <div
           class="modal-body overflow-auto"
-          style="height: calc(90vh - 160px)"
+          style="max-height: calc(90vh - 160px)"
         >
           <form>
-            {{#each item in addSensor}} {{#if check item.type "id"}}
+            {{#each item in addland}} {{#if check item.type "text"}}
             <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
+              <label for="recipient-name" class="col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-8">
-                <span id="{{item.id}}"></span>
-              </div>
-            </div>
-            {{else}} {{#if check item.type "text"}}
-            <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
-                >{{item.text}}</label
-              >
-              <div class="col-8">
+              <div class="col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -223,40 +202,37 @@
                 />
               </div>
             </div>
-            {{/if}} {{/if}} {{/each}}
+            {{/if}} {{/each}}
           </form>
         </div>
         <div class="modal-footer w-100 mt-2">
-          <button class="btn btn-info save" id="save_add_Sensor">
-            Xác nhận
-          </button>
+          <button class="btn btn-info save" id="save_add_land">Xác nhận</button>
           <button id="close-modal" class="btn btn-danger">Đóng</button>
         </div>
       </div>
     </div>
   </div>
-  <div id="modal_delete_Sensor" class="_modal modal">
+  <div id="modal_delete_land" class="_modal modal">
     <div
       class="_main p-0"
       style="
         display: grid;
         overflow: auto;
         width: 30%;
-        height: 300px;
+        max-height: 300px;
         /* justify-items: center; */
         /* align-content: stretch; */
       "
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Xóa dữ liệu của Sensor</h3>
+          <h3 class="text-light">Xóa dữ liệu</h3>
         </div>
-
         <div class="modal-body">
           <h5 id="content_delete"></h5>
         </div>
-        <div class="modal-footer w-100 mt-2">
-          <button class="btn btn-info save" id="delete_Sensor">Xác nhận</button>
+        <div class="modal-footer">
+          <button class="btn btn-info save" id="delete_land">Xác nhận</button>
           <button id="close-modal" class="btn btn-danger">Hủy</button>
         </div>
       </div>

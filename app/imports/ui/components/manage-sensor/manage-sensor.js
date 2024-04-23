@@ -26,9 +26,9 @@ function loadDatatable() {
     }
 
     const dt = resultdata.rows;
-
+    console.log(dt, "dt");
     $("#data_Sensor").DataTable().clear().destroy();
-    new DataTable("data_Sensor", {
+    new DataTable("#data_Sensor", {
       data: dt,
       paging: true,
       destroy: true,
@@ -58,16 +58,15 @@ function loadDatatable() {
         { data: "station_code" },
         {
           data: null,
-          className: "dt-center editor-edit",
-          defaultContent:
-            '<button class= "btn btn-primary btn-sm"><i class="fa fa-pencil fa-lg "/></button>',
-          orderable: false,
-        },
-        {
-          data: null,
-          className: "dt-center editor-delete",
-          defaultContent:
-            '<button class= "btn btn-danger btn-sm"><i class="fa fa-trash fa-lg"/></button>',
+          className: "dt-center control",
+          defaultContent: `<div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+          <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+        </div>`,
           orderable: false,
         },
       ],
@@ -75,7 +74,10 @@ function loadDatatable() {
   });
 }
 Template.manageSensors.onRendered(async () => {
-  $("#dashboard-title").html("Quản lí các thiết bị");
+  $(document).ready(function () {
+    $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
+  });
+  $("#dashboard-title").html("Quản lí các thiết bị cảm biến");
 
   loadDatatable();
   document.getElementById("add-station").onclick = async function () {
@@ -123,99 +125,99 @@ Template.manageSensors.onRendered(async () => {
     };
   };
   // Edit Record
-  $("#data_Sensor").on("click", "td.editor-edit", function (e) {
+  $("#data_Sensor ").on("click", "td.control", function (e) {
     e.preventDefault();
-    const data = $("#data_Sensor").DataTable().row(this).data();
-    console.log(data, "data");
-    document.getElementById("_modal").style.display = "block";
-    const keys = [
-      "sensor_speed",
-      "serial_speed",
-      "status_speed",
-      "remote_control",
-      "serial_control",
-      "status_control",
-      "sensor_accelerator",
-      "serial_accelerator",
-      "status_accelerator",
-      "cable_sensor_speed",
-      "cable_sensor_accelerator",
-      "station_code",
-    ];
-    keys.forEach((e) => {
-      document.getElementById(e).value = data[e];
-    });
-    function checkEmpty(data) {
-      return data ? data : "Chưa có thông tin";
-    }
-    document.getElementById("save_edit_Sensor").onclick = function () {
-      const insert = {
-        key: data.id_stat,
-        sensor_speed: checkEmpty($("#sensor_speed").val()),
-        serial_speed: checkEmpty($("#serial_speed").val()),
-        status_speed: checkEmpty($("#status_speed").val()),
-        remote_control: checkEmpty($("#remote_control").val()),
-        serial_control: checkEmpty($("#serial_control").val()),
-        status_control: checkEmpty($("#status_control").val()),
-        sensor_accelerator: checkEmpty($("#sensor_accelerator").val()),
-        serial_accelerator: checkEmpty($("#serial_accelerator").val()),
-        status_accelerator: checkEmpty($("#status_accelerator").val()),
-        cable_sensor_speed: checkEmpty($("#cable_sensor_speed").val()),
-        cable_sensor_accelerator: checkEmpty(
-          $("#cable_sensor_accelerator").val()
-        ),
-        station_code: checkEmpty($("#station_code").val()),
+    if ($(e.target).hasClass("editor-edit")) {
+      const data = $("#data_Sensor").DataTable().row(this).data();
+      console.log(data, "data");
+      document.getElementById("_modal").style.display = "block";
+      const keys = [
+        "sensor_speed",
+        "serial_speed",
+        "status_speed",
+        "remote_control",
+        "serial_control",
+        "status_control",
+        "sensor_accelerator",
+        "serial_accelerator",
+        "status_accelerator",
+        "cable_sensor_speed",
+        "cable_sensor_accelerator",
+        "station_code",
+      ];
+      keys.forEach((e) => {
+        document.getElementById(e).value = data[e];
+      });
+      function checkEmpty(data) {
+        return data ? data : "Chưa có thông tin";
+      }
+      document.getElementById("save_edit_Sensor").onclick = function () {
+        const insert = {
+          key: data.id_stat,
+          sensor_speed: checkEmpty($("#sensor_speed").val()),
+          serial_speed: checkEmpty($("#serial_speed").val()),
+          status_speed: checkEmpty($("#status_speed").val()),
+          remote_control: checkEmpty($("#remote_control").val()),
+          serial_control: checkEmpty($("#serial_control").val()),
+          status_control: checkEmpty($("#status_control").val()),
+          sensor_accelerator: checkEmpty($("#sensor_accelerator").val()),
+          serial_accelerator: checkEmpty($("#serial_accelerator").val()),
+          status_accelerator: checkEmpty($("#status_accelerator").val()),
+          cable_sensor_speed: checkEmpty($("#cable_sensor_speed").val()),
+          cable_sensor_accelerator: checkEmpty(
+            $("#cable_sensor_accelerator").val()
+          ),
+          station_code: checkEmpty($("#station_code").val()),
+        };
+        Meteor.call("editSensor", insert, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            loadDatatable();
+            document.getElementById("_modal").style.display = "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Lưu dữ liệu thành công",
+            });
+          }
+        });
       };
-      Meteor.call("editSensor", insert, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          loadDatatable();
-          document.getElementById("_modal").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Lưu dữ liệu thành công",
-          });
-        }
-      });
-    };
-  });
-
-  // Delete a record
-  $("#data_Sensor").on("click", "td.editor-delete", function (e) {
-    const data = $("#data_Sensor").DataTable().row(this).data();
-    document.getElementById("modal_delete_Sensor").style.display = "block";
-    document.getElementById(
-      "content_delete"
-    ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
-    document.getElementById("delete_Sensor").onclick = function () {
-      Meteor.call("deleteSensor", data.id, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          loadDatatable();
-          document.getElementById("modal_delete_Sensor").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Xóa dữ liệu thành công!",
-          });
-        }
-      });
-    };
+    } else if ($(e.target).hasClass("editor-delete")) {
+      const data = $("#data_Sensor").DataTable().row(this).data();
+      document.getElementById("modal_delete_Sensor").style.display = "block";
+      document.getElementById(
+        "content_delete"
+      ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
+      document.getElementById("delete_Sensor").onclick = function () {
+        Meteor.call("deleteSensor", data.id, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            loadDatatable();
+            document.getElementById("modal_delete_Sensor").style.display =
+              "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Xóa dữ liệu thành công!",
+            });
+          }
+        });
+      };
+    }
   });
 });
 

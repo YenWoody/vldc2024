@@ -93,7 +93,7 @@
   <div class="manage-users row shadow">
     <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-station">
-        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm Baler mới
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm máy ghi mới
       </button>
     </div>
     <table id="data_baler" class="table table-striped" style="width: 100%">
@@ -104,7 +104,6 @@
           <th>Serial</th>
           <th>Trạng thái</th>
           <th>Trạm</th>
-          <th></th>
           <th></th>
         </tr>
       </thead>
@@ -125,7 +124,7 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Sửa dữ liệu của baler</h3>
+          <h3 class="text-light">Sửa dữ liệu máy ghi</h3>
         </div>
         <div class="modal-body" style="max-height: calc(90vh - 160px)">
           <form>
@@ -158,7 +157,7 @@
   </div>
   <div id="modal_add_baler" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
 
@@ -169,83 +168,62 @@
         /* align-content: stretch; */
       "
     >
-      <div class="_container">
+      <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Thêm dữ liệu của Baler</h3>
+          <h3 class="text-light">Thêm dữ liệu máy ghi</h3>
         </div>
         <hr />
-        <div class="modal-body">
+        <div class="modal-body" style="max-height: calc(90vh - 160px)">
           <form>
-            <div class="mb-3">
+            {{#each item in addBaler}} {{#if check item.type "text"}}
+            <div class="row my-2 d-flex align-items-center">
               <label for="recipient-name" class="col-lg-4 col-form-label"
-                >Trạm:</label
+                >{{item.text}}</label
               >
               <div class="col-lg-8">
                 <input
                   type="text"
                   class="form-control"
-                  id="baler_station_"
-                  placeholder="Ví dụ : BDVB"
+                  id="{{item.id}}"
+                  placeholder="Nhập thông tin"
                   value=""
                 />
               </div>
             </div>
-            <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
-                >Baler:</label
-              >
-              <div class="col-lg-8">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Tên thiết bị"
-                  id="baler_"
-                  value=""
-                />
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
-                >Serial:</label
-              >
-              <div class="col-lg-8">
-                <input type="text" class="form-control" id="serial_" value="" />
-              </div>
-            </div>
+            {{/if}} {{/each}}
           </form>
         </div>
-        <div class="_footer mt-5">
+        <div class="modal-footer w-100 mt-2">
           <button class="btn btn-info save" id="save_add_baler">
             Xác nhận
           </button>
-          <button id="close-modal" class="close-modal">Đóng</button>
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
         </div>
       </div>
     </div>
   </div>
   <div id="modal_delete_baler" class="_modal modal">
     <div
-      class="_main"
+      class="_main p-0"
       style="
         display: grid;
         overflow: auto;
         width: 30%;
-        height: 300px;
+        max-height: 300px;
         /* justify-items: center; */
         /* align-content: stretch; */
       "
     >
-      <div class="_container">
+      <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Xóa dữ liệu của Baler</h3>
+          <h3 class="text-light">Xóa dữ liệu máy ghi</h3>
         </div>
-        <hr />
         <div class="modal-body">
-          <h4 id="content_delete"></h4>
+          <h5 id="content_delete"></h5>
         </div>
-        <div class="_footer">
+        <div class="modal-footer">
           <button class="btn btn-info save" id="delete_baler">Xác nhận</button>
-          <button id="close-modal" class="close-modal">Hủy</button>
+          <button id="close-modal" class="btn btn-danger">Hủy</button>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { Meteor } from "meteor/meteor";
-import "./manage-baler.html";
+import "./manage-battery.html";
 import "../not_access/not_access";
 import { $ } from "meteor/jquery";
 
@@ -11,7 +11,7 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageBaler.onCreated(function () {
+Template.manageBattery.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
@@ -21,15 +21,15 @@ Template.manageBaler.onCreated(function () {
   loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
 function callDatatable() {
-  Meteor.call("dataBaler", function (error, resultdata) {
+  Meteor.call("dataBattery", function (error, resultdata) {
     if (error) {
       reject(error);
     }
 
     const dt = resultdata.rows;
 
-    $("#data_baler").DataTable().clear().destroy();
-    new DataTable("#data_baler", {
+    $("#data_battery").DataTable().clear().destroy();
+    new DataTable("#data_battery", {
       data: dt,
       paging: true,
       destroy: true,
@@ -38,55 +38,70 @@ function callDatatable() {
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
-        info: "Hiển thị từ _START_ đến _END_ máy ghi",
-        infoEmpty: "Hiển thị 0 máy ghi",
-        lengthMenu: "Hiển thị _MENU_ máy ghi mỗi trang",
-        infoFiltered: "(Lọc từ tổng số _MAX_ máy ghi)",
+        info: "Hiển thị từ _START_ đến _END_",
+        infoEmpty: "Hiển thị 0 ",
+        lengthMenu: "Hiển thị _MENU_ dữ liệu mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ thông tin)",
       },
       columns: [
         { data: "id" },
         { data: "code" },
-        { data: "serial" },
+        { data: "start_date" },
         { data: "status" },
+        { data: "charger" },
+        { data: "start_charger" },
+        { data: "status_charger" },
+        { data: "sun_battery" },
+        { data: "power_cable" },
         { data: "station_code" },
+
         {
           data: null,
           className: "dt-center control",
           defaultContent: `<div class="btn-group btn-group-sm">
-              <button type="button" class="btn btn-primary btn-sm me-2 editor-edit"             data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
-              <button type="button" class="btn btn-danger btn-sm editor-delete"             data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
-            </div>`,
+          <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
+          <button type="button" class="btn btn-danger btn-sm editor-delete" data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
+        </div>`,
           orderable: false,
         },
       ],
     });
   });
 }
-Template.manageBaler.onRendered(async () => {
+Template.manageBattery.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
-  $("#dashboard-title").html("Quản lí các thiết bị");
+  $("#dashboard-title").html("Quản lí bộ lưu trữ năng lượng");
   callDatatable();
+  var keyNames = [
+    "code",
+    "start_date",
+    "status",
+    "charger",
+    "start_charger",
+    "status_charger",
+    "sun_battery",
+    "power_cable",
+    "station_code",
+  ];
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
   }
   document.getElementById("add-station").onclick = async function () {
-    // document.getElementById('stt_baler_').innerHTML = maxKey + 1;
-    document.getElementById("modal_add_baler").style.display = "block";
-    document.getElementById("save_add_baler").onclick = function () {
-      const insert = {
-        code: checkEmpty($("#code_a").val()),
-        serial: checkEmpty($("#serial_a").val()),
-        status: checkEmpty($("#status_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
-      };
+    document.getElementById("modal_add_battery").style.display = "block";
+    document.getElementById("save_add_battery").onclick = async function () {
+      let insert = {};
+      keyNames.forEach((e) => {
+        insert[e] = checkEmpty($(`#${e}_a`).val());
+      });
 
-      Meteor.call("insertBaler", insert, (error) => {
+      await Meteor.call("insertBattery", insert, (error, result) => {
+        console.log(result, "result");
         if (error) {
           Swal.fire({
             icon: "error",
@@ -96,7 +111,7 @@ Template.manageBaler.onRendered(async () => {
           });
         } else {
           callDatatable();
-          document.getElementById("modal_add_baler").style.display = "none";
+          document.getElementById("modal_add_battery").style.display = "none";
           Swal.fire({
             icon: "success",
             heightAuto: false,
@@ -109,24 +124,22 @@ Template.manageBaler.onRendered(async () => {
   };
   // Edit Record
 
-  $("#data_baler ").on("click", "td.control", function (e) {
+  $("#data_battery ").on("click", "td.control", function (e) {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
-      const data = $("#data_baler").DataTable().row(this).data();
+      const data = $("#data_battery").DataTable().row(this).data();
       document.getElementById("_modal").style.display = "block";
-      var keyNames = ["code", "serial", "status", "station_code"];
+
+      let insert = {};
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
-      document.getElementById("save_edit_baler").onclick = function () {
-        const insert = {
-          key: data.id,
-          code: checkEmpty($("#code").val()),
-          serial: checkEmpty($("#serial").val()),
-          status: checkEmpty($("#status").val()),
-          station_code: checkEmpty($("#station_code").val()),
-        };
-        Meteor.call("editBaler", insert, (error) => {
+      document.getElementById("save_edit_battery").onclick = function () {
+        keyNames.forEach((e) => {
+          insert[e] = checkEmpty($(`#${e}`).val());
+        });
+        insert.id = data.id;
+        Meteor.call("editBattery", insert, (error, result) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -134,7 +147,7 @@ Template.manageBaler.onRendered(async () => {
               title: "Có lỗi xảy ra!",
               text: error.reason,
             });
-          } else {
+          } else if (result) {
             callDatatable();
             document.getElementById("_modal").style.display = "none";
             Swal.fire({
@@ -147,14 +160,14 @@ Template.manageBaler.onRendered(async () => {
         });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
-      const data = $("#data_baler").DataTable().row(this).data();
-      document.getElementById("modal_delete_baler").style.display = "block";
+      const data = $("#data_battery").DataTable().row(this).data();
+      document.getElementById("modal_delete_battery").style.display = "block";
       document.getElementById(
         "content_delete"
       ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
 
-      document.getElementById("delete_baler").onclick = function () {
-        Meteor.call("deleteBaler", data.id, (error) => {
+      document.getElementById("delete_battery").onclick = function () {
+        Meteor.call("deleteBattery", data.id, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -164,7 +177,7 @@ Template.manageBaler.onRendered(async () => {
             });
           } else {
             callDatatable();
-            document.getElementById("modal_delete_baler").style.display =
+            document.getElementById("modal_delete_battery").style.display =
               "none";
             Swal.fire({
               icon: "success",
@@ -177,34 +190,54 @@ Template.manageBaler.onRendered(async () => {
       };
     }
   });
+
+  // Delete a record
 });
 
-Template.manageBaler.events({
+Template.manageBattery.events({
   "click #close-modal": function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_baler").style.display = "none";
-    document.getElementById("modal_delete_baler").style.display = "none";
+    document.getElementById("modal_add_battery").style.display = "none";
+    document.getElementById("modal_delete_battery").style.display = "none";
   },
 });
-Template.manageBaler.helpers({
+Template.manageBattery.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
   },
-  editBaler: () => {
+  editbattery: () => {
     const t = [
-      { id: "code", text: "Mã máy ghi", type: "text" },
-      { id: "serial", text: "Serial", type: "text" },
-      { id: "status", text: "Tình trạng", type: "text" },
-      { id: "station_code", text: "Trạm", type: "text" },
+      { id: "code", text: "Ác quy", type: "text" },
+      { id: "start_date", text: "Năm trang bị ắc quy", type: "text" },
+      { id: "status", text: "Tình trạng ắc quy", type: "text" },
+      { id: "charger", text: "Bộ nạp", type: "text" },
+      { id: "start_charger", text: "Năm trang bị bộ nạp", type: "text" },
+      {
+        id: "status_charger",
+        text: "Tình trạng bộ nạp",
+        type: "text",
+      },
+      { id: "sun_battery", text: "Pin mặt trời", type: "text" },
+      { id: "power_cable", text: "Cáp nguồn", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "text" },
     ];
     return t;
   },
-  addBaler: () => {
+  addbattery: () => {
     const t = [
-      { id: "code_a", text: "Mã máy ghi", type: "text" },
-      { id: "serial_a", text: "Serial", type: "text" },
-      { id: "status_a", text: "Tình trạng", type: "text" },
-      { id: "station_code_a", text: "Trạm", type: "text" },
+      { id: "code_a", text: "Ác quy", type: "text" },
+      { id: "start_date_a", text: "Năm trang bị ắc quy", type: "text" },
+      { id: "status_a", text: "Tình trạng ắc quy", type: "text" },
+      { id: "charger_a", text: "Bộ nạp", type: "text" },
+      { id: "start_charger_a", text: "Năm trang bị bộ nạp", type: "text" },
+      {
+        id: "status_charger_a",
+        text: "Tình trạng bộ nạp",
+        type: "text",
+      },
+      { id: "sun_battery_a", text: "Pin mặt trời", type: "text" },
+      { id: "power_cable_a", text: "Cáp nguồn", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "text" },
     ];
     return t;
   },

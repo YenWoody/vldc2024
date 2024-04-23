@@ -1,4 +1,4 @@
-<template name="manageSensors">
+<template name="manageEmployee">
   <style>
     @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
@@ -93,24 +93,19 @@
   <div class="manage-users row shadow">
     <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-station">
-        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm Sensor mới
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm mới
       </button>
     </div>
-    <table id="data_Sensor" class="display" style="width: 100%">
+    <table id="data_employee" class="table table-striped" style="width: 100%">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Đầu đo vận tốc</th>
-          <th>Serial đầu đo vận tốc</th>
-          <th>Tình trạng đầu đo vận tốc</th>
-          <th>Bộ điều khiển</th>
-          <th>Serial bộ điều khiển</th>
-          <th>Tình trạng bộ điều khiển</th>
-          <th>Đầu đo gia tốc</th>
-          <th>Serial đầu đo gia tốc</th>
-          <th>Tình trạng đầu đo gia tốc</th>
-          <th>Cáp đầu đo vận tốc</th>
-          <th>Cáp đầu đo gia tốc</th>
+          <th>Họ và tên bảo vệ</th>
+          <th>Số điện thoại bảo vệ</th>
+          <th>Họ và tên quan trắc viên</th>
+          <th>Số điện thoại quan trắc viên</th>
+          <th>Họ và tên phụ trách</th>
+          <th>Số điện thoại phụ trách</th>
           <th>Mã trạm</th>
           <th></th>
         </tr>
@@ -123,7 +118,7 @@
       style="
         display: grid;
 
-        max-height: 90vh;
+        max-height: 700px;
         overflow: auto;
         width: 30%;
         /* justify-items: center; */
@@ -132,29 +127,19 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Sửa dữ liệu của Sensor</h3>
+          <h3 class="text-light">Sửa dữ liệu</h3>
         </div>
-
         <div
           class="modal-body overflow-auto"
-          style="height: calc(90vh - 160px)"
+          style="max-height: calc(90vh - 160px)"
         >
           <form>
-            {{#each item in editSensor}} {{#if check item.type "id"}}
+            {{#each item in editemployee}} {{#if check item.type "text"}}
             <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
+              <label for="recipient-name" class="col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-8">
-                <span id="{{item.id}}"></span>
-              </div>
-            </div>
-            {{else}} {{#if check item.type "text"}}
-            <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
-                >{{item.text}}</label
-              >
-              <div class="col-8">
+              <div class="col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -164,11 +149,11 @@
                 />
               </div>
             </div>
-            {{/if}} {{/if}} {{/each}}
+            {{/if}} {{/each}}
           </form>
         </div>
-        <div class="modal-footer w-100 mt-2">
-          <button class="btn btn-info save" id="save_edit_Sensor">
+        <div class="modal-footer mt-2">
+          <button class="btn btn-info save" id="save_edit_employee">
             Xác nhận
           </button>
           <button id="close-modal" class="btn btn-danger">Đóng</button>
@@ -176,13 +161,13 @@
       </div>
     </div>
   </div>
-  <div id="modal_add_Sensor" class="_modal modal">
+  <div id="modal_add_employee" class="_modal modal">
     <div
       class="_main p-0"
       style="
         display: grid;
 
-        max-height: 90vh;
+        max-height: 700px;
         overflow: auto;
         width: 30%;
         /* justify-items: center; */
@@ -191,29 +176,20 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Thêm dữ liệu của Sensor</h3>
+          <h3 class="text-light">Thêm dữ liệu</h3>
         </div>
-
+        <hr />
         <div
           class="modal-body overflow-auto"
-          style="height: calc(90vh - 160px)"
+          style="max-height: calc(90vh - 160px)"
         >
           <form>
-            {{#each item in addSensor}} {{#if check item.type "id"}}
+            {{#each item in addemployee}} {{#if check item.type "text"}}
             <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
+              <label for="recipient-name" class="col-lg-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-8">
-                <span id="{{item.id}}"></span>
-              </div>
-            </div>
-            {{else}} {{#if check item.type "text"}}
-            <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-4 col-form-label"
-                >{{item.text}}</label
-              >
-              <div class="col-8">
+              <div class="col-lg-8">
                 <input
                   type="text"
                   class="form-control"
@@ -223,11 +199,11 @@
                 />
               </div>
             </div>
-            {{/if}} {{/if}} {{/each}}
+            {{/if}} {{/each}}
           </form>
         </div>
         <div class="modal-footer w-100 mt-2">
-          <button class="btn btn-info save" id="save_add_Sensor">
+          <button class="btn btn-info save" id="save_add_employee">
             Xác nhận
           </button>
           <button id="close-modal" class="btn btn-danger">Đóng</button>
@@ -235,28 +211,29 @@
       </div>
     </div>
   </div>
-  <div id="modal_delete_Sensor" class="_modal modal">
+  <div id="modal_delete_employee" class="_modal modal">
     <div
       class="_main p-0"
       style="
         display: grid;
         overflow: auto;
         width: 30%;
-        height: 300px;
+        max-height: 300px;
         /* justify-items: center; */
         /* align-content: stretch; */
       "
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Xóa dữ liệu của Sensor</h3>
+          <h3 class="text-light">Xóa dữ liệu</h3>
         </div>
-
-        <div class="modal-body">
+        <div class="modal-body overflow-auto">
           <h5 id="content_delete"></h5>
         </div>
-        <div class="modal-footer w-100 mt-2">
-          <button class="btn btn-info save" id="delete_Sensor">Xác nhận</button>
+        <div class="modal-footer">
+          <button class="btn btn-info save" id="delete_employee">
+            Xác nhận
+          </button>
           <button id="close-modal" class="btn btn-danger">Hủy</button>
         </div>
       </div>
