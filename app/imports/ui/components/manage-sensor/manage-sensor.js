@@ -47,14 +47,10 @@ function loadDatatable() {
         { data: "sensor_speed" },
         { data: "serial_speed" },
         { data: "status_speed" },
-        { data: "remote_control" },
-        { data: "serial_control" },
-        { data: "status_control" },
+
         { data: "sensor_accelerator" },
         { data: "serial_accelerator" },
         { data: "status_accelerator" },
-        { data: "cable_sensor_speed" },
-        { data: "cable_sensor_accelerator" },
         { data: "station_code" },
         {
           data: null,
@@ -91,16 +87,10 @@ Template.manageSensors.onRendered(async () => {
         sensor_speed: checkEmpty($("#sensor_speed_a").val()),
         serial_speed: checkEmpty($("#serial_speed_a").val()),
         status_speed: checkEmpty($("#status_speed_a").val()),
-        remote_control: checkEmpty($("#remote_control_a").val()),
-        serial_control: checkEmpty($("#serial_control_a").val()),
-        status_control: checkEmpty($("#status_control_a").val()),
+
         sensor_accelerator: checkEmpty($("#sensor_accelerator_a").val()),
         serial_accelerator: checkEmpty($("#serial_accelerator_a").val()),
         status_accelerator: checkEmpty($("#status_accelerator_a").val()),
-        cable_sensor_speed: checkEmpty($("#cable_sensor_speed_a").val()),
-        cable_sensor_accelerator: checkEmpty(
-          $("#cable_sensor_accelerator_a").val()
-        ),
         station_code: checkEmpty($("#station_code_a").val()),
       };
       Meteor.call("insertSensor", insert, (error) => {
@@ -135,14 +125,10 @@ Template.manageSensors.onRendered(async () => {
         "sensor_speed",
         "serial_speed",
         "status_speed",
-        "remote_control",
-        "serial_control",
-        "status_control",
+
         "sensor_accelerator",
         "serial_accelerator",
         "status_accelerator",
-        "cable_sensor_speed",
-        "cable_sensor_accelerator",
         "station_code",
       ];
       keys.forEach((e) => {
@@ -153,20 +139,13 @@ Template.manageSensors.onRendered(async () => {
       }
       document.getElementById("save_edit_Sensor").onclick = function () {
         const insert = {
-          key: data.id_stat,
+          key: data.id,
           sensor_speed: checkEmpty($("#sensor_speed").val()),
           serial_speed: checkEmpty($("#serial_speed").val()),
           status_speed: checkEmpty($("#status_speed").val()),
-          remote_control: checkEmpty($("#remote_control").val()),
-          serial_control: checkEmpty($("#serial_control").val()),
-          status_control: checkEmpty($("#status_control").val()),
           sensor_accelerator: checkEmpty($("#sensor_accelerator").val()),
           serial_accelerator: checkEmpty($("#serial_accelerator").val()),
           status_accelerator: checkEmpty($("#status_accelerator").val()),
-          cable_sensor_speed: checkEmpty($("#cable_sensor_speed").val()),
-          cable_sensor_accelerator: checkEmpty(
-            $("#cable_sensor_accelerator").val()
-          ),
           station_code: checkEmpty($("#station_code").val()),
         };
         Meteor.call("editSensor", insert, (error) => {
@@ -237,9 +216,6 @@ Template.manageSensors.helpers({
       { id: "sensor_speed", text: "Đầu đo vận tốc", type: "text" },
       { id: "serial_speed", text: "Serial đầu đo vận tốc", type: "text" },
       { id: "status_speed", text: "Tình trạng đầu đo vận tốc", type: "text" },
-      { id: "remote_control", text: "Bộ điều khiển", type: "text" },
-      { id: "serial_control", text: "Serial bộ điều khiển", type: "text" },
-      { id: "status_control", text: "Tình trạng bộ điều khiển", type: "text" },
       { id: "sensor_accelerator", text: "Đầu đo gia tốc", type: "text" },
       { id: "serial_accelerator", text: "Serial đầu đo gia tốc", type: "text" },
       {
@@ -247,12 +223,7 @@ Template.manageSensors.helpers({
         text: "Tình trạng đầu đo gia tốc",
         type: "text",
       },
-      { id: "cable_sensor_speed", text: "Cáp đầu đo vận tốc", type: "text" },
-      {
-        id: "cable_sensor_accelerator",
-        text: "Cáp đầu đo gia tốc",
-        type: "text",
-      },
+
       { id: "station_code", text: "Mã trạm", type: "text" },
     ];
     return t;
@@ -262,13 +233,7 @@ Template.manageSensors.helpers({
       { id: "sensor_speed_a", text: "Đầu đo vận tốc", type: "text" },
       { id: "serial_speed_a", text: "Serial đầu đo vận tốc", type: "text" },
       { id: "status_speed_a", text: "Tình trạng đầu đo vận tốc", type: "text" },
-      { id: "remote_control_a", text: "Bộ điều khiển", type: "text" },
-      { id: "serial_control_a", text: "Serial bộ điều khiển", type: "text" },
-      {
-        id: "status_control_a",
-        text: "Tình trạng bộ điều khiển",
-        type: "text",
-      },
+
       { id: "sensor_accelerator_a", text: "Đầu đo gia tốc", type: "text" },
       {
         id: "serial_accelerator_a",
@@ -280,12 +245,7 @@ Template.manageSensors.helpers({
         text: "Tình trạng đầu đo gia tốc",
         type: "text",
       },
-      { id: "cable_sensor_speed_a", text: "Cáp đầu đo vận tốc", type: "text" },
-      {
-        id: "cable_sensor_accelerator_a",
-        text: "Cáp đầu đo gia tốc",
-        type: "text",
-      },
+
       { id: "station_code_a", text: "Mã trạm", type: "text" },
     ];
     return t;

@@ -392,8 +392,8 @@
             </div>
           </div>
         </div>
-        <div id="popup">
-          <div class="m-2 d-flex align-items-center">
+        <div id="popup" class="d-flex flex-column">
+          <div class="p-2 shadow d-flex align-items-center">
             <button
               class="bg-white me-2"
               id="closebtn"
@@ -403,108 +403,112 @@
             </button>
             <span class="user-select-none">Thông tin chi tiết</span>
           </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-            >
-              Tóm tắt
-            </div>
-            <div class="mb-2">
-              <table class="table table-bordered">
-                <tr>
-                  <td class="fw-bold">Thời gian</td>
-                  <td id="time">Chưa có thông tin</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Vĩ độ</td>
-                  <td id="lat">Chưa có thông tin</td>
-                  <td class="fw-bold">Độ lớn</td>
-                  <td class="mag">Chưa có thông tin</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Kinh độ</td>
-                  <td id="long">Chưa có thông tin</td>
-                  <td class="fw-bold">Độ sâu</td>
-                  <td id="depth">Chưa có thông tin</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Vị trí</td>
-                  <td colspan="3" id="location">Chưa có thông tin</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#magCollapse"
-              aria-expanded="false"
-              aria-controls="magCollapse"
-              id="magHeading"
-            >
-              <i id="point" class="fa fa-plus-circle me-1"> </i>
-              Độ lớn
-            </div>
-
-            <div class="collapse p-1" id="magCollapse"></div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#wavePickCollapse"
-              aria-expanded="false"
-              aria-controls="wavePickCollapse"
-              id="wavePickHeading"
-            >
-              <i id="pointWavePick" class="fa fa-plus-circle me-1"> </i>
-              Thông tin pick sóng
-            </div>
-
-            <div class="collapse" id="wavePickCollapse">
+          <div class="mt-1 overflow-auto">
+            <div class="my-2">
               <div
-                id="wavePickTable"
-                style="max-height: 50vh"
-                class="overflow-auto p-1 text-center"
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
               >
-                Chưa có thông tin
+                Tóm tắt
+              </div>
+              <div class="mb-2">
+                <table class="table table-bordered">
+                  <tr>
+                    <td class="fw-bold">Thời gian</td>
+                    <td id="time">Chưa có thông tin</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Vĩ độ</td>
+                    <td id="lat">Chưa có thông tin</td>
+                    <td class="fw-bold">Độ lớn</td>
+                    <td class="mag">Chưa có thông tin</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Kinh độ</td>
+                    <td id="long">Chưa có thông tin</td>
+                    <td class="fw-bold">Độ sâu</td>
+                    <td id="depth">Chưa có thông tin</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Vị trí</td>
+                    <td colspan="3" id="location">Chưa có thông tin</td>
+                  </tr>
+                </table>
               </div>
             </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#wavePictureCollapse"
-              aria-expanded="false"
-              aria-controls="wavePictureCollapse"
-              id="wavePictureHeading"
-            >
-              <i id="pointWavePicture" class="fa fa-plus-circle me-1"> </i>
-              Hình ảnh băng sóng
-            </div>
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#magCollapse"
+                aria-expanded="false"
+                aria-controls="magCollapse"
+                id="magHeading"
+              >
+                <i id="point" class="fa fa-plus-circle me-1"> </i>
+                Độ lớn
+              </div>
 
-            <div class="collapse" id="wavePictureCollapse">
-              <div class="text-center">Chưa có thông tin</div>
+              <div class="collapse p-1" id="magCollapse"></div>
             </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#shakemapCollapse"
-              aria-expanded="false"
-              aria-controls="shakemapCollapse"
-              id="shakemapHeading"
-            >
-              <i id="pointShakemap" class="fa fa-plus-circle me-1"> </i>
-              Bản đồ shakemap
-            </div>
+            {{#if rolesCheck}}
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#wavePickCollapse"
+                aria-expanded="false"
+                aria-controls="wavePickCollapse"
+                id="wavePickHeading"
+              >
+                <i id="pointWavePick" class="fa fa-plus-circle me-1"> </i>
+                Thông tin pick sóng
+              </div>
 
-            <div class="collapse" id="shakemapCollapse">
-              <div class="text-center">Chưa có thông tin</div>
+              <div class="collapse" id="wavePickCollapse">
+                <div
+                  id="wavePickTable"
+                  style="max-height: 50vh"
+                  class="overflow-auto p-1 text-center"
+                >
+                  Chưa có thông tin
+                </div>
+              </div>
             </div>
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#wavePictureCollapse"
+                aria-expanded="false"
+                aria-controls="wavePictureCollapse"
+                id="wavePictureHeading"
+              >
+                <i id="pointWavePicture" class="fa fa-plus-circle me-1"> </i>
+                Hình ảnh băng sóng
+              </div>
+
+              <div class="collapse" id="wavePictureCollapse">
+                <div class="text-center">Chưa có thông tin</div>
+              </div>
+            </div>
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#shakemapCollapse"
+                aria-expanded="false"
+                aria-controls="shakemapCollapse"
+                id="shakemapHeading"
+              >
+                <i id="pointShakemap" class="fa fa-plus-circle me-1"> </i>
+                Bản đồ shakemap
+              </div>
+
+              <div class="collapse" id="shakemapCollapse">
+                <div class="text-center">Chưa có thông tin</div>
+              </div>
+            </div>
+            {{/if}}
           </div>
         </div>
       </div>

@@ -41,7 +41,6 @@ function callDatatable() {
         columns: [
           { data: "id_key" },
           { data: "name" },
-          { data: "type" },
           { data: "code" },
           { data: "network" },
           { data: "address" },
@@ -51,6 +50,7 @@ function callDatatable() {
           { data: "tunnel_type" },
           { data: "active_date" },
           { data: "status" },
+          { data: "machineHistory" },
           {
             data: null,
             className: "dt-center control",
@@ -169,43 +169,78 @@ Template.manageStation.onRendered(async () => {
         long: parseFloat($("#long_a").val()),
         height: parseFloat($("#height_a").val()),
         network: checkEmpty($("#network_a").val()),
-        type: checkEmpty($("#type_a").val()),
         status: checkEmpty($("#status_a").val()),
-        active_date: checkEmpty($("#active_date_a").val()),
+        machineHistory: checkEmpty($("#machineHistory_a").val()),
+        active_date: parseFloat($("#active_date_a").val()),
         tunnel_type: checkEmpty($("#tunnel_type_a").val()),
         address: checkEmpty($("#address_a").val()),
       };
-      // const insert = {
-      //   id: id_tram_,
-      //   id_key: key_tram_,
-      //   network: network_tram_,
-      //   address: diachi_tram_,
-      //   name: ten_tram_,
-      //   height: docao_tram_,
-      //   lat: lat_tram_,
-      //   long: long_tram_,
-      // };
-
-      Meteor.call("insertStation", insert, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          $("#data_tram").DataTable().clear().destroy();
-          callDatatable();
-          document.getElementById("modal_add_station").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Thêm dữ liệu thành công!",
-          });
-        }
+      $("#lat_a").change(() => {
+        $("#alert_lat_a").html("");
       });
+      $("#long_a").change(() => {
+        $("#alert_long_a").html("");
+      });
+      $("#height_a").change(() => {
+        $("#alert_height_a").html("");
+      });
+      $("#active_date_a").change(() => {
+        $("#alert_active_date_a").html("");
+      });
+      if (
+        isNaN(insert.lat) ||
+        isNaN(insert.long) ||
+        isNaN(insert.active_date) ||
+        isNaN(insert.height)
+      ) {
+        if (isNaN(insert.lat)) {
+          $("#alert_lat_a").html(
+            '<span><i aria-hidden="true" style="margin-right: 2px" class="fa fa-exclamation-triangle"></i>Vui lòng nhập dữ liệu</span>'
+          );
+        }
+        if (isNaN(insert.long)) {
+          $("#alert_long_a").html(
+            '<span><i aria-hidden="true" style="margin-right: 2px" class="fa fa-exclamation-triangle"></i>Vui lòng nhập dữ liệu</span>'
+          );
+        }
+        if (isNaN(insert.height)) {
+          $("#alert_height_a").html(
+            '<span><i aria-hidden="true" style="margin-right: 2px" class="fa fa-exclamation-triangle"></i>Vui lòng nhập dữ liệu</span>'
+          );
+        }
+        if (isNaN(insert.active_date)) {
+          $("#alert_active_date_a").html(
+            '<span><i aria-hidden="true" style="margin-right: 2px" class="fa fa-exclamation-triangle"></i>Vui lòng nhập dữ liệu</span>'
+          );
+        }
+        Swal.fire({
+          icon: "error",
+          heightAuto: false,
+          title: "Có lỗi xảy ra!",
+          text: "Vui lòng nhập đầy đủ trường thông tin",
+        });
+      } else {
+        Meteor.call("insertStation", insert, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            $("#data_tram").DataTable().clear().destroy();
+            callDatatable();
+            document.getElementById("modal_add_station").style.display = "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Thêm dữ liệu thành công!",
+            });
+          }
+        });
+      }
     };
   };
   // Edit Record
@@ -213,6 +248,7 @@ Template.manageStation.onRendered(async () => {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
       const data = $("#data_tram").DataTable().row(this).data();
+      console.log(data, "data");
       var keyNames = [
         "id_key",
         "code",
@@ -221,10 +257,10 @@ Template.manageStation.onRendered(async () => {
         "lat",
         "long",
         "address",
-        "type",
         "tunnel_type",
         "active_date",
         "status",
+        "machineHistory",
         "height",
       ];
       document.getElementById("_modal").style.display = "block";
@@ -246,9 +282,9 @@ Template.manageStation.onRendered(async () => {
           long: parseFloat($("#long").val()),
           height: parseFloat($("#height").val()),
           network: checkEmpty($("#network").val()),
-          type: checkEmpty($("#type").val()),
           status: checkEmpty($("#status").val()),
-          active_date: checkEmpty($("#active_date").val()),
+          machineHistory: checkEmpty($("#machineHistory").val()),
+          active_date: parseFloat($("#active_date").val()),
           tunnel_type: checkEmpty($("#tunnel_type").val()),
           address: checkEmpty($("#address").val()),
         };
@@ -333,14 +369,14 @@ Template.manageStation.helpers({
         id: "name",
         type: "text",
       },
-      { id: "network", text: "Mạng trạm", type: "select" },
+      { id: "network", text: "Mạng trạm", type: "text" },
       { id: "lat", text: "Vĩ độ", type: "number" },
       { id: "long", text: "Kinh độ", type: "number" },
       { id: "address", text: "Địa chỉ", type: "text" },
-      { id: "type", text: "Loại trạm", type: "text" },
       { id: "tunnel_type", text: "Loại hầm", type: "text" },
       { id: "active_date", text: "Năm hoạt động", type: "number" },
       { id: "status", text: "Trạng thái", type: "text" },
+      { id: "machineHistory", text: "Lịch sử đặt máy", type: "text" },
       { id: "height", text: "Độ cao", type: "number" },
     ];
     return t;
@@ -354,14 +390,14 @@ Template.manageStation.helpers({
         id: "name_a",
         type: "text",
       },
-      { id: "network_a", text: "Mạng trạm", type: "select" },
+      { id: "network_a", text: "Mạng trạm", type: "text" },
       { id: "lat_a", text: "Vĩ độ", type: "number" },
       { id: "long_a", text: "Kinh độ", type: "number" },
       { id: "address_a", text: "Địa chỉ", type: "text" },
-      { id: "type_a", text: "Loại trạm", type: "text" },
       { id: "tunnel_type_a", text: "Loại hầm", type: "text" },
       { id: "active_date_a", text: "Năm hoạt động", type: "number" },
       { id: "status_a", text: "Trạng thái", type: "text" },
+      { id: "machineHistory", text: "Lịch sử đặt máy", type: "text" },
       { id: "height_a", text: "Độ cao", type: "number" },
     ];
     return t;

@@ -63,6 +63,15 @@ function callDatatable() {
                 data +
                 "</span>"
               );
+            } else if (data === "editor") {
+              color = "white";
+              return (
+                '<span class="badge bg-warning" style="font-size : 12px;color:' +
+                color +
+                '">' +
+                data +
+                "</span>"
+              );
             }
           },
         },
@@ -314,7 +323,7 @@ Template.manageUsers.events({
   "click #eye2": function () {
     document.getElementById("eye2").classList.toggle("fa-eye-slash");
   },
-  "submit form": function (event) {
+  "click #submit_form": function (event) {
     event.preventDefault();
     let role = $("[name=role_]").val();
     let username = $("[name=username]").val();

@@ -23,7 +23,6 @@ Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
 Template.category.onRendered(() => {
-
   loadModules([
     "esri/Map",
     "esri/views/MapView",
@@ -1999,7 +1998,15 @@ Template.category.onRendered(() => {
     });
 });
 
-Template.category.helpers({});
+Template.category.helpers({
+  rolesCheck: () => {
+    let status = true;
+    if (!Meteor.user()) {
+      status = false;
+    }
+    return status; // look at the current user
+  },
+});
 
 Template.category.events({
   "click  #sidebarCollapse": () => {

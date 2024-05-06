@@ -1,8 +1,7 @@
 import { Meteor } from "meteor/meteor";
-import "./manage-network.html";
+import "./manage-cable.html";
 import "../not_access/not_access";
 import { $ } from "meteor/jquery";
-
 import DataTable from "datatables.net-dt";
 import "datatables.net-responsive-dt";
 import { loadCss } from "esri-loader";
@@ -11,27 +10,24 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageNetwork.onCreated(function () {
+Template.manageCable.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
     "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
   loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
-  // datatables(window, $);
-  // datatables_bs(window, $);
 });
-function callDatatable() {
-  Meteor.call("dataNetwork", function (error, resultdata) {
+function loadDatatable() {
+  Meteor.call("dataCable", function (error, resultdata) {
     if (error) {
-      reject(error);
+      console.log(error);
     }
-    const dt = resultdata.rows;
 
-    $("#data_network").DataTable().clear().destroy();
-    new DataTable("#data_network", {
+    const dt = resultdata.rows;
+    $("#data_Cable").DataTable().clear().destroy();
+    new DataTable("#data_Cable", {
       data: dt,
       paging: true,
       destroy: true,
@@ -40,15 +36,18 @@ function callDatatable() {
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
-        info: "Hiển thị từ _START_ đến _END_ network",
-        infoEmpty: "Hiển thị 0 network",
-        lengthMenu: "Hiển thị _MENU_ network mỗi trang",
-        infoFiltered: "(Lọc từ tổng số _MAX_ network)",
+        info: "Hiển thị từ _START_ đến _END_ dữ liệu",
+        infoEmpty: "Hiển thị 0 dữ liệu",
+        lengthMenu: "Hiển thị _MENU_ Sensor mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ dữ liệu)",
       },
       columns: [
         { data: "id" },
-        { data: "code" },
-        { data: "net" },
+        { data: "power_cable" },
+        { data: "cable_internet" },
+        { data: "cable_sensor_speed" },
+        { data: "cable_sensor_accelerator" },
+        { data: "station_code" },
         {
           data: null,
           className: "dt-center control",
@@ -66,23 +65,30 @@ function callDatatable() {
     });
   });
 }
-Template.manageNetwork.onRendered(async () => {
+Template.manageCable.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
-  $("#dashboard-title").html("Quản lí các mạng trạm");
-  callDatatable();
+  $("#dashboard-title").html("Quản lí cáp");
+
+  loadDatatable();
   document.getElementById("add-station").onclick = async function () {
-    // document.getElementById('stt_network_').innerHTML = maxKey + 1;
-    document.getElementById("modal_add_network").style.display = "block";
-    document.getElementById("save_add_network").onclick = function () {
-      const codes = document.getElementById("code_").value;
-      const networks = document.getElementById("network_").value;
+    // document.getElementById('stt_Sensor_').innerHTML = maxKey + 1;
+    document.getElementById("modal_add_Sensor").style.display = "block";
+    document.getElementById("save_add_Sensor").onclick = function () {
+      function checkEmpty(data) {
+        return data ? data : "Chưa có thông tin";
+      }
       const insert = {
-        code: codes,
-        net: networks,
+        power_cable: checkEmpty($("#power_cable_a").val()),
+        cable_internet: checkEmpty($("#cable_internet_a").val()),
+        cable_sensor_speed: checkEmpty($("#cable_sensor_speed_a").val()),
+        cable_sensor_accelerator: checkEmpty(
+          $("#cable_sensor_accelerator_a").val()
+        ),
+        station_code: checkEmpty($("#station_code_a").val()),
       };
-      Meteor.call("insertNetwork", insert, (error) => {
+      Meteor.call("insertCable", insert, (error) => {
         if (error) {
           Swal.fire({
             icon: "error",
@@ -91,39 +97,50 @@ Template.manageNetwork.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          callDatatable();
-          document.getElementById("modal_add_network").style.display = "none";
+          loadDatatable();
+          document.getElementById("modal_add_Sensor").style.display = "none";
           Swal.fire({
             icon: "success",
             heightAuto: false,
             title: "Chúc mừng!",
-            text: "Lưu dữ liệu thành công",
+            text: "Thêm dữ liệu thành công!",
           });
         }
       });
     };
   };
   // Edit Record
-  $("#data_network ").on("click", "td.control", function (e) {
+  $("#data_Cable ").on("click", "td.control", function (e) {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
-      const data = $("#data_network").DataTable().row(this).data();
+      const data = $("#data_Cable").DataTable().row(this).data();
       console.log(data, "data");
       document.getElementById("_modal").style.display = "block";
-      document.getElementById("code").value = data.code;
-      document.getElementById("network").value = data.net;
+      const keys = [
+        "power_cable",
+        "cable_internet",
+        "cable_sensor_speed",
+        "cable_sensor_accelerator",
+        "station_code",
+      ];
+      keys.forEach((e) => {
+        document.getElementById(e).value = data[e];
+      });
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
-      document.getElementById("save_edit_network").onclick = function () {
-        const network1 = checkEmpty(document.getElementById("network").value);
-        const code1 = checkEmpty(document.getElementById("code").value);
+      document.getElementById("save_edit_cable").onclick = function () {
         const insert = {
           key: data.id,
-          code: code1,
-          net: network1,
+          power_cable: checkEmpty($("#power_cable").val()),
+          cable_internet: checkEmpty($("#cable_internet").val()),
+          cable_sensor_speed: checkEmpty($("#cable_sensor_speed").val()),
+          cable_sensor_accelerator: checkEmpty(
+            $("#cable_sensor_accelerator").val()
+          ),
+          station_code: checkEmpty($("#station_code").val()),
         };
-        Meteor.call("editNetwork", insert, (error) => {
+        Meteor.call("editCable", insert, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -132,7 +149,7 @@ Template.manageNetwork.onRendered(async () => {
               text: error.reason,
             });
           } else {
-            callDatatable();
+            loadDatatable();
             document.getElementById("_modal").style.display = "none";
             Swal.fire({
               icon: "success",
@@ -144,13 +161,13 @@ Template.manageNetwork.onRendered(async () => {
         });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
-      const data = $("#data_network").DataTable().row(this).data();
-      document.getElementById("modal_delete_network").style.display = "block";
+      const data = $("#data_Cable").DataTable().row(this).data();
+      document.getElementById("modal_delete_cable").style.display = "block";
       document.getElementById(
         "content_delete"
       ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
-      document.getElementById("delete_network").onclick = function () {
-        Meteor.call("deleteNetwork", data.id, (error) => {
+      document.getElementById("delete_cable").onclick = function () {
+        Meteor.call("deleteCable", data.id, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -159,8 +176,8 @@ Template.manageNetwork.onRendered(async () => {
               text: error.reason,
             });
           } else {
-            callDatatable();
-            document.getElementById("modal_delete_network").style.display =
+            loadDatatable();
+            document.getElementById("modal_delete_cable").style.display =
               "none";
             Swal.fire({
               icon: "success",
@@ -175,16 +192,50 @@ Template.manageNetwork.onRendered(async () => {
   });
 });
 
-Template.manageNetwork.events({
+Template.manageCable.events({
   "click #close-modal": function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_network").style.display = "none";
-    document.getElementById("modal_delete_network").style.display = "none";
+    document.getElementById("modal_add_Sensor").style.display = "none";
+    document.getElementById("modal_delete_cable").style.display = "none";
   },
 });
-Template.manageNetwork.helpers({
+Template.manageCable.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+  },
+  editSensor: () => {
+    const t = [
+      { id: "power_cable", text: "Cáp nguồn", type: "text" },
+      { id: "cable_internet", text: "Cáp mạng", type: "text" },
+
+      { id: "cable_sensor_speed", text: "Cáp đầu đo vận tốc", type: "text" },
+      {
+        id: "cable_sensor_accelerator",
+        text: "Cáp đầu đo gia tốc",
+        type: "text",
+      },
+      { id: "station_code", text: "Mã trạm", type: "text" },
+    ];
+    return t;
+  },
+  addSensor: () => {
+    const t = [
+      { id: "power_cable_a", text: "Cáp nguồn", type: "text" },
+      { id: "cable_internet_a", text: "Cáp mạng", type: "text" },
+      { id: "cable_sensor_speed_a", text: "Cáp đầu đo vận tốc", type: "text" },
+      {
+        id: "cable_sensor_accelerator_a",
+        text: "Cáp đầu đo gia tốc",
+        type: "text",
+      },
+      { id: "station_code_a", text: "Mã trạm", type: "text" },
+    ];
+    return t;
+  },
+  check: (a, b) => {
+    if (a === b) {
+      return true;
+    }
   },
   isUserLogged() {
     return isUserLogged();

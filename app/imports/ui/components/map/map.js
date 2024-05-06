@@ -185,12 +185,12 @@ Template.map.onRendered(() => {
           ("0" + lastday).slice(-2),
         ].join("-");
         const response = await fetch(
-          `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&limit=200&output=text`
+          `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&limit=800&minmagnitude=1&output=text`
         );
         const dataIris = await response.text();
         const dtIris = [];
         dataIris.split(/\r?\n/).forEach((lines) => {
-          const line = lines.split(/[|]+/g);
+          const line = lines.split("|");
 
           dtIris.push({
             time: line[1],
@@ -231,11 +231,11 @@ Template.map.onRendered(() => {
         function loadDataTable(data) {
           const table = $("#dulieu").DataTable({
             data: data,
-            paging: false,
+            paging: true,
             destroy: true,
             searching: false,
-            // scrollX: "true",
-            scrollY: "calc(100vh - 360px)",
+            scrollX: "true",
+            scrollY: "calc(100vh - 420px)",
             language: {
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
@@ -285,11 +285,11 @@ Template.map.onRendered(() => {
         function loadDataTableGlobal(data) {
           const table = $("#dulieu").DataTable({
             data: data,
-            paging: false,
+            paging: true,
             destroy: true,
             searching: false,
             scrollX: "true",
-            scrollY: "calc(100vh - 360px)",
+            scrollY: "calc(100vh - 420px)",
             language: {
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
@@ -1709,7 +1709,15 @@ Template.map.onRendered(() => {
     });
 });
 
-Template.map.helpers({});
+Template.map.helpers({
+  rolesCheck: () => {
+    let status = true;
+    if (!Meteor.user()) {
+      status = false;
+    }
+    return status; // look at the current user
+  },
+});
 
 Template.map.events({
   "click #closebtn": () => {

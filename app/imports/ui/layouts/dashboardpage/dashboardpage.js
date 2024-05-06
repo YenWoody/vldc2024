@@ -89,6 +89,11 @@ Template.dashboardTemplate.helpers({
         class: "bi bi-inboxes-fill me-2",
       },
       {
+        content: "Quản lý hệ thống máy",
+        link: "/manage-machine-system",
+        class: "bi bi-inboxes-fill me-2",
+      },
+      {
         content: "Quản lý sự kiện động đất",
         link: "/manage-event",
         class: "fa fa-globe me-2",
@@ -96,20 +101,20 @@ Template.dashboardTemplate.helpers({
       {
         content: "Quản lý mạng trạm",
         link: "/manage-network",
-        class: "bi bi-hdd-network-fill me-2",
+        class: "fa bi-hdd-network-fill me-2",
       },
       {
-        content: "Quản lý thiết bị Dataloger",
+        content: "Quản lý máy ghi",
         link: "/manage-device",
-        class: "bi bi-hdd-rack-fill me-2",
+        class: "fa bi-hdd-rack-fill me-2",
       },
       {
-        content: "Quản lý thiết bị cảm biến",
+        content: "Quản lý cảm biến",
         link: "/manage-sensor",
-        class: "bi bi-easel-fill me-2",
+        class: "fa bi-easel-fill me-2",
       },
       {
-        content: "Quản lý thiết bị máy ghi",
+        content: "Quản lý bộ lưu số liệu",
         link: "/manage-baler",
         class: "fa fa-microchip me-2",
       },
@@ -119,12 +124,22 @@ Template.dashboardTemplate.helpers({
         class: "fa fa-home fa-lg me-2",
       },
       {
-        content: "Quản lý Internet",
+        content: "Quản lý mạng Internet",
         link: "/manage-internet",
         class: "fa fa-info-circle fa-lg me-2",
       },
       {
-        content: "Quản lý lưu trữ năng lượng",
+        content: "Quản lý cáp",
+        link: "/manage-cable",
+        class: "bi bi-bezier2 me-2",
+      },
+      {
+        content: "Quản lý bộ điều khiển",
+        link: "/manage-remote",
+        class: "bi bi-bezier2 me-2",
+      },
+      {
+        content: "Quản lý nguồn điện",
         link: "/manage-battery",
         class: "fa fa-battery-full me-2",
       },

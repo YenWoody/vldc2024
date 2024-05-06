@@ -52,7 +52,6 @@ function callDatatable() {
         { data: "start_charger" },
         { data: "status_charger" },
         { data: "sun_battery" },
-        { data: "power_cable" },
         { data: "station_code" },
 
         {
@@ -86,7 +85,6 @@ Template.manageBattery.onRendered(async () => {
     "start_charger",
     "status_charger",
     "sun_battery",
-    "power_cable",
     "station_code",
   ];
   function checkEmpty(data) {
@@ -218,7 +216,6 @@ Template.manageBattery.helpers({
         type: "text",
       },
       { id: "sun_battery", text: "Pin mặt trời", type: "text" },
-      { id: "power_cable", text: "Cáp nguồn", type: "text" },
       { id: "station_code", text: "Mã trạm", type: "text" },
     ];
     return t;
@@ -236,7 +233,6 @@ Template.manageBattery.helpers({
         type: "text",
       },
       { id: "sun_battery_a", text: "Pin mặt trời", type: "text" },
-      { id: "power_cable_a", text: "Cáp nguồn", type: "text" },
       { id: "station_code_a", text: "Mã trạm", type: "text" },
     ];
     return t;

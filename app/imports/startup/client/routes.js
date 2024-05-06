@@ -22,14 +22,18 @@ import "../../ui/components/manage-user/manage-users";
 import "../../ui/components/manage-station/manage-station";
 import "../../ui/components/manage-device/manage-device";
 import "../../ui/components/manage-sensor/manage-sensor";
+import "../../ui/components/manage-cable/manage-cable";
+import "../../ui/components/manage-remote/manage-remote";
 import "../../ui/components/manage-baler/manage-baler";
 import "../../ui/components/manage-event/manage-event";
+import "../../ui/components/manage-machine_system/manage-machine_system";
 import "../../ui/components/manage-network/manage-network";
 import "../../ui/components/manage-land/manage-land";
 import "../../ui/components/manage-employee/manage-employee";
 import "../../ui/components/manage-battery/manage-battery";
 import "../../ui/components/manage-internet/manage-internet";
 import "../../ui/components/machine-history/machine-history";
+import "../../ui/components/dashboard/dashboard";
 // Set up all routes in the app
 FlowRouter.route("/main", {
   name: "App.event",
@@ -40,13 +44,31 @@ FlowRouter.route("/main", {
 FlowRouter.route("/dashboard", {
   name: "dashboard",
   action() {
-    this.render("dashboardTemplate", "");
+    this.render("dashboardTemplate", "dashboardComponent");
   },
 });
 FlowRouter.route("/manage-user", {
   name: "dashboard",
   action() {
     this.render("dashboardTemplate", "manageUsers");
+  },
+});
+FlowRouter.route("/manage-cable", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageCable");
+  },
+});
+FlowRouter.route("/manage-remote", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageRemotes");
+  },
+});
+FlowRouter.route("/manage-machine-system", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageMachineSystem");
   },
 });
 FlowRouter.route("/manage-device", {

@@ -45,6 +45,7 @@ function loadDatatable() {
           { data: "id" },
           { data: "code" },
           { data: "serial" },
+          { data: "serial_q" },
           { data: "status" },
           { data: "station_code" },
           {
@@ -82,6 +83,7 @@ Template.manageDevice.onRendered(async () => {
       const insert = {
         code: checkEmpty($("#code_a").val()),
         serial: checkEmpty($("#serial_a").val()),
+        serial_q: checkEmpty($("#serial_q_a").val()),
         status: checkEmpty($("#status_a").val()),
         station_code: checkEmpty($("#station_code_a").val()),
       };
@@ -114,7 +116,14 @@ Template.manageDevice.onRendered(async () => {
       const data = $("#data_dataloger").DataTable().row(this).data();
 
       document.getElementById("_modal").style.display = "block";
-      var keyNames = ["id", "code", "serial", "status", "station_code"];
+      var keyNames = [
+        "id",
+        "code",
+        "serial",
+        "serial_q",
+        "status",
+        "station_code",
+      ];
       keyNames.forEach((e) => {
         if (e == "id") {
           $(`#${e}`).html(data[e]);
@@ -129,6 +138,7 @@ Template.manageDevice.onRendered(async () => {
           key: data.id,
           code: checkEmpty($("#code").val()),
           serial: checkEmpty($("#serial").val()),
+          serial_q: checkEmpty($("#serial_q").val()),
           status: checkEmpty($("#status").val()),
           station_code: checkEmpty($("#station_code").val()),
         };
@@ -200,6 +210,7 @@ Template.manageDevice.helpers({
       { id: "id", text: "STT", type: "id" },
       { id: "code", text: "Mã máy ghi", type: "text" },
       { id: "serial", text: "Serial", type: "text" },
+      { id: "serial_q", text: "Q330 Serial", type: "text" },
       { id: "status", text: "Tình trạng", type: "text" },
       { id: "station_code", text: "Trạm", type: "text" },
     ];
@@ -210,6 +221,7 @@ Template.manageDevice.helpers({
       { id: "id_a", text: "STT", type: "id" },
       { id: "code_a", text: "Mã máy ghi", type: "text" },
       { id: "serial_a", text: "Serial", type: "text" },
+      { id: "serial_q_a", text: "Q330 Serial", type: "text" },
       { id: "status_a", text: "Tình trạng", type: "text" },
       { id: "station_code_a", text: "Trạm", type: "text" },
     ];

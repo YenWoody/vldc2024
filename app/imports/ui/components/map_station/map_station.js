@@ -33,18 +33,6 @@ Template.map_station.onCreated(async () => {
   }
   const dataNetworks = await dataNetwork();
   this.dataNetwork = await dataNetworks;
-  this.state = new ReactiveDict();
-  this.state.setDefault("listNetwork", [
-    {
-      code: "VN",
-    },
-    {
-      code: "PS",
-    },
-    {
-      code: "RM",
-    },
-  ]);
 });
 Meteor.startup(function () {
   $.getScript("/plugins/js/jquery.sparkline.min.js");
@@ -153,6 +141,26 @@ Template.map_station.onRendered(() => {
             });
           });
         }
+        function dataCables() {
+          return new Promise(function (resolve, reject) {
+            Meteor.call("dataCable", function (error, result) {
+              if (error) {
+                reject(error);
+              }
+              resolve(result.rows);
+            });
+          });
+        }
+        function dataRemotes() {
+          return new Promise(function (resolve, reject) {
+            Meteor.call("dataRemote", function (error, result) {
+              if (error) {
+                reject(error);
+              }
+              resolve(result.rows);
+            });
+          });
+        }
         function dataEvent() {
           return new Promise(function (resolve, reject) {
             Meteor.call("layerEvent", function (error, resultEvent) {
@@ -224,6 +232,8 @@ Template.map_station.onRendered(() => {
         const dataBaler = await dataBalers();
         const dataDataloger = await dataDatalogers();
         const dataSensor = await dataSensors();
+        const dataCable = await dataCables();
+        const dataRemote = await dataRemotes();
         /**
          * init basemap
          */
@@ -789,7 +799,7 @@ Template.map_station.onRendered(() => {
             destroy: true,
             searching: false,
             scrollX: "true",
-            scrollY: "calc(100vh - 360px)",
+            scrollY: "calc(100vh - 440px)",
             language: {
               sSearch: "Tìm kiếm :",
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
@@ -952,7 +962,7 @@ Template.map_station.onRendered(() => {
                 layerView.filter = { where: "id = -1" };
               });
             } else {
-              response.results.forEach(function (result) {
+              response.results.forEach(async function (result) {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerStations) {
                   openPopupRightSide();
@@ -981,27 +991,39 @@ Template.map_station.onRendered(() => {
                     });
                   }
                   loadEventStation();
-                  $("#lat_station").html(result.graphic.attributes.lat);
-                  $("#long_station").html(result.graphic.attributes.long);
-                  $("#name_station").html(result.graphic.attributes.name);
-                  $("#code_station").html(result.graphic.attributes.code);
-                  $("#address_station").html(result.graphic.attributes.address);
-                  $("#height_station").html(result.graphic.attributes.height);
-                  $("#tunnel_type").html(result.graphic.attributes.tunnel_type);
-                  $("#type_station").html(result.graphic.attributes.type);
-                  $("#status_station").html(result.graphic.attributes.status);
-                  $("#active_date").html(result.graphic.attributes.active_date);
-                  console.log(
-                    result.graphic.attributes,
-                    "result.graphic.attributes"
+                  $("#lat_station").html(
+                    getContent(result.graphic.attributes.lat)
                   );
-                  console.log(dataEmployes, "dataEmployes");
-                  console.log(dataLands, "dataLands");
-                  console.log(dataBatterys, "dataBatterys");
-                  console.log(dataInternets, "dataInternets");
-                  console.log(dataBaler, "dataBaler");
-                  console.log(dataDataloger, "dataDataloger");
-                  console.log(dataSensor, "dataSensor");
+                  $("#long_station").html(
+                    getContent(result.graphic.attributes.long)
+                  );
+                  $("#name_station").html(
+                    getContent(result.graphic.attributes.name)
+                  );
+                  $("#code_station").html(
+                    getContent(result.graphic.attributes.code)
+                  );
+                  $("#address_station").html(
+                    getContent(result.graphic.attributes.address)
+                  );
+                  $("#height_station").html(
+                    getContent(result.graphic.attributes.height)
+                  );
+                  $("#tunnel_type").html(
+                    getContent(result.graphic.attributes.tunnel_type)
+                  );
+                  $("#type_station").html(
+                    getContent(result.graphic.attributes.type)
+                  );
+                  $("#status_station").html(
+                    getContent(result.graphic.attributes.status)
+                  );
+                  $("#active_date").html(
+                    getContent(result.graphic.attributes.active_date)
+                  );
+                  $("#machine_history").html(
+                    getContent(result.graphic.attributes.machineHistory)
+                  );
                   function getContent(data) {
                     return data == null ? "Chưa có thông tin" : data;
                   }
@@ -1027,43 +1049,285 @@ Template.map_station.onRendered(() => {
                   const sensor = dataSensor.filter((e) => {
                     return e.station_code === result.graphic.attributes.code;
                   });
-                  $("#infoPersonnel").html(`            
-                   <table class="table table-bordered">
-                        <tr>
-                        <td class="fw-bold text-start">Bảo vệ</td>
-                        <td colspan="3" >${getContent(
-                          employee[0].name_guard
-                        )}</td>
-                        <td colspan="3" >${getContent(
-                          employee[0].phone_guard
-                        )}</td>
-                        </tr>
-                        <tr>
-                          <td class="fw-bold text-start">Quan trắc viên</td>
-                          <td colspan="3" >${getContent(
-                            employee[0].name_observer
-                          )}</td>
-                          <td colspan="3" >${getContent(
-                            employee[0].phone_observer
-                          )}</td>
-                        </tr>
-                        <tr>
-                        <td class="fw-bold text-start">Cán bô phụ trách</td>
-                        <td colspan="3" >${getContent(
-                          employee[0].person_incharge
-                        )}</td>
-                        <td colspan="3" >${getContent(
-                          employee[0].phone_person_incharge
-                        )}</td>
+                  const cable = dataCable.filter((e) => {
+                    return e.station_code === result.graphic.attributes.code;
+                  });
+                  const remote = dataRemote.filter((e) => {
+                    return e.station_code === result.graphic.attributes.code;
+                  });
+                  //Thông tin nhân sự
+                  // const innerinfoPersonnel = "";
+                  console.log(dataloger, "dataloger");
+                  const row_dataloger = [];
+                  const row_dataloger_user = [];
+                  const row_dataloger_editor = [];
+                  const row_employee = [];
+                  const row_sensor = [];
+                  const row_sensor_user = [];
+                  const row_sensor_editor = [];
+                  const row_sensor_giatoc = [];
+                  const row_sensor_giatoc_user = [];
+                  const row_sensor_giatoc_editor = [];
+                  const row_remote = [];
+                  const row_remote_editor = [];
+                  const row_baler = [];
+                  const row_baler_editor = [];
+                  const row_batterys = [];
+                  const row_charger = [];
+                  const row_sunbattery = [];
+                  const row_cable = [];
+                  const row_internet = [];
+                  const row_land = [];
+                  await land.map((e) => {
+                    row_land.push(`
+                    <tr>
+                        <td class="text-start">Tổng diện tích</td>
+                        <td class="text-center" >${getContent(e.total_area)}
+                        </td>
+                        <td class="fw-bold text-center"></td>
+                        <td class="fw-bold text-center"></td>
+                    </tr>
+                    <tr>
+                      <td class="text-start">Nhà làm việc</td>
+                      <td class="text-center" >${getContent(e.work_house)}
+                      </td>
+                      <td class="text-center" >${getContent(e.active_year)}
+                      </td>
+                      <td class="text-center" >${getContent(e.status)}
+                      </td>
+                  
+                    </tr>
+                    <tr>
+                      <td class="text-start">Hầm đặt máy</td>
+                      <td class="text-center" >${getContent(e.tunnel)}
+                      </td>
+                      <td class="text-center" >${getContent(
+                        e.active_date_tunnel
+                      )}
+                      </td>
+                      <td class="text-center" >${getContent(e.status_tunnel)}
+                      </td>
+                    </tr>
+                    
+                    <tr>
+                      <td class="text-start">Sân vườn</td>
+                      <td class=" text-center" >${getContent(e.yard)}</td>
+                      <td class="text-start"></td>
+                      <td class="text-start"></td>
+                    </tr>
+                    <tr>
+                    <td class="text-start">Hàng rào, cổng</td>
+                    <td class=" text-center" >${getContent(e.gate)}</td>
+                    <td class="text-start"></td>
+                    <td class="text-start"></td>
+                   
+                  
+                    </tr>
+                    <tr>
+                      <td class="text-start">Giấy tờ nhà đất</td>
+                      <td class="text-center" >${getContent(e.document)}</td>
+                      <td class="text-start"></td>
+                      <td class="text-start"></td>
+                    
+                    </tr>
+                    `);
+                  });
+                  await internet.map((e) => {
+                    row_internet.push(` 
+                    <tr>
+                      <td class="fw-bold text-start">Internet</td>
+                      <td >${getContent(e.code)}</td>
+                      <td colspan="3" >${getContent(e.ip)}</td>
+                    </tr>`);
+                  });
+                  await cable.map((e) => {
+                    row_cable.push(`
+                    <tr>
+                      <td class="fw-bold text-start">Cáp nguồn</td>
+                      <td colspan="3"  class="fw-bold text-center" >${getContent(
+                        e.power_cable
+                      )}</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold text-start">Cáp đầu đo vận tốc</td>
+                      <td colspan="3"   class="fw-bold text-center" >${getContent(
+                        e.cable_sensor_speed
+                      )}</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold text-start">Cáp đầu đo gia tốc</td>
+                      <td colspan="3"  class="fw-bold text-center" >${getContent(
+                        e.cable_sensor_accelerator
+                      )}</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold text-start">Cáp mạng</td>
+                      <td colspan="3"  class="fw-bold text-center" >${getContent(
+                        e.cable_internet
+                      )}</td>
+                    </tr>`);
+                  });
+                  await batterys.map((e) => {
+                    row_batterys.push(` 
+                    <tr>
+                      <td class="fw-bold text-start">Ác quy</td>
+                      <td >${getContent(e.code)}</td>
+                      <td >${getContent(e.serial)}</td>
+                      <td >${getContent(e.status)}</td>
+                    </tr>`);
+                    row_sunbattery.push(` 
+                    <tr>
+                      <td class="fw-bold text-start">Pin mặt trời</td>
+                      <td colspan="3" class="fw-bold text-center" >${getContent(
+                        e.sun_battery
+                      )}</td>
+                     </tr>`);
+                    row_charger.push(`
+                    <tr>
+                      <td class="fw-bold text-start">Bộ nạp</td>
+                      <td  >${getContent(e.charger)}</td>
+                      <td >${getContent(e.serial)}</td>
+                      <td >${getContent(e.status)}</td>
+                    </tr>`);
+                  });
+                  await baler.map((e) => {
+                    row_baler.push(`  
+                      <tr>
+                        <td class="fw-bold text-start">Bộ lưu trữ số liệu</td>
+                        <td  >${getContent(e.code)}</td>
+                        <td  >${getContent(e.serial)}</td>
+                        <td  >${getContent(e.status)}</td>
+                      </tr>`);
+                    row_baler_editor.push(`  
+                      <tr>
+                      <td class="fw-bold text-start">Bộ lưu trữ số liệu</td>
+                      <td  >${getContent(e.code)}</td>
+                      <td  >Không có quyền xem</td>
+                      <td  >${getContent(e.status)}</td>
+                      </tr>`);
+                  });
+                  await remote.map((e) => {
+                    row_remote.push(`
+                    <tr>
+                      <td class="fw-bold text-start">Bộ điều khiển đầu đo vận tốc</td>
+                      <td  >${getContent(e.remote_control)}</td>
+                      <td  >${getContent(e.serial_control)}</td>
+                      <td  >${getContent(e.status_control)}</td>
+                    </tr>`);
+                    row_remote_editor.push(` 
+                    <tr>
+                      <td class="fw-bold text-start">Bộ điều khiển đầu đo vận tốc</td>
+                      <td  >${getContent(e.remote_control)}</td>
+                      <td  >Không có quyền xem</td>
+                      <td  >${getContent(e.status_control)}</td>
+                    </tr>`);
+                  });
+                  await sensor.map((e) => {
+                    row_sensor.push(`  
+                    <tr>
+                    <td class="fw-bold text-start">Đầu đo vận tốc</td>
+                    <td  >${getContent(e.sensor_speed)}</td>
+                    <td  >${getContent(e.serial_speed)}</td>
+                    <td >${getContent(e.status_speed)}</td>
+                    </tr>`);
+                    row_sensor_user.push(` <tr>
+                    <td class="fw-bold text-start">Đầu đo vận tốc</td>
+                    <td  >${getContent(e.sensor_speed)}</td>
+                    <td  >Không có quyền xem</td>
+                    <td  >Không có quyền xem</td>
+                </tr>`);
+                    row_sensor_editor.push(` 
+                    <tr>
+                    <td class="fw-bold text-start">Đầu đo vận tốc</td>
+                    <td  >${getContent(e.sensor_speed)}</td>
+                    <td  >Không có quyền xem</td>
+                    <td >${getContent(e.status_speed)}</td>
+                    </tr>`);
+                    row_sensor_giatoc.push(` 
+                    <tr>
+                      <td class="fw-bold text-start">Đầu đo gia tốc</td>
+                      <td  >${getContent(e.sensor_accelerator)}</td>
+                      <td >${getContent(e.serial_accelerator)}</td>
+                      <td  >${getContent(e.status_accelerator)}</td>
+                    </tr>`);
+                    row_sensor_giatoc_user.push(` 
+                    <tr>
+                      <td class="fw-bold text-start">Đầu đo gia tốc</td>
+                      <td  >${getContent(e.sensor_accelerator)}</td>
+                      <td  >Không có quyền xem</td>
+                      <td  >Không có quyền xem</td>
+                    </tr>`);
+                    row_sensor_giatoc_editor.push(`
+                    <tr>
+                      <td class="fw-bold text-start">Đầu đo gia tốc</td>
+                      <td  >${getContent(e.sensor_accelerator)}</td>
+                      <td  >Không có quyền xem</td>
+                      <td  >${getContent(e.status_accelerator)}</td>
+                    </tr>`);
+                  });
+                  await employee.map((e) => {
+                    row_employee.push(`
+                    <tr>
+                    <td class="fw-bold text-start">Bảo vệ</td>
+                    <td colspan="3" >${getContent(e.name_guard)}</td>
+                    <td colspan="3" >${getContent(e.phone_guard)}</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold text-start">Quan trắc viên</td>
+                      <td colspan="3" >${getContent(e.name_observer)}</td>
+                      <td colspan="3" >${getContent(e.phone_observer)}</td>
+                    </tr>
+                    <tr>
+                    <td class="fw-bold text-start">Cán bô phụ trách</td>
+                    <td colspan="3" >${getContent(e.person_incharge)}</td>
+                    <td colspan="3" >${getContent(e.phone_person_incharge)}</td>
+                  </tr>
+                    
+                    `);
+                  });
+                  await dataloger.map((e) => {
+                    row_dataloger.push(`
+                    <tr>
+                      <td class="fw-bold text-start">Máy ghi</td>
+                      <td  >${getContent(e.code)}</td>
+                      <td  >${getContent(e.serial)}</td>
+                      <td  >${getContent(e.status)}</td>
+                    </tr>`);
+                    row_dataloger_user.push(
+                      `
+                      <tr>
+                        <td class="fw-bold text-start">Máy ghi</td>
+                        <td  >${getContent(e.code)}</td>
+                        <td  >Không có quyền xem</td>
+                        <td  >Không có quyền xem</td>
                       </tr>
+                      `
+                    );
+                    row_dataloger_editor.push(`
+                      <tr>
+                        <td class="fw-bold text-start">Máy ghi</td>
+                        <td  >${getContent(e.code)}</td>
+                        <td  >Không có quyền xem</td>
+                        <td  >${getContent(e.status)}</td>
+                    </tr>`);
+                  });
+
+                  console.log(row_dataloger, "row_dataloger");
+                  // Meteor.user().roles === "";
+                  $("#infoPersonnel").html(`            
+                   <table class="table table-bordered table-hover">
+                   ${row_employee.join("")}
                     </table>`);
 
                   // Thông tin trang thiết bị
-                  $("#infoEquipmentContent").html(`         
-                   <table class="table table-bordered">
+                  if (Meteor.user() && Meteor.user().roles === "admin") {
+                    $("#infoEquipmentContent").html(`         
+                  <table class="table table-bordered table-hover">
                       <tr class="heading-table">
                           <td class="fw-bold text-start">Thiết bị</td>
-                          <td colspan="3" class=" fw-bold ">Loại máy</td>
+                          <td class=" fw-bold ">Loại máy</td>
+                          <td  class=" fw-bold ">Serial</td>
+                          <td  class=" fw-bold ">Tình trạng</td>
                       </tr>
                       <tr>
                           <td class="fw-bold text-center" colspan="5" style="background-color: #fff2cc;">${
@@ -1085,185 +1349,128 @@ Template.map_station.onRendered(() => {
                           )}
                           </td>
                       </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Máy ghi</td>
-                          <td colspan="3" >${getContent(dataloger[0].code)}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Đầu đo vận tốc</td>
-                          <td colspan="3" >${getContent(
-                            sensor[0].sensor_speed
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Bộ điều khiển đầu đo vận tốc</td>
-                          <td colspan="3" >${getContent(
-                            sensor[0].remote_control
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Đầu đo gia tốc</td>
-                          <td colspan="3" >${getContent(
-                            sensor[0].sensor_accelerator
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Bộ lưu trữ số liệu</td>
-                          <td colspan="3" >${getContent(baler[0].code)}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Ác quy</td>
-                          <td colspan="3" >${getContent(batterys[0].code)}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Bộ nạp</td>
-                          <td colspan="3" >${getContent(
-                            batterys[0].charger
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Pin mặt trời</td>
-                          <td colspan="3" >${getContent(
-                            batterys[0].sun_battery
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Cáp nguồn</td>
-                          <td colspan="3" >${getContent(
-                            batterys[0].power_cable
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Cáp đầu đo vận tốc</td>
-                          <td colspan="3" >${getContent(
-                            sensor[0].cable_sensor_speed
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Cáp đầu đo gia tốc</td>
-                          <td colspan="3" >${getContent(
-                            sensor[0].cable_sensor_accelerator
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Cáp mạng</td>
-                          <td colspan="3" >${getContent(
-                            internet[0].cable_internet
-                          )}</td>
-                      </tr>
-                      <tr>
-                          <td class="fw-bold text-start">Internet</td>
-                          <td colspan="3" >${getContent(internet[0].code)}</td>
-                      </tr>
+                      ${row_dataloger.join("")}
+                      ${row_sensor.join("")}
+                      ${row_remote.join("")}  
+                      ${row_sensor_giatoc.join("")}
+                      ${row_baler.join("")}
+                      ${row_batterys.join("")}
+                      ${row_charger.join("")}
+                      ${row_sunbattery.join("")}
+                      ${row_cable.join("")}
+                      ${row_internet.join("")}
                       <tr>
                           <td class="fw-bold text-start">Ngày bắt đầu</td>
-                          <td colspan="3" >${getContent(
+                          <td  >${getContent(
                             result.graphic.attributes.active_date
                           )}</td>
+                          <td class="fw-bold text-start">Ngày kết thúc</td>
+                            <td  >${getContent(
+                              result.graphic.attributes.end_date
+                            )}</td>
                       </tr>
                     </table>
                   `);
+                  }
+                  // Người dùng thường
+                  if (Meteor.user() && Meteor.user().roles === "user") {
+                    $("#infoEquipmentContent").html(`         
+                  <table class="table table-bordered table-hover">
+                      <tr class="heading-table">
+                          <td class="fw-bold text-start">Thiết bị</td>
+                          <td class=" fw-bold ">Loại máy</td>
+                          <td  class=" fw-bold ">Serial</td>
+                          <td  class=" fw-bold ">Tình trạng</td>
+                      </tr>
+                      <tr>
+                          <td class="fw-bold text-center" colspan="5" style="background-color: #fff2cc;">${
+                            result.graphic.attributes.type
+                          }
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="fw-bold text-start">Mã trạm</td>
+                          <td colspan="3" >${getContent(
+                            result.graphic.attributes.code
+                          )}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="fw-bold text-start">Mã mạng trạm</td>
+                          <td colspan="3" >${getContent(
+                            result.graphic.attributes.network
+                          )}
+                          </td>
+                      </tr>
+                      ${row_dataloger_user.join("")}
+                      ${row_sensor_user.join("")}
+                      ${row_sensor_giatoc_user.join("")}
+                    </table>
+                  `);
+                  }
+                  // Người chỉnh sửa
+                  if (Meteor.user() && Meteor.user().roles === "editor") {
+                    $("#infoEquipmentContent").html(`         
+                    <table class="table table-bordered table-hover">
+                        <tr class="heading-table">
+                            <td class="fw-bold text-start">Thiết bị</td>
+                            <td class=" fw-bold ">Loại máy</td>
+                            <td  class=" fw-bold ">Serial</td>
+                            <td  class=" fw-bold ">Tình trạng</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-center" colspan="5" style="background-color: #fff2cc;">${
+                              result.graphic.attributes.type
+                            }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-start">Mã trạm</td>
+                            <td colspan="3" >${getContent(
+                              result.graphic.attributes.code
+                            )}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold text-start">Mã mạng trạm</td>
+                            <td colspan="3" >${getContent(
+                              result.graphic.attributes.network
+                            )}
+                            </td>
+                        </tr>
+                        ${row_dataloger_editor.join("")}
+                        ${row_sensor_editor.join("")}
+                        ${row_remote_editor.join("")}
+                        ${row_sensor_giatoc_editor.join("")}
+                        ${row_baler_editor.join("")}
+                        ${row_batterys.join("")}
+                        ${row_charger.join("")}
+                        ${row_sunbattery.join("")}
+                        ${row_cable.join("")}
+                        ${row_internet.join("")}
+                        <tr>
+                            <td class="fw-bold text-start">Ngày bắt đầu</td>
+                            <td  >${getContent(
+                              result.graphic.attributes.active_date
+                            )}</td>
+                            <td class="fw-bold text-start">Ngày kết thúc</td>
+                              <td  >${getContent(
+                                result.graphic.attributes.end_date
+                              )}</td>
+                        </tr>
+                      </table>
+                    `);
+                  }
                   // Đất đai
                   $("#infoLand").html(`
-                 <table class="table table-bordered">
+                 <table class="table table-bordered table-hover">
                     <tr class="heading-table">
                         <td class="fw-bold text-start">Nội dung</td>
                         <td class="fw-bold text-center">Diện tích</td>
+                        <td class="fw-bold text-center">Năm đưa vào sử dụng</td>
+                        <td class="fw-bold text-center">Tình trạng</td>
                     </tr>
-                    <tr>
-                        <td class="text-start">Tổng diện tích</td>
-                        <td class="text-center" >${getContent(
-                          land[0].total_area
-                        )}
-                        </td>
-                       
-                    </tr>
-                    <tr>
-                    <td class="text-start">Nhà làm việc</td>
-                    <td class="text-center" >${getContent(land[0].work_house)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Hầm đặt máy</td>
-                    <td class="text-center" >${getContent(land[0].tunnel)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Sân vườn</td>
-                    <td class=" text-center" >${getContent(land[0].yard)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Hàng rào, cổng</td>
-                    <td class=" text-center" >${getContent(land[0].gate)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Giấy tờ nhà đất</td>
-                    <td class="text-center" >${getContent(land[0].document)}
-                    </td>
-                   
-                    </tr>
-                  </table>
-                  
-                  `);
-                  // lịch sử đặt máy
-                  $("machineHistory").html(`
-                 <table class="table table-bordered">
-                    <tr>
-                        <td class="fw-bold text-start">Nội dung</td>
-                        <td class="fw-bold text-center">Diện tích</td>
-                    </tr>
-                    <tr>
-                        <td class="text-start">Tổng diện tích</td>
-                        <td class="text-center" >${getContent(
-                          land[0].total_area
-                        )}
-                        </td>
-                       
-                    </tr>
-                    <tr>
-                    <td class="text-start">Nhà làm việc</td>
-                    <td class="text-center" >${getContent(land[0].work_house)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Hầm đặt máy</td>
-                    <td class="text-center" >${getContent(land[0].tunnel)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Sân vườn</td>
-                    <td class=" text-center" >${getContent(land[0].yard)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Hàng rào, cổng</td>
-                    <td class=" text-center" >${getContent(land[0].gate)}
-                    </td>
-                   
-                    </tr>
-                    </tr>
-                    <tr>
-                    <td class="text-start">Giấy tờ nhà đất</td>
-                    <td class="text-center" >${getContent(land[0].document)}
-                    </td>
-                   
-                    </tr>
+                    ${row_land.join("")} 
                   </table>
                   
                   `);
@@ -1293,7 +1500,6 @@ Template.map_station.onRendered(() => {
           }
         }
         // basemap Gallery
-        console.log('this.state.get("listNetwork");', this.state);
         const basemapToggle = new BasemapToggle({
           view: view,
           nextBasemap: satellite,
@@ -1379,15 +1585,40 @@ Template.map_station.onRendered(() => {
 });
 
 Template.map_station.helpers({
-  listNetwork: function () {
-    var instance = Template.instance();
-    let t = [{ code: "hi" }];
-    if (instance.view.isRendered) {
-      // action
-      t = Template.instance().state.get("listNetwork");
-      console.log(t);
+  rolesCheck: (text) => {
+    let status = true;
+
+    if (!Meteor.user()) {
+      if (
+        text === "address_station" ||
+        text === "lat_station" ||
+        text === "long_station" ||
+        text === "height_station" ||
+        text === "tunnel_type"
+      ) {
+        status = false;
+      }
     }
-    return t;
+    return status; // look at the current user
+  },
+  rolesCheckManage: (text) => {
+    let status = true;
+    if (Meteor.user()) {
+      if (Meteor.user().roles === "user" || !Meteor.user().roles) {
+        status = false;
+      }
+    }
+    if (!Meteor.user()) {
+      status = false;
+    }
+    return status; // look at the current user
+  },
+  rolesCheck2: (text) => {
+    let status = true;
+    if (!Meteor.user()) {
+      status = false;
+    }
+    return status; // look at the current user
   },
 
   listInfo: () => {
@@ -1461,6 +1692,23 @@ Template.map_station.events({
   "click #shakemapHeading": (e) => {
     $("#pointShakemap").toggleClass("fa-plus-circle");
     $("#pointShakemap").toggleClass("fa-minus-circle");
+  },
+  "click #frequencyResponseHeading": (e) => {
+    $("#frequency_Response").toggleClass("fa-plus-circle");
+    $("#frequency_Response").toggleClass("fa-minus-circle");
+  },
+
+  "click #infoEquipmentHeading": (e) => {
+    $("#infoEquipment").toggleClass("fa-plus-circle");
+    $("#infoEquipment").toggleClass("fa-minus-circle");
+  },
+  "click #monitoringLogHeading": (e) => {
+    $("#monitoring_Log").toggleClass("fa-plus-circle");
+    $("#monitoring_Log").toggleClass("fa-minus-circle");
+  },
+  "click #machineHistoryHeading": (e) => {
+    $("#machine").toggleClass("fa-plus-circle");
+    $("#machine").toggleClass("fa-minus-circle");
   },
   "click  #sidebarCollapse": () => {
     $("#sidebarCollapse").toggleClass("active");

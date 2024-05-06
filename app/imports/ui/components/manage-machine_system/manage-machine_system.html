@@ -1,4 +1,4 @@
-<template name="manageBattery">
+<template name="manageMachineSystem">
   <style>
     @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
@@ -93,21 +93,17 @@
   <div class="manage-users row shadow">
     <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-station">
-        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm dữ liệu
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm Hệ thống máy mới
       </button>
     </div>
-    <table id="data_battery" class="table table-striped" style="width: 100%">
+    <table id="data_Remote" class="display" style="width: 100%">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Ắc quy</th>
-          <th>Năm trang bị ắc quy</th>
-          <th>Tình trạng ắc quy</th>
-          <th>Bộ nạp</th>
-          <th>Năm trang bị bộ nạp</th>
-          <th>Tình trạng bộ nạp</th>
-          <th>Pin mặt trời</th>
           <th>Mã trạm</th>
+          <th>Hệ thống máy</th>
+          <th>Ngày bắt đầu</th>
+          <th>Ngày kết thúc</th>
           <th></th>
         </tr>
       </thead>
@@ -128,19 +124,29 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Sửa dữ liệu</h3>
+          <h3 class="text-light">Sửa dữ liệu của Hệ thống máy</h3>
         </div>
+
         <div
           class="modal-body overflow-auto"
-          style="max-height: calc(90vh - 160px)"
+          style="height: calc(90vh - 160px)"
         >
           <form>
-            {{#each item in editbattery}} {{#if check item.type "text"}}
+            {{#each item in editRemote}} {{#if check item.type "id"}}
             <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-lg-8">
+              <div class="col-8">
+                <span id="{{item.id}}"></span>
+              </div>
+            </div>
+            {{else}} {{#if check item.type "text"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
                 <input
                   type="text"
                   class="form-control"
@@ -150,11 +156,11 @@
                 />
               </div>
             </div>
-            {{/if}} {{/each}}
+            {{/if}} {{/if}} {{/each}}
           </form>
         </div>
-        <div class="modal-footer mt-2">
-          <button class="btn btn-info save" id="save_edit_battery">
+        <div class="modal-footer w-100 mt-2">
+          <button class="btn btn-info save" id="save_edit_Remote">
             Xác nhận
           </button>
           <button id="close-modal" class="btn btn-danger">Đóng</button>
@@ -162,13 +168,13 @@
       </div>
     </div>
   </div>
-  <div id="modal_add_battery" class="_modal modal">
+  <div id="modal_add_Remote" class="_modal modal">
     <div
       class="_main p-0"
       style="
         display: grid;
 
-        max-height: 700px;
+        max-height: 90vh;
         overflow: auto;
         width: 30%;
         /* justify-items: center; */
@@ -177,19 +183,29 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Thêm dữ liệu</h3>
+          <h3 class="text-light">Thêm dữ liệu Hệ thống máy</h3>
         </div>
+
         <div
           class="modal-body overflow-auto"
-          style="max-height: calc(90vh - 160px)"
+          style="height: calc(90vh - 160px)"
         >
           <form>
-            {{#each item in addbattery}} {{#if check item.type "text"}}
+            {{#each item in addRemote}} {{#if check item.type "id"}}
             <div class="row my-2 d-flex align-items-center">
-              <label for="recipient-name" class="col-lg-4 col-form-label"
+              <label for="recipient-name" class="col-4 col-form-label"
                 >{{item.text}}</label
               >
-              <div class="col-lg-8">
+              <div class="col-8">
+                <span id="{{item.id}}"></span>
+              </div>
+            </div>
+            {{else}} {{#if check item.type "text"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
                 <input
                   type="text"
                   class="form-control"
@@ -199,11 +215,11 @@
                 />
               </div>
             </div>
-            {{/if}} {{/each}}
+            {{/if}} {{/if}} {{/each}}
           </form>
         </div>
         <div class="modal-footer w-100 mt-2">
-          <button class="btn btn-info save" id="save_add_battery">
+          <button class="btn btn-info save" id="save_add_Remote">
             Xác nhận
           </button>
           <button id="close-modal" class="btn btn-danger">Đóng</button>
@@ -211,29 +227,28 @@
       </div>
     </div>
   </div>
-  <div id="modal_delete_battery" class="_modal modal">
+  <div id="modal_delete_Remote" class="_modal modal">
     <div
       class="_main p-0"
       style="
         display: grid;
         overflow: auto;
         width: 30%;
-        max-height: 300px;
+        height: 300px;
         /* justify-items: center; */
         /* align-content: stretch; */
       "
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Xóa dữ liệu</h3>
+          <h3 class="text-light">Xóa dữ liệu của Hệ thống máy</h3>
         </div>
+
         <div class="modal-body">
           <h5 id="content_delete"></h5>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-info save" id="delete_battery">
-            Xác nhận
-          </button>
+        <div class="modal-footer w-100 mt-2">
+          <button class="btn btn-info save" id="delete_Remote">Xác nhận</button>
           <button id="close-modal" class="btn btn-danger">Hủy</button>
         </div>
       </div>

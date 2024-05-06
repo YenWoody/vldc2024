@@ -10,11 +10,11 @@
         class="pb-4 pt-2 px-2 position-relative z-2 bg-white overflow-auto h-100 border-right"
       >
         <div class="mb-1">
-          <h3 class="text-black text-center heading p-2 text-uppercase">
+          <h3 class="text-light text-center heading p-2 text-uppercase">
             Trạm quan trắc
           </h3>
           <div class="d-grid">
-            <div class="d-flex mb-2 rounded" style="background-color: #e2f0d9">
+            <div class="d-flex mb-2 rounded bg-light">
               <button
                 type="button"
                 class="w-50 p-2 m-2 btn btn-light activeButton p-0"
@@ -407,8 +407,8 @@
             </div>
           </div>
         </div>
-        <div id="popup">
-          <div class="m-2 d-flex align-items-center">
+        <div id="popup" class="d-flex flex-column">
+          <div class="p-2 shadow d-flex align-items-center">
             <button
               class="bg-white me-2"
               id="closebtn"
@@ -418,134 +418,146 @@
             </button>
             <span class="user-select-none">Thông tin trạm quan trắc</span>
           </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-            >
-              Thông tin chung
-            </div>
+          <div class="mt-1 overflow-auto">
             <div class="mb-2">
-              <table>
-                {{ #each list in listInfo}}
-                <tr>
-                  <td class="fw-bold">{{list.name}}</td>
-                  <td id="{{list.id}}">Chưa có thông tin</td>
-                </tr>
-                {{/each}}
-              </table>
-            </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#infoPersonnel"
-              aria-expanded="false"
-              aria-controls="infoPersonnel"
-              id="magHeading"
-            >
-              <i id="point" class="fa fa-plus-circle me-1"> </i>
-              Thông tin nhân sự
-            </div>
-
-            <div class="collapse p-1" id="infoPersonnel">Chưa có thông tin</div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#infoEquip"
-              aria-expanded="false"
-              aria-controls="infoEquip"
-              id="infoEquipment"
-            >
-              <i id="infoEquipment" class="fa fa-plus-circle me-1"> </i>
-              Thông tin trang thiết bị
-            </div>
-
-            <div class="collapse" id="infoEquip">
               <div
-                id="infoEquipmentContent"
-                style="max-height: 50vh"
-                class="overflow-auto p-1 text-center"
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
               >
+                Thông tin chung
+              </div>
+              <div class="mb-2">
+                <table class="table table-hover table-bordered">
+                  <tbody>
+                    {{ #each list in listInfo}} {{#if rolesCheck list.id}}
+                    <tr>
+                      <td class="fw-bold">{{list.name}}</td>
+                      <td id="{{list.id}}">Chưa có thông tin</td>
+                    </tr>
+                    {{/if}} {{/each}}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {{#if rolesCheckManage}}
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#infoPersonnel"
+                aria-expanded="false"
+                aria-controls="infoPersonnel"
+                id="magHeading"
+              >
+                <i id="point" class="fa fa-plus-circle me-1"> </i>
+                Thông tin nhân sự
+              </div>
+
+              <div class="collapse p-1" id="infoPersonnel">
                 Chưa có thông tin
               </div>
             </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#divLand"
-              aria-expanded="false"
-              aria-controls="divLand"
-              id="wavePictureHeading"
-            >
-              <i id="pointWavePicture" class="fa fa-plus-circle me-1"> </i>
-              Thông tin đất đai, nhà cửa
-            </div>
-
-            <div class="collapse" id="divLand">
+            {{/if}} {{#if rolesCheck2}}
+            <div class="my-2">
               <div
-                id="infoLand"
-                style="max-height: 50vh"
-                class="overflow-auto p-1 text-center"
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#infoEquip"
+                aria-expanded="false"
+                aria-controls="infoEquip"
+                id="infoEquipmentHeading"
               >
-                Chưa có thông tin
+                <i id="infoEquipment" class="fa fa-plus-circle me-1"> </i>
+                Thông tin trang thiết bị
+              </div>
+
+              <div class="collapse" id="infoEquip">
+                <div
+                  id="infoEquipmentContent"
+                  style="max-height: 50vh"
+                  class="overflow-auto p-1 text-center"
+                >
+                  Chưa có thông tin
+                </div>
               </div>
             </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#machineHistory"
-              aria-expanded="false"
-              aria-controls="machineHistory"
-              id="shakemapHeading"
-            >
-              <i id="pointShakemap" class="fa fa-plus-circle me-1"> </i>
-              Lịch sử đặt máy
-            </div>
+            {{/if}} {{#if rolesCheckManage}}
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#divLand"
+                aria-expanded="false"
+                aria-controls="divLand"
+                id="wavePictureHeading"
+              >
+                <i id="pointWavePicture" class="fa fa-plus-circle me-1"> </i>
+                Thông tin đất đai, nhà cửa
+              </div>
 
-            <div class="collapse" id="machineHistory">
-              <div class="text-center">Chưa có thông tin</div>
+              <div class="collapse" id="divLand">
+                <div
+                  id="infoLand"
+                  style="max-height: 50vh"
+                  class="overflow-auto p-1 text-center"
+                >
+                  Chưa có thông tin
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#monitoringLog"
-              aria-expanded="false"
-              aria-controls="monitoringLog"
-              id="shakemapHeading"
-            >
-              <i id="pointShakemap" class="fa fa-plus-circle me-1"> </i>
-              Nhật ký quan trắc
-            </div>
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#machineHistory"
+                aria-expanded="false"
+                aria-controls="machineHistory"
+                id="machineHistoryHeading"
+              >
+                <i id="machine" class="fa fa-plus-circle me-1"> </i>
+                Lịch sử đặt máy
+              </div>
 
-            <div class="collapse" id="monitoringLog">
-              <div class="text-center">Chưa có thông tin</div>
+              <div class="collapse" id="machineHistory">
+                <div class="text-center mx-4" id="machine_history">
+                  Chưa có thông tin
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="my-2">
-            <div
-              class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              data-bs-toggle="collapse"
-              data-bs-target="#frequencyResponse"
-              aria-expanded="false"
-              aria-controls="frequencyResponse"
-              id="shakemapHeading"
-            >
-              <i id="pointShakemap" class="fa fa-plus-circle me-1"> </i>
-              Đáp ứng tần số
-            </div>
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#monitoringLog"
+                aria-expanded="false"
+                aria-controls="monitoringLog"
+                id="monitoringLogHeading"
+              >
+                <i id="monitoring_Log" class="fa fa-plus-circle me-1"> </i>
+                Nhật ký quan trắc
+              </div>
 
-            <div class="collapse" id="frequencyResponse">
-              <div class="text-center">Chưa có thông tin</div>
+              <div class="collapse" id="monitoringLog">
+                <div class="text-center">Chưa có thông tin</div>
+              </div>
             </div>
+            <div class="my-2">
+              <div
+                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
+                data-bs-toggle="collapse"
+                data-bs-target="#frequencyResponse"
+                aria-expanded="false"
+                aria-controls="frequencyResponse"
+                id="frequencyResponseHeading"
+              >
+                <i id="frequency_Response" class="fa fa-plus-circle me-1"> </i>
+                Đáp ứng tần số
+              </div>
+
+              <div class="collapse" id="frequencyResponse">
+                <div class="text-center">Chưa có thông tin</div>
+              </div>
+            </div>
+            {{/if}}
           </div>
         </div>
       </div>

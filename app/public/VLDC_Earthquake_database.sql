@@ -7,15 +7,23 @@
   "height" float,
   "geometry" geometry,
   "network" varchar,
-  "type" varchar,
   "tunnel_type" varchar,
-  "active_date" varchar,
+  "active_date" float,
   "status" varchar,
   "address" varchar,
   "machineHistory" varchar
 );
 
 -- Key là số thứ tự tự thêm vào khi import dữ liệu Trạm
+CREATE TABLE "machine_system" (
+  "id" SERIAL PRIMARY KEY,
+  "id_stat" integer,
+  "station_code" varchar,
+  "code" varchar,
+  "start_time" timestamp,
+  "end_time" timestamp
+);
+
 -- Baler/Serial	
 CREATE TABLE "baler" (
   "id" SERIAL PRIMARY KEY,
@@ -23,6 +31,17 @@ CREATE TABLE "baler" (
   "code" varchar,
   "serial" varchar,
   "status" varchar,
+  "station_code" varchar
+);
+
+-- Cáp
+CREATE TABLE "cable" (
+  "id" SERIAL PRIMARY KEY,
+  "id_stat" integer,
+  "power_cable" varchar,
+  "cable_internet" varchar,
+  "cable_sensor_speed" varchar,
+  "cable_sensor_accelerator" varchar,
   "station_code" varchar
 );
 
@@ -42,7 +61,11 @@ CREATE TABLE "battery" (
 );
 
 -- Network
-CREATE TABLE "network" ("id" SERIAL PRIMARY KEY, "code" varchar);
+CREATE TABLE "network" (
+  "id" SERIAL PRIMARY KEY,
+  "code" varchar,
+  "net" varchar
+);
 
 -- Quan trắc viên/Bảo vệ
 CREATE TABLE "employee" (
@@ -63,6 +86,7 @@ CREATE TABLE "dataloger" (
   "id_stat" integer,
   "code" varchar,
   "serial" varchar,
+  "serial_q" varchar,
   "status" varchar,
   "station_code" varchar
 );
@@ -73,7 +97,6 @@ CREATE TABLE "internet" (
   "id_stat" integer,
   "code" varchar,
   "ip" varchar,
-  "cable_internet" varchar,
   "station_code" varchar
 );
 
@@ -101,17 +124,23 @@ CREATE TABLE "sensor" (
   "sensor_speed" varchar,
   "serial_speed" varchar,
   "status_speed" varchar,
-  "remote_control" varchar,
-  "serial_control" varchar,
-  "status_control" varchar,
   "sensor_accelerator" varchar,
   "serial_accelerator" varchar,
   "status_accelerator" varchar,
-  "cable_sensor_speed" varchar,
-  "cable_sensor_accelerator" varchar,
   "station_code" varchar
 );
 
+-- Remote	
+CREATE TABLE "remote" (
+  "id" SERIAL PRIMARY KEY,
+  "id_stat" integer,
+  "remote_control" varchar,
+  "serial_control" varchar,
+  "status_control" varchar,
+  "station_code" varchar
+);
+
+-------------------------------------------------------------------
 CREATE TABLE "raw_data" (
   "id" SERIAL PRIMARY KEY,
   "name" varchar,

@@ -93,14 +93,15 @@
   <div class="manage-users row shadow">
     <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-station">
-        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm network mới
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm mạng trạm mới
       </button>
     </div>
     <table id="data_network" class="table table-striped" style="width: 100%">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Network</th>
+          <th>STT</th>
+          <th>Mã mạng trạm</th>
+          <th>Mạng lưới</th>
           <th></th>
         </tr>
       </thead>
@@ -127,14 +128,28 @@
           <form>
             <div class="mb-3">
               <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
-                >Network:</label
+                >Mã mạng:</label
+              >
+              <div class="col-8 col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="code"
+                  placeholder="Tên mạng"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
+                >Mạng lưới:</label
               >
               <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
                   id="network"
-                  placeholder="Tên mạng"
+                  placeholder="Tên mạng lưới"
                   value=""
                 />
               </div>
@@ -172,13 +187,27 @@
           <form>
             <div class="mb-3">
               <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
-                >Network:</label
+                >Mã mạng:</label
               >
               <div class="col-8 col-lg-8">
                 <input
                   type="text"
                   class="form-control"
                   placeholder="Tên mạng"
+                  id="code_"
+                  value=""
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
+                >Mạng lưới:</label
+              >
+              <div class="col-8 col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Tên mạng lưới"
                   id="network_"
                   value=""
                 />

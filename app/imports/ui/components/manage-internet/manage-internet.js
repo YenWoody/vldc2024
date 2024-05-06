@@ -47,7 +47,6 @@ function callDatatable() {
         { data: "id" },
         { data: "code" },
         { data: "ip" },
-        { data: "cable_internet" },
         { data: "station_code" },
         {
           data: null,
@@ -75,7 +74,7 @@ Template.manageInternet.onRendered(async () => {
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
   }
-  const keyNames = ["code", "ip", "cable_internet", "station_code"];
+  const keyNames = ["code", "ip", "station_code"];
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
   }
@@ -188,7 +187,6 @@ Template.manageInternet.helpers({
     const t = [
       { id: "code", text: "Loại mạng", type: "text" },
       { id: "ip", text: "IP", type: "text" },
-      { id: "cable_internet", text: "Cáp mạng", type: "text" },
       { id: "station_code", text: "Mã trạm", type: "text" },
     ];
     return t;
@@ -197,7 +195,6 @@ Template.manageInternet.helpers({
     const t = [
       { id: "code_a", text: "Loại mạng", type: "text" },
       { id: "ip_a", text: "IP", type: "text" },
-      { id: "cable_internet_a", text: "Cáp mạng", type: "text" },
       { id: "station_code_a", text: "Mã trạm", type: "text" },
     ];
     return t;

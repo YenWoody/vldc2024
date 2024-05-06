@@ -1,8 +1,7 @@
 import { Meteor } from "meteor/meteor";
-import "./manage-network.html";
+import "./manage-remote.html";
 import "../not_access/not_access";
 import { $ } from "meteor/jquery";
-
 import DataTable from "datatables.net-dt";
 import "datatables.net-responsive-dt";
 import { loadCss } from "esri-loader";
@@ -11,27 +10,25 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageNetwork.onCreated(function () {
+Template.manageRemotes.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
   loadCss(
     "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
   );
   loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
-  // datatables(window, $);
-  // datatables_bs(window, $);
 });
-function callDatatable() {
-  Meteor.call("dataNetwork", function (error, resultdata) {
+function loadDatatable() {
+  Meteor.call("dataRemote", function (error, resultdata) {
     if (error) {
-      reject(error);
+      console.log(error);
     }
-    const dt = resultdata.rows;
 
-    $("#data_network").DataTable().clear().destroy();
-    new DataTable("#data_network", {
+    const dt = resultdata.rows;
+    console.log(dt, "dt");
+    $("#data_Remote").DataTable().clear().destroy();
+    new DataTable("#data_Remote", {
       data: dt,
       paging: true,
       destroy: true,
@@ -40,15 +37,17 @@ function callDatatable() {
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
-        info: "Hiển thị từ _START_ đến _END_ network",
-        infoEmpty: "Hiển thị 0 network",
-        lengthMenu: "Hiển thị _MENU_ network mỗi trang",
-        infoFiltered: "(Lọc từ tổng số _MAX_ network)",
+        info: "Hiển thị từ _START_ đến _END_ dữ liệu",
+        infoEmpty: "Hiển thị 0 dữ liệu",
+        lengthMenu: "Hiển thị _MENU_ Remote mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ dữ liệu)",
       },
       columns: [
         { data: "id" },
-        { data: "code" },
-        { data: "net" },
+        { data: "remote_control" },
+        { data: "serial_control" },
+        { data: "status_control" },
+        { data: "station_code" },
         {
           data: null,
           className: "dt-center control",
@@ -66,23 +65,27 @@ function callDatatable() {
     });
   });
 }
-Template.manageNetwork.onRendered(async () => {
+Template.manageRemotes.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
-  $("#dashboard-title").html("Quản lí các mạng trạm");
-  callDatatable();
+  $("#dashboard-title").html("Quản lí bộ điều khiển");
+
+  loadDatatable();
   document.getElementById("add-station").onclick = async function () {
-    // document.getElementById('stt_network_').innerHTML = maxKey + 1;
-    document.getElementById("modal_add_network").style.display = "block";
-    document.getElementById("save_add_network").onclick = function () {
-      const codes = document.getElementById("code_").value;
-      const networks = document.getElementById("network_").value;
+    // document.getElementById('stt_Sensor_').innerHTML = maxKey + 1;
+    document.getElementById("modal_add_Remote").style.display = "block";
+    document.getElementById("save_add_Remote").onclick = function () {
+      function checkEmpty(data) {
+        return data ? data : "Chưa có thông tin";
+      }
       const insert = {
-        code: codes,
-        net: networks,
+        remote_control: checkEmpty($("#remote_control_a").val()),
+        serial_control: checkEmpty($("#serial_control_a").val()),
+        status_control: checkEmpty($("#status_control_a").val()),
+        station_code: checkEmpty($("#station_code_a").val()),
       };
-      Meteor.call("insertNetwork", insert, (error) => {
+      Meteor.call("insertRemote", insert, (error) => {
         if (error) {
           Swal.fire({
             icon: "error",
@@ -91,39 +94,49 @@ Template.manageNetwork.onRendered(async () => {
             text: error.reason,
           });
         } else {
-          callDatatable();
-          document.getElementById("modal_add_network").style.display = "none";
+          loadDatatable();
+          document.getElementById("modal_add_Remote").style.display = "none";
           Swal.fire({
             icon: "success",
             heightAuto: false,
             title: "Chúc mừng!",
-            text: "Lưu dữ liệu thành công",
+            text: "Thêm dữ liệu thành công!",
           });
         }
       });
     };
   };
   // Edit Record
-  $("#data_network ").on("click", "td.control", function (e) {
+  $("#data_Remote ").on("click", "td.control", function (e) {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
-      const data = $("#data_network").DataTable().row(this).data();
+      const data = $("#data_Remote").DataTable().row(this).data();
       console.log(data, "data");
       document.getElementById("_modal").style.display = "block";
-      document.getElementById("code").value = data.code;
-      document.getElementById("network").value = data.net;
+      const keys = [
+        "remote_control",
+        "serial_control",
+        "status_control",
+
+        "station_code",
+      ];
+      keys.forEach((e) => {
+        document.getElementById(e).value = data[e];
+      });
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
-      document.getElementById("save_edit_network").onclick = function () {
-        const network1 = checkEmpty(document.getElementById("network").value);
-        const code1 = checkEmpty(document.getElementById("code").value);
+      document.getElementById("save_edit_Remote").onclick = function () {
         const insert = {
           key: data.id,
-          code: code1,
-          net: network1,
+
+          remote_control: checkEmpty($("#remote_control").val()),
+          serial_control: checkEmpty($("#serial_control").val()),
+          status_control: checkEmpty($("#status_control").val()),
+
+          station_code: checkEmpty($("#station_code").val()),
         };
-        Meteor.call("editNetwork", insert, (error) => {
+        Meteor.call("editRemote", insert, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -132,7 +145,7 @@ Template.manageNetwork.onRendered(async () => {
               text: error.reason,
             });
           } else {
-            callDatatable();
+            loadDatatable();
             document.getElementById("_modal").style.display = "none";
             Swal.fire({
               icon: "success",
@@ -144,13 +157,13 @@ Template.manageNetwork.onRendered(async () => {
         });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
-      const data = $("#data_network").DataTable().row(this).data();
-      document.getElementById("modal_delete_network").style.display = "block";
+      const data = $("#data_Remote").DataTable().row(this).data();
+      document.getElementById("modal_delete_Remote").style.display = "block";
       document.getElementById(
         "content_delete"
       ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
-      document.getElementById("delete_network").onclick = function () {
-        Meteor.call("deleteNetwork", data.id, (error) => {
+      document.getElementById("delete_Remote").onclick = function () {
+        Meteor.call("deleteRemote", data.id, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -159,8 +172,8 @@ Template.manageNetwork.onRendered(async () => {
               text: error.reason,
             });
           } else {
-            callDatatable();
-            document.getElementById("modal_delete_network").style.display =
+            loadDatatable();
+            document.getElementById("modal_delete_Remote").style.display =
               "none";
             Swal.fire({
               icon: "success",
@@ -175,16 +188,44 @@ Template.manageNetwork.onRendered(async () => {
   });
 });
 
-Template.manageNetwork.events({
+Template.manageRemotes.events({
   "click #close-modal": function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_network").style.display = "none";
-    document.getElementById("modal_delete_network").style.display = "none";
+    document.getElementById("modal_add_Remote").style.display = "none";
+    document.getElementById("modal_delete_Remote").style.display = "none";
   },
 });
-Template.manageNetwork.helpers({
+Template.manageRemotes.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
+  },
+  editRemote: () => {
+    const t = [
+      { id: "remote_control", text: "Bộ điều khiển", type: "text" },
+      { id: "serial_control", text: "Serial bộ điều khiển", type: "text" },
+      { id: "status_control", text: "Tình trạng bộ điều khiển", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "text" },
+    ];
+    return t;
+  },
+  addRemote: () => {
+    const t = [
+      { id: "remote_control_a", text: "Bộ điều khiển", type: "text" },
+      { id: "serial_control_a", text: "Serial bộ điều khiển", type: "text" },
+      {
+        id: "status_control_a",
+        text: "Tình trạng bộ điều khiển",
+        type: "text",
+      },
+
+      { id: "station_code_a", text: "Mã trạm", type: "text" },
+    ];
+    return t;
+  },
+  check: (a, b) => {
+    if (a === b) {
+      return true;
+    }
   },
   isUserLogged() {
     return isUserLogged();

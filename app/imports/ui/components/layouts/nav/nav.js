@@ -5,8 +5,6 @@ import "./nav.html";
 
 Template.nav.onCreated(function () {
   var current = FlowRouter.current();
-  console.log(FlowRouter.getRouteName(), "FlowRouter.getRouteName()");
-  console.log(FlowRouter.getParam());
 });
 
 Template.nav.onRendered(() => {
@@ -98,6 +96,30 @@ Template.nav.helpers({
         name: "Dashboard",
         code: "dashboard",
         link: "/dashboard",
+      },
+    ];
+  },
+  listsGuest() {
+    return [
+      {
+        name: "Trang chủ",
+        code: "home",
+        link: "/",
+      },
+      {
+        name: "Danh mục động đất",
+        code: "category",
+        link: "/category",
+      },
+      {
+        name: "Trạm quan trắc",
+        code: "station",
+        link: "/station",
+      },
+      {
+        name: "Số liệu",
+        code: "statistics",
+        link: "/statistics",
       },
     ];
   },
