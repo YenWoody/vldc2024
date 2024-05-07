@@ -382,6 +382,24 @@ Meteor.methods({
               WHERE id = ${id};`
     );
   },
+  editMachine: async function (data) {
+    return await pool.query(
+      `UPDATE "machine_system"
+            SET "code" = '${data.code}',"start_time" = '${data.start_time}', "end_time" = '${data.end_time}',"station_code" = '${data.station_code}'
+            WHERE "id" = ${data.key};`
+    );
+  },
+  insertMachine: async function (data) {
+    return await pool.query(
+      `INSERT INTO "machine_system" ("code","start_time","end_time","station_code") VALUES ('${data.code}','${data.start_time}','${data.end_time}','${data.station_code}')`
+    );
+  },
+  deleteMachine: async function (id) {
+    return await pool.query(
+      `DELETE FROM machine_system
+              WHERE id = ${id};`
+    );
+  },
   editLand: async function (data) {
     return await pool.query(
       `UPDATE "land"
@@ -741,6 +759,18 @@ Meteor.methods({
       .query(
         `SELECT *
           FROM sensor;`
+      )
+      .then((data) => {
+        return data;
+      });
+
+    return result;
+  },
+  dataMachine: () => {
+    const result = pool
+      .query(
+        `SELECT *
+          FROM machine_system;`
       )
       .then((data) => {
         return data;
@@ -1331,12 +1361,30 @@ Meteor.methods({
                     let machineSystem_full = machineSystem
                       .map((es) => {
                         es.id_stat = rows[0].id_key;
+                        const dtStr = es.start_time;
+                        const dtStr_end = es.end_time;
+                        let date_start = "Chưa có thông tin";
+                        let date_end = "Chưa có thông tin";
+                        try {
+                          if (dtStr) {
+                            const [d, m, y] = dtStr.split(/-|\//); // splits "26-02-2012" or "26/02/2012"
+                            date_start = d + "/" + m + "/" + y;
+                          }
+                          if (dtStr_end) {
+                            const [d_end, m_end, y_end] =
+                              dtStr_end.split(/-|\//); // splits "26-02-2012" or "26/02/2012"
+                            date_end = d_end + "/" + m_end + "/" + y_end;
+                          }
+                          es.start_time = date_start;
+                          es.end_time = date_end;
+                        } catch (e) {
+                          console.log(e);
+                        }
                         return `(${cols
                           .map((e) => `$${values.push(es[e])}`)
                           .join(", ")})`;
                       })
                       .join(", ");
-
                     return pool.query(
                       `INSERT INTO "machine_system"
                                 (${cols.map((e) => `"${e}"`).join(", ")})

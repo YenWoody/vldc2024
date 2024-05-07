@@ -91,7 +91,7 @@ Template.dashboardTemplate.helpers({
       {
         content: "Quản lý hệ thống máy",
         link: "/manage-machine-system",
-        class: "bi bi-inboxes-fill me-2",
+        class: "bi bi-cpu me-2",
       },
       {
         content: "Quản lý sự kiện động đất",
@@ -136,7 +136,7 @@ Template.dashboardTemplate.helpers({
       {
         content: "Quản lý bộ điều khiển",
         link: "/manage-remote",
-        class: "bi bi-bezier2 me-2",
+        class: "fa fa-gamepad me-2",
       },
       {
         content: "Quản lý nguồn điện",

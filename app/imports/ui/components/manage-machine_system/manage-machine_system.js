@@ -20,15 +20,15 @@ Template.manageMachineSystem.onCreated(function () {
   loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
 function loadDatatable() {
-  Meteor.call("dataRemote", function (error, resultdata) {
+  Meteor.call("dataMachine", function (error, resultdata) {
     if (error) {
       console.log(error);
     }
 
     const dt = resultdata.rows;
     console.log(dt, "dt");
-    $("#data_Remote").DataTable().clear().destroy();
-    new DataTable("#data_Remote", {
+    $("#data_MachineSystem").DataTable().clear().destroy();
+    new DataTable("#data_MachineSystem", {
       data: dt,
       paging: true,
       destroy: true,
@@ -39,7 +39,7 @@ function loadDatatable() {
         emptyTable: "Dữ liệu chưa tải thành công",
         info: "Hiển thị từ _START_ đến _END_ dữ liệu",
         infoEmpty: "Hiển thị 0 dữ liệu",
-        lengthMenu: "Hiển thị _MENU_ Remote mỗi trang",
+        lengthMenu: "Hiển thị _MENU_ Machine mỗi trang",
         infoFiltered: "(Lọc từ tổng số _MAX_ dữ liệu)",
       },
       columns: [
@@ -74,18 +74,18 @@ Template.manageMachineSystem.onRendered(async () => {
   loadDatatable();
   document.getElementById("add-station").onclick = async function () {
     // document.getElementById('stt_Sensor_').innerHTML = maxKey + 1;
-    document.getElementById("modal_add_Remote").style.display = "block";
-    document.getElementById("save_add_Remote").onclick = function () {
+    document.getElementById("modal_add_Machine").style.display = "block";
+    document.getElementById("save_add_Machine").onclick = function () {
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
       const insert = {
-        remote_control: checkEmpty($("#remote_control_a").val()),
-        serial_control: checkEmpty($("#serial_control_a").val()),
-        status_control: checkEmpty($("#status_control_a").val()),
+        code: checkEmpty($("#code_a").val()),
+        start_time: checkEmpty($("#start_time_a").val()),
+        end_time: checkEmpty($("#end_time_a").val()),
         station_code: checkEmpty($("#station_code_a").val()),
       };
-      Meteor.call("insertRemote", insert, (error) => {
+      Meteor.call("insertMachine", insert, (error) => {
         if (error) {
           Swal.fire({
             icon: "error",
@@ -95,7 +95,7 @@ Template.manageMachineSystem.onRendered(async () => {
           });
         } else {
           loadDatatable();
-          document.getElementById("modal_add_Remote").style.display = "none";
+          document.getElementById("modal_add_Machine").style.display = "none";
           Swal.fire({
             icon: "success",
             heightAuto: false,
@@ -107,36 +107,55 @@ Template.manageMachineSystem.onRendered(async () => {
     };
   };
   // Edit Record
-  $("#data_Remote ").on("click", "td.control", function (e) {
+  $("#data_MachineSystem ").on("click", "td.control", function (e) {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
-      const data = $("#data_Remote").DataTable().row(this).data();
+      const data = $("#data_MachineSystem").DataTable().row(this).data();
       console.log(data, "data");
       document.getElementById("_modal").style.display = "block";
-      const keys = [
-        "remote_control",
-        "serial_control",
-        "status_control",
+      const keys = ["code", "station_code"];
 
-        "station_code",
-      ];
+      if (data["start_time"] === "Chưa có thông tin") {
+        document.getElementById("start_time").value = "";
+      } else {
+        const [d, m, y] = data["start_time"].split(/-|\//); // splits "26-02-2012" or "26/02/2012"
+        date_start = y + "-" + m + "-" + d;
+        console.log(date_start, "date_start");
+        document.getElementById("start_time").value = date_start;
+      }
+      if (data["end_time"] === "Chưa có thông tin") {
+        document.getElementById("end_time").value = "";
+      } else {
+        const [d_end, m_end, y_end] = data["end_time"].split(/-|\//); // splits "26-02-2012" or "26/02/2012"
+        date_end = y_end + "-" + m_end + "-" + d_end;
+        console.log(date_end, "date_end");
+        document.getElementById("end_time").value = date_end;
+      }
+
       keys.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
-      document.getElementById("save_edit_Remote").onclick = function () {
+      document.getElementById("save_edit_Machine").onclick = function () {
+        const [year, month, day] = $("#start_time").val().split(/-|\//);
+        const [year_end, month_end, day_end] = $("#end_time")
+          .val()
+          .split(/-|\//);
+
         const insert = {
           key: data.id,
-
-          remote_control: checkEmpty($("#remote_control").val()),
-          serial_control: checkEmpty($("#serial_control").val()),
-          status_control: checkEmpty($("#status_control").val()),
-
+          code: checkEmpty($("#code").val()),
+          start_time: year
+            ? day + "/" + month + "/" + year
+            : "Chưa có thông tin",
+          end_time: year_end
+            ? day_end + "/" + month_end + "/" + year_end
+            : "Chưa có thông tin",
           station_code: checkEmpty($("#station_code").val()),
         };
-        Meteor.call("editRemote", insert, (error) => {
+        Meteor.call("editMachine", insert, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -157,13 +176,13 @@ Template.manageMachineSystem.onRendered(async () => {
         });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
-      const data = $("#data_Remote").DataTable().row(this).data();
-      document.getElementById("modal_delete_Remote").style.display = "block";
+      const data = $("#data_MachineSystem").DataTable().row(this).data();
+      document.getElementById("modal_delete_Machine").style.display = "block";
       document.getElementById(
         "content_delete"
       ).innerHTML = `Sau khi xác nhận dữ liệu sẽ bị xóa và không khôi phục lại được!`;
-      document.getElementById("delete_Remote").onclick = function () {
-        Meteor.call("deleteRemote", data.id, (error) => {
+      document.getElementById("delete_Machine").onclick = function () {
+        Meteor.call("deleteMachine", data.id, (error) => {
           if (error) {
             Swal.fire({
               icon: "error",
@@ -173,7 +192,7 @@ Template.manageMachineSystem.onRendered(async () => {
             });
           } else {
             loadDatatable();
-            document.getElementById("modal_delete_Remote").style.display =
+            document.getElementById("modal_delete_Machine").style.display =
               "none";
             Swal.fire({
               icon: "success",
@@ -191,28 +210,28 @@ Template.manageMachineSystem.onRendered(async () => {
 Template.manageMachineSystem.events({
   "click #close-modal": function () {
     document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_Remote").style.display = "none";
-    document.getElementById("modal_delete_Remote").style.display = "none";
+    document.getElementById("modal_add_Machine").style.display = "none";
+    document.getElementById("modal_delete_Machine").style.display = "none";
   },
 });
 Template.manageMachineSystem.helpers({
   users: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
   },
-  editRemote: () => {
+  editMachine: () => {
     const t = [
       { id: "code", text: "Hệ thống máy", type: "text" },
-      { id: "start_time", text: "Ngày bắt đầu", type: "text" },
-      { id: "end_time", text: "Ngày kết thúc", type: "text" },
+      { id: "start_time", text: "Ngày bắt đầu", type: "date" },
+      { id: "end_time", text: "Ngày kết thúc", type: "date" },
       { id: "station_code", text: "Mã trạm", type: "text" },
     ];
     return t;
   },
-  addRemote: () => {
+  addMachine: () => {
     const t = [
       { id: "code_a", text: "Hệ thống máy", type: "text" },
-      { id: "start_time_a", text: "Ngày bắt đầu", type: "text" },
-      { id: "end_time_a", text: "Ngày kết thúc", type: "text" },
+      { id: "start_time_a", text: "Ngày bắt đầu", type: "date" },
+      { id: "end_time_a", text: "Ngày kết thúc", type: "date" },
       { id: "station_code_a", text: "Mã trạm", type: "text" },
     ];
     return t;

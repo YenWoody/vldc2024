@@ -20,8 +20,8 @@ CREATE TABLE "machine_system" (
   "id_stat" integer,
   "station_code" varchar,
   "code" varchar,
-  "start_time" timestamp,
-  "end_time" timestamp
+  "start_time" varchar,
+  "end_time" varchar
 );
 
 -- Baler/Serial	

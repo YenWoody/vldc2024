@@ -21,18 +21,6 @@ Template.map_station.onCreated(async () => {
   );
   // datatables(window, $);
   // datatables_bs(window, $);
-  function dataNetwork() {
-    return new Promise(function (resolve, reject) {
-      Meteor.call("dataNetwork", function (error, resultdata) {
-        if (error) {
-          reject(error);
-        }
-        resolve(resultdata.rows);
-      });
-    });
-  }
-  const dataNetworks = await dataNetwork();
-  this.dataNetwork = await dataNetworks;
 });
 Meteor.startup(function () {
   $.getScript("/plugins/js/jquery.sparkline.min.js");
@@ -114,6 +102,16 @@ Template.map_station.onRendered(() => {
         function dataBalers() {
           return new Promise(function (resolve, reject) {
             Meteor.call("dataBaler", function (error, result) {
+              if (error) {
+                reject(error);
+              }
+              resolve(result.rows);
+            });
+          });
+        }
+        function dataMachines() {
+          return new Promise(function (resolve, reject) {
+            Meteor.call("dataMachine", function (error, result) {
               if (error) {
                 reject(error);
               }
@@ -234,6 +232,7 @@ Template.map_station.onRendered(() => {
         const dataSensor = await dataSensors();
         const dataCable = await dataCables();
         const dataRemote = await dataRemotes();
+        const dataMachineSystem = await dataMachines();
         /**
          * init basemap
          */
@@ -819,10 +818,13 @@ Template.map_station.onRendered(() => {
               {
                 data: null,
                 render: function (data, type, row) {
+                  const network = dataNetworks.filter((e) => {
+                    return e.code === data.attributes.network;
+                  });
                   return `    
                   <div>
                          <h6 class="fw-bold">${data.attributes.name}</h1> 
-                       ${data.attributes.type}
+                       ${network[0].net}
                   </div>`;
                 },
               },
@@ -1012,9 +1014,10 @@ Template.map_station.onRendered(() => {
                   $("#tunnel_type").html(
                     getContent(result.graphic.attributes.tunnel_type)
                   );
-                  $("#type_station").html(
-                    getContent(result.graphic.attributes.type)
-                  );
+                  const network = dataNetworks.filter((e) => {
+                    return e.code === result.graphic.attributes.network;
+                  });
+                  $("#type_station").html(getContent(network[0].net));
                   $("#status_station").html(
                     getContent(result.graphic.attributes.status)
                   );
@@ -1055,6 +1058,10 @@ Template.map_station.onRendered(() => {
                   const remote = dataRemote.filter((e) => {
                     return e.station_code === result.graphic.attributes.code;
                   });
+                  const machineSystem = dataMachineSystem.filter((e) => {
+                    return e.station_code === result.graphic.attributes.code;
+                  });
+                  console.log(machineSystem, "machineSystem");
                   //Thông tin nhân sự
                   // const innerinfoPersonnel = "";
                   console.log(dataloger, "dataloger");
@@ -1331,7 +1338,7 @@ Template.map_station.onRendered(() => {
                       </tr>
                       <tr>
                           <td class="fw-bold text-center" colspan="5" style="background-color: #fff2cc;">${
-                            result.graphic.attributes.type
+                            machineSystem[0].code
                           }
                           </td>
                       </tr>
@@ -1384,7 +1391,7 @@ Template.map_station.onRendered(() => {
                       </tr>
                       <tr>
                           <td class="fw-bold text-center" colspan="5" style="background-color: #fff2cc;">${
-                            result.graphic.attributes.type
+                            machineSystem[0].code
                           }
                           </td>
                       </tr>
@@ -1420,7 +1427,7 @@ Template.map_station.onRendered(() => {
                         </tr>
                         <tr>
                             <td class="fw-bold text-center" colspan="5" style="background-color: #fff2cc;">${
-                              result.graphic.attributes.type
+                              machineSystem[0].code
                             }
                             </td>
                         </tr>
