@@ -9,12 +9,6 @@ import "@sweetalert2/theme-bootstrap-4/bootstrap-4.css";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
-Template.uploaded.helpers({
-  uploaded: function () {
-    return FilesMachineHistory.find();
-  },
-});
-
 Template.dashboardComponent.onCreated(function () {
   this.currentUpload = new ReactiveVar(false);
   // Meteor.subscribe('event_db');

@@ -4,6 +4,8 @@ import datatables from "datatables.net";
 import datatables_bs from "datatables.net-bs";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
+import alasql from "alasql";
+import XLSX from "xlsx";
 import * as turf from "@turf/turf";
 Template.category.onCreated(() => {
   setDefaultOptions({
@@ -106,7 +108,6 @@ Template.category.onRendered(() => {
             );
           });
         }
-
         function dataEvent() {
           return new Promise(function (resolve, reject) {
             Meteor.call("layerEvent", function (error, resultEvent) {
@@ -231,7 +232,7 @@ Template.category.onRendered(() => {
               { data: "attributes.dep" },
               {
                 data: null,
-                className: "dt-center editor-edit",
+                className: "dt-center download-row",
                 defaultContent:
                   '<button class= "btn btn-sm download"><i class="fa fa-download fa-lg "/></button>',
                 orderable: false,
@@ -294,7 +295,7 @@ Template.category.onRendered(() => {
               { data: "attributes.md" },
               {
                 data: null,
-                className: "dt-center editor-edit",
+                className: "dt-center download-row",
                 defaultContent:
                   '<button class= "btn btn-sm download"><i class="fa fa-download fa-lg "/></button>',
                 orderable: false,
@@ -1941,7 +1942,7 @@ Template.category.onRendered(() => {
         //   content: basemapGallery,
         //   group: "top-right",
         // });
-        $("#dulieu").on("click", "td.editor-edit", function (e) {
+        $("#dulieu").on("click", "td.download-row", function (e) {
           e.preventDefault();
           const table = $("#dulieu").DataTable();
 
@@ -1958,7 +1959,7 @@ Template.category.onRendered(() => {
               rowData[e] = getParentRow[0].cells[i].innerText;
             }
           });
-
+          alasql.setXLSX(XLSX);
           window.saveFile = function saveFile() {
             let opts = [{ sheetid: "Sheet1", header: true }];
             let res = alasql(

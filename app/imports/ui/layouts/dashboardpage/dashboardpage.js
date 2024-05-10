@@ -6,6 +6,7 @@ import "../../pages/login/login";
 import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 import { Meteor } from "meteor/meteor";
 import { $ } from "meteor/jquery";
+import "animate.css";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
@@ -62,9 +63,17 @@ Template.dashboardTemplate.helpers({
     const active = FlowRouter._current.path === list.link;
     return active && "active-navbar";
   },
+  activeListClassSpan(list) {
+    const active = FlowRouter._current.path === list.link;
+    return active && "active-span";
+  },
   activeListClassRegisterEvent() {
     const active = FlowRouter._current.path === "/register-event";
     return active && "active-navbar";
+  },
+  activeListClassRegisterEventSpan() {
+    const active = FlowRouter._current.path === "/register-event";
+    return active && "active-span";
   },
   listMenu: () => {
     return [
@@ -76,6 +85,11 @@ Template.dashboardTemplate.helpers({
       {
         content: "Tải lịch sử đặt máy",
         link: "/machine-history",
+        class: "fa fa-upload me-2",
+      },
+      {
+        content: "Tải lịch sử ghi dữ liệu",
+        link: "/upload-pdf",
         class: "fa fa-upload me-2",
       },
       {
@@ -157,9 +171,13 @@ Template.dashboardTemplate.events({
     $("#button_sidebar").toggleClass("fa-times");
   },
   "mouseenter .sidebar-item"(event) {
-    $(event.target).find(".item-span").addClass("active-sidebar");
+    $(event.target)
+      .find(".item-span")
+      .addClass("active-sidebar animate__animated animate__heartBeat");
   },
   "mouseleave .sidebar-item"(event) {
-    $(event.target).find(".item-span").removeClass("active-sidebar");
+    $(event.target)
+      .find(".item-span")
+      .removeClass("active-sidebar animate__animated animate__heartBeat");
   },
 });

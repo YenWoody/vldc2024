@@ -33,6 +33,7 @@ import "../../ui/components/manage-employee/manage-employee";
 import "../../ui/components/manage-battery/manage-battery";
 import "../../ui/components/manage-internet/manage-internet";
 import "../../ui/components/machine-history/machine-history";
+import "../../ui/components/upload-pdf/upload-pdf";
 import "../../ui/components/dashboard/dashboard";
 // Set up all routes in the app
 FlowRouter.route("/main", {
@@ -57,6 +58,12 @@ FlowRouter.route("/manage-cable", {
   name: "dashboard",
   action() {
     this.render("dashboardTemplate", "manageCable");
+  },
+});
+FlowRouter.route("/upload-pdf", {
+  name: "dashboard",
+  action() {
+    this.render("dashboardTemplate", "manageManagePdf");
   },
 });
 FlowRouter.route("/manage-remote", {

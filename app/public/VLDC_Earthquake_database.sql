@@ -14,6 +14,14 @@
   "machineHistory" varchar
 );
 
+CREATE TABLE "recording_history" (
+  "id" SERIAL PRIMARY KEY,
+  "key" varchar,
+  "name" varchar,
+  "link" varchar,
+  "station_code" varchar
+);
+
 -- Key là số thứ tự tự thêm vào khi import dữ liệu Trạm
 CREATE TABLE "machine_system" (
   "id" SERIAL PRIMARY KEY,

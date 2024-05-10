@@ -27,7 +27,7 @@ button.swal2-confirm.swal2-styled {
   background-color: #3d77b1;
 }
 #file-upload-button {
-  background-color: #44bef1;
+  background-color: #3d77b1;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -35,7 +35,10 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 .active-sidebar {
-  color: #ffd000 !important;
+  color: #3d77b1 !important;
+}
+.active-span.active-sidebar {
+  color: #3d77b1 !important;
 }
 table.dataTable td {
   text-align: start !important;
@@ -66,7 +69,7 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
   }
 }
 #sidebar {
-  max-width: 270px;
+  width: 360px;
   background: white;
   color: #fff;
   -webkit-transition: all 0.3s;
@@ -104,19 +107,17 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
       a {
         display: flex;
         align-items: center;
-        padding: 10px 0;
+        padding: 10px 0px 10px 10px;
         color: #414141;
-        border-bottom: 1px solid rgb(0 0 0 / 10%);
+        // border-bottom: 1px solid rgb(0 0 0 / 10%);
         text-decoration: unset !important;
-        span {
-          color: #414141;
-        }
         span:hover {
-          color: #ffd000;
+          color: #3d77b1 !important;
         }
         &:hover {
+          border-radius: 10px;
           background: #75757524;
-          color: #ffd000;
+          color: #3d77b1 !important;
         }
       }
     }
@@ -181,7 +182,7 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
   }
 }
 #sidebar.active {
-  margin-left: -270px;
+  margin-left: -360px;
 }
 a[data-toggle="collapse"] {
   position: relative;

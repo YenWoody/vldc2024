@@ -1,18 +1,15 @@
 import { Template } from "meteor/templating";
 import { ReactiveVar } from "meteor/reactive-var";
-import FilesMachineHistory from "/lib/files.machine_history.js";
+import FilesMachineHistory from "/lib/files.machineHistory.js";
 import "./machine-history.html";
 import "../../pages/login/login";
 import "../not_access/not_access";
-import selectize from "@selectize/selectize";
 import "@selectize/selectize/dist/css/selectize.css";
 import "@sweetalert2/theme-bootstrap-4/bootstrap-4.css";
-import JSZip from "jszip";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import XLSX from "xlsx";
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
-Template.uploaded.helpers({
+Template.uploadedTxt.helpers({
   uploaded: function () {
     return FilesMachineHistory.find();
   },

@@ -17,6 +17,8 @@
     "@turf/collect": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/turf": "^6.5.0",
+    "alasql": "^4.3.3",
+    "animate.css": "^4.1.1",
     "bootstrap": "^5.1.3",
     "datatables.net": "^1.12.1",
     "datatables.net-bs": "^1.12.1",

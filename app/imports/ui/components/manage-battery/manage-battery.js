@@ -2,7 +2,6 @@ import { Meteor } from "meteor/meteor";
 import "./manage-battery.html";
 import "../not_access/not_access";
 import { $ } from "meteor/jquery";
-
 import DataTable from "datatables.net-dt";
 import "datatables.net-responsive-dt";
 import { loadCss } from "esri-loader";

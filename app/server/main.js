@@ -3,6 +3,8 @@ import "/imports/startup/server";
 import "/imports/startup/both";
 import { Meteor } from "meteor/meteor";
 import Files from "/lib/files.collection.js";
+import FilesMachineHistory from "/lib/files.machineHistory.js";
+import FilesPdf from "/lib/files.pdf.js";
 import fs from "fs";
 import pg from "pg";
 import path from "path";
@@ -10,7 +12,7 @@ import os from "os";
 import { check } from "meteor/check";
 import { Accounts } from "meteor/accounts-base";
 import { Email } from "meteor/email";
-import FilesMachineHistory from "../lib/files.machine_history";
+
 // server.js
 const PG_HOST = "localhost";
 const PG_PORT = "5432";
@@ -644,6 +646,15 @@ Meteor.methods({
             WHERE "id_key" = ${key};`
     );
   },
+  importPdfStation: function (data) {
+    pool.query(
+      `INSERT INTO "recording_history" ( 
+        "name",
+        "key",
+        "link",
+        "station_code") VALUES ('${data.name}','${data.key}','${data.link}','${data.station_code}')`
+    );
+  },
   layerEvent: () => {
     const result = pool
       .query(
@@ -838,6 +849,25 @@ Meteor.methods({
       });
 
     return result;
+  },
+  dataPdfStation: () => {
+    const result = pool
+      .query(
+        `SELECT *
+          FROM recording_history;`
+      )
+      .then((data) => {
+        // console.log("data",data)
+        return data;
+      });
+
+    return result;
+  },
+  deletePdfStation: async function (id) {
+    return await pool.query(
+      `DELETE FROM recording_history
+              WHERE id = ${id};`
+    );
   },
   importEventExcel: function (data) {
     run();
@@ -1654,6 +1684,9 @@ Meteor.methods({
   },
   remove_MachineHistory: function (file) {
     FilesMachineHistory.remove({ _id: `${file}` });
+  },
+  remove_Pdf: function (file) {
+    FilesPdf.remove({ _id: `${file}` });
   },
   verify: (username) => {
     let info = Accounts.findUserByUsername(username);
