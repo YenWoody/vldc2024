@@ -96,13 +96,11 @@ Template.uploadMachineHistory.events({
     document.getElementById("modal_add_machine_history").style.display = "none";
   },
   "change #fileInput": function (e, template) {
-    console.log(e.target, "e.target");
-    console.log(template);
+    var file = $("#fileInput")[0].files[0].name;
+    $("#choose-file-label").text(file);
   },
   "click #import-button": function (e, template) {
     let fileUpload = document.getElementById("fileInput").files[0];
-
-    console.log($("#select-tools").val(), "teml");
     if (fileUpload) {
       // We upload only one file, in case
       const file_type = fileUpload.name.split(".").pop();

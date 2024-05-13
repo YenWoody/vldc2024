@@ -71,6 +71,36 @@ function callDatatable() {
   });
 }
 Template.manageBattery.onRendered(async () => {
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
@@ -84,7 +114,6 @@ Template.manageBattery.onRendered(async () => {
     "start_charger",
     "status_charger",
     "sun_battery",
-    "station_code",
   ];
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
@@ -96,27 +125,27 @@ Template.manageBattery.onRendered(async () => {
       keyNames.forEach((e) => {
         insert[e] = checkEmpty($(`#${e}_a`).val());
       });
-
-      await Meteor.call("insertBattery", insert, (error, result) => {
-        console.log(result, "result");
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          callDatatable();
-          document.getElementById("modal_add_battery").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Thêm dữ liệu thành công!",
-          });
-        }
-      });
+      (insert["station_code"] = checkEmpty($("#select-tools").val())),
+        await Meteor.call("insertBattery", insert, (error, result) => {
+          console.log(result, "result");
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            callDatatable();
+            document.getElementById("modal_add_battery").style.display = "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Thêm dữ liệu thành công!",
+            });
+          }
+        });
     };
   };
   // Edit Record
@@ -131,30 +160,32 @@ Template.manageBattery.onRendered(async () => {
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       document.getElementById("save_edit_battery").onclick = function () {
         keyNames.forEach((e) => {
           insert[e] = checkEmpty($(`#${e}`).val());
         });
         insert.id = data.id;
-        Meteor.call("editBattery", insert, (error, result) => {
-          if (error) {
-            Swal.fire({
-              icon: "error",
-              heightAuto: false,
-              title: "Có lỗi xảy ra!",
-              text: error.reason,
-            });
-          } else if (result) {
-            callDatatable();
-            document.getElementById("_modal").style.display = "none";
-            Swal.fire({
-              icon: "success",
-              heightAuto: false,
-              title: "Chúc mừng!",
-              text: "Lưu dữ liệu thành công",
-            });
-          }
-        });
+        (insert["station_code"] = checkEmpty($("#select-tools-edit").val())),
+          Meteor.call("editBattery", insert, (error, result) => {
+            if (error) {
+              Swal.fire({
+                icon: "error",
+                heightAuto: false,
+                title: "Có lỗi xảy ra!",
+                text: error.reason,
+              });
+            } else if (result) {
+              callDatatable();
+              document.getElementById("_modal").style.display = "none";
+              Swal.fire({
+                icon: "success",
+                heightAuto: false,
+                title: "Chúc mừng!",
+                text: "Lưu dữ liệu thành công",
+              });
+            }
+          });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
       const data = $("#data_battery").DataTable().row(this).data();
@@ -215,7 +246,7 @@ Template.manageBattery.helpers({
         type: "text",
       },
       { id: "sun_battery", text: "Pin mặt trời", type: "text" },
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -232,7 +263,7 @@ Template.manageBattery.helpers({
         type: "text",
       },
       { id: "sun_battery_a", text: "Pin mặt trời", type: "text" },
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

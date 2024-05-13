@@ -74,6 +74,36 @@ Template.manageEmployee.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $("#dashboard-title").html("Quản lí thông tin nhân sự");
   callDatatable();
   function checkEmpty(data) {
@@ -86,7 +116,6 @@ Template.manageEmployee.onRendered(async () => {
     "phone_observer",
     "person_incharge",
     "phone_person_incharge",
-    "station_code",
   ];
   document.getElementById("add-station").onclick = async function () {
     // document.getElementById('stt_employee_').innerHTML = maxKey + 1;
@@ -96,26 +125,27 @@ Template.manageEmployee.onRendered(async () => {
       keyNames.forEach((e) => {
         insert[e] = checkEmpty($(`#${e}_a`).val());
       });
-
-      Meteor.call("insertEmployee", insert, (error) => {
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            heightAuto: false,
-            title: "Có lỗi xảy ra!",
-            text: error.reason,
-          });
-        } else {
-          callDatatable();
-          document.getElementById("modal_add_employee").style.display = "none";
-          Swal.fire({
-            icon: "success",
-            heightAuto: false,
-            title: "Chúc mừng!",
-            text: "Thêm dữ liệu thành công!",
-          });
-        }
-      });
+      (insert["station_code"] = checkEmpty($("#select-tools").val())),
+        Meteor.call("insertEmployee", insert, (error) => {
+          if (error) {
+            Swal.fire({
+              icon: "error",
+              heightAuto: false,
+              title: "Có lỗi xảy ra!",
+              text: error.reason,
+            });
+          } else {
+            callDatatable();
+            document.getElementById("modal_add_employee").style.display =
+              "none";
+            Swal.fire({
+              icon: "success",
+              heightAuto: false,
+              title: "Chúc mừng!",
+              text: "Thêm dữ liệu thành công!",
+            });
+          }
+        });
     };
   };
   // Edit Record
@@ -129,31 +159,33 @@ Template.manageEmployee.onRendered(async () => {
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       document.getElementById("save_edit_employee").onclick = function () {
         let insert = {};
         keyNames.forEach((e) => {
           insert[e] = checkEmpty($(`#${e}`).val());
         });
         insert.id = data.id;
-        Meteor.call("editEmployee", insert, (error) => {
-          if (error) {
-            Swal.fire({
-              icon: "error",
-              heightAuto: false,
-              title: "Có lỗi xảy ra!",
-              text: error.reason,
-            });
-          } else {
-            callDatatable();
-            document.getElementById("_modal").style.display = "none";
-            Swal.fire({
-              icon: "success",
-              heightAuto: false,
-              title: "Chúc mừng!",
-              text: "Lưu dữ liệu thành công",
-            });
-          }
-        });
+        (insert["station_code"] = checkEmpty($("#select-tools-edit").val())),
+          Meteor.call("editEmployee", insert, (error) => {
+            if (error) {
+              Swal.fire({
+                icon: "error",
+                heightAuto: false,
+                title: "Có lỗi xảy ra!",
+                text: error.reason,
+              });
+            } else {
+              callDatatable();
+              document.getElementById("_modal").style.display = "none";
+              Swal.fire({
+                icon: "success",
+                heightAuto: false,
+                title: "Chúc mừng!",
+                text: "Lưu dữ liệu thành công",
+              });
+            }
+          });
       };
     } else if ($(e.target).hasClass("editor-delete")) {
       const data = $("#data_employee").DataTable().row(this).data();
@@ -207,7 +239,7 @@ Template.manageEmployee.helpers({
       { id: "phone_observer", text: "SĐT quan trắc viên", type: "text" },
       { id: "person_incharge", text: "Họ và tên phụ trách ", type: "text" },
       { id: "phone_person_incharge", text: "SĐT phụ trách", type: "text" },
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -219,7 +251,7 @@ Template.manageEmployee.helpers({
       { id: "phone_observer_a", text: "SĐT quan trắc viên", type: "text" },
       { id: "person_incharge_a", text: "Họ và tên phụ trách ", type: "text" },
       { id: "phone_person_incharge_a", text: "SĐT phụ trách", type: "text" },
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

@@ -74,6 +74,36 @@ function callDatatable() {
   });
 }
 Template.manageLand.onRendered(async () => {
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
@@ -90,7 +120,6 @@ Template.manageLand.onRendered(async () => {
     "yard",
     "gate",
     "document",
-    "station_code",
   ];
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
@@ -102,7 +131,7 @@ Template.manageLand.onRendered(async () => {
       keyNames.forEach((e) => {
         insert[e] = checkEmpty($(`#${e}_a`).val());
       });
-
+      insert["station_code"] = checkEmpty($("#select-tools").val());
       Meteor.call("insertLand", insert, (error) => {
         if (error) {
           Swal.fire({
@@ -137,11 +166,14 @@ Template.manageLand.onRendered(async () => {
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       document.getElementById("save_edit_land").onclick = function () {
         keyNames.forEach((e) => {
           insert[e] = checkEmpty($(`#${e}`).val());
         });
+
         insert.id = data.id;
+        insert["station_code"] = checkEmpty($("#select-tools-edit").val());
         Meteor.call("editLand", insert, (error) => {
           if (error) {
             Swal.fire({
@@ -223,7 +255,7 @@ Template.manageLand.helpers({
       { id: "yard", text: "Sân vườn", type: "text" },
       { id: "gate", text: "Hàng rào, cổng", type: "text" },
       { id: "document", text: "Giấy tờ nhà đất", type: "text" },
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -243,7 +275,7 @@ Template.manageLand.helpers({
       { id: "yard_a", text: "Sân vườn", type: "text" },
       { id: "gate_a", text: "Hàng rào, cổng", type: "text" },
       { id: "document_a", text: "Giấy tờ nhà đất", type: "text" },
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

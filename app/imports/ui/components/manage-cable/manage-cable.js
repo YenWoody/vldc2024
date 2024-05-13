@@ -66,6 +66,36 @@ function loadDatatable() {
   });
 }
 Template.manageCable.onRendered(async () => {
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
@@ -86,7 +116,7 @@ Template.manageCable.onRendered(async () => {
         cable_sensor_accelerator: checkEmpty(
           $("#cable_sensor_accelerator_a").val()
         ),
-        station_code: checkEmpty($("#station_code_a").val()),
+        station_code: checkEmpty($("#select-tools").val()),
       };
       Meteor.call("insertCable", insert, (error) => {
         if (error) {
@@ -121,7 +151,6 @@ Template.manageCable.onRendered(async () => {
         "cable_internet",
         "cable_sensor_speed",
         "cable_sensor_accelerator",
-        "station_code",
       ];
       keys.forEach((e) => {
         document.getElementById(e).value = data[e];
@@ -129,6 +158,7 @@ Template.manageCable.onRendered(async () => {
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       document.getElementById("save_edit_cable").onclick = function () {
         const insert = {
           key: data.id,
@@ -138,7 +168,7 @@ Template.manageCable.onRendered(async () => {
           cable_sensor_accelerator: checkEmpty(
             $("#cable_sensor_accelerator").val()
           ),
-          station_code: checkEmpty($("#station_code").val()),
+          station_code: checkEmpty($("#select-tools-edit").val()),
         };
         Meteor.call("editCable", insert, (error) => {
           if (error) {
@@ -214,7 +244,7 @@ Template.manageCable.helpers({
         text: "Cáp đầu đo gia tốc",
         type: "text",
       },
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -228,7 +258,7 @@ Template.manageCable.helpers({
         text: "Cáp đầu đo gia tốc",
         type: "text",
       },
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

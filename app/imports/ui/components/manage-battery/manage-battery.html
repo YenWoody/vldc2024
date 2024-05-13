@@ -150,7 +150,20 @@
                 />
               </div>
             </div>
-            {{/if}} {{/each}}
+            {{else}} {{#if check item.type "station_code"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
+                <select
+                  id="select-tools-edit"
+                  multiple
+                  placeholder="Chọn mã trạm"
+                ></select>
+              </div>
+            </div>
+            {{/if}} {{/if}} {{/each}}
           </form>
         </div>
         <div class="modal-footer mt-2">
@@ -199,7 +212,20 @@
                 />
               </div>
             </div>
-            {{/if}} {{/each}}
+            {{else}} {{#if check item.type "station_code"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
+                <select
+                  id="select-tools"
+                  multiple
+                  placeholder="Chọn mã trạm"
+                ></select>
+              </div>
+            </div>
+            {{/if}} {{/if}} {{/each}}
           </form>
         </div>
         <div class="modal-footer w-100 mt-2">

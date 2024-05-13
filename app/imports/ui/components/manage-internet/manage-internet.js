@@ -66,6 +66,36 @@ function callDatatable() {
   });
 }
 Template.manageInternet.onRendered(async () => {
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
@@ -74,7 +104,7 @@ Template.manageInternet.onRendered(async () => {
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
   }
-  const keyNames = ["code", "ip", "station_code"];
+  const keyNames = ["code", "ip"];
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";
   }
@@ -86,6 +116,7 @@ Template.manageInternet.onRendered(async () => {
       keyNames.forEach((e) => {
         insert[e] = checkEmpty($(`#${e}_a`).val());
       });
+      insert["station_code"] = checkEmpty($("#select-tools").val());
       Meteor.call("insertInternet", insert, (error) => {
         if (error) {
           Swal.fire({
@@ -117,11 +148,13 @@ Template.manageInternet.onRendered(async () => {
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       document.getElementById("save_edit_internet").onclick = function () {
         let insert = {};
         keyNames.forEach((e) => {
           insert[e] = checkEmpty($(`#${e}`).val());
         });
+        insert["station_code"] = checkEmpty($("#select-tools-edit").val());
         insert.id = data.id;
         Meteor.call("editInternet", insert, (error) => {
           if (error) {
@@ -187,7 +220,7 @@ Template.manageInternet.helpers({
     const t = [
       { id: "code", text: "Loại mạng", type: "text" },
       { id: "ip", text: "IP", type: "text" },
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -195,7 +228,7 @@ Template.manageInternet.helpers({
     const t = [
       { id: "code_a", text: "Loại mạng", type: "text" },
       { id: "ip_a", text: "IP", type: "text" },
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

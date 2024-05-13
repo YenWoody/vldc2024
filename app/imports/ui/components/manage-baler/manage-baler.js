@@ -67,6 +67,36 @@ function callDatatable() {
   });
 }
 Template.manageBaler.onRendered(async () => {
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
@@ -83,7 +113,7 @@ Template.manageBaler.onRendered(async () => {
         code: checkEmpty($("#code_a").val()),
         serial: checkEmpty($("#serial_a").val()),
         status: checkEmpty($("#status_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
+        station_code: checkEmpty($("#select-tools").val()),
       };
 
       Meteor.call("insertBaler", insert, (error) => {
@@ -114,17 +144,18 @@ Template.manageBaler.onRendered(async () => {
     if ($(e.target).hasClass("editor-edit")) {
       const data = $("#data_baler").DataTable().row(this).data();
       document.getElementById("_modal").style.display = "block";
-      var keyNames = ["code", "serial", "status", "station_code"];
+      var keyNames = ["code", "serial", "status"];
       keyNames.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       document.getElementById("save_edit_baler").onclick = function () {
         const insert = {
           key: data.id,
           code: checkEmpty($("#code").val()),
           serial: checkEmpty($("#serial").val()),
           status: checkEmpty($("#status").val()),
-          station_code: checkEmpty($("#station_code").val()),
+          station_code: checkEmpty($("#select-tools-edit").val()),
         };
         Meteor.call("editBaler", insert, (error) => {
           if (error) {
@@ -195,7 +226,7 @@ Template.manageBaler.helpers({
       { id: "code", text: "Mã máy ghi", type: "text" },
       { id: "serial", text: "Serial", type: "text" },
       { id: "status", text: "Tình trạng", type: "text" },
-      { id: "station_code", text: "Trạm", type: "text" },
+      { id: "station_code", text: "Trạm", type: "station_code" },
     ];
     return t;
   },
@@ -204,7 +235,7 @@ Template.manageBaler.helpers({
       { id: "code_a", text: "Mã máy ghi", type: "text" },
       { id: "serial_a", text: "Serial", type: "text" },
       { id: "status_a", text: "Tình trạng", type: "text" },
-      { id: "station_code_a", text: "Trạm", type: "text" },
+      { id: "station_code_a", text: "Trạm", type: "station_code" },
     ];
     return t;
   },

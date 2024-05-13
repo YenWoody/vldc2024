@@ -70,12 +70,41 @@ Template.manageDevice.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $("#dashboard-title").html("Quản lí thiết bị máy ghi");
   loadDatatable();
   document.getElementById("add-station").onclick = async function () {
     // document.getElementById('stt_dataloger_').innerHTML = maxKey + 1;
     document.getElementById("modal_add_dataloger").style.display = "block";
-
     document.getElementById("save_add_dataloger").onclick = function () {
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
@@ -85,7 +114,7 @@ Template.manageDevice.onRendered(async () => {
         serial: checkEmpty($("#serial_a").val()),
         serial_q: checkEmpty($("#serial_q_a").val()),
         status: checkEmpty($("#status_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
+        station_code: checkEmpty($("#select-tools").val()),
       };
 
       Meteor.call("insertDataloger", insert, (error) => {
@@ -116,20 +145,11 @@ Template.manageDevice.onRendered(async () => {
       const data = $("#data_dataloger").DataTable().row(this).data();
 
       document.getElementById("_modal").style.display = "block";
-      var keyNames = [
-        "id",
-        "code",
-        "serial",
-        "serial_q",
-        "status",
-        "station_code",
-      ];
+      var keyNames = ["code", "serial", "serial_q", "status"];
       keyNames.forEach((e) => {
-        if (e == "id") {
-          $(`#${e}`).html(data[e]);
-        }
         document.getElementById(e).value = data[e];
       });
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
@@ -140,8 +160,9 @@ Template.manageDevice.onRendered(async () => {
           serial: checkEmpty($("#serial").val()),
           serial_q: checkEmpty($("#serial_q").val()),
           status: checkEmpty($("#status").val()),
-          station_code: checkEmpty($("#station_code").val()),
+          station_code: checkEmpty($("#select-tools-edit").val()),
         };
+        console.log(insert, "insert");
         Meteor.call("editDataloger", insert, (error) => {
           if (error) {
             Swal.fire({
@@ -207,23 +228,21 @@ Template.manageDevice.helpers({
   },
   editDataloger: () => {
     const t = [
-      { id: "id", text: "STT", type: "id" },
       { id: "code", text: "Mã máy ghi", type: "text" },
       { id: "serial", text: "Serial", type: "text" },
       { id: "serial_q", text: "Q330 Serial", type: "text" },
       { id: "status", text: "Tình trạng", type: "text" },
-      { id: "station_code", text: "Trạm", type: "text" },
+      { id: "station_code", text: "Trạm", type: "station_code" },
     ];
     return t;
   },
   addDataloger: () => {
     const t = [
-      { id: "id_a", text: "STT", type: "id" },
       { id: "code_a", text: "Mã máy ghi", type: "text" },
       { id: "serial_a", text: "Serial", type: "text" },
       { id: "serial_q_a", text: "Q330 Serial", type: "text" },
       { id: "status_a", text: "Tình trạng", type: "text" },
-      { id: "station_code_a", text: "Trạm", type: "text" },
+      { id: "station_code_a", text: "Trạm", type: "station_code" },
     ];
     return t;
   },

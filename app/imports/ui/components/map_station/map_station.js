@@ -139,6 +139,16 @@ Template.map_station.onRendered(() => {
             });
           });
         }
+        function dataPdfStations() {
+          return new Promise(function (resolve, reject) {
+            Meteor.call("dataPdfStation", function (error, result) {
+              if (error) {
+                reject(error);
+              }
+              resolve(result.rows);
+            });
+          });
+        }
         function dataCables() {
           return new Promise(function (resolve, reject) {
             Meteor.call("dataCable", function (error, result) {
@@ -233,6 +243,7 @@ Template.map_station.onRendered(() => {
         const dataCable = await dataCables();
         const dataRemote = await dataRemotes();
         const dataMachineSystem = await dataMachines();
+        const dataPdfStation = await dataPdfStations();
         /**
          * init basemap
          */
@@ -1061,6 +1072,9 @@ Template.map_station.onRendered(() => {
                   const machineSystem = dataMachineSystem.filter((e) => {
                     return e.station_code === result.graphic.attributes.code;
                   });
+                  const recording_history = dataPdfStation.filter((e) => {
+                    return e.station_code === result.graphic.attributes.code;
+                  });
                   console.log(machineSystem, "machineSystem");
                   //Thông tin nhân sự
                   // const innerinfoPersonnel = "";
@@ -1085,6 +1099,19 @@ Template.map_station.onRendered(() => {
                   const row_cable = [];
                   const row_internet = [];
                   const row_land = [];
+                  const row_recording_history = [];
+                  console.log(recording_history, "recording_history");
+                  if (recording_history.length > 0) {
+                    await recording_history.map((e) => {
+                      row_recording_history.push(
+                        `<div class="mb-1 mx-2"><a href="${e.link}?download=true" download="${e.name}">${e.name}</a></div>`
+                      );
+                    });
+                  } else {
+                    row_recording_history.push(
+                      `<div class="text-center">Chưa có thông tin</div>`
+                    );
+                  }
                   await land.map((e) => {
                     row_land.push(`
                     <tr>
@@ -1378,6 +1405,8 @@ Template.map_station.onRendered(() => {
                       </tr>
                     </table>
                   `);
+                    console.log(row_recording_history, "row_recording_history");
+                    $("#monitoringLog").html(getContent(row_recording_history));
                   }
                   // Người dùng thường
                   if (Meteor.user() && Meteor.user().roles === "user") {

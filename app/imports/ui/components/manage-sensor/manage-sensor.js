@@ -73,6 +73,36 @@ Template.manageSensors.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $("#dashboard-title").html("Quản lí các thiết bị cảm biến");
 
   loadDatatable();
@@ -91,7 +121,7 @@ Template.manageSensors.onRendered(async () => {
         sensor_accelerator: checkEmpty($("#sensor_accelerator_a").val()),
         serial_accelerator: checkEmpty($("#serial_accelerator_a").val()),
         status_accelerator: checkEmpty($("#status_accelerator_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
+        station_code: checkEmpty($("#select-tools").val()),
       };
       Meteor.call("insertSensor", insert, (error) => {
         if (error) {
@@ -129,7 +159,6 @@ Template.manageSensors.onRendered(async () => {
         "sensor_accelerator",
         "serial_accelerator",
         "status_accelerator",
-        "station_code",
       ];
       keys.forEach((e) => {
         document.getElementById(e).value = data[e];
@@ -137,6 +166,7 @@ Template.manageSensors.onRendered(async () => {
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       document.getElementById("save_edit_Sensor").onclick = function () {
         const insert = {
           key: data.id,
@@ -146,7 +176,7 @@ Template.manageSensors.onRendered(async () => {
           sensor_accelerator: checkEmpty($("#sensor_accelerator").val()),
           serial_accelerator: checkEmpty($("#serial_accelerator").val()),
           status_accelerator: checkEmpty($("#status_accelerator").val()),
-          station_code: checkEmpty($("#station_code").val()),
+          station_code: checkEmpty($("#select-tools-edit").val()),
         };
         Meteor.call("editSensor", insert, (error) => {
           if (error) {
@@ -224,7 +254,7 @@ Template.manageSensors.helpers({
         type: "text",
       },
 
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -246,7 +276,7 @@ Template.manageSensors.helpers({
         type: "text",
       },
 
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

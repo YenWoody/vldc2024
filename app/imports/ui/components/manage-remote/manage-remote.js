@@ -69,6 +69,36 @@ Template.manageRemotes.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $("#dashboard-title").html("Quản lí bộ điều khiển");
 
   loadDatatable();
@@ -83,7 +113,7 @@ Template.manageRemotes.onRendered(async () => {
         remote_control: checkEmpty($("#remote_control_a").val()),
         serial_control: checkEmpty($("#serial_control_a").val()),
         status_control: checkEmpty($("#status_control_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
+        station_code: checkEmpty($("#select-tools").val()),
       };
       Meteor.call("insertRemote", insert, (error) => {
         if (error) {
@@ -113,28 +143,21 @@ Template.manageRemotes.onRendered(async () => {
       const data = $("#data_Remote").DataTable().row(this).data();
       console.log(data, "data");
       document.getElementById("_modal").style.display = "block";
-      const keys = [
-        "remote_control",
-        "serial_control",
-        "status_control",
-
-        "station_code",
-      ];
+      const keys = ["remote_control", "serial_control", "status_control"];
       keys.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
       document.getElementById("save_edit_Remote").onclick = function () {
         const insert = {
           key: data.id,
-
           remote_control: checkEmpty($("#remote_control").val()),
           serial_control: checkEmpty($("#serial_control").val()),
           status_control: checkEmpty($("#status_control").val()),
-
-          station_code: checkEmpty($("#station_code").val()),
+          station_code: checkEmpty($("#select-tools-edit").val()),
         };
         Meteor.call("editRemote", insert, (error) => {
           if (error) {
@@ -204,7 +227,7 @@ Template.manageRemotes.helpers({
       { id: "remote_control", text: "Bộ điều khiển", type: "text" },
       { id: "serial_control", text: "Serial bộ điều khiển", type: "text" },
       { id: "status_control", text: "Tình trạng bộ điều khiển", type: "text" },
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -218,7 +241,7 @@ Template.manageRemotes.helpers({
         type: "text",
       },
 
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

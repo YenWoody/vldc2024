@@ -3,6 +3,7 @@ import "./manage-machine_system.html";
 import "../not_access/not_access";
 import { $ } from "meteor/jquery";
 import DataTable from "datatables.net-dt";
+import "@selectize/selectize/dist/css/selectize.css";
 import "datatables.net-responsive-dt";
 import { loadCss } from "esri-loader";
 import Swal from "sweetalert2/dist/sweetalert2.js";
@@ -66,6 +67,36 @@ function loadDatatable() {
   });
 }
 Template.manageMachineSystem.onRendered(async () => {
+  Meteor.call("dataStation", function (error, resultdataStation) {
+    if (error) {
+      reject(error);
+    } else {
+      const data = resultdataStation.rows;
+      const listOption = [];
+      data.map((e) => {
+        listOption.push({
+          id: e.id_key,
+          title: e.code,
+        });
+      });
+      $("#select-tools").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+      $("#select-tools-edit").selectize({
+        maxItems: 1,
+        valueField: "title",
+        labelField: "title",
+        searchField: "title",
+        options: listOption,
+        create: false,
+      });
+    }
+  });
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
@@ -79,11 +110,15 @@ Template.manageMachineSystem.onRendered(async () => {
       function checkEmpty(data) {
         return data ? data : "Chưa có thông tin";
       }
+      const [y_add, m_add, d_add] = $("#start_time_a").val().split(/-|\//); // splits "26-02-2012" or "26/02/2012"
+      const date_start_add = d_add + "-" + m_add + "-" + y_add;
+      const [y_end, m_end, d_end] = $("#start_time_a").val().split(/-|\//); // splits "26-02-2012" or "26/02/2012"
+      const date_end_add = d_end + "-" + m_end + "-" + y_end;
       const insert = {
         code: checkEmpty($("#code_a").val()),
-        start_time: checkEmpty($("#start_time_a").val()),
-        end_time: checkEmpty($("#end_time_a").val()),
-        station_code: checkEmpty($("#station_code_a").val()),
+        start_time: checkEmpty(date_start_add),
+        end_time: checkEmpty(date_end_add),
+        station_code: checkEmpty($("#select-tools").val()),
       };
       Meteor.call("insertMachine", insert, (error) => {
         if (error) {
@@ -111,9 +146,9 @@ Template.manageMachineSystem.onRendered(async () => {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
       const data = $("#data_MachineSystem").DataTable().row(this).data();
-      console.log(data, "data");
+
       document.getElementById("_modal").style.display = "block";
-      const keys = ["code", "station_code"];
+      const keys = ["code"];
 
       if (data["start_time"] === "Chưa có thông tin") {
         document.getElementById("start_time").value = "";
@@ -131,7 +166,7 @@ Template.manageMachineSystem.onRendered(async () => {
         console.log(date_end, "date_end");
         document.getElementById("end_time").value = date_end;
       }
-
+      $("#select-tools-edit").data("selectize").setValue(data["station_code"]);
       keys.forEach((e) => {
         document.getElementById(e).value = data[e];
       });
@@ -153,7 +188,7 @@ Template.manageMachineSystem.onRendered(async () => {
           end_time: year_end
             ? day_end + "/" + month_end + "/" + year_end
             : "Chưa có thông tin",
-          station_code: checkEmpty($("#station_code").val()),
+          station_code: checkEmpty($("#select-tools-edit").val()),
         };
         Meteor.call("editMachine", insert, (error) => {
           if (error) {
@@ -223,7 +258,7 @@ Template.manageMachineSystem.helpers({
       { id: "code", text: "Hệ thống máy", type: "text" },
       { id: "start_time", text: "Ngày bắt đầu", type: "date" },
       { id: "end_time", text: "Ngày kết thúc", type: "date" },
-      { id: "station_code", text: "Mã trạm", type: "text" },
+      { id: "station_code", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },
@@ -232,7 +267,7 @@ Template.manageMachineSystem.helpers({
       { id: "code_a", text: "Hệ thống máy", type: "text" },
       { id: "start_time_a", text: "Ngày bắt đầu", type: "date" },
       { id: "end_time_a", text: "Ngày kết thúc", type: "date" },
-      { id: "station_code_a", text: "Mã trạm", type: "text" },
+      { id: "station_code_a", text: "Mã trạm", type: "station_code" },
     ];
     return t;
   },

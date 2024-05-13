@@ -29,9 +29,11 @@
       style="
         display: grid;
 
-        max-height: 90vh;
+        max-height: 400px;
         overflow: auto;
-        width: 30%;
+        min-width: 300px !important;
+        max-width: 400px;
+        width: 50% !important;
         /* justify-items: center; */
         /* align-content: stretch; */
       "
@@ -51,17 +53,26 @@
                 <select
                   id="select-tools"
                   multiple
-                  placeholder="Pick a tool..."
+                  placeholder="Chọn mã trạm"
                 ></select>
               </div>
             </div>
             <div class="mb-3">
               <div class="upload-progress">
-                {{#with currentUpload}} Uploading <b>{{file.name}}</b>:
+                {{#with currentUpload}} Đang tải lên <b>{{file.name}}</b>:
                 <span id="progress">{{progress.get}}%</span>
                 {{else}}
-                <label class="btn btn-outline-info btn-lg">
-                  <input id="fileInput" type="file" />
+                <label
+                  class="d-flex align-items-center btn btn-outline-info btn-lg"
+                >
+                  <input id="fileInput" type="file" style="display: none" />
+                  <label
+                    for="fileInput"
+                    class="custom-file-upload me-2"
+                    id="choose-file-label"
+                  >
+                    Chọn tệp
+                  </label>
                   <i class="fa fa-cloud-upload fa-lg" aria-hidden="true"></i>
                 </label>
                 {{/with}}

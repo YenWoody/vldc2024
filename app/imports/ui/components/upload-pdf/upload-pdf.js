@@ -224,8 +224,8 @@ Template.manageManagePdf.events({
     document.getElementById("modal_delete_battery").style.display = "none";
   },
   "change #fileInput": function (e, template) {
-    console.log(e.target, "e.target");
-    console.log(template);
+    var file = $("#fileInput")[0].files[0].name;
+    $("#choose-file-label").text(file);
   },
   "click #import-button": function (e, template) {
     let fileUpload = document.getElementById("fileInput").files[0];
@@ -318,7 +318,7 @@ Template.manageManagePdf.events({
   "click .delete"(file) {
     var remove = file.target.attributes[1].nodeValue;
     Swal.fire({
-      title: "Bạn có chắc chắn Xóa dữ liệu?",
+      title: "Bạn có chắc chắn xóa dữ liệu?",
       showDenyButton: true,
       confirmButtonText: "Xác nhận",
       denyButtonText: `Hủy`,

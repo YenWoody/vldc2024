@@ -93,7 +93,7 @@
   <div class="manage-users row shadow">
     <div class="d-flex justify-content-end">
       <button type="submit" class="btn btn-success" id="add-station">
-        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm Dataloger mới
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm máy ghi mới
       </button>
     </div>
 
@@ -126,7 +126,7 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Sửa dữ liệu của Dataloger</h3>
+          <h3 class="text-light">Sửa dữ liệu của máy ghi</h3>
         </div>
         <div class="modal-body">
           <form>
@@ -154,7 +154,20 @@
                 />
               </div>
             </div>
-            {{/if}} {{/if}} {{/each}}
+            {{else}} {{#if check item.type "station_code"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
+                <select
+                  id="select-tools-edit"
+                  multiple
+                  placeholder="Chọn mã trạm"
+                ></select>
+              </div>
+            </div>
+            {{/if}} {{/if}} {{/if}} {{/each}}
           </form>
         </div>
         <div class="modal-footer w-100 mt-3">
@@ -181,7 +194,7 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Thêm dữ liệu của Dataloger</h3>
+          <h3 class="text-light">Thêm dữ liệu của máy ghi</h3>
         </div>
         <hr />
         <div class="modal-body">
@@ -201,7 +214,20 @@
                 />
               </div>
             </div>
-            {{/if}} {{/each}}
+            {{else}} {{#if check item.type "station_code"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
+                <select
+                  id="select-tools"
+                  multiple
+                  placeholder="Chọn mã trạm"
+                ></select>
+              </div>
+            </div>
+            {{/if}} {{/if}} {{/each}}
           </form>
         </div>
         <div class="modal-footer w-100 mt-3">
@@ -227,7 +253,7 @@
     >
       <div class="_container w-100">
         <div class="_title bg-primary modal-header justify-content-center">
-          <h3 class="text-light">Xóa dữ liệu của Dataloger</h3>
+          <h3 class="text-light">Xóa dữ liệu của máy ghi</h3>
         </div>
         <div class="modal-body">
           <h5 id="content_delete"></h5>
