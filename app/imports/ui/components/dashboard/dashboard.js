@@ -7,6 +7,7 @@ import selectize from "@selectize/selectize";
 import "@selectize/selectize/dist/css/selectize.css";
 import "@sweetalert2/theme-bootstrap-4/bootstrap-4.css";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import "animate.css";
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.dashboardComponent.onCreated(function () {
@@ -107,4 +108,15 @@ Template.dashboardComponent.onRendered(async function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
 });
-Template.dashboardComponent.events({});
+Template.dashboardComponent.events({
+  "mouseenter .heading"(event) {
+    $(event.target)
+      .find(".icons-animate")
+      .addClass("animate__animated animate__swing");
+  },
+  "mouseleave .heading"(event) {
+    $(event.target)
+      .find(".icons-animate")
+      .removeClass("animate__animated animate__swing");
+  },
+});

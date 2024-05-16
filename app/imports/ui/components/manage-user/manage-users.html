@@ -118,18 +118,12 @@
           <h3 class="text-light">Phân quyền người dùng</h3>
         </div>
         <div class="_content text-center mt-3" id="_content">
-          <form id="_role">
-            <select
-              name="role"
-              id="role"
-              style="height: 2em; border-style: groove"
-            >
-              <option value="user">Người dùng thường</option>
-              <option value="editor">Biên tập viên</option>
-              <option value="admin">Quản trị viên</option>
-            </select>
-            <br />
-          </form>
+          <select
+            id="select-tools"
+            multiple
+            placeholder="Chọn mã trạm"
+          ></select>
+          <br />
         </div>
         <div class="modal-footer w-100 mt-4">
           <button class="btn btn-info save" id="submit-role">Xác nhận</button>
@@ -327,7 +321,9 @@
           </form>
         </div>
         <div class="modal-footer w-100">
-          <button class="btn btn-info save" id="submit_form" type="submit">Xác nhận</button>
+          <button class="btn btn-info save" id="submit_form" type="submit">
+            Xác nhận
+          </button>
           <button
             id="close-modal_"
             class="btn btn-danger close-modal"

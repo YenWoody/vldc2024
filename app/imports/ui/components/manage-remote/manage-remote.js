@@ -4,6 +4,7 @@ import "../not_access/not_access";
 import { $ } from "meteor/jquery";
 import DataTable from "datatables.net-dt";
 import "datatables.net-responsive-dt";
+import "@selectize/selectize/dist/css/selectize.css";
 import { loadCss } from "esri-loader";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 let state = false;

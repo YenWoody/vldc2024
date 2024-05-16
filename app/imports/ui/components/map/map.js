@@ -67,6 +67,7 @@ Template.map.onRendered(() => {
         LabelClass,
         Popup,
       ]) => {
+        var dojoConfig = { isDebug: true };
         function dataRealTimes() {
           return new Promise(function (resolve, reject) {
             Meteor.call("dataRealTime", function (error, resulteventStation) {

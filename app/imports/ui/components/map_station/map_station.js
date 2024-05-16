@@ -1104,7 +1104,8 @@ Template.map_station.onRendered(() => {
                   if (recording_history.length > 0) {
                     await recording_history.map((e) => {
                       row_recording_history.push(
-                        `<div class="mb-1 mx-2"><a href="${e.link}?download=true" download="${e.name}">${e.name}</a></div>`
+                        `<div class="mb-1 mx-2" 
+                        style="border: solid 1px #dbdbdb;padding: 5px;"><a href="${e.link}?download=true" download="${e.name}">${e.name}</a></div>`
                       );
                     });
                   } else {

@@ -7,7 +7,6 @@ import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 import { Meteor } from "meteor/meteor";
 import { $ } from "meteor/jquery";
 import "animate.css";
-import Swal from "sweetalert2/dist/sweetalert2.js";
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 Template.dashboardTemplate.helpers({

@@ -33,6 +33,9 @@ function callDatatable() {
       data: dt,
       paging: true,
       destroy: true,
+      deferLoading: 57,
+      processing: true,
+      // serverSide: true,
       scrollX: true,
       pageLength: 10,
       language: {
@@ -42,6 +45,10 @@ function callDatatable() {
         infoEmpty: "Hiển thị 0 ",
         lengthMenu: "Hiển thị _MENU_  mỗi trang",
         infoFiltered: "(Lọc từ tổng số _MAX_ )",
+        processing:
+          "<span class='fa-stack fa-lg'>\n\
+        <i class='fa fa-spinner fa-spin fa-stack-2x fa-fw'></i>\n\
+   </span> Đang tải",
       },
       columns: [
         { data: "id" },

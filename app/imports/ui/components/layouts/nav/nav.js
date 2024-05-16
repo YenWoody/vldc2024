@@ -87,11 +87,11 @@ Template.nav.helpers({
         code: "station",
         link: "/station",
       },
-      {
-        name: "Số liệu",
-        code: "statistics",
-        link: "/statistics",
-      },
+      // {
+      //   name: "Số liệu",
+      //   code: "statistics",
+      //   link: "/statistics",
+      // },
       {
         name: "Dashboard",
         code: "dashboard",
@@ -116,11 +116,11 @@ Template.nav.helpers({
         code: "station",
         link: "/station",
       },
-      {
-        name: "Số liệu",
-        code: "statistics",
-        link: "/statistics",
-      },
+      // {
+      //   name: "Số liệu",
+      //   code: "statistics",
+      //   link: "/statistics",
+      // },
     ];
   },
   activeListClass(list) {

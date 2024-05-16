@@ -6,6 +6,7 @@ import DataTable from "datatables.net-dt";
 import "datatables.net-responsive-dt";
 import { loadCss } from "esri-loader";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import "@selectize/selectize/dist/css/selectize.css";
 let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();

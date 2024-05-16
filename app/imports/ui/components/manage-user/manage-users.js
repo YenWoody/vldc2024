@@ -5,6 +5,7 @@ import "../not_access/not_access";
 import { loadCss } from "esri-loader";
 import DataTable from "datatables.net-dt";
 import "datatables.net-responsive-dt";
+import "@selectize/selectize/dist/css/selectize.css";
 let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
@@ -104,6 +105,18 @@ function callDatatable() {
   });
 }
 Template.manageUsers.onRendered(async () => {
+  $("#select-tools").selectize({
+    maxItems: 1,
+    valueField: "key",
+    labelField: "title",
+    searchField: "title",
+    options: [
+      { title: "Người dùng thường", key: "user" },
+      { title: "Biên tập viên", key: "editor" },
+      { title: "Quản trị viên", key: "admin" },
+    ],
+    create: false,
+  });
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
@@ -116,8 +129,7 @@ Template.manageUsers.onRendered(async () => {
       const data = $("#data_users").DataTable().row(this).data();
       document.getElementById("modal_edit_user").style.display = "block";
       document.getElementById("submit-role").onclick = function () {
-        let role = $("[name=role]").val();
-
+        let role = $("#select-tools").val()[0];
         const id = data._id;
         Meteor.call("update-role", id, role, (error) => {
           if (error) {
