@@ -1,8 +1,12 @@
 <template name="uploadMachineHistory">
   {{#if rolesCheck}} {{> not_access}} {{else}}
-  <div class="container shadow pt-3 d-flex align-items-end" id="upload">
+  <div
+    class="container shadow pt-3"
+    id="upload"
+    style="padding: 15px 45px 45px 45px"
+  >
     {{#if userUnVerified}} {{> verify_form }} {{else}}
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end w-100 pe-3">
       <button type="submit" class="btn btn-success" id="add-history">
         <i class="bi bi-plus-circle-dotted me-2"></i>Thêm lịch sử đặt máy mới
       </button>

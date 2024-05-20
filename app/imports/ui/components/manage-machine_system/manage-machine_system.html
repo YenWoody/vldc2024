@@ -96,7 +96,11 @@
         <i class="bi bi-plus-circle-dotted me-2"></i>Thêm Hệ thống máy mới
       </button>
     </div>
-    <table id="data_MachineSystem" class="display" style="width: 100%">
+    <table
+      id="data_MachineSystem"
+      class="table table-striped"
+      style="width: 100%"
+    >
       <thead>
         <tr>
           <th>ID</th>
@@ -108,6 +112,15 @@
         </tr>
       </thead>
     </table>
+    <div class="mt-2 loading_class text-center">
+      <div
+        class="spinner-border text-secondary"
+        id="loading_datatables"
+        role="status"
+      >
+        <span class="sr-only text-dark">Đang tải...</span>
+      </div>
+    </div>
   </div>
   <div id="_modal" class="_modal modal">
     <div

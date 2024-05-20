@@ -5,6 +5,7 @@ import datatables_bs from "datatables.net-bs";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
 import * as turf from "@turf/turf";
+import "animate.css";
 Template.map.onCreated(() => {
   setDefaultOptions({
     version: "4.22",
@@ -1458,6 +1459,7 @@ Template.map.onRendered(() => {
         // Highlight điểm click trên FeatureLayer
         function hightlightPoint(layer, point) {
           view.whenLayerView(layer).then(function (layerView) {
+            layerView.filter = { where: `id = ${point.attributes.id}` };
             if (highlightSelect) {
               highlightSelect.remove();
             }
@@ -1469,7 +1471,17 @@ Template.map.onRendered(() => {
           });
         }
         //end highlight
-
+        $("#closebtn").click(() => {
+          view.whenLayerView(layerStations).then((layerView) => {
+            layerView.filter = { where: "id = -1" };
+          });
+          view.whenLayerView(layerRealTime).then((layerView) => {
+            layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
+          });
+          if (highlightSelect) {
+            highlightSelect.remove();
+          }
+        });
         view.on("click", async (event) => {
           if (highlightSelect) {
             highlightSelect.remove();
@@ -1481,6 +1493,9 @@ Template.map.onRendered(() => {
               document.getElementById("map").style.marginRight = "0";
               view.whenLayerView(layerStations).then((layerView) => {
                 layerView.filter = { where: "id = -1" };
+              });
+              view.whenLayerView(layerRealTime).then((layerView) => {
+                layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
               });
             } else {
               response.results.forEach(function (result) {
@@ -1631,6 +1646,17 @@ Template.map.onRendered(() => {
           container: legendDiv,
         });
         function openPopupRightSide() {
+          if ($("#sidebarCollapse").hasClass("active")) {
+            $("#sidebarCollapse").toggleClass("active");
+            $("#iconArrow").hasClass("fa-caret-left")
+              ? $("#iconArrow")
+                  .addClass("fa-caret-right")
+                  .removeClass("fa-caret-left")
+              : $("#iconArrow")
+                  .addClass("fa-caret-left")
+                  .removeClass("fa-caret-right");
+            $("#leftSideBar").toggleClass("active");
+          }
           if ($(window).width() <= 900) {
             document.getElementById("popup").style.width = "50vw";
             document.getElementById("map").style.marginRight = "50vw";
@@ -1721,6 +1747,16 @@ Template.map.helpers({
 });
 
 Template.map.events({
+  "mouseenter #head_title"(event) {
+    $(event.target)
+      .find(".fa-chevron-right")
+      .addClass("animate__animated animate__rubberBand");
+  },
+  "mouseleave #head_title"(event) {
+    $(event.target)
+      .find(".fa-chevron-right")
+      .removeClass("animate__animated animate__rubberBand");
+  },
   "click #closebtn": () => {
     document.getElementById("popup").style.width = "0";
     document.getElementById("map").style.marginRight = "0";

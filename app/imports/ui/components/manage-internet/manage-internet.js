@@ -27,17 +27,18 @@ function callDatatable() {
     }
 
     const dt = resultdata.rows;
-
+    $("#loading_datatables").show();
     $("#data_internet").DataTable().clear().destroy();
     new DataTable("#data_internet", {
       data: dt,
       paging: true,
       destroy: true,
-      deferLoading: 57,
-      processing: true,
-      // serverSide: true,
       scrollX: true,
       pageLength: 10,
+      processing: true,
+      initComplete: function (settings, json) {
+        $("#loading_datatables").hide();
+      },
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
@@ -45,10 +46,6 @@ function callDatatable() {
         infoEmpty: "Hiển thị 0 ",
         lengthMenu: "Hiển thị _MENU_  mỗi trang",
         infoFiltered: "(Lọc từ tổng số _MAX_ )",
-        processing:
-          "<span class='fa-stack fa-lg'>\n\
-        <i class='fa fa-spinner fa-spin fa-stack-2x fa-fw'></i>\n\
-   </span> Đang tải",
       },
       columns: [
         { data: "id" },

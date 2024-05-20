@@ -24,12 +24,16 @@ function callDatatable() {
     if (error) {
       console.log(error);
     }
+    $("#loading_datatables").show();
     let table = new DataTable("#data_users", {
       data: resultdata,
       paging: true,
       destroy: true,
       scrollX: true,
       pageLength: 10,
+      initComplete: function (settings, json) {
+        $("#loading_datatables").hide();
+      },
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",

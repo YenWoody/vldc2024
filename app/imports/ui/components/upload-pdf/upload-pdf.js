@@ -68,7 +68,7 @@ function callDatatable() {
     }
 
     const dt = resultdata.rows;
-
+    $("#loading_datatables").show();
     $("#data_pdf").DataTable().clear().destroy();
     new DataTable("#data_pdf", {
       data: dt,
@@ -76,6 +76,9 @@ function callDatatable() {
       destroy: true,
       scrollX: true,
       pageLength: 10,
+      initComplete: function (settings, json) {
+        $("#loading_datatables").hide();
+      },
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",
@@ -95,7 +98,7 @@ function callDatatable() {
           defaultContent: `<div class="btn-group btn-group-sm">
           <button type="button" class="btn btn-primary btn-sm me-2 editor-view" data-bs-toggle="tooltip"
           data-bs-placement="top"
-          title="Tải xuống" ><span class="fa fa-eye fa-lg editor-view"/></span></button>
+          title="Xem" ><span class="fa fa-eye fa-lg editor-view"/></span></button>
           <button type="button" class="btn btn-primary btn-sm me-2 editor-download" data-bs-toggle="tooltip"
           data-bs-placement="top"
           title="Tải xuống" ><span class="fa fa-download fa-lg editor-download"/></span></button>

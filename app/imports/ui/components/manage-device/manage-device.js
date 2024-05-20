@@ -25,6 +25,7 @@ function loadDatatable() {
     if (error) {
       console.log(error);
     } else {
+      $("#loading_datatables").show();
       const dt = resultdata.rows;
       $("#data_dataloger").DataTable().clear().destroy();
       new DataTable("#data_dataloger", {
@@ -33,6 +34,9 @@ function loadDatatable() {
         destroy: true,
         scrollX: true,
         pageLength: 10,
+        initComplete: function (settings, json) {
+          $("#loading_datatables").hide();
+        },
         language: {
           sSearch: "Tìm kiếm :",
           emptyTable: "Dữ liệu chưa tải thành công",

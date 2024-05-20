@@ -125,7 +125,7 @@ Template.nav.helpers({
   },
   activeListClass(list) {
     const active = FlowRouter.getRouteName() === list.code;
-    return active && "active-navbar";
+    return active && "active-menu";
   },
 });
 

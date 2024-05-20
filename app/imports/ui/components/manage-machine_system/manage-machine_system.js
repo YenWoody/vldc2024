@@ -27,7 +27,7 @@ function loadDatatable() {
     }
 
     const dt = resultdata.rows;
-    console.log(dt, "dt");
+    $("#loading_datatables").show();
     $("#data_MachineSystem").DataTable().clear().destroy();
     new DataTable("#data_MachineSystem", {
       data: dt,
@@ -35,6 +35,9 @@ function loadDatatable() {
       destroy: true,
       scrollX: true,
       pageLength: 10,
+      initComplete: function (settings, json) {
+        $("#loading_datatables").hide();
+      },
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",

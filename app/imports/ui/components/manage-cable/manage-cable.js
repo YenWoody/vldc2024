@@ -24,7 +24,7 @@ function loadDatatable() {
     if (error) {
       console.log(error);
     }
-
+    $("#loading_datatables").show();
     const dt = resultdata.rows;
     $("#data_Cable").DataTable().clear().destroy();
     new DataTable("#data_Cable", {
@@ -33,6 +33,9 @@ function loadDatatable() {
       destroy: true,
       scrollX: true,
       pageLength: 10,
+      initComplete: function (settings, json) {
+        $("#loading_datatables").hide();
+      },
       language: {
         sSearch: "Tìm kiếm :",
         emptyTable: "Dữ liệu chưa tải thành công",

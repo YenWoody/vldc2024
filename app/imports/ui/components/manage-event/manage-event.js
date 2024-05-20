@@ -31,12 +31,16 @@ function loadDatatable() {
       const data = dataEvents.filter((e) => {
         return !(e.geometry === null);
       });
+      $("#loading_datatables").show();
       let table = new DataTable("#data_event", {
         data: data,
         paging: true,
         destroy: true,
         scrollX: true,
         pageLength: 10,
+        initComplete: function (settings, json) {
+          $("#loading_datatables").hide();
+        },
         language: {
           sSearch: "Tìm kiếm :",
           emptyTable: "Dữ liệu chưa tải thành công",

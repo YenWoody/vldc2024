@@ -23,6 +23,7 @@ function callDatatable() {
     if (error) {
       reject(error);
     } else {
+      $("#loading_datatables").show();
       let table = new DataTable("#data_tram", {
         data: resultdataStation.rows,
         paging: true,
@@ -30,6 +31,9 @@ function callDatatable() {
         destroy: true,
         scrollX: true,
         pageLength: 10,
+        initComplete: function (settings, json) {
+          $("#loading_datatables").hide();
+        },
         language: {
           sSearch: "Tìm kiếm :",
           emptyTable: "Dữ liệu chưa tải thành công",
