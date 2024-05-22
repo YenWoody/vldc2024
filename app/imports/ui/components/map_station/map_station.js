@@ -821,7 +821,6 @@ Template.map_station.onRendered(() => {
               {
                 data: "attributes.code",
                 fnCreatedCell: function (nTd, sData, oData, iRow, iCol) {
-                  console.log(nTd, sData, oData);
                   $(nTd).html(
                     `<div class = "url_code_station"><b><a href =>${sData}</a></b></div>`
                   );
@@ -1072,10 +1071,8 @@ Template.map_station.onRendered(() => {
           const recording_history = dataPdfStation.filter((e) => {
             return e.station_code === result.attributes.code;
           });
-          console.log(machineSystem, "machineSystem");
           //Thông tin nhân sự
           // const innerinfoPersonnel = "";
-          console.log(dataloger, "dataloger");
           const row_dataloger = [];
           const row_dataloger_user = [];
           const row_dataloger_editor = [];
@@ -1097,7 +1094,6 @@ Template.map_station.onRendered(() => {
           const row_internet = [];
           const row_land = [];
           const row_recording_history = [];
-          console.log(recording_history, "recording_history");
           if (recording_history.length > 0) {
             await recording_history.map((e) => {
               row_recording_history.push(
@@ -1341,8 +1337,6 @@ Template.map_station.onRendered(() => {
                 <td  >${getContent(e.status)}</td>
             </tr>`);
           });
-
-          console.log(row_dataloger, "row_dataloger");
           // Meteor.user().roles === "";
           $("#infoPersonnel").html(`            
            <table class="table table-bordered table-hover">
@@ -1393,7 +1387,6 @@ Template.map_station.onRendered(() => {
               </tr>
             </table>
           `);
-            console.log(row_recording_history, "row_recording_history");
             $("#monitoringLog").html(getContent(row_recording_history));
           }
           // Người dùng thường
@@ -1572,7 +1565,6 @@ Template.map_station.onRendered(() => {
         //
         $("select").on("change", function () {
           let selectedNetWork = $("#listNetwork option:selected").val();
-          console.log(selectedNetWork, "selectedNetWork");
           if (selectedNetWork === "all") {
             return (floodLayerView.filter = null);
           } else {
@@ -1588,7 +1580,6 @@ Template.map_station.onRendered(() => {
 
           return layerStations.queryFeatures(query).then(function (response) {
             const dataSet = response.features;
-            console.log(dataSet, "dataSet");
             loadDataTable(dataSet);
           });
         });

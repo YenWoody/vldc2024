@@ -193,7 +193,6 @@ Template.category.onRendered(() => {
         const dataStations = await dataStation();
         const dataEmployee = await dataEmployes();
         const dataBaler = await dataBalers();
-        console.log(dataBaler, "dataBaler");
         const dataDataloger = await dataDatalogers();
         const dataSensor = await dataSensors();
         //DataTable
@@ -215,7 +214,6 @@ Template.category.onRendered(() => {
               {
                 data: "attributes.Reporting_time",
                 render: function (data, type, row) {
-                  console.log(data, "data");
                   const date = data.toLocaleString();
                   const dataSplit = date.split(" ");
                   return dataSplit[1] + " " + dataSplit[0];
@@ -257,7 +255,6 @@ Template.category.onRendered(() => {
                   .DataTable()
                   .order([[0, "asc"]])
                   .draw();
-            console.log(value);
           });
         }
         function loadDataTableProcessedEvent(data) {
@@ -325,7 +322,6 @@ Template.category.onRendered(() => {
                   .DataTable()
                   .order([[0, "asc"]])
                   .draw();
-            console.log(value);
           });
         }
         $("#buttonRealtime").on("click", (e) => {
@@ -1440,7 +1436,6 @@ Template.category.onRendered(() => {
                 : "";
             });
             function updateFilter_realtime() {
-              console.log("chạy");
               depthMin = depthSlider.values[0];
               depthMax = depthSlider.values[1];
               magnitudeMin = magnitudeSlider.values[0];
@@ -1593,7 +1588,6 @@ Template.category.onRendered(() => {
           //   floodLayerView = layerView;
           // });
         });
-        console.log(layerEvent, "layerEvent");
         // Datatable
         function loadProcessedEvent() {
           let query_ProcessedEvent = layerEvent.createQuery();
@@ -1603,7 +1597,7 @@ Template.category.onRendered(() => {
             .queryFeatures(query_ProcessedEvent)
             .then(function (response) {
               const dataSet = response.features;
-              console.log(dataSet, "1916");
+
               const data = dataSet.map((e) => {
                 e.attributes.time = new Date(e.attributes.time);
                 return e;
@@ -1624,6 +1618,8 @@ Template.category.onRendered(() => {
                     zoom: 6,
                   });
                 });
+                openPopupRightSide();
+                loadPopupLayerEvent(dataRow);
               });
             });
         }
@@ -1657,6 +1653,8 @@ Template.category.onRendered(() => {
                   zoom: 6,
                 });
               });
+              openPopupRightSide();
+              loadPopupLayerRealtime(dataRow);
             });
           });
         }
@@ -1664,7 +1662,6 @@ Template.category.onRendered(() => {
         // Highlight điểm click trên FeatureLayer
         function hightlightPoint(layer, point) {
           view.whenLayerView(layer).then(function (layerView) {
-            console.log(point, "point");
             layerView.filter = { where: `id = ${point.attributes.id}` };
             if (highlightSelect) {
               highlightSelect.remove();
@@ -1691,6 +1688,198 @@ Template.category.onRendered(() => {
             highlightSelect.remove();
           }
         });
+        async function loadPopupLayerRealtime(result) {
+          const date = new Date(result.attributes.Reporting_time);
+
+          const time = date.toLocaleString();
+
+          const fullTime = time.split(" ")[1] + " " + time.split(" ")[0];
+          $("#time").html(fullTime);
+          $("#lat").html(result.attributes.lat);
+          $("#long").html(result.attributes.lon);
+          $("#depth").html(result.attributes.dep);
+          $(".mag").html(result.attributes.Mpd + " " + "(MPd)");
+          $("#magCollapse")
+            .html(`           <table class="table table-bordered">
+          <tr>
+          <td class="fw-bold">Mall</td>
+          <td colspan="3" class="mag">${result.attributes.Mall}</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Mpd</td>
+            <td colspan="3" class="mag">${result.attributes.Mpd}</td>
+          </tr>
+          <tr>
+          <td class="fw-bold">Mtc</td>
+          <td colspan="3" class="mag">${result.attributes.Mtc}</td>
+          </tr>
+          </table>`);
+          // $("#location").html(fullTime);
+
+          const where = `realtime_id = ${result.attributes.id}`;
+
+          let query = layerrealtimeEvent.createQuery();
+          query.where = where;
+          query.outFields = "*";
+
+          return layerrealtimeEvent
+            .queryFeatures(query)
+            .then(function (response) {
+              const dataSet = response.features;
+              const row_data = [];
+              const code_station = [];
+              // Hiển thị các Trạm đo được lên bản đồ
+
+              dataSet.map((e) => {
+                if (e.attributes.Sta != null) {
+                  code_station.push(`(code = '${e.attributes.Sta}')`);
+                }
+
+                for (const prop in e.attributes) {
+                  if (e.attributes[prop] == undefined) {
+                    e.attributes[prop] = "Chưa có thông tin";
+                  }
+                  if (e.attributes[prop] == null) {
+                    e.attributes[prop] = "Chưa có thông tin";
+                  }
+                }
+                row_data.push(` <tr>
+                    <td>${e.attributes.Sta}</td>
+                    <td>${e.attributes.pa}</td>
+                    <td>${e.attributes.pv}</td>
+                    <td>${e.attributes.pd}</td>
+                    <td>${e.attributes.tc}</td>
+                    <td>${e.attributes.Mtc}</td>
+                    <td>${e.attributes.MPd}</td>
+                    <td>${e.attributes.Dis}</td>
+                    <td>${e.attributes.Parr}</td>
+                    </tr>`);
+              });
+              view.whenLayerView(layerStations).then((layerView) => {
+                layerView.filter =
+                  code_station.length > 0
+                    ? { where: code_station.join("OR") }
+                    : { where: "code = -1" };
+              });
+              // console.log(row_data, "row_data");
+              const wavePicData = `
+                <table >
+            
+                    <tr >
+                        <th class="content_popup">Mã trạm</th>
+                        <th class="content_popup">Pa</th>
+                        <th class="content_popup">Pv</th>
+                        <th class="content_popup">Pd</th>
+                        <th class="content_popup">Tc</th>
+                        <th class="content_popup">Mtc</th>
+                        <th class="content_popup">MPd</th>
+                        <th class="content_popup">Khoảng cách đến trạm</th>
+                        <th class="content_popup">Thời gian sóng tới</th>
+                    </tr>
+              
+                <tbody>
+                   ${row_data.join("")}
+                </tbody>
+                </table>`;
+              $("#wavePickTable").html(wavePicData);
+              // $("#shortData").html(shortData);
+            });
+        }
+        async function loadPopupLayerEvent(result) {
+          // console.log(result, "result");
+          const date = new Date(result.attributes.datetime);
+
+          const time = date.toLocaleString();
+
+          const fullTime = time.split(" ")[1] + " " + time.split(" ")[0];
+          $("#time").html(fullTime);
+          $("#lat").html(result.attributes.lat);
+          $("#long").html(result.attributes.long);
+          $("#depth").html(result.attributes.md);
+          $(".mag").html(result.attributes.ml + " " + "(ml)");
+          $("#location").html(
+            result.attributes.location
+              ? result.attributes.location
+              : "Chưa có thông tin"
+          );
+          $("#magCollapse").html(
+            `<table>
+                    <tr>
+                    <td class="fw-bold">Ml</td>
+                    <td colspan="3" class="mag">${result.attributes.ml}</td>
+                  </tr></table>`
+          );
+          $("#wavePickTable").html("Chưa có thông tin");
+          const where = `event_id = ${result.attributes.id}`;
+          let query_eventStation = layerEventStaions.createQuery();
+          query_eventStation.where = where;
+          query_eventStation.outFields = "*";
+          return layerEventStaions
+            .queryFeatures(query_eventStation)
+            .then(function (response) {
+              const dataSet = response.features;
+              const code_station = [];
+              dataSet.map((e) => {
+                if (e.attributes.station_id != null) {
+                  code_station.push(`(code = '${e.attributes.station_id}')`);
+                }
+              });
+              // Hiển thị các Trạm đo được lên bản đồ
+              view.whenLayerView(layerStations).then((layerView) => {
+                layerView.filter =
+                  code_station.length > 0
+                    ? { where: code_station.join("OR") }
+                    : { where: "code = -1" };
+              });
+              const row_data = [];
+              if (dataSet.length == 0) {
+                $("#wavePickTable").html("Chưa có thông tin");
+              } else {
+                dataSet.map((e) => {
+                  for (const prop in e.attributes) {
+                    if (!e.attributes[prop]) {
+                      e.attributes[prop] = "Chưa có thông tin";
+                    }
+
+                    if (!prop) {
+                      e.attributes[prop] = "Chưa có thông tin";
+                    }
+                  }
+                  row_data.push(` <tr>
+                          <td>${e.attributes.station_id}</td>
+                          <td>${e.attributes.ain}</td>
+                          <td>${e.attributes.amplit}</td>              
+                          <td>${e.attributes.caz7}</td>
+                          <td>${e.attributes.dis}</td>
+                          <td>${e.attributes.i}</td>
+                          <td>${e.attributes.peri}</td>
+                          <td>${e.attributes.secon}</td>
+                          <td>${e.attributes.sp}</td>
+                          </tr>`);
+                });
+              }
+              const pickWaveTable = `<table>
+                    
+                              <tr>
+                                  <th class="content_popup">Mã trạm</th>
+                                  <th class="content_popup">Góc tới</th>
+                                  <th class="content_popup">Biên độ dao động trội</th>
+                                  <th class="content_popup">Góc Azimut</th>
+                                  <th class="content_popup">Khoảng cách chấn tâm</th>
+                                  <th class="content_popup">Pha sóng</th>
+                                  <th class="content_popup">Chu kỳ </th>
+                                  <th class="content_popup">Thời gian sóng tới trạm</th>
+                                  <th class="content_popup">Kênh sử dụng</th>
+                                
+                              </tr>
+               
+                          <tbody>
+                             ${row_data.join("")}
+                          </tbody>
+                      </table>`;
+              $("#wavePickTable").html(pickWaveTable);
+            });
+        }
         view.on("click", async (event) => {
           if (highlightSelect) {
             highlightSelect.remove();
@@ -1714,202 +1903,10 @@ Template.category.onRendered(() => {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerRealTime) {
                   hightlightPoint(layerRealTime, result.graphic);
-                  const date = new Date(
-                    result.graphic.attributes.Reporting_time
-                  );
-
-                  const time = date.toLocaleString();
-
-                  const fullTime =
-                    time.split(" ")[1] + " " + time.split(" ")[0];
-                  $("#time").html(fullTime);
-                  $("#lat").html(result.graphic.attributes.lat);
-                  $("#long").html(result.graphic.attributes.lon);
-                  $("#depth").html(result.graphic.attributes.dep);
-                  $(".mag").html(result.graphic.attributes.Mpd + " " + "(MPd)");
-                  $("#magCollapse")
-                    .html(`           <table class="table table-bordered">
-                  <tr>
-                  <td class="fw-bold">Mall</td>
-                  <td colspan="3" class="mag">${result.graphic.attributes.Mall}</td>
-                </tr>
-                  <tr>
-                    <td class="fw-bold">Mpd</td>
-                    <td colspan="3" class="mag">${result.graphic.attributes.Mpd}</td>
-                  </tr>
-                  <tr>
-                  <td class="fw-bold">Mtc</td>
-                  <td colspan="3" class="mag">${result.graphic.attributes.Mtc}</td>
-                </tr>
-                </table>`);
-                  // $("#location").html(fullTime);
-
-                  const where = `realtime_id = ${result.graphic.attributes.id}`;
-
-                  let query = layerrealtimeEvent.createQuery();
-                  query.where = where;
-                  query.outFields = "*";
-
-                  return layerrealtimeEvent
-                    .queryFeatures(query)
-                    .then(function (response) {
-                      const dataSet = response.features;
-                      const row_data = [];
-                      const code_station = [];
-                      // Hiển thị các Trạm đo được lên bản đồ
-
-                      dataSet.map((e) => {
-                        console.log(e.attributes, "e.attributes");
-                        if (e.attributes.Sta != null) {
-                          code_station.push(`(code = '${e.attributes.Sta}')`);
-                        }
-
-                        for (const prop in e.attributes) {
-                          if (e.attributes[prop] == undefined) {
-                            e.attributes[prop] = "Chưa có thông tin";
-                          }
-                          if (e.attributes[prop] == null) {
-                            e.attributes[prop] = "Chưa có thông tin";
-                          }
-                        }
-                        row_data.push(` <tr>
-                            <td>${e.attributes.Sta}</td>
-                            <td>${e.attributes.pa}</td>
-                            <td>${e.attributes.pv}</td>
-                            <td>${e.attributes.pd}</td>
-                            <td>${e.attributes.tc}</td>
-                            <td>${e.attributes.Mtc}</td>
-                            <td>${e.attributes.MPd}</td>
-                            <td>${e.attributes.Dis}</td>
-                            <td>${e.attributes.Parr}</td>
-                            </tr>`);
-                      });
-                      view.whenLayerView(layerStations).then((layerView) => {
-                        layerView.filter =
-                          code_station.length > 0
-                            ? { where: code_station.join("OR") }
-                            : { where: "code = -1" };
-                      });
-                      console.log(row_data, "row_data");
-                      const wavePicData = `
-                        <table >
-                    
-                            <tr >
-                                <th class="content_popup">Mã trạm</th>
-                                <th class="content_popup">Pa</th>
-                                <th class="content_popup">Pv</th>
-                                <th class="content_popup">Pd</th>
-                                <th class="content_popup">Tc</th>
-                                <th class="content_popup">Mtc</th>
-                                <th class="content_popup">MPd</th>
-                                <th class="content_popup">Khoảng cách đến trạm</th>
-                                <th class="content_popup">Thời gian sóng tới</th>
-                            </tr>
-                      
-                        <tbody>
-                           ${row_data.join("")}
-                        </tbody>
-                        </table>`;
-                      $("#wavePickTable").html(wavePicData);
-                      // $("#shortData").html(shortData);
-                    });
+                  loadPopupLayerRealtime(result.graphic);
                 } else if (result.graphic.layer === layerEvent) {
                   hightlightPoint(layerEvent, result.graphic);
-                  const date = new Date(result.graphic.attributes.datetime);
-
-                  const time = date.toLocaleString();
-
-                  const fullTime =
-                    time.split(" ")[1] + " " + time.split(" ")[0];
-                  $("#time").html(fullTime);
-                  $("#lat").html(result.graphic.attributes.lat);
-                  $("#long").html(result.graphic.attributes.long);
-                  $("#depth").html(result.graphic.attributes.md);
-                  $(".mag").html(result.graphic.attributes.ml + " " + "(ml)");
-                  $("#location").html(
-                    result.graphic.attributes.location
-                      ? result.graphic.attributes.location
-                      : "Chưa có thông tin"
-                  );
-                  $("#magCollapse").html(
-                    `<table>
-                    <tr>
-                    <td class="fw-bold">Ml</td>
-                    <td colspan="3" class="mag">${result.graphic.attributes.ml}</td>
-                  </tr></table>`
-                  );
-                  $("#wavePickTable").html("Chưa có thông tin");
-                  const where = `event_id = ${result.graphic.attributes.id}`;
-                  let query_eventStation = layerEventStaions.createQuery();
-                  query_eventStation.where = where;
-                  query_eventStation.outFields = "*";
-                  return layerEventStaions
-                    .queryFeatures(query_eventStation)
-                    .then(function (response) {
-                      const dataSet = response.features;
-                      const code_station = [];
-                      dataSet.map((e) => {
-                        if (e.attributes.station_id != null) {
-                          code_station.push(
-                            `(code = '${e.attributes.station_id}')`
-                          );
-                        }
-                      });
-                      // Hiển thị các Trạm đo được lên bản đồ
-                      view.whenLayerView(layerStations).then((layerView) => {
-                        layerView.filter =
-                          code_station.length > 0
-                            ? { where: code_station.join("OR") }
-                            : { where: "code = -1" };
-                      });
-                      const row_data = [];
-                      if (dataSet.length == 0) {
-                        $("#wavePickTable").html("Chưa có thông tin");
-                      } else {
-                        dataSet.map((e) => {
-                          for (const prop in e.attributes) {
-                            if (!e.attributes[prop]) {
-                              e.attributes[prop] = "Chưa có thông tin";
-                            }
-
-                            if (!prop) {
-                              e.attributes[prop] = "Chưa có thông tin";
-                            }
-                          }
-                          row_data.push(` <tr>
-                          <td>${e.attributes.station_id}</td>
-                          <td>${e.attributes.ain}</td>
-                          <td>${e.attributes.amplit}</td>              
-                          <td>${e.attributes.caz7}</td>
-                          <td>${e.attributes.dis}</td>
-                          <td>${e.attributes.i}</td>
-                          <td>${e.attributes.peri}</td>
-                          <td>${e.attributes.secon}</td>
-                          <td>${e.attributes.sp}</td>
-                          </tr>`);
-                        });
-                      }
-                      const pickWaveTable = `<table>
-                    
-                              <tr>
-                                  <th class="content_popup">Mã trạm</th>
-                                  <th class="content_popup">Góc tới</th>
-                                  <th class="content_popup">Biên độ dao động trội</th>
-                                  <th class="content_popup">Góc Azimut</th>
-                                  <th class="content_popup">Khoảng cách chấn tâm</th>
-                                  <th class="content_popup">Pha sóng</th>
-                                  <th class="content_popup">Chu kỳ </th>
-                                  <th class="content_popup">Thời gian sóng tới trạm</th>
-                                  <th class="content_popup">Kênh sử dụng</th>
-                                
-                              </tr>
-               
-                          <tbody>
-                             ${row_data.join("")}
-                          </tbody>
-                      </table>`;
-                      $("#wavePickTable").html(pickWaveTable);
-                    });
+                  loadPopupLayerEvent(result.graphic);
                 }
               });
               // do something with the result graphic

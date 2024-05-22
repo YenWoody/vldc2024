@@ -1419,6 +1419,8 @@ Template.map.onRendered(() => {
                   zoom: 6,
                 });
               });
+              openPopupRightSide();
+              loadPopupLayerIris(dataRow);
             });
           });
         }
@@ -1452,6 +1454,8 @@ Template.map.onRendered(() => {
                   zoom: 6,
                 });
               });
+              openPopupRightSide();
+              loadPopupLayerRealtime(dataRow);
             });
           });
         }
@@ -1459,7 +1463,9 @@ Template.map.onRendered(() => {
         // Highlight điểm click trên FeatureLayer
         function hightlightPoint(layer, point) {
           view.whenLayerView(layer).then(function (layerView) {
-            layerView.filter = { where: `id = ${point.attributes.id}` };
+            layerView.filter = point.attributes.id
+              ? { where: `id = ${point.attributes.id}` }
+              : { where: `__OBJECTID = ${point.attributes.__OBJECTID}` };
             if (highlightSelect) {
               highlightSelect.remove();
             }
@@ -1482,6 +1488,131 @@ Template.map.onRendered(() => {
             highlightSelect.remove();
           }
         });
+        async function loadPopupLayerRealtime(result) {
+          const date = new Date(result.attributes.Reporting_time);
+
+          const time = date.toLocaleString();
+
+          const fullTime = time.split(" ")[1] + " " + time.split(" ")[0];
+          $("#time").html(fullTime);
+          $("#lat").html(result.attributes.lat);
+          $("#long").html(result.attributes.lon);
+          $("#depth").html(result.attributes.dep);
+          $(".mag").html(result.attributes.Mpd + " " + "(MPd)");
+          $("#magCollapse")
+            .html(`           <table class="table table-bordered">
+          <tr>
+          <td class="fw-bold">Mall</td>
+          <td colspan="3" class="mag">${result.attributes.Mall}</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Mpd</td>
+            <td colspan="3" class="mag">${result.attributes.Mpd}</td>
+          </tr>
+          <tr>
+          <td class="fw-bold">Mtc</td>
+          <td colspan="3" class="mag">${result.attributes.Mtc}</td>
+          </tr>
+          </table>`);
+          // $("#location").html(fullTime);
+
+          const where = `realtime_id = ${result.attributes.id}`;
+
+          let query = layerrealtimeEvent.createQuery();
+          query.where = where;
+          query.outFields = "*";
+
+          return layerrealtimeEvent
+            .queryFeatures(query)
+            .then(function (response) {
+              const dataSet = response.features;
+              const row_data = [];
+              const code_station = [];
+              // Hiển thị các Trạm đo được lên bản đồ
+
+              dataSet.map((e) => {
+                if (e.attributes.Sta != null) {
+                  code_station.push(`(code = '${e.attributes.Sta}')`);
+                }
+
+                for (const prop in e.attributes) {
+                  if (e.attributes[prop] == undefined) {
+                    e.attributes[prop] = "Chưa có thông tin";
+                  }
+                  if (e.attributes[prop] == null) {
+                    e.attributes[prop] = "Chưa có thông tin";
+                  }
+                }
+                row_data.push(` <tr>
+                    <td>${e.attributes.Sta}</td>
+                    <td>${e.attributes.pa}</td>
+                    <td>${e.attributes.pv}</td>
+                    <td>${e.attributes.pd}</td>
+                    <td>${e.attributes.tc}</td>
+                    <td>${e.attributes.Mtc}</td>
+                    <td>${e.attributes.MPd}</td>
+                    <td>${e.attributes.Dis}</td>
+                    <td>${e.attributes.Parr}</td>
+                    </tr>`);
+              });
+              view.whenLayerView(layerStations).then((layerView) => {
+                layerView.filter =
+                  code_station.length > 0
+                    ? { where: code_station.join("OR") }
+                    : { where: "code = -1" };
+              });
+              const wavePicData = `
+                <table >
+            
+                    <tr >
+                        <th class="content_popup">Mã trạm</th>
+                        <th class="content_popup">Pa</th>
+                        <th class="content_popup">Pv</th>
+                        <th class="content_popup">Pd</th>
+                        <th class="content_popup">Tc</th>
+                        <th class="content_popup">Mtc</th>
+                        <th class="content_popup">MPd</th>
+                        <th class="content_popup">Khoảng cách đến trạm</th>
+                        <th class="content_popup">Thời gian sóng tới</th>
+                    </tr>
+              
+                <tbody>
+                   ${row_data.join("")}
+                </tbody>
+                </table>`;
+              $("#wavePickTable").html(wavePicData);
+              // $("#shortData").html(shortData);
+            });
+        }
+        async function loadPopupLayerIris(result) {
+          const date = new Date(result.attributes.time);
+
+          const time = date.toLocaleString();
+
+          const fullTime = time.split(" ")[1] + " " + time.split(" ")[0];
+          $("#time").html(fullTime);
+          $("#lat").html(result.attributes.lat);
+          $("#long").html(result.attributes.long);
+          $("#depth").html(result.attributes.depth);
+
+          $(".mag").html(
+            result.attributes.magnitude + " " + `(${result.attributes.magtype})`
+          );
+          $("#magCollapse").html(
+            `<table>
+                <tr>
+                <td class="fw-bold">${result.attributes.magtype}</td>
+                <td colspan="3" class="mag">${result.attributes.magnitude}</td>
+              </tr></table>`
+          );
+          $("#location").html(
+            result.attributes.location
+              ? result.attributes.location
+              : "Chưa có thông tin"
+          );
+
+          $("#wavePickTable").html("Chưa có thông tin");
+        }
         view.on("click", async (event) => {
           if (highlightSelect) {
             highlightSelect.remove();
@@ -1497,140 +1628,20 @@ Template.map.onRendered(() => {
               view.whenLayerView(layerRealTime).then((layerView) => {
                 layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
               });
+              view.whenLayerView(layerIris).then((layerView) => {
+                layerView.filter = {
+                  where: "magnitude >= 0 and magnitude <= 1000",
+                };
+              });
             } else {
               response.results.forEach(function (result) {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerRealTime) {
                   hightlightPoint(layerRealTime, result.graphic);
-                  const date = new Date(
-                    result.graphic.attributes.Reporting_time
-                  );
-
-                  const time = date.toLocaleString();
-
-                  const fullTime =
-                    time.split(" ")[1] + " " + time.split(" ")[0];
-                  $("#time").html(fullTime);
-                  $("#lat").html(result.graphic.attributes.lat);
-                  $("#long").html(result.graphic.attributes.lon);
-                  $("#depth").html(result.graphic.attributes.dep);
-                  $(".mag").html(result.graphic.attributes.Mpd + " " + "(MPd)");
-                  $("#magCollapse")
-                    .html(`           <table class="table table-bordered">
-                  <tr>
-                  <td class="fw-bold">Mall</td>
-                  <td colspan="3" class="mag">${result.graphic.attributes.Mall}</td>
-                </tr>
-                  <tr>
-                    <td class="fw-bold">Mpd</td>
-                    <td colspan="3" class="mag">${result.graphic.attributes.Mpd}</td>
-                  </tr>
-                  <tr>
-                  <td class="fw-bold">Mtc</td>
-                  <td colspan="3" class="mag">${result.graphic.attributes.Mtc}</td>
-                </tr>
-                </table>`);
-                  // $("#location").html(fullTime);
-
-                  const where = `realtime_id = ${result.graphic.attributes.id}`;
-
-                  let query = layerrealtimeEvent.createQuery();
-                  query.where = where;
-                  query.outFields = "*";
-
-                  return layerrealtimeEvent
-                    .queryFeatures(query)
-                    .then(function (response) {
-                      const dataSet = response.features;
-                      const row_data = [];
-                      const code_station = [];
-                      // Hiển thị các Trạm đo được lên bản đồ
-
-                      dataSet.map((e) => {
-                        if (e.attributes.Sta != null) {
-                          code_station.push(`(code = '${e.attributes.Sta}')`);
-                        }
-
-                        for (const prop in e.attributes) {
-                          if (e.attributes[prop] == undefined) {
-                            e.attributes[prop] = "Chưa có thông tin";
-                          }
-                          if (e.attributes[prop] == null) {
-                            e.attributes[prop] = "Chưa có thông tin";
-                          }
-                        }
-                        row_data.push(` <tr>
-                            <td>${e.attributes.Sta}</td>
-                            <td>${e.attributes.pa}</td>
-                            <td>${e.attributes.pv}</td>
-                            <td>${e.attributes.pd}</td>
-                            <td>${e.attributes.tc}</td>
-                            <td>${e.attributes.Mtc}</td>
-                            <td>${e.attributes.MPd}</td>
-                            <td>${e.attributes.Dis}</td>
-                            <td>${e.attributes.Parr}</td>
-                            </tr>`);
-                      });
-                      view.whenLayerView(layerStations).then((layerView) => {
-                        layerView.filter =
-                          code_station.length > 0
-                            ? { where: code_station.join("OR") }
-                            : { where: "code = -1" };
-                      });
-                      const wavePicData = `
-                        <table >
-                    
-                            <tr >
-                                <th class="content_popup">Mã trạm</th>
-                                <th class="content_popup">Pa</th>
-                                <th class="content_popup">Pv</th>
-                                <th class="content_popup">Pd</th>
-                                <th class="content_popup">Tc</th>
-                                <th class="content_popup">Mtc</th>
-                                <th class="content_popup">MPd</th>
-                                <th class="content_popup">Khoảng cách đến trạm</th>
-                                <th class="content_popup">Thời gian sóng tới</th>
-                            </tr>
-                      
-                        <tbody>
-                           ${row_data.join("")}
-                        </tbody>
-                        </table>`;
-                      $("#wavePickTable").html(wavePicData);
-                      // $("#shortData").html(shortData);
-                    });
+                  loadPopupLayerRealtime(result.graphic);
                 } else if (result.graphic.layer === layerIris) {
                   hightlightPoint(layerIris, result.graphic);
-                  const date = new Date(result.graphic.attributes.time);
-
-                  const time = date.toLocaleString();
-
-                  const fullTime =
-                    time.split(" ")[1] + " " + time.split(" ")[0];
-                  $("#time").html(fullTime);
-                  $("#lat").html(result.graphic.attributes.lat);
-                  $("#long").html(result.graphic.attributes.long);
-                  $("#depth").html(result.graphic.attributes.depth);
-
-                  $(".mag").html(
-                    result.graphic.attributes.magnitude +
-                      " " +
-                      `(${result.graphic.attributes.magtype})`
-                  );
-                  $("#magCollapse").html(
-                    `<table>
-                    <tr>
-                    <td class="fw-bold">${result.graphic.attributes.magtype}</td>
-                    <td colspan="3" class="mag">${result.graphic.attributes.magnitude}</td>
-                  </tr></table>`
-                  );
-                  $("#location").html(
-                    result.graphic.attributes.location
-                      ? result.graphic.attributes.location
-                      : "Chưa có thông tin"
-                  );
-
-                  $("#wavePickTable").html("Chưa có thông tin");
+                  loadPopupLayerIris(result.graphic);
                 }
               });
               // do something with the result graphic
