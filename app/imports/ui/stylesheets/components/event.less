@@ -1,4 +1,5 @@
 #leftSideBar {
+  // max-width: 80vw;
   width: 450px;
   background: white;
   color: #fff;
@@ -146,10 +147,17 @@ button {
 }
 @media (min-width: 1500px) {
   #leftSideBar {
-    // width: 400px;
     max-width: 500px;
   }
   #leftSideBar.active {
     margin-left: -500px;
+  }
+}
+@media (max-width: 520px) {
+  #leftSideBar {
+    max-width: 80vw;
+  }
+  #leftSideBar.active {
+    margin-left: -80vw;
   }
 }
