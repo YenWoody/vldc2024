@@ -125,23 +125,45 @@
           >
           {{/each}}
         </ul>
-        <form class="d-flex">
-          <div class="currentUser_div" id="currentUser_div">
-            <div class="d-flex justify-content-end">
-              <b
-                style="
-                  margin-top: 5px;
-                  color: rgb(30, 132, 221);
-                  font-size: 1.3em;
-                "
-                >{{currentUser.username}}</b
-              >
-              <a class="header__references_logout" href="#">
-                <span class="text-white font-medium">Đăng xuất</span></a
-              >
-            </div>
-          </div>
-        </form>
+        <ul class="navbar-nav ms-md-0">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="fa fa-user-circle-o me-2 fa-2x"></i
+            ></a>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="navbarDropdown"
+            >
+              <li class="text-center">
+                <span
+                  >Chào
+                  <b style="color: rgb(30, 132, 221)"
+                    >{{currentUser.username}}</b
+                  >
+                  !</span
+                >
+              </li>
+              <li><hr class="m-1" /></li>
+              <li>
+                <a class="dropdown-item" href="/changepass"
+                  ><i class="fa fa-key me-2"></i>Đổi mật khẩu</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item header__references_logout" href="#!"
+                  ><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng
+                  xuất</a
+                >
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
