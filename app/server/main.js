@@ -29,7 +29,6 @@ const pool = new pg.Pool({
 });
 // Insert Realtime Data
 const FOLDER = "assets/app/files";
-
 function run() {
   fs.readdirSync(FOLDER).forEach((file) => {
     if (/^.+\.rep$/.test(file)) {
@@ -198,7 +197,10 @@ function insertRealtime(realtime) {
 }
 
 Accounts.onCreateUser(function (options, user) {
-  user.roles = "user";
+  user.username == "admin"
+    ? ((user.roles = "admin"),
+      (user.emails = [{ address: "admin@gmail.com", verified: true }]))
+    : (user.roles = "user");
   return user;
 });
 Meteor.startup(function () {
@@ -293,24 +295,27 @@ Meteor.startup(function () {
       </table>`;
     },
   };
-  const allUsers = Meteor.users.find({}).fetch();
+  const checkAdmin = Meteor.users.find({ roles: "admin" }).fetch();
+  const checkUsernameAdmin = Meteor.users.find({ username: "admin" }).fetch();
+  console.log(checkAdmin.length, checkUsernameAdmin.length);
+  if (checkAdmin.length == 0 && checkUsernameAdmin.length == 0) {
+    Accounts.createUser({
+      username: "admin",
+      email: "admin@gmail.com",
+      password: "admin123@",
+      roles: "admin",
+    });
 
-  // if (Meteor.users.find().count() == 0) {
-  //   Accounts.createUser({
-  //     username: "admin",
-  //     email: "admin@gmail.com",
-  //     password: "admin123@",
-  //     roles: "admin",
-  //   }).then(() => {
-  //     const idAdmin = Meteor.users.findOne({ username: "admin" });
-  //     Meteor.users.update(idAdmin._id, {
-  //       $set: {
-  //         roles: "admin",
-  //         emails: [{ address: "adminMail", verified: true }],
-  //       },
-  //     });
-  //   });
-  // }
+    // .then(() => {
+    //   const idAdmin = Meteor.users.findOne({ username: "admin" });
+    //   Meteor.users.update(idAdmin._id, {
+    //     $set: {
+    //       roles: "admin",
+    //       emails: [{ address: "admin@gmail.com", verified: true }],
+    //     },
+    //   });
+    // });
+  }
 });
 Meteor.methods({
   callLog: (e) => {

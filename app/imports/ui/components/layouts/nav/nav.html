@@ -18,7 +18,7 @@
         </div>
       </button>
       <div class="navbar-collapse" id="navbarButton" style="height: 0">
-        <div class="list_nav d-none">
+        <div class="list_nav d-none d-lg-flex w-100">
           <ul
             class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
             style="padding-left: 10px"
@@ -104,58 +104,60 @@
         </div>
       </button>
       <div class="navbar-collapse" id="navbarButton" style="height: 0">
-        <ul
-          class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
-          style="padding-left: 10px"
-        >
-          {{#each list in lists}}
-          <!-- <a class="nav-link" onclick="window.location.href='{{list.link}}'"
+        <div class="list_nav d-none d-lg-flex w-100">
+          <ul
+            class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
+            style="padding-left: 10px"
+          >
+            {{#each list in lists}}
+            <!-- <a class="nav-link" onclick="window.location.href='{{list.link}}'"
             ><span class="{{activeListClass list}}">{{list.name}}</span></a
           > -->
-          <a class="nav-link" href="{{list.link}}"
-            ><span class="{{activeListClass list}}">{{list.name}}</span></a
-          >
-          {{/each}}
-        </ul>
-        <ul class="navbar-nav ms-md-0">
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              id="navbarDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+            <a class="nav-link" href="{{list.link}}"
+              ><span class="{{activeListClass list}}">{{list.name}}</span></a
             >
-              <i class="fa fa-user-circle-o me-2 fa-2x"></i
-            ></a>
-            <ul
-              class="dropdown-menu dropdown-menu-end"
-              aria-labelledby="navbarDropdown"
-            >
-              <li class="text-center">
-                <span
-                  >Chào
-                  <b style="color: rgb(30, 132, 221)"
-                    >{{currentUser.username}}</b
+            {{/each}}
+          </ul>
+          <ul class="navbar-nav ms-md-0">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa fa-user-circle-o me-2 fa-2x"></i
+              ></a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown"
+              >
+                <li class="text-center">
+                  <span
+                    >Chào
+                    <b style="color: rgb(30, 132, 221)"
+                      >{{currentUser.username}}</b
+                    >
+                    !</span
                   >
-                  !</span
-                >
-              </li>
-              <li><hr class="m-1" /></li>
-              <li>
-                <a class="dropdown-item" href="/changepass"
-                  ><i class="fa fa-key me-2"></i>Đổi mật khẩu</a
-                >
-              </li>
-              <li>
-                <a class="dropdown-item header__references_logout" href="#!"
-                  ><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng
-                  xuất</a
-                >
-              </li>
-            </ul>
-          </li>
-        </ul>
+                </li>
+                <li><hr class="m-1" /></li>
+                <li>
+                  <a class="dropdown-item" href="/changepass"
+                    ><i class="fa fa-key me-2"></i>Đổi mật khẩu</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item header__references_logout" href="#!"
+                    ><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng
+                    xuất</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
@@ -182,26 +184,28 @@
       </button>
 
       <div class="navbar-collapse" id="navbarButton" style="height: 0">
-        <ul
-          class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
-          style="padding-left: 10px"
-        >
-          {{#each list in listsGuest}}
+        <div class="list_nav d-none d-lg-flex w-100">
+          <ul
+            class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
+            style="padding-left: 10px"
+          >
+            {{#each list in listsGuest}}
 
-          <a class="nav-link" href="{{list.link}}"
-            ><span class="{{activeListClass list}}">{{list.name}}</span></a
-          >
-          {{/each}}
-        </ul>
-        <form class="d-flex">
-          <button
-            type="button"
-            class="btn btn-outline-light"
-            onclick="window.location.href='/login'"
-          >
-            Đăng nhập | Đăng ký
-          </button>
-        </form>
+            <a class="nav-link" href="{{list.link}}"
+              ><span class="{{activeListClass list}}">{{list.name}}</span></a
+            >
+            {{/each}}
+          </ul>
+          <form class="d-flex">
+            <button
+              type="button"
+              class="btn btn-outline-light"
+              onclick="window.location.href='/login'"
+            >
+              Đăng nhập | Đăng ký
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </nav>
