@@ -147,7 +147,6 @@ Template.manageCable.onRendered(async () => {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
       const data = $("#data_Cable").DataTable().row(this).data();
-      console.log(data, "data");
       document.getElementById("_modal").style.display = "block";
       const keys = [
         "power_cable",

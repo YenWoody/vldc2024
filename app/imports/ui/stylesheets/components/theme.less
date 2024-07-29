@@ -370,6 +370,8 @@ footer a:hover {
   font-weight: bold;
   font-size: 16px;
   padding: 50px 20px 50px 20px;
+  z-index: 50;
+  position: relative;
   // margin-top: 50px;
 }
 
@@ -381,11 +383,6 @@ footer a:hover {
 }
 
 /* footer left*/
-
-.footer .footer-left {
-  // width: 33%;
-  // padding-right: 15px;
-}
 
 .footer .about {
   line-height: 20px;
@@ -574,10 +571,14 @@ footer a:hover {
   width: auto;
   margin: 0 40px;
 }
-.navbar-collapse.collapse.show {
+.list_nav {
   display: flex !important;
   align-items: flex-start;
 }
+// .navbar-collapse.show {
+//   display: flex !important;
+//   align-items: flex-start;
+// }
 .navbar-collapse.collapsing {
   display: flex !important;
   align-items: flex-start;

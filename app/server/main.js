@@ -313,6 +313,9 @@ Meteor.startup(function () {
   // }
 });
 Meteor.methods({
+  callLog: (e) => {
+    console.log(e);
+  },
   importRealtimeData: function () {},
   findUsers: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
@@ -1484,7 +1487,6 @@ Meteor.methods({
             return insertEvent(event);
           })
           .then(({ rowCount, rows }) => {
-            console.log("insert event", rowCount, rows);
             if (rowCount === 1) {
               event_station.map((elem) => {
                 elem.event_id = rows[0].id;

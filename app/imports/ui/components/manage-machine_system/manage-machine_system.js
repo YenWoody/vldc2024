@@ -158,7 +158,7 @@ Template.manageMachineSystem.onRendered(async () => {
       } else {
         const [d, m, y] = data["start_time"].split(/-|\//); // splits "26-02-2012" or "26/02/2012"
         date_start = y + "-" + m + "-" + d;
-        console.log(date_start, "date_start");
+
         document.getElementById("start_time").value = date_start;
       }
       if (data["end_time"] === "Chưa có thông tin") {
@@ -166,7 +166,7 @@ Template.manageMachineSystem.onRendered(async () => {
       } else {
         const [d_end, m_end, y_end] = data["end_time"].split(/-|\//); // splits "26-02-2012" or "26/02/2012"
         date_end = y_end + "-" + m_end + "-" + d_end;
-        console.log(date_end, "date_end");
+
         document.getElementById("end_time").value = date_end;
       }
       $("#select-tools-edit").data("selectize").setValue(data["station_code"]);

@@ -145,7 +145,7 @@ Template.manageRemotes.onRendered(async () => {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
       const data = $("#data_Remote").DataTable().row(this).data();
-      console.log(data, "data");
+
       document.getElementById("_modal").style.display = "block";
       const keys = ["remote_control", "serial_control", "status_control"];
       keys.forEach((e) => {

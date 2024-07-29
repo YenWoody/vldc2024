@@ -2,6 +2,7 @@ import "./category.html";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
 import datatables from "datatables.net";
 import datatables_bs from "datatables.net-bs";
+import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
 import alasql from "alasql";
@@ -21,11 +22,13 @@ Template.category.onCreated(() => {
   );
   datatables(window, $);
   datatables_bs(window, $);
+  var dojoConfig = { isDebug: true };
 });
 Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
 Template.category.onRendered(() => {
+  var dojoConfig = { isDebug: true };
   loadModules([
     "esri/Map",
     "esri/views/MapView",
@@ -39,6 +42,7 @@ Template.category.onRendered(() => {
     "esri/widgets/Expand",
     "esri/widgets/Zoom",
     "esri/widgets/Slider",
+    "esri/widgets/Sketch",
     "esri/widgets/BasemapToggle",
     "esri/widgets/CoordinateConversion",
     "esri/layers/WebTileLayer",
@@ -62,6 +66,7 @@ Template.category.onRendered(() => {
         Expand,
         Zoom,
         Slider,
+        Sketch,
         BasemapToggle,
         CoordinateConversion,
         WebTileLayer,
@@ -70,6 +75,10 @@ Template.category.onRendered(() => {
         LabelClass,
         Popup,
       ]) => {
+        //remove active navbar
+        $("#navbarButton").removeClass("show");
+        $(".menu-bar").removeClass("change");
+        //end active navbar
         function dataRealTimes() {
           return new Promise(function (resolve, reject) {
             Meteor.call("dataRealTime", function (error, resulteventStation) {
@@ -184,7 +193,6 @@ Template.category.onRendered(() => {
           });
         }
         // Fetch Data From Iris
-
         // const waitDataIris = await Promise.all(dataIris_final);
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
@@ -371,6 +379,7 @@ Template.category.onRendered(() => {
         /**
          * init view
          */
+
         const map = new Map({
           basemap: weMap,
         });
@@ -791,290 +800,7 @@ Template.category.onRendered(() => {
           labelsVisible: false,
           listMode: "hide",
         });
-        const layerEmployee = new GeoJSONLayer({
-          url: url_employee,
-          title: "Employee",
-          visible: true,
-          labelsVisible: false,
-          listMode: "hide",
-        });
-        const layerBaler = new GeoJSONLayer({
-          url: url_baler,
-          title: "Baler",
-          visible: true,
-          labelsVisible: false,
-          listMode: "hide",
-        });
-        const layerDataloger = new GeoJSONLayer({
-          url: url_dataloger,
-          title: "Dataloger",
-          visible: true,
-          labelsVisible: false,
-          listMode: "hide",
-        });
-        const layerSensor = new GeoJSONLayer({
-          url: url_sensor,
-          title: "Sensor",
-          visible: true,
-          labelsVisible: false,
-          listMode: "hide",
-        });
-
         // Trạm
-        const contentEmployee = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `station_id = '${event.graphic.attributes.id}'`;
-            let query_Station = layerEmployee.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            return layerEmployee
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  const date_start = new Date(e.attributes.start_date);
-                  const date_end = new Date(e.attributes.end_date);
-                  const year_start = date_start.getFullYear();
-                  const month_start = date_start.getMonth() + 1;
-                  const day_start = date_start.getDate();
-                  const year_end = date_end.getFullYear();
-                  const month_end = date_end.getMonth() + 1;
-                  const day_end = date_end.getDate();
-                  dateFormat_start =
-                    weekday[date_start.getUTCDay()] +
-                    " ngày " +
-                    day_start +
-                    "/" +
-                    month_start +
-                    "/" +
-                    year_start +
-                    " (GMT)";
-                  dateFormat_end =
-                    weekday[date_end.getUTCDay()] +
-                    " ngày " +
-                    day_end +
-                    "/" +
-                    month_end +
-                    "/" +
-                    year_end +
-                    " (GMT)";
-                  if (e.attributes.start_date == null) {
-                    dateFormat_start = "Chưa có thông tin";
-                  }
-                  if (e.attributes.end_date == null) {
-                    dateFormat_end = "Chưa có thông tin";
-                  }
-                  if (e.attributes.name == null) {
-                    e.attributes.name = "Chưa có thông tin";
-                  }
-                  if (e.attributes.phone == null) {
-                    e.attributes.phone = "Chưa có thông tin";
-                  }
-                  if (e.attributes.name2 == null) {
-                    e.attributes.name2 = "Chưa có thông tin";
-                  }
-                  if (e.attributes.phone2 == null) {
-                    e.attributes.phone2 = "Chưa có thông tin";
-                  }
-
-                  row_data.push(` <tr>
-                          <td>${e.attributes.name}</td>
-                          <td>${e.attributes.phone}</td>
-                          <td>${e.attributes.name2}</td>
-                          <td>${e.attributes.phone2}</td>
-                          <td>${dateFormat_start}</td>
-                          <td>${dateFormat_end}</td>
-                          </tr>`);
-                });
-                return `<div style="margin: 10px;"><b>Thông tin Quan trắc viên/Bảo vệ</b></div>
-                  <table class="display" style="border-style: double">
-                  <thead>
-                      <tr style="border-bottom: groove">
-                          <th class="content_popup">Tên nhân viên 1</th>
-                          <th class="content_popup">Số điện thoại 1</th>
-                          <th class="content_popup">Tên nhân viên 2</th>
-                          <th class="content_popup">Số điện thoại 2</th>
-                          <th class="content_popup">Ngày bắt đầu</th>
-                          <th class="content_popup">Ngày kết thúc</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                    ${row_data.join("")}
-                  </tbody>
-              </table>`;
-              });
-          },
-        });
-        const contentBaler = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `station_id = '${event.graphic.attributes.id}'`;
-            let query_Station = layerBaler.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            return layerBaler
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  if (e.attributes.code == null) {
-                    e.attributes.code = "Chưa có thông tin";
-                  }
-                  if (e.attributes.serial == null) {
-                    e.attributes.serial = "Chưa có thông tin";
-                  }
-                  if (
-                    e.attributes.serial !== "Chưa có thông tin" &&
-                    e.attributes.code !== "Chưa có thông tin"
-                  ) {
-                    row_data.push(` <tr>
-                              <td>${e.attributes.code}</td>
-                              <td>${e.attributes.serial}</td>
-                              </tr>`);
-                  }
-                });
-                return `<div style="margin: 10px;"><b>Thông tin máy Baler</b></div>
-                  <table class="display" style="border-style: double">
-                  <thead>
-                      <tr style="border-bottom: groove">
-                          <th class="content_popup">Tên máy</th>
-                          <th class="content_popup">Serial</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                    ${row_data.join("")}
-                  </tbody>
-              </table>`;
-              });
-          },
-        });
-        const contentDataloger = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `station_id = '${event.graphic.attributes.id}'`;
-            let query_Station = layerDataloger.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            async function id() {
-              let query = layerEventStaions.createQuery();
-
-              query.where = `station_id LIKE '%${event.graphic.attributes.id}%'`;
-              query.outFields = "*";
-              const id = [];
-              const f = await layerEventStaions.queryFeatures(query);
-              f.features.map((e) => {
-                id.push(e.attributes.event_id);
-              });
-              // Lọc số bị trùng
-              // function check(arr) {
-              //     var newArr = []
-              //     for (var i = 0; i < arr.length; i++) {
-              //         if (newArr.indexOf(arr[i]) === -1) {
-              //             newArr.push(arr[i])
-              //         }
-              //     }
-              //     return newArr
-              // }
-              // end
-              // const id_event = id;
-              // const id_query = []
-              // id_event.map(e => {
-              //     id_query.push(`(id = ${e})`)
-              // });
-
-              // view.whenLayerView(layerEvent).then((layerView) => {
-              //     eventview = layerView;
-              //     eventview.filter = id_query.length > 0 ? { where: id_query.join("OR") } : { where: "id = -1" };
-              // })
-            }
-            id();
-            //
-            return layerDataloger
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  if (e.attributes.dataloger == null) {
-                    e.attributes.dataloger = "Chưa có thông tin";
-                  }
-                  if (e.attributes.serial == null) {
-                    e.attributes.serial = "Chưa có thông tin";
-                  }
-                  row_data.push(` <tr>
-                  <td>${e.attributes.dataloger}</td>
-                  <td>${e.attributes.serial}</td>
-      
-                  </tr>`);
-                });
-                return `<div style="margin: 10px;"><b>Thông tin bộ ghi dữ liệu Dataloger</b></div>
-                  <table class="display" style="border-style: double">
-                  <thead>
-                      <tr style="border-bottom: groove">
-                          <th class="content_popup">Tên máy</th>
-                          <th class="content_popup">Serial</th>
-                
-                      </tr>
-                  </thead>
-                  <tbody>
-                    ${row_data.join("")}
-                  </tbody>
-              </table>`;
-              });
-          },
-        });
-        const contentSensor = new CustomContent({
-          outFields: ["*"],
-          creator: (event) => {
-            const where = `id_stat = ${event.graphic.attributes.id_key}`;
-            let query_Station = layerSensor.createQuery();
-            query_Station.where = where;
-            query_Station.outFields = "*";
-            return layerSensor
-              .queryFeatures(query_Station)
-              .then(function (response) {
-                const dataSet = response.features;
-                const row_data = [];
-                dataSet.map((e) => {
-                  if (e.attributes.sensor1 == null) {
-                    e.attributes.sensor1 = "Chưa có thông tin";
-                  }
-                  if (e.attributes.serial1 == null) {
-                    e.attributes.serial1 = "Chưa có thông tin";
-                  }
-                  if (e.attributes.sensor2 == null) {
-                    e.attributes.sensor2 = "Chưa có thông tin";
-                  }
-                  if (e.attributes.serial2 == null) {
-                    e.attributes.serial2 = "Chưa có thông tin";
-                  }
-                  row_data.push(` <tr>
-                  <td>${e.attributes.sensor1}</td>
-                  <td>${e.attributes.serial1}</td>
-                  <td>${e.attributes.sensor2}</td>
-                  <td>${e.attributes.serial2}</td>
-                  </tr>`);
-                });
-                return `<div style="margin: 10px;"><b>Thông tin cảm biến</b></div>
-                  <table class="display" style="border-style: double">
-                  <thead>
-                      <tr style="border-bottom: groove">
-                          <th class="content_popup">Tên cảm biến 1</th>
-                          <th class="content_popup">Serial 1</th>
-                          <th class="content_popup">Tên cảm biến 2</th>
-                          <th class="content_popup">Serial 2</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                    ${row_data.join("")}
-                  </tbody>
-              </table>`;
-              });
-          },
-        });
         const stationPopupTemplate = {
           title: "Thông tin Trạm",
           content: [
@@ -1921,6 +1647,7 @@ Template.category.onRendered(() => {
           view: view,
           container: legendDiv,
         });
+
         function openPopupRightSide() {
           if ($("#sidebarCollapse").hasClass("active")) {
             $("#sidebarCollapse").toggleClass("active");
@@ -2026,6 +1753,11 @@ Template.category.onRendered(() => {
     .catch((err) => {
       // handle any errors
       console.error(err);
+      //remove active navbar
+      $("#navbarButton").removeClass("show");
+      $(".menu-bar").removeClass("change");
+      //end active navbar
+      location.reload();
     });
 });
 

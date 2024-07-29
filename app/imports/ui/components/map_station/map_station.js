@@ -2,6 +2,7 @@ import "./map_station.html";
 import { Template } from "meteor/templating";
 import { ReactiveDict } from "meteor/reactive-dict";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
+import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 import datatables from "datatables.net";
 import datatables_bs from "datatables.net-bs";
 import { $ } from "meteor/jquery";
@@ -19,19 +20,12 @@ Template.map_station.onCreated(async () => {
   loadCss(
     "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
   );
-  // datatables(window, $);
-  // datatables_bs(window, $);
+  datatables(window, $);
+  datatables_bs(window, $);
+  var dojoConfig = { isDebug: true };
 });
-Meteor.startup(function () {
-  $.getScript("/plugins/js/jquery.sparkline.min.js");
-});
-
 Template.map_station.onRendered(() => {
-  document.addEventListener("DOMContentLoaded", function () {
-    datatables(window, $);
-    datatables_bs(window, $);
-  });
-
+  var dojoConfig = { isDebug: true };
   loadModules([
     "esri/Map",
     "esri/views/MapView",
@@ -76,7 +70,10 @@ Template.map_station.onRendered(() => {
         LabelClass,
         Zoom,
       ]) => {
-        var dojoConfig = { isDebug: true };
+        //remove active navbar
+        $("#navbarButton").removeClass("show");
+        $(".menu-bar").removeClass("change");
+        //end active navbar
         function dataEventStation() {
           return new Promise(function (resolve, reject) {
             Meteor.call(
@@ -493,16 +490,6 @@ Template.map_station.onRendered(() => {
           labelsVisible: false,
           listMode: "hide",
         });
-
-        const weekday = [
-          "Chủ nhât",
-          "Thứ 2",
-          "Thứ 3",
-          "Thứ 4",
-          "Thứ 5",
-          "Thứ 6",
-          "Thứ 7",
-        ];
         const contentEvent = new CustomContent({
           outFields: ["*"],
           creator: (event) => {
@@ -785,14 +772,6 @@ Template.map_station.onRendered(() => {
             layer.filter = { where: "id = -1" };
           });
         });
-        function clearFilter() {
-          layer.filter = { where: "id = -1" };
-          floodLayerView.filter = null;
-          if (highlightSelect != undefined) {
-            highlightSelect.remove();
-          }
-          $("#relationship-select option").prop("selected", false);
-        }
         function loadDataTableStation() {
           // Datatable
           let query = layerStations.createQuery();
@@ -1533,12 +1512,12 @@ Template.map_station.onRendered(() => {
         view.ui.add(legendExpand, {
           position: "top-right",
         });
-        let ccWidget = new CoordinateConversion({
-          view: view,
-          group: "bottom-right",
-        });
-        view.ui.add(ccWidget, "manual");
-        ccWidget.multipleConversions = false;
+        // let ccWidget = new CoordinateConversion({
+        //   view: view,
+        //   group: "bottom-right",
+        // });
+        // view.ui.add(ccWidget, "manual");
+        // ccWidget.multipleConversions = false;
         view.when().then(function () {
           // the webmap successfully loaded
           $(".preloader").fadeOut();
@@ -1560,7 +1539,6 @@ Template.map_station.onRendered(() => {
             ` <option value="${e.code.trim()}">${e.code}</option>`
           );
         });
-
         $("#listNetwork").html(elementNetwork.join(" "));
         //
         $("select").on("change", function () {
@@ -1588,6 +1566,11 @@ Template.map_station.onRendered(() => {
     .catch((err) => {
       // handle any errors
       console.error(err);
+      //remove active navbar
+      $("#navbarButton").removeClass("show");
+      $(".menu-bar").removeClass("change");
+      //end active navbar
+      location.reload();
     });
 });
 

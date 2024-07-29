@@ -42,19 +42,41 @@ Template.dashboardTemplate.onRendered(function () {
   };
   fullHeight();
   if (window.innerWidth < 768) {
-    $("#sidebar").addClass("active");
+    $("#sidebar").addClass("activeMobile sidebarMobile");
+    $("#sidebar").innerWidth("60%");
+    console.log($("#content_dashboard").innerHeight(), "$.innerHeight()");
+    $("#sidebar").innerHeight($("#content_dashboard").innerHeight());
   }
   $("#sidebarCollapse").on("click", function () {
-    $("#sidebar").toggleClass("active");
+    if (window.innerWidth < 768) {
+      $("#sidebar").toggleClass("activeMobile");
+      $("#sidebar").innerHeight($("#content_dashboard").innerHeight());
+      $("#sidebar_list").addClass("scroll_sidebar");
+    } else {
+      $("#sidebar").toggleClass("active");
+    }
+  });
+  $(".sidebar-item").on("click", (e) => {
+    $("#button_sidebar").toggleClass("fa-arrow-right");
+    $("#button_sidebar").toggleClass("fa-arrow-left");
+    if (window.innerWidth < 768) {
+      $("#sidebar").toggleClass("activeMobile");
+    } else {
+      $("#sidebar").toggleClass("active");
+    }
+  });
+  $(document).ready(function () {
+    // do stuff
+    console.log($("#content_dashboard").innerHeight(), "$.innerHeight()");
   });
 });
 Template.dashboardTemplate.helpers({
   checkScreenSize() {
-    let active = "fa-times";
+    let active = "fa-arrow-left";
     if (window.innerWidth < 768) {
-      active = "fa-bars";
+      active = "fa-arrow-right";
     } else {
-      active = "fa-times";
+      active = "fa-arrow-left";
     }
     return active;
   },
@@ -166,8 +188,8 @@ Template.dashboardTemplate.helpers({
 });
 Template.dashboardTemplate.events({
   "click #sidebarCollapse": (e) => {
-    $("#button_sidebar").toggleClass("fa-bars");
-    $("#button_sidebar").toggleClass("fa-times");
+    $("#button_sidebar").toggleClass("fa-arrow-right");
+    $("#button_sidebar").toggleClass("fa-arrow-left");
   },
   "mouseenter .sidebar-item"(event) {
     $(event.target)

@@ -130,7 +130,6 @@ Template.manageBattery.onRendered(async () => {
       });
       (insert["station_code"] = checkEmpty($("#select-tools").val())),
         await Meteor.call("insertBattery", insert, (error, result) => {
-          console.log(result, "result");
           if (error) {
             Swal.fire({
               icon: "error",

@@ -103,7 +103,7 @@ Template.manageBaler.onRendered(async () => {
   $(document).ready(function () {
     $("body").tooltip({ selector: "[ data-bs-toggle='tooltip']" });
   });
-  $("#dashboard-title").html("Quản lí các thiết bị");
+  $("#dashboard-title").html("Quản lí bộ lưu dữ liệu");
   callDatatable();
   function checkEmpty(data) {
     return data ? data : "Chưa có thông tin";

@@ -166,7 +166,7 @@ Template.manageDevice.onRendered(async () => {
           status: checkEmpty($("#status").val()),
           station_code: checkEmpty($("#select-tools-edit").val()),
         };
-        console.log(insert, "insert");
+
         Meteor.call("editDataloger", insert, (error) => {
           if (error) {
             Swal.fire({

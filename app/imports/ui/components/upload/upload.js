@@ -67,7 +67,6 @@ Template.uploadForm.events({
       // there was multiple files selected
       var file = e.currentTarget.files[0];
       const file_type = file.name.split(".").pop();
-      console.log(file_type);
       if (file_type === "xls" || file_type === "xlsx") {
         var ExcelToJSON = function () {
           this.parseExcel = function (file) {

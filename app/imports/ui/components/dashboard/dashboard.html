@@ -1,5 +1,4 @@
 <template name="dashboardComponent">
-  {{#if rolesCheck}} {{> not_access}} {{else}}
   <div class="container pt-3 d-flex align-items-end">
     {{#if userUnVerified}} {{> verify_form }} {{else}}
     <div class="row">
@@ -123,7 +122,7 @@
     </div>
     {{/if}}
   </div>
-  {{/if}}
+
   <!-- <div class = "read">
     <h3>Nội dung thô của tệp:</h3>
     <pre id="file-content">Vui lòng upload file.</pre>

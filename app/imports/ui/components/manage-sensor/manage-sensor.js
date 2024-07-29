@@ -153,7 +153,7 @@ Template.manageSensors.onRendered(async () => {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
       const data = $("#data_Sensor").DataTable().row(this).data();
-      console.log(data, "data");
+
       document.getElementById("_modal").style.display = "block";
       const keys = [
         "sensor_speed",

@@ -252,7 +252,7 @@ Template.manageStation.onRendered(async () => {
     e.preventDefault();
     if ($(e.target).hasClass("editor-edit")) {
       const data = $("#data_tram").DataTable().row(this).data();
-      console.log(data, "data");
+
       var keyNames = [
         "id_key",
         "code",

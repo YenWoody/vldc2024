@@ -66,7 +66,6 @@ Template.uploadMachineHistory.onRendered(function () {
           title: e.code,
         });
       });
-      console.log(listOption, "list");
       $("#select-tools").selectize({
         maxItems: 1,
         valueField: "id",
@@ -75,7 +74,6 @@ Template.uploadMachineHistory.onRendered(function () {
         options: listOption,
         create: false,
       });
-      console.log(data, "data");
     }
   });
   $("#dashboard-title").html("Đăng tải dữ liệu lịch sử đặt máy");
@@ -104,7 +102,6 @@ Template.uploadMachineHistory.events({
     if (fileUpload) {
       // We upload only one file, in case
       const file_type = fileUpload.name.split(".").pop();
-      console.log(file_type);
 
       var uploadInstance = FilesMachineHistory.insert(
         {
@@ -122,8 +119,6 @@ Template.uploadMachineHistory.events({
       // Read Zip File
       const reader = new FileReader();
       reader.onload = function (ev) {
-        console.log(ev.target.result, "ev.target.result");
-
         Meteor.call(
           "importTxtStation",
           ev.target.result,

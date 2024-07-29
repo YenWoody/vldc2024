@@ -19,6 +19,13 @@ td.dt-center.control {
 .dt-container.dt-bootstrap5.dt-empty-footer {
   overflow: auto !important;
 }
+#content_dashboard {
+  min-height: 100vh;
+}
+.scroll_sidebar {
+  overflow: auto;
+  height: 100%;
+}
 .content_body_modal {
   overflow: auto;
   max-height: 60vh;
@@ -80,6 +87,9 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
       }
     }
   }
+}
+#navbarButton {
+  transition: height 200ms;
 }
 #sidebar {
   width: 360px;
@@ -197,6 +207,13 @@ table.table.dataTable.table-striped > tbody > tr:nth-of-type(2n + 1) > * {
 #sidebar.active {
   margin-left: -360px;
 }
+.sidebarMobile {
+  position: absolute !important;
+  z-index: 100;
+}
+#sidebar.activeMobile {
+  margin-left: -60%;
+}
 a[data-toggle="collapse"] {
   position: relative;
 }
@@ -213,7 +230,8 @@ a[data-toggle="collapse"] {
 }
 #content {
   width: 100%;
-  min-height: 100vh;
+  margin-bottom: 3rem;
+  // min-height: calc(100vh - 160px);
   -webkit-transition: all 0.3s;
   -o-transition: all 0.3s;
   transition: all 0.3s;

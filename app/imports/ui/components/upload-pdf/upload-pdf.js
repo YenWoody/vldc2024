@@ -118,8 +118,7 @@ Template.manageManagePdf.onRendered(function () {
     e.preventDefault();
     if ($(e.target).hasClass("editor-download")) {
       const data = $("#data_pdf").DataTable().row(this).data();
-      console.log(FlowRouter._current, "FlowRouter._current.path");
-      console.log(FlowRouter, "FlowRouter._current.path");
+
       // FlowRouter.go(`${data.link}?download=true`);
 
       // check if href value exists
@@ -204,7 +203,6 @@ Template.manageManagePdf.onRendered(function () {
         options: listOption,
         create: false,
       });
-      console.log(data, "data");
     }
   });
   $("#dashboard-title").html("Đăng tải dữ liệu lịch sử đặt máy");
@@ -244,14 +242,7 @@ Template.manageManagePdf.events({
       uploadInstance.on("start", function () {
         template.currentUpload.set(this);
       });
-      console.log(uploadInstance.config.fileId, "fileId;");
-      console.log(FilesPdf, "FilesPdf");
-      console.log(
-        FilesPdf.findOne({
-          _id: uploadInstance.config.fileId,
-        }),
-        "FilesPdf.findOne()"
-      );
+
       const file_current = FilesPdf.find().current();
       const pathFile =
         file_current._downloadRoute +
@@ -262,8 +253,6 @@ Template.manageManagePdf.events({
         "/original/" +
         uploadInstance.config.fileId +
         file_current.extensionWithDot;
-      console.log(pathFile, "pathFile");
-      console.log(uploadInstance.config.fileId, "uploadInstance.config.fileId");
       // Read Zip File
       const reader = new FileReader();
       reader.onload = function (ev) {
@@ -273,7 +262,6 @@ Template.manageManagePdf.events({
           link: pathFile,
           station_code: $("#select-tools").val()[0],
         };
-        console.log(insert_data, "insert_data");
         Meteor.call("importPdfStation", insert_data, (error) => {
           if (error) {
             Swal.fire({
