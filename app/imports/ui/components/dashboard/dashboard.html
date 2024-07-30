@@ -1,0 +1,132 @@
+<template name="dashboardComponent">
+  <div class="container pt-3 d-flex align-items-end">
+    {{#if userUnVerified}} {{> verify_form }} {{else}}
+    <div class="row">
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card shadow h-100 py-2 heading">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs fw-bold text-light text-primary text-uppercase mb-2"
+                >
+                  Tổng số trạm đo
+                </div>
+                <div class="fw-bold text-warning fs-4">
+                  <div
+                    class="spinner-border spinner-border-sm mx-2"
+                    role="status"
+                    id="load_totalStation"
+                  >
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                  <div id="totalStation"></div>
+                </div>
+              </div>
+              <div class="col-auto icons-animate">
+                <i class="bi bi-house-door fs-1 text-light"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2 heading">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs fw-bold text-light text-uppercase mb-2">
+                  Động đất đã xử lý dữ liệu
+                </div>
+                <div class="fw-bold text-warning fs-4">
+                  <div
+                    class="spinner-border spinner-border-sm mx-2"
+                    role="status"
+                    id="load_eventTotal"
+                  >
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                  <div id="eventTotal"></div>
+                </div>
+              </div>
+              <div class="col-auto icons-animate">
+                <i class="bi bi-calendar2-check fs-1 text-light"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2 heading">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs fw-bold text-light text-uppercase mb-2">
+                  Động đất thời gian thực
+                </div>
+                <div class="row no-gutters align-items-center">
+                  <div class="col-auto">
+                    <div class="mr-3 fw-bold text-warning fs-4">
+                      <div
+                        class="spinner-border spinner-border-sm mx-2"
+                        role="status"
+                        id="load_realtimeTotal"
+                      >
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                      <div id="realtimeTotal"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto icons-animate">
+                <i class="bi bi-clock fs-1 text-light"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Requests Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2 heading">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs fw-bold text-light text-uppercase mb-2">
+                  Động đất trong ngày trên thế giới
+                </div>
+                <div class="fw-bold text-warning fs-4">
+                  <div
+                    class="spinner-border spinner-border-sm mx-2"
+                    role="status"
+                    id="load_eventInDay"
+                  >
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                  <div id="eventInDay"></div>
+                </div>
+              </div>
+              <div class="col-auto icons-animate">
+                <i class="bi bi-calendar3-event fs-1 text-light"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+
+  <!-- <div class = "read">
+    <h3>Nội dung thô của tệp:</h3>
+    <pre id="file-content">Vui lòng upload file.</pre>
+    <h3>Nội dung của tệp đã phân tích cú pháp:</h3>
+    <pre id="file-parsed">Vui lòng upload file.</pre>
+  </div> -->
+</template>

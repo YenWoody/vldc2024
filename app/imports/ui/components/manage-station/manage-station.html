@@ -1,0 +1,363 @@
+<template name="manageStation">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      box-shadow: 0 0 5px rgba(3, 221, 255, 0.8);
+      border: 1px solid rgba(3, 221, 255, 0.8);
+    }
+
+    .form-horizontal {
+      width: 320px;
+      background-color: #ffffff;
+      padding: 25px 38px;
+      border-radius: 12px;
+      box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+    }
+    td.dt-center.editor-edit {
+      cursor: pointer;
+    }
+    td.dt-center.editor-delete {
+      cursor: pointer;
+    }
+    .control-label {
+      text-align: left !important;
+      padding-bottom: 4px;
+    }
+
+    .progress {
+      height: 3px !important;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-danger {
+      background-color: #e90f10;
+    }
+
+    .progress-bar-warning {
+      background-color: #ffad00;
+    }
+
+    .progress-bar-success {
+      background-color: #02b502;
+    }
+
+    .login-btn {
+      width: 180px !important;
+      background-image: linear-gradient(to right, #f6086e, #ff133a) !important;
+      font-size: 18px;
+      color: #fff;
+      margin: 0 auto 5px;
+      padding: 8px 0;
+    }
+
+    .login-btn:hover {
+      background-image: linear-gradient(
+        to right,
+        rgba(255, 0, 111, 0.8),
+        rgba(247, 2, 43, 0.8)
+      ) !important;
+      color: #fff !important;
+    }
+
+    .fa-eye {
+      color: #022255;
+      cursor: pointer;
+    }
+
+    .ex-account p a {
+      color: #18a2ed;
+      text-decoration: underline;
+    }
+
+    .fa-circle {
+      font-size: 6px;
+    }
+
+    .fa-check {
+      color: #02b502;
+    }
+    .mb-3 {
+      display: flex;
+      align-items: center;
+    }
+  </style>
+  {{#if rolesCheck}} {{> not_access}} {{else}} {{#if userUnVerified}} {{>
+  verify_form }} {{else}}
+
+  <div class="manage-users row shadow">
+    <div
+      class="col-md-12 pull-right mb-3"
+      style="
+        display: flex;
+        justify-items: center;
+        justify-content: space-between;
+      "
+    >
+      <button type="submit" class="btn btn-success mt-2" id="add-station">
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm trạm mới
+      </button>
+      <button
+        type="submit"
+        class="btn btn-success mt-2"
+        id="add-station-excel"
+        title="Tải nhiều trạm bằng file Excel"
+        data-toggle="tooltip"
+        data-placement="top"
+      >
+        <i class="bi bi-upload me-1"></i> Tải lên nhiều trạm mới
+      </button>
+    </div>
+    <table id="data_tram" class="table table-striped" style="width: 100%">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tên trạm</th>
+          <th>Mã trạm</th>
+          <th>Mạng trạm</th>
+          <th>Địa chỉ</th>
+          <th>Vĩ độ</th>
+          <th>Kinh độ</th>
+          <th>Độ cao</th>
+          <th>Loại hầm</th>
+          <th>Năm hoạt động</th>
+          <th>Trạng thái</th>
+          <th>Lịch sử đặt máy</th>
+          <th></th>
+        </tr>
+      </thead>
+    </table>
+    <div class="mt-2 loading_class text-center">
+      <div
+        class="spinner-border text-secondary"
+        id="loading_datatables"
+        role="status"
+      >
+        <span class="sr-only text-dark">Đang tải...</span>
+      </div>
+    </div>
+  </div>
+  <div id="_modal" class="_modal modal">
+    <div class="_main p-0 d-grid" style="max-height: 90vh; width: 30%">
+      <div class="w-100">
+        <div class="modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Sửa dữ liệu của trạm</h3>
+        </div>
+
+        <div class="modal-body content_body_modal">
+          <form>
+            {{#each item in editStation}} {{#if check item.type "text"}}
+            <div class="mb-3">
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8 col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="{{item.id}}"
+                  value=""
+                />
+              </div>
+            </div>
+            {{else}} {{#if check item.type "select"}}
+
+            <div class="mb-3">
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8 col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="{{item.id}}"
+                  value=""
+                />
+              </div>
+            </div>
+            {{ else }} {{#if check item.type "number"}}
+
+            <div class="mb-3">
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8 col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  id="{{item.id}}"
+                  value=""
+                />
+              </div>
+            </div>
+
+            {{/if}} {{/if}}{{/if}}{{/each}}
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer mt-2 w-100">
+        <button class="btn btn-info save" id="save_edit_station">
+          Xác nhận
+        </button>
+        <button id="close-modal" class="btn btn-danger">Đóng</button>
+      </div>
+    </div>
+  </div>
+  <div id="modal_add_station" class="_modal modal">
+    <div
+      class="_main p-0 d-grid"
+      style="
+        max-height: 90vh;
+
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="w-100">
+        <div class="modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Thêm dữ liệu của trạm</h3>
+        </div>
+
+        <div class="modal-body content_body_modal">
+          <form>
+            {{#each item in addStation}} {{#if check item.type "text"}}
+            <div class="mb-3">
+              <div class="col-4 col-lg-4 col-form-label">
+                <label for="recipient-name">{{item.text}}</label>
+              </div>
+              <div class="col-8 col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="{{item.id}}"
+                  value=""
+                />
+              </div>
+            </div>
+            {{else}} {{#if check item.type "select"}}
+
+            <div class="mb-3">
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8 col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="{{item.id}}"
+                  value=""
+                />
+              </div>
+            </div>
+            {{ else }} {{#if check item.type "number"}}
+
+            <div class="mb-3">
+              <div class="col-4 col-lg-4 col-form-label">
+                <label for="recipient-name">{{item.text}}</label>
+              </div>
+              <div class="col-8 col-lg-8">
+                <input
+                  type="number"
+                  class="form-control"
+                  pattern="[0-9]"
+                  title="Nhập dạng số"
+                  placeholder="Nhập dạng số"
+                  id="{{item.id}}"
+                  value=""
+                />
+                <span id="alert_{{item.id}}" class="text-danger"></span>
+              </div>
+            </div>
+
+            {{/if}} {{/if}}{{/if}}{{/each}}
+          </form>
+        </div>
+        <div class="modal-footer mt-2 w-100">
+          <button class="btn btn-info save" id="save_add_station">
+            Xác nhận
+          </button>
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal_add_station_excel" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+
+        max-height: 700px;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container">
+        <div class="modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Thêm dữ liệu của trạm bằng tệp Excel</h3>
+        </div>
+        <div class="modal-body d-flex justify-content-center">
+          <form>
+            <label class="btn btn-outline-info btn-lg">
+              Tải lên tệp tin
+              <input id="upload" type="file" hidden />
+              <i class="fa fa-cloud-upload fa-lg" aria-hidden="true"></i>
+            </label>
+          </form>
+        </div>
+        <div class="modal-footer mt-3 w-100">
+          <button class="btn btn-info save" id="save_add_station">
+            Xác nhận
+          </button>
+          <button id="close-modal" class="close-modal btn btn-danger">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal_delete_station" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+        overflow: auto;
+        width: 30%;
+        max-height: 500px;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container">
+        <div class="modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Xóa dữ liệu của trạm</h3>
+        </div>
+        <div class="modal-body">
+          <h4 id="content_delete"></h4>
+        </div>
+        <div class="modal-footer mt-3">
+          <button class="btn btn-info save" id="delete_station">
+            Xác nhận
+          </button>
+          <button id="close-modal" class="close-modal btn btn-danger">
+            Hủy
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--Bootstrap Datatable-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"></script>
+  {{/if}} {{/if}}
+</template>

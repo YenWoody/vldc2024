@@ -1,0 +1,85 @@
+<template name="map_realtime">
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+    <div id="viewDiv">
+        <div id="legendDiv" style="display: none;">
+            <h3 class="titleLegend">
+                <span>Chú thích</span>
+            </h3>
+            <div class="esri-legend__service" tabindex="0">
+                <h3 class="esri-widget__heading esri-legend__service-label">Thông báo nhanh động đất tại Việt Nam (Thử
+                    nghiệm)</h3>
+                <div class="esri-legend__layer">
+                    <div class="esri-legend__layer-table esri-legend__layer-table--size-ramp">
+                        <div class="esri-legend__layer-body">
+                            <div class="esri-legend__layer-row">
+                                <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols">
+                                    <div class="esri-legend__symbol">
+                                        <span style="height: 30px;
+                                        width: 30px;
+                                        background-color: #83C7E8;
+                                        border-radius: 50%;
+                                        display: inline-block;"></span>
+                                    </div>
+                                </div>
+                                <div class="esri-legend__layer-cell esri-legend__layer-cell--info"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="infoDiv" class="esri-widget" style="display: none;">
+            <h3 class="title">
+                <span>Lọc sự kiện</span>
+            </h3>
+            <!-- Lọc Trạm theo Network-->
+            <!-- <li class="esri-layer-list__item">
+                <label for="relationship-select">Network:</label>
+                <select id="relationship-select" class="options">
+                    <option value="all" selected >Chọn</option>
+                    <option value="VN">VN</option>
+                    <option value="RM">RM</option>
+                    </select>
+                <br /><br />
+            </li> -->
+            <li class="esri-layer-list__item p-1">
+                <label for="depthSlider" style="padding-bottom: 15px;">Độ sâu (km):</label>
+                <div id="depthSlider" style="height:60px!important"></div>
+                <br /><br />
+            </li>
+            <li class="esri-layer-list__item p-1">
+                <label for="magnitudeSlider" style="padding-bottom: 15px;">Cường độ:</label>
+                <div id="magnitudeSlider" style="height:60px!important"></div>
+                <br /><br />
+            </li>
+            <h3 class="title">Thời gian sự kiện động đất </h3>
+            <li class="esri-layer-list__item">
+                <div id="timeSlider"></div>
+                <br /><br />
+            </li>
+            <!-- <h3 class ="title">Thời gian sự kiện động đất (real time)</h3>
+            <li class="esri-layer-list__item">
+                <div id="timeSlider_realtime"></div>
+                <br /><br />
+            </li> -->
+            <div class="d-flex justify-content-center mx-auto">
+                <div class="m-3">
+                    <button class="btn btn-warning text-white" title="Lọc" id="filter"><i class="fa fa-search" aria-hidden="true"></i>
+                    
+                    </button>
+                </div>
+                <div class="m-3">
+                    <button class="btn btn-danger text-white" title="Xóa lọc" id="clearFilter">
+                        <i class="fa fa-ban" aria-hidden="true"></i>
+                      
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,72 @@
+<template name="changepass">
+  <style>
+    #changepass {
+      border-radius: 10px;
+      display: grid;
+      justify-items: center;
+    }
+  </style>
+
+  <div class="container" id="changepass">
+    {{#if userUnVerified}} {{> verify_form }} {{else}}
+    <form class="changepassword-form rounded">
+      <h1 class="h3 mb-3 fw-normal text-center">Vui lòng nhập mật khẩu</h1>
+
+      <!-- <div class="form-floating" style="width: 80%">
+        <input
+          type="password"
+          id="floatingInput"
+          placeholder="Mật khẩu cũ"
+          name="oldpassword"
+          style="width: 100%"
+        />
+      </div> -->
+      <!-- <div class="form-floating" style="width:80%">
+              <input type="password" id="floatingPassword" placeholder="Mật khẩu mới" name="newpassword"  style="width:100%">
+         
+            </div> -->
+      <div class="form-floating">
+        <input
+          type="password"
+          class="form-control w-100"
+          id="floatingInput"
+          name="oldpassword"
+          autocomplete="on"
+          required
+        />
+        <label for="floatingInput">
+          <i aria-hidden="true" style="margin-right: 5px" class="fa fa-lock"></i
+          >Mật khẩu cũ</label
+        >
+        <span id="show-pass" class="show-pass"
+          ><i class="fa fa-eye" id="eye"></i
+        ></span>
+      </div>
+      <div class="form-floating">
+        <input
+          type="password"
+          class="form-control w-100"
+          id="floatingPassword"
+          name="newpassword"
+          autocomplete="on"
+          required
+        />
+        <label for="floatingPassword">
+          <i aria-hidden="true" style="margin-right: 5px" class="fa fa-lock"></i
+          >Mật khẩu mới</label
+        >
+        <span id="show-pass2" class="show-pass"
+          ><i class="fa fa-eye" id="eye2"></i
+        ></span>
+      </div>
+      <button
+        class="btn btn-lg btn-primary"
+        style="margin-top: 30px"
+        type="submit"
+      >
+        Xác Nhận
+      </button>
+    </form>
+    {{/if}}
+  </div>
+</template>

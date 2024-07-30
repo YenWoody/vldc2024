@@ -1,0 +1,27 @@
+<template name="verify">
+  <div class="container my-auto mx-auto">
+    {{#if checkUser }} {{> login_form }} {{else}}
+    <div class="row" style="margin: 0px !important">
+      <div class="form-content">
+        <div class="form-signin">
+          <form class="verify-form">
+            <h1 class="h3 mb-3 fw-normal d-flex justify-content-center">
+              <p>Xin Chào <b id="username">{{currentUser.username}}</b></p>
+            </h1>
+
+            <div class="form-floating d-flex flex-column text-center">
+              <p>
+                Bạn đã đăng kí tài khoản thành công, để sử dụng các chức năng
+                vui lòng xác thực Email bằng cách click vào đường link bên dưới
+              </p>
+              <button class="btn btn-lg btn-primary" type="submit">
+                Gửi mã xác thực
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</template>

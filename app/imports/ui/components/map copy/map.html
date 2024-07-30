@@ -1,0 +1,195 @@
+<template name="map">
+  <div class="container-fluid p-0 mb-4 position-relative">
+    <nav id="leftSideBar" class="shadow position-absolute z-3 active h-100">
+      <div class="custom-menu mt-3">
+        <button type="button" id="sidebarCollapse" class="btn btn-primary z-1">
+          <i class="fa fa-caret-right" id="iconArrow"></i>
+        </button>
+      </div>
+      <div class="py-4 px-2 position-relative z-2 h-100 d-grid bg-white">
+        <h2 class="text-black text-center">Các sự kiện gần đây</h2>
+        <div class="position-relative h-100 w-100 overflow-auto">
+          <table id="dulieu" class="display table table-striped h-100">
+            <thead>
+              <tr id="tieude">
+                <th>Ngày/Giờ</th>
+                <th>Độ lớn</th>
+                <th>Vĩ độ</th>
+                <th>Kinh độ</th>
+                <th>Độ sâu</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </nav>
+    <div class="col-md-12">
+      <div id="bando">
+        <div class="bg-light p-0 h-100">
+          <div id="viewDiv">
+            <div id="legendDiv" style="display: none">
+              <h3 class="titleLegend">
+                <span>Chú thích</span>
+              </h3>
+              <div class="esri-legend__service" tabindex="0">
+                <h3 class="esri-widget__heading esri-legend__service-label">
+                  Thông báo nhanh động đất tại Việt Nam (Thử nghiệm)
+                </h3>
+                <div class="esri-legend__layer">
+                  <div
+                    class="esri-legend__layer-table esri-legend__layer-table--size-ramp"
+                  >
+                    <div class="esri-legend__layer-body">
+                      <div class="esri-legend__layer-row">
+                        <div
+                          class="esri-legend__layer-cell esri-legend__layer-cell--symbols"
+                        >
+                          <div class="esri-legend__symbol">
+                            <span
+                              style="
+                                height: 30px;
+                                width: 30px;
+                                background-color: #83c7e8;
+                                border-radius: 50%;
+                                display: inline-block;
+                              "
+                            ></span>
+                          </div>
+                        </div>
+                        <div
+                          class="esri-legend__layer-cell esri-legend__layer-cell--info"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="esri-legend__service" tabindex="0">
+                <h3 class="esri-widget__heading esri-legend__service-label">
+                  Thông báo nhanh động đất toàn cầu
+                </h3>
+                <div class="esri-legend__layer">
+                  <div
+                    class="esri-legend__layer-table esri-legend__layer-table--size-ramp"
+                  >
+                    <div class="esri-legend__layer-body">
+                      <div class="esri-legend__layer-row">
+                        <div
+                          class="esri-legend__layer-cell esri-legend__layer-cell--symbols"
+                        >
+                          <div class="esri-legend__symbol">
+                            <span
+                              style="
+                                height: 30px;
+                                width: 30px;
+                                background-color: #80d1c4;
+                                border-radius: 50%;
+                                display: inline-block;
+                              "
+                            ></span>
+                          </div>
+                        </div>
+                        <div
+                          class="esri-legend__layer-cell esri-legend__layer-cell--info"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="esri-legend__service" tabindex="0">
+                <h3 class="esri-widget__heading esri-legend__service-label">
+                  Thông tin động đất tại Việt Nam (đã chuẩn hoá)
+                </h3>
+                <div class="esri-legend__layer">
+                  <div
+                    class="esri-legend__layer-table esri-legend__layer-table--size-ramp"
+                  >
+                    <div class="esri-legend__layer-body">
+                      <div class="esri-legend__layer-row">
+                        <div
+                          class="esri-legend__layer-cell esri-legend__layer-cell--symbols"
+                        >
+                          <div class="esri-legend__symbol">
+                            <span
+                              style="
+                                height: 30px;
+                                width: 30px;
+                                background-color: #f3b77f;
+                                border-radius: 50%;
+                                display: inline-block;
+                              "
+                            ></span>
+                          </div>
+                        </div>
+                        <div
+                          class="esri-legend__layer-cell esri-legend__layer-cell--info"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div id="infoDiv" class="esri-widget" style="display: none">
+              <h3 class="title">
+                <span>Lọc sự kiện</span>
+              </h3>
+             
+              <li class="esri-layer-list__item p-1">
+                <label for="depthSlider" style="padding-bottom: 15px"
+                  >Độ sâu (km):</label
+                >
+                <div id="depthSlider" style="height: 60px !important"></div>
+                <br /><br />
+              </li>
+              <li class="esri-layer-list__item p-1">
+                <label for="magnitudeSlider" style="padding-bottom: 15px"
+                  >Cường độ:</label
+                >
+                <div id="magnitudeSlider" style="height: 60px !important"></div>
+                <br /><br />
+              </li>
+              <h3 class="title">Thời gian sự kiện động đất</h3>
+              <li class="esri-layer-list__item">
+                <div id="timeSlider"></div>
+                <br /><br />
+              </li>
+             
+              <div class="d-flex justify-content-center mx-auto">
+                <div class="m-3">
+                  <button
+                    class="btn btn-warning text-white"
+                    title="Lọc"
+                    id="filter"
+                  >
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div class="m-3">
+                  <button
+                    class="btn btn-danger text-white"
+                    title="Xóa lọc"
+                    id="clearFilter"
+                  >
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="preloader">
+    <div class="lds-ripple">
+      <div class="lds-pos"></div>
+      <div class="lds-pos"></div>
+    </div>
+  </div>
+  <script
+    type="text/javascript"
+    src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.js"
+  ></script>
+</template>

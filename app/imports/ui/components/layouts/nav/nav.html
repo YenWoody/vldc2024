@@ -1,0 +1,213 @@
+<template name="nav">
+  {{#if userVerified }}
+  <nav
+    class="navbar navbar-expand-lg navbar-light py-1 px-3"
+    style="background-color: #3d77b1 !important"
+  >
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="/" class="logo"
+          ><img class="head-logo" src="./assets/img/logo.png" alt="logo"
+        /></a>
+      </div>
+      <button class="navbar-toggler p-0" type="button">
+        <div class="menu-bar">
+          <div class="bar bar1"></div>
+          <div class="bar bar2"></div>
+          <div class="bar bar3"></div>
+        </div>
+      </button>
+      <div class="navbar-collapse" id="navbarButton" style="height: 0">
+        <div class="list_nav d-none d-lg-flex align-items-lg-center w-100">
+          <ul
+            class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
+            style="padding-left: 10px"
+          >
+            {{#each list in lists}}
+            <a class="nav-link" href="{{list.link}}"
+              ><span class="{{activeListClass list}}">{{list.name}}</span></a
+            >
+            <!-- <a class="nav-link" onclick="window.location.href='{{list.link}}'"
+          ><span class="{{activeListClass list}}">{{list.name}}</span></a
+          > -->
+            {{/each}}
+          </ul>
+          <ul class="navbar-nav ms-md-0">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa fa-user-circle-o me-2 fa-2x"></i
+              ></a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown"
+              >
+                <li class="text-center">
+                  <span
+                    >Chào
+                    <b style="color: rgb(30, 132, 221)"
+                      >{{currentUser.username}}</b
+                    >
+                    !</span
+                  >
+                </li>
+                <li><hr class="m-1" /></li>
+                <li>
+                  <a class="dropdown-item" href="/changepass"
+                    ><i class="fa fa-key me-2"></i>Đổi mật khẩu</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item header__references_logout" href="#!"
+                    ><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng
+                    xuất</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <!-- <form class="d-flex">
+                    <div class="currentUser_div" id="currentUser_div">
+                        <div style="display: grid; justify-items: center;"><b
+                                style="margin-top: 5px;color :rgb(30, 132, 221); font-size: 1.3em;">{{currentUser.username}}</b>
+                            <a class="header__references_logout" href="#">
+                                <span class="text-white font-medium">Đăng xuất</span></a>
+                        </div>
+                    </div>
+                </form> -->
+      </div>
+    </div>
+  </nav>
+
+  {{else}} {{#if isUserLogged}}
+  <nav
+    class="navbar navbar-expand-lg navbar-light px-3"
+    style="background-color: #3d77b1 !important"
+  >
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="/" class="logo"
+          ><img class="head-logo" src="./assets/img/logo.png" alt="logo"
+        /></a>
+      </div>
+      <button class="navbar-toggler p-0" type="button">
+        <div class="menu-bar">
+          <div class="bar bar1"></div>
+          <div class="bar bar2"></div>
+          <div class="bar bar3"></div>
+        </div>
+      </button>
+      <div class="navbar-collapse" id="navbarButton" style="height: 0">
+        <div class="list_nav d-none d-lg-flex align-items-lg-center w-100">
+          <ul
+            class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
+            style="padding-left: 10px"
+          >
+            {{#each list in lists}}
+            <!-- <a class="nav-link" onclick="window.location.href='{{list.link}}'"
+            ><span class="{{activeListClass list}}">{{list.name}}</span></a
+          > -->
+            <a class="nav-link" href="{{list.link}}"
+              ><span class="{{activeListClass list}}">{{list.name}}</span></a
+            >
+            {{/each}}
+          </ul>
+          <ul class="navbar-nav ms-md-0">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa fa-user-circle-o me-2 fa-2x"></i
+              ></a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown"
+              >
+                <li class="text-center">
+                  <span
+                    >Chào
+                    <b style="color: rgb(30, 132, 221)"
+                      >{{currentUser.username}}</b
+                    >
+                    !</span
+                  >
+                </li>
+                <li><hr class="m-1" /></li>
+                <li>
+                  <a class="dropdown-item" href="/changepass"
+                    ><i class="fa fa-key me-2"></i>Đổi mật khẩu</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item header__references_logout" href="#!"
+                    ><i class="fa fa-sign-out me-2" aria-hidden="true"></i>Đăng
+                    xuất</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- hello-->
+
+  {{else}}
+  <nav
+    class="navbar navbar-expand-lg navbar-light px-3"
+    style="background-color: #3d77b1 !important"
+  >
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="/" class="logo"
+          ><img class="head-logo" src="./assets/img/logo.png" alt="logo"
+        /></a>
+      </div>
+      <!-- <span class="text-white">Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</span> -->
+      <button class="navbar-toggler p-0" type="button">
+        <div class="menu-bar">
+          <div class="bar bar1"></div>
+          <div class="bar bar2"></div>
+          <div class="bar bar3"></div>
+        </div>
+      </button>
+
+      <div class="navbar-collapse" id="navbarButton" style="height: 0">
+        <div class="list_nav d-none d-lg-flex align-items-lg-center w-100">
+          <ul
+            class="navbar-nav me-auto mb-2 mb-lg-0 hover-nav"
+            style="padding-left: 10px"
+          >
+            {{#each list in listsGuest}}
+
+            <a class="nav-link" href="{{list.link}}"
+              ><span class="{{activeListClass list}}">{{list.name}}</span></a
+            >
+            {{/each}}
+          </ul>
+          <form class="d-flex">
+            <button
+              type="button"
+              class="btn btn-outline-light"
+              onclick="window.location.href='/login'"
+            >
+              Đăng nhập | Đăng ký
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+  {{/if}} {{/if}}
+</template>

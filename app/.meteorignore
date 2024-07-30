@@ -1,0 +1,9 @@
+public/.uploads
+public/.uploads/
+public/.uploads/*
+
+.uploads/*
+.uploads/
+.uploads
+
+

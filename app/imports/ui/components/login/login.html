@@ -1,0 +1,65 @@
+<template name="login">
+  <div class="cotainer my-5 mx-3">
+    <div class="row">
+      <div class="form-content">
+        <div class="form-signin">
+          <form class="login-form">
+            <h2 class="text-center">Vui lòng đăng nhập</h2>
+
+            <div class="form-floating mt-3">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingInput"
+                placeholder="Username"
+                name="username"
+              />
+              <label for="floatingInput"
+                ><i
+                  aria-hidden="true"
+                  style="margin-right: 5px"
+                  class="fa fa-user"
+                ></i
+                >Tài khoản/Email</label
+              >
+            </div>
+            <div class="form-floating">
+              <input
+                type="password"
+                class="form-control"
+                id="floatingPassword"
+                placeholder="Password"
+                name="password"
+              />
+              <label for="floatingPassword"
+                ><i
+                  aria-hidden="true"
+                  style="margin-right: 5px"
+                  class="fa fa-lock"
+                ></i
+                >Mật khẩu</label
+              ><span id="show-pass" class="show-pass">
+                <i class="fa fa-eye" id="eye"></i>
+              </span>
+            </div>
+            <a href="/reset" class="">Quên mật khẩu?</a>
+            <!-- <div class="checkbox mb-3">
+                    <label>
+                      <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                  </div> -->
+            <div class="pb-3">
+              <button class="btn btn-lg btn-primary" type="submit">
+                Đăng nhập
+              </button>
+            </div>
+            <div class="d-flex justify-content-evenly">
+              <span class="ms-3">Bạn chưa có tài khoản ?</span
+              ><a class="me-3" href="/register">Đăng ký</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

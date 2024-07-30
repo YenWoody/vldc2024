@@ -1,0 +1,270 @@
+<template name="manageBaler">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      box-shadow: 0 0 5px rgba(3, 221, 255, 0.8);
+      border: 1px solid rgba(3, 221, 255, 0.8);
+    }
+
+    .form-horizontal {
+      width: 320px;
+      background-color: #ffffff;
+      padding: 25px 38px;
+      border-radius: 12px;
+      box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+    }
+    td.dt-center.editor-edit {
+      cursor: pointer;
+    }
+    td.dt-center.editor-delete {
+      cursor: pointer;
+    }
+    .control-label {
+      text-align: left !important;
+      padding-bottom: 4px;
+    }
+
+    .progress {
+      height: 3px !important;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-danger {
+      background-color: #e90f10;
+    }
+
+    .progress-bar-warning {
+      background-color: #ffad00;
+    }
+
+    .progress-bar-success {
+      background-color: #02b502;
+    }
+
+    .login-btn {
+      width: 180px !important;
+      background-image: linear-gradient(to right, #f6086e, #ff133a) !important;
+      font-size: 18px;
+      color: #fff;
+      margin: 0 auto 5px;
+      padding: 8px 0;
+    }
+
+    .login-btn:hover {
+      background-image: linear-gradient(
+        to right,
+        rgba(255, 0, 111, 0.8),
+        rgba(247, 2, 43, 0.8)
+      ) !important;
+      color: #fff !important;
+    }
+
+    .fa-eye {
+      color: #022255;
+      cursor: pointer;
+    }
+
+    .ex-account p a {
+      color: #18a2ed;
+      text-decoration: underline;
+    }
+
+    .fa-circle {
+      font-size: 6px;
+    }
+
+    .fa-check {
+      color: #02b502;
+    }
+    .mb-3 {
+      display: flex;
+      align-items: center;
+    }
+  </style>
+  {{#if rolesCheck}} {{> not_access}} {{else}} {{#if userUnVerified}} {{>
+  verify_form }} {{else}}
+
+  <div class="manage-users row shadow">
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-success" id="add-station">
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm bộ lưu mới
+      </button>
+    </div>
+    <table id="data_baler" class="table table-striped" style="width: 100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Mã máy ghi</th>
+          <th>Serial</th>
+          <th>Trạng thái</th>
+          <th>Trạm</th>
+          <th></th>
+        </tr>
+      </thead>
+    </table>
+    <div class="mt-2 loading_class text-center">
+      <div
+        class="spinner-border text-secondary"
+        id="loading_datatables"
+        role="status"
+      >
+        <span class="sr-only text-dark">Đang tải...</span>
+      </div>
+    </div>
+  </div>
+  <div id="_modal" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+
+        max-height: 700px;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container w-100">
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Sửa dữ liệu máy ghi</h3>
+        </div>
+        <div class="modal-body" style="max-height: calc(90vh - 160px)">
+          <form>
+            {{#each item in editBaler}} {{#if check item.type "text"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="{{item.id}}"
+                  placeholder="Nhập thông tin"
+                  value=""
+                />
+              </div>
+            </div>
+            {{else}} {{#if check item.type "station_code"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
+                <select
+                  id="select-tools-edit"
+                  multiple
+                  placeholder="Chọn mã trạm"
+                ></select>
+              </div>
+            </div>
+            {{/if}} {{/if}} {{/each}}
+          </form>
+        </div>
+        <div class="modal-footer mt-2">
+          <button class="btn btn-info save" id="save_edit_baler">
+            Xác nhận
+          </button>
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal_add_baler" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+
+        max-height: 700px;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container w-100">
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Thêm dữ liệu máy ghi</h3>
+        </div>
+        <hr />
+        <div class="modal-body" style="max-height: calc(90vh - 160px)">
+          <form>
+            {{#each item in addBaler}} {{#if check item.type "text"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-lg-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-lg-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="{{item.id}}"
+                  placeholder="Nhập thông tin"
+                  value=""
+                />
+              </div>
+            </div>
+            {{else}} {{#if check item.type "station_code"}}
+            <div class="row my-2 d-flex align-items-center">
+              <label for="recipient-name" class="col-4 col-form-label"
+                >{{item.text}}</label
+              >
+              <div class="col-8">
+                <select
+                  id="select-tools"
+                  multiple
+                  placeholder="Chọn mã trạm"
+                ></select>
+              </div>
+            </div>
+            {{/if}} {{/if}} {{/each}}
+          </form>
+        </div>
+        <div class="modal-footer w-100 mt-2">
+          <button class="btn btn-info save" id="save_add_baler">
+            Xác nhận
+          </button>
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal_delete_baler" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+        overflow: auto;
+        width: 30%;
+        max-height: 300px;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container w-100">
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Xóa dữ liệu máy ghi</h3>
+        </div>
+        <div class="modal-body">
+          <h5 id="content_delete"></h5>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-info save" id="delete_baler">Xác nhận</button>
+          <button id="close-modal" class="btn btn-danger">Hủy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--Bootstrap Datatable-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"></script>
+  {{/if}} {{/if}}
+</template>

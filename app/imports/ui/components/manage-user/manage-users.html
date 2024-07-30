@@ -1,0 +1,351 @@
+<template name="manageUsers">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      box-shadow: 0 0 5px rgba(3, 221, 255, 0.8);
+      border: 1px solid rgba(3, 221, 255, 0.8);
+    }
+
+    .form-horizontal {
+      width: 320px;
+      background-color: #ffffff;
+      padding: 25px 38px;
+      border-radius: 12px;
+      box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .control-label {
+      text-align: left !important;
+      padding-bottom: 4px;
+    }
+
+    .progress {
+      height: 3px !important;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-danger {
+      background-color: #e90f10;
+    }
+
+    .progress-bar-warning {
+      background-color: #ffad00;
+    }
+
+    .progress-bar-success {
+      background-color: #02b502;
+    }
+
+    .login-btn {
+      width: 180px !important;
+      background-image: linear-gradient(to right, #f6086e, #ff133a) !important;
+      font-size: 18px;
+      color: #fff;
+      margin: 0 auto 5px;
+      padding: 8px 0;
+    }
+
+    .login-btn:hover {
+      background-image: linear-gradient(
+        to right,
+        rgba(255, 0, 111, 0.8),
+        rgba(247, 2, 43, 0.8)
+      ) !important;
+      color: #fff !important;
+    }
+
+    .fa-eye {
+      color: #022255;
+      cursor: pointer;
+    }
+
+    .ex-account p a {
+      color: #18a2ed;
+      text-decoration: underline;
+    }
+
+    .fa-circle {
+      font-size: 6px;
+    }
+
+    .fa-check {
+      color: #02b502;
+    }
+  </style>
+  {{#if rolesCheck}} {{> not_access}} {{else}} {{#if userUnVerified}} {{>
+  verify_form }} {{else}}
+  <!-- <div  >
+    <button type="submit" class="btn btn-success" id="add-user">Thêm thành viên mới</button>
+  </div> -->
+  <div class="manage-users row shadow">
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-success" id="add-user">
+        <i class="bi bi-person-plus me-2"></i>Thêm thành viên mới
+      </button>
+    </div>
+    <table id="data_users" class="table table-striped" style="width: 100%">
+      <thead>
+        <tr>
+          <th>Tài khoản</th>
+          <th>Email</th>
+          <th>Xác thực Email</th>
+          <th>Chức vụ</th>
+          <th>Thời gian đăng kí</th>
+          <th></th>
+        </tr>
+      </thead>
+    </table>
+    <div class="mt-2 loading_class text-center">
+      <div
+        class="spinner-border text-secondary"
+        id="loading_datatables"
+        role="status"
+      >
+        <span class="sr-only text-dark">Đang tải...</span>
+      </div>
+    </div>
+  </div>
+  <div id="modal_edit_user" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container">
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Phân quyền người dùng</h3>
+        </div>
+        <div class="_content text-center mt-3" id="_content">
+          <select
+            id="select-tools"
+            multiple
+            placeholder="Chọn mã trạm"
+          ></select>
+          <br />
+        </div>
+        <div class="modal-footer w-100 mt-4">
+          <button class="btn btn-info save" id="submit-role">Xác nhận</button>
+          <button id="close-modal_" class="btn btn-danger close-modal">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="_delete_user" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+        overflow: auto;
+        width: 30%;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container">
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light" id="confirm_username"></h3>
+        </div>
+        <div class="modal-body">
+          <div class="_content" id="_content">
+            <h5>Sau khi xóa sẽ không thể khôi phục được tài khoản!</h5>
+            <!-- <button class="w-100 btn btn-lg btn-primary" style="margin-top: 20px;" id="delete_user">Xác nhận</button> -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer mt-2">
+        <button class="btn btn-info save" id="delete_user">Xác nhận</button>
+        <button id="close-modal_" class="btn btn-danger close-modal">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="_add-user" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="display: grid; max-height: 90vh; width: 40%; overflow: auto"
+    >
+      <div class="w-100">
+        <div class="modal-header bg-primary justify-content: center">
+          <h3 class="text-light text-center">Thêm người dùng mới</h3>
+        </div>
+        <div
+          class="_content p-3 overflow-auto"
+          id="_content"
+          style="max-height: calc(90vh - 150px)"
+        >
+          <form>
+            <div class="form-floating">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingUsername"
+                placeholder="text"
+                name="username"
+                style="margin-bottom: 10px"
+                required
+              />
+              <label for="floatingInput"
+                ><i
+                  aria-hidden="true"
+                  style="margin-right: 5px"
+                  class="fa fa-user"
+                ></i
+                >Tài khoản</label
+              >
+            </div>
+            <div class="form-floating">
+              <input
+                type="password"
+                class="form-control"
+                id="floatingPassword"
+                placeholder="password"
+                autocomplete="on"
+                name="password"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                title="Phải chứa ít nhất một số và một chữ hoa và chữ thường và ít nhất 6 ký tự trở lên"
+                required
+              />
+              <label for="floatingPassword"
+                ><i
+                  aria-hidden="true"
+                  style="margin-right: 5px"
+                  class="fa fa-lock"
+                ></i
+                >Mật khẩu</label
+              ><span id="show-pass" class="show-pass">
+                <i class="fa fa-eye" id="eye"></i>
+              </span>
+            </div>
+            <div id="popover-password">
+              <p class="result-pass"><span id="result"></span></p>
+              <div class="progress">
+                <div
+                  id="password-strength"
+                  class="progress-bar"
+                  role="progressbar"
+                  aria-valuenow="40"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <ul class="list-unstyled">
+                <li class="">
+                  <span
+                    class="low-upper-case"
+                    style="display: flex; align-items: center"
+                  >
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    &nbsp;Chữ thường &amp; Chữ in hoa
+                  </span>
+                </li>
+                <li class="">
+                  <span
+                    class="one-number"
+                    style="display: flex; align-items: center"
+                  >
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    &nbsp;Số (0-9)
+                  </span>
+                </li>
+                <li class="">
+                  <span
+                    class="six-character"
+                    style="display: flex; align-items: center"
+                  >
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    &nbsp;Ít nhất 6 kí tự
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div class="form-floating">
+              <input
+                type="password"
+                class="form-control"
+                id="checkPassword"
+                autocomplete="on"
+                placeholder="password"
+                name="checkpassword"
+                required
+              />
+              <label for="floatingPassword">
+                <i
+                  aria-hidden="true"
+                  style="margin-right: 5px"
+                  class="fa fa-lock"
+                ></i
+                >Nhập lại Mật khẩu</label
+              ><span id="show-pass2" class="show-pass">
+                <i class="fa fa-eye" id="eye2"></i>
+              </span>
+            </div>
+            <div id="popover-password">
+              <p class="result-pass"><span id="result"></span></p>
+              <div class="progress">
+                <div
+                  id="check-password"
+                  class="progress-bar"
+                  role="progressbar"
+                  aria-valuenow="40"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+            <span id="alertPassword"></span>
+            <div class="form-floating">
+              <input
+                type="email"
+                class="form-control"
+                id="floatingEmail"
+                placeholder="email"
+                name="email"
+                required
+              />
+              <label for="floatingInput"
+                ><i
+                  aria-hidden="true"
+                  style="margin-right: 5px"
+                  class="fa fa-envelope"
+                ></i
+                >Email</label
+              >
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer w-100">
+          <button class="btn btn-info save" id="submit_form" type="submit">
+            Xác nhận
+          </button>
+          <button
+            id="close-modal_"
+            class="btn btn-danger close-modal"
+            style="float: right"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--Bootstrap Datatable-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"></script>
+  {{/if}} {{/if}}
+</template>

@@ -1,0 +1,223 @@
+<template name="manageManagePdf">
+  {{#if rolesCheck}} {{> not_access}} {{else}}
+  <div class="manage-users row shadow" id="upload">
+    {{#if userUnVerified}} {{> verify_form }} {{else}}
+    <div class="d-flex justify-content-end mb-2">
+      <button type="submit" class="btn btn-success" id="add-history">
+        <i class="bi bi-plus-circle-dotted me-2"></i>Thêm lịch sử đặt máy mới
+      </button>
+    </div>
+
+    <table id="data_pdf" class="table table-striped" style="width: 100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên file</th>
+          <th>Mã trạm</th>
+          <th></th>
+        </tr>
+      </thead>
+    </table>
+    <div class="mt-2 loading_class text-center">
+      <div
+        class="spinner-border text-secondary"
+        id="loading_datatables"
+        role="status"
+      >
+        <span class="sr-only text-dark">Đang tải...</span>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+  <div id="_modal" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+
+        height: 90vh;
+        max-height: 90vh !important;
+        overflow: auto;
+
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container w-100">
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Xem dữ liệu</h3>
+        </div>
+        <div
+          class="modal-body overflow-auto"
+          style="max-height: calc(90vh - 160px)"
+        >
+          <iframe id="viewPdf" class="w-100 h-100" src="" title=""> </iframe>
+        </div>
+        <div class="modal-footer mt-2">
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal_add_machine_history" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+        max-height: 400px;
+        overflow: auto;
+        min-width: 300px !important;
+        max-width: 400px;
+        width: 50% !important;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container w-100">
+        <div class="_title modal-header justify-content-center bg-primary">
+          <h3 class="text-light">Thêm dữ liệu lịch sử đặt máy</h3>
+        </div>
+        <hr />
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-4 col-lg-4 col-form-label"
+                >Mã trạm:</label
+              >
+              <div class="col-8 col-lg-8">
+                <select
+                  id="select-tools"
+                  multiple
+                  placeholder="Chọn mã trạm"
+                ></select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="upload-progress">
+                {{#with currentUpload}} Uploading <b>{{file.name}}</b>:
+                <span id="progress">{{progress.get}}%</span>
+                {{else}}
+                <label
+                  class="d-flex align-items-center btn btn-outline-info btn-lg"
+                >
+                  <input id="fileInput" type="file" style="display: none" />
+                  <label
+                    for="fileInput"
+                    class="custom-file-upload me-2"
+                    id="choose-file-label"
+                  >
+                    Chọn tệp
+                  </label>
+                  <i class="fa fa-cloud-upload fa-lg" aria-hidden="true"></i>
+                </label>
+                {{/with}}
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer mt-2 w-100">
+          <button class="btn btn-info save" id="import-button">Xác nhận</button>
+          <button id="close-modal" class="btn btn-danger">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="modal_delete_battery" class="_modal modal">
+    <div
+      class="_main p-0"
+      style="
+        display: grid;
+        overflow: auto;
+        width: 30%;
+        max-height: 300px;
+        /* justify-items: center; */
+        /* align-content: stretch; */
+      "
+    >
+      <div class="_container w-100">
+        <div class="_title bg-primary modal-header justify-content-center">
+          <h3 class="text-light">Xóa dữ liệu</h3>
+        </div>
+        <div class="modal-body">
+          <h5 id="content_delete"></h5>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-info save" id="delete_battery">
+            Xác nhận
+          </button>
+          <button id="close-modal" class="btn btn-danger">Hủy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+  <!--Bootstrap Datatable-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"></script>
+  <!-- <div class = "read">
+    <h3>Nội dung thô của tệp:</h3>
+    <pre id="file-content">Vui lòng upload file.</pre>
+    <h3>Nội dung của tệp đã phân tích cú pháp:</h3>
+    <pre id="file-parsed">Vui lòng upload file.</pre>
+  </div> -->
+</template>
+<template name="uploadedPdf">
+  {{#if uploaded.count}}
+  <ul class="list-group">
+    {{#each file in uploaded.each}}
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
+      style="padding: 5px"
+    >
+      <div class="ms-2">
+        <i class="fa fa-file-o fa-lg" aria-hidden="true"></i>
+      </div>
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">
+          <a href="{{file.link}}?download=true" download="{{file.name}}"
+            >{{file.link}}</a
+          >
+        </div>
+        {{file.size}}<span> byte</span>
+      </div>
+      <span class="badge badge-primary badge-pill">
+        <div class="btn-group btn-group-sm">
+          <button
+            class="download btn btn-primary btn-sm me-2"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Tải về"
+            style="border: none"
+          >
+            <a
+              class="text-light"
+              href="{{file.link}}?download=true"
+              download="{{file.name}}"
+            >
+              <i class="fa fa-download fa-lg"></i
+            ></a>
+          </button>
+          <button
+            class="delete btn btn-danger btn-sm"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Xóa"
+            style="border: none"
+          >
+            <i
+              class="fa fa-trash fa-lg"
+              value="{{file._id}}"
+              aria-hidden="true"
+            ></i>
+          </button>
+        </div>
+        <!-- <button class="import" style ="border: none; background-color: white;" ><i class="fa fa-database fa-lg" value ="{{file._id}}"       aria-hidden="true"></i></button> -->
+      </span>
+    </li>
+    {{/each}}
+  </ul>
+
+  {{else}}
+  <div style="margin-top: 10px">Chưa có tài liệu được tải lên</div>
+  {{/if}}
+</template>

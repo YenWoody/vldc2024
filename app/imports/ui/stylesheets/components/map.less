@@ -1,0 +1,403 @@
+#timeSlider {
+  // width: 370px;
+  // padding-right: 10px;
+}
+.esri-time-slider {
+  min-width: unset !important ;
+}
+.content {
+  padding: 0 15px;
+}
+
+.wrapper {
+  overflow: hidden;
+  min-height: 100%;
+  display: block;
+}
+
+.table-content {
+  /* display: block; */
+  height: 450px;
+  overflow: auto;
+  margin-top: 40px;
+}
+
+thead {
+  vertical-align: middle !important;
+}
+
+th.sorting {
+  text-align: center;
+}
+
+.bg-light.border.rounded-3.col-md-3 {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+#popup {
+  .closebtn {
+    position: relative;
+    top: 0;
+    left: 10px;
+  }
+  height: 100%;
+  width: 0;
+  max-width: 450px;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
+#infoDiv {
+  background-color: white;
+  padding: 0px;
+  position: relative;
+  // top: -42px;
+  right: 0px;
+  font-size: 14px;
+  font-family: "Be Vietnam Pro";
+  // display: none;
+}
+.esri-view-width-xsmall
+  .esri-ui-top-right
+  .esri-expand--auto
+  .esri-expand__container--expanded,
+.esri-view-width-xsmall
+  .esri-ui-bottom-right
+  .esri-expand--auto
+  .esri-expand__container--expanded {
+  width: 100% !important;
+  max-width: 75vw !important;
+}
+.esri-expand__container.esri-expand__container--expanded {
+  // width: 75vw!important;
+  position: relative !important;
+}
+.esri-expand__mask.esri-expand__mask--expanded {
+  display: none !important;
+}
+h3.title {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.title {
+  background-color: #0d70d3;
+  margin: 0;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  max-width: 100%;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+}
+
+div#dulieu_info {
+  white-space: unset !important;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+div#data_table {
+  min-height: 410px;
+}
+
+input.form-control.input-sm {
+  padding: 0px;
+}
+
+td.dataTables_empty {
+  text-align: left !important;
+}
+
+// .dataTables_scrollBody {
+//   height: 440px!important;
+// }
+.dataTables_wrapper.no-footer {
+  // height: 100%;
+  // padding: 10px;
+  // border: solid gray 1px;
+  // border-radius: 5px;
+  // padding: unset;
+  border: unset;
+  border-radius: 0;
+}
+
+div.dt-button-collection {
+  top: 35px !important;
+  left: 0px !important;
+}
+
+div#stationtable_wrapper {
+  margin: 20px;
+}
+
+.content_popup {
+  text-align: center;
+  background-color: lightsteelblue;
+}
+
+.geometry-options {
+  display: flex;
+  flex-direction: row;
+}
+
+.ev {
+  position: absolute;
+}
+
+.geometry-button {
+  flex: 1;
+  border-style: solid;
+  border-width: 1px;
+  border-image: none;
+}
+
+.slide_class {
+  height: 60px;
+}
+
+.geometry-button-selected {
+  background: #4c4c4c;
+  color: #fff;
+}
+
+.options {
+  max-width: 150px;
+  width: 100%;
+  height: 25px;
+  // display: block;
+  // margin-left: -12px;
+  // margin-top: 20px;
+}
+
+// #bufferNum {
+//   width: 90%;
+//   margin: 2.5em auto 0;
+// }
+
+.titleLegend {
+  background-color: #0d70d3;
+  margin: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  max-width: 100%;
+  width: 100%;
+  color: #fff;
+}
+
+h3.titleLegend {
+  font-size: 1.17em;
+  font-weight: 700;
+  text-align: center;
+}
+
+#legendDiv {
+  max-width: 475px;
+  width: 50vw;
+}
+.esri-legend__message {
+  display: none !important;
+}
+div.esri-legend__service {
+  padding: 3px 10px;
+}
+
+.esri-widget--panel-height-only::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+.esri-widget--panel-height-only::-webkit-scrollbar {
+  width: 12px;
+  background-color: #f5f5f5;
+}
+
+.esri-widget--panel-height-only::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #d62929;
+}
+
+section.section.section--content {
+  // margin: 30px 0px 30px;
+  min-height: calc(100vh - 234px);
+}
+
+.esri-component.esri-coordinate-conversion {
+  left: 15px;
+  cursor: default;
+  font-size: 12px;
+  position: absolute;
+  width: 220px;
+  top: 100px;
+  background-color: #f9e2a8;
+}
+
+.esri-coordinate-conversion__tools {
+  margin: -5px;
+}
+
+li.esri-layer-list__item {
+  display: flex;
+  flex-wrap: nowrap;
+  align-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border-bottom: 1px solid rgba(110, 110, 110, 0.3);
+  // position: relative;
+  overflow: hidden;
+  list-style: none;
+  margin: 2px 10px;
+  padding: 0;
+  transition: background-color 125ms ease-in-out;
+}
+
+._modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #00000040;
+  display: none;
+  animation: fade ease-out 0.25s forwards;
+  z-index: 10;
+
+  &[data-active="true"] {
+    display: block;
+
+    ._main {
+      animation: growing ease 0.25s;
+    }
+  }
+
+  ._main {
+    width: 65%;
+    max-height: 80vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    padding: 1em;
+    color: #0079c1;
+    background: #ffffff;
+    box-shadow: 0 0px 8px #00000020;
+    overflow: auto;
+    z-index: 11;
+  }
+
+  * {
+    outline: none;
+
+    ._container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      hr {
+        width: 100%;
+        border-color: #00000040;
+      }
+
+      ._title {
+        text-align: center;
+      }
+
+      ._content {
+        color: #000000;
+        overflow: auto;
+      }
+
+      ._footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+
+        .close-modal {
+          cursor: pointer;
+          width: 5rem;
+          border: none;
+          border-radius: 6px;
+          outline: none;
+
+          padding: 0.5em 1em;
+
+          color: #fff;
+          background: #f05;
+        }
+      }
+    }
+  }
+}
+@media only screen and (max-width: 767px) {
+  div#dulieu_wrapper {
+    height: auto;
+    padding: unset;
+    border: unset;
+    border-radius: 0;
+  }
+  .footer-logo img {
+    background-color: white;
+    height: 100px;
+    border-radius: 80px;
+  }
+}
+@media only screen and (min-width: 880px) {
+  #infoDiv {
+    background-color: white;
+    padding: 0px;
+    // width: 40vw;
+    // max-width: 300px;
+    position: relative;
+    // top: -42px;
+    right: 0px;
+    font-size: 14px;
+    font-family: "Be Vietnam Pro";
+    // display: none;
+  }
+}
+
+@keyframes click {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  20%,
+  60% {
+    transform: scale(1.25);
+  }
+
+  40%,
+  80% {
+    transform: rotate(0.9);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes growing {
+  from {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

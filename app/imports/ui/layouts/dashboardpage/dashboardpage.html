@@ -1,0 +1,81 @@
+<template name="dashboardTemplate">
+  <section class="section section--header">{{> nav}}</section>
+  <section
+    class="section section--content d-flex align-items-center position-relative"
+  >
+    {{#if userUnVerified }} {{> verify_form }} {{else}}
+
+    <div class="preloader">
+      <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+      </div>
+    </div>
+    <!--New layout -->
+    <div class="wrapper d-flex align-items-stretch w-100 z-3">
+      <nav id="sidebar" class="shadow">
+        <div class="custom-menu mt-3">
+          <button
+            type="button"
+            id="sidebarCollapse"
+            class="btn btn-primary z-1"
+          >
+            <i id="button_sidebar" class="fa fa-2x  {{checkScreenSize}}"></i>
+          </button>
+        </div>
+        <div class="py-3 px-1 position-relative z-2" id="sidebar_list">
+          <ul class="list-unstyled components mb-5">
+            <li class="sidebar-item">
+              <a
+                class="sidebar-link waves-effect waves-dark sidebar-link {{activeListClassRegisterEvent}}"
+                aria-expanded="false"
+                href="{{pathFor 'register-event'}}"
+              >
+                <span
+                  class="item-span fa fa-bell me-2 {{activeListClassRegisterEventSpan}}"
+                ></span
+                >Đăng ký nhận sự kiện động đất
+              </a>
+            </li>
+            {{#if rolesCheck}} {{else}} {{#each item in listMenu}}
+            <li class="sidebar-item">
+              <a
+                class="sidebar-link waves-effect waves-dark sidebar-link {{activeListClass item}}"
+                href="{{item.link}}"
+                aria-expanded="false"
+              >
+                <span
+                  class="item-span {{item.class}} {{activeListClassSpan item}}"
+                ></span
+                >{{item.content}}
+              </a>
+            </li>
+            {{/each}} {{/if}}
+          </ul>
+        </div>
+      </nav>
+      <div class="bg-light container-fluid p-0" id="content_dashboard">
+        <div
+          class="page-breadcrumb d-flex ps-5 shadow bg-white mb-3"
+          style="height: 90px"
+        >
+          <div class="row align-items-center">
+            <div class="col-12">
+              <h4 class="page-title fw-bold m-2" id="dashboard-title">
+                Công cụ quản lý
+              </h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Content  -->
+        <div id="content" class="px-3 pt-3 container-fluid">{{> yield}}</div>
+      </div>
+    </div>
+    <script src="plugins/js/custom.js"></script>
+
+    {{/if}}
+  </section>
+
+  {{> footer}}
+</template>
