@@ -297,7 +297,6 @@ Meteor.startup(function () {
   };
   const checkAdmin = Meteor.users.find({ roles: "admin" }).fetch();
   const checkUsernameAdmin = Meteor.users.find({ username: "admin" }).fetch();
-  console.log(checkAdmin.length, checkUsernameAdmin.length);
   if (checkAdmin.length == 0 && checkUsernameAdmin.length == 0) {
     Accounts.createUser({
       username: "admin",
