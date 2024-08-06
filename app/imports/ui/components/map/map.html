@@ -6,7 +6,9 @@
           <i class="fa fa-caret-right" id="iconArrow"></i>
         </button>
       </div>
-      <div class="pb-4 pt-2 px-2 position-relative z-2 h-100 bg-white">
+      <div
+        class="pb-4 pt-2 px-2 position-relative z-2 h-100 bg-white overflow-auto"
+      >
         <div class="mb-1">
           <h3 class="text-black text-center">Các sự kiện gần đây</h3>
           <div class="d-grid">
@@ -28,16 +30,21 @@
             </div>
             <div class="my-auto d-flex justify-content-between">
               <div>
-                <select class="form-select" id="softDatatable">
+                <select class="form-select mb-2" id="softDatatable">
                   <option value="date" selected>Sắp xếp theo Ngày</option>
                   <option value="mag">Sắp xếp theo Cường độ</option>
                 </select>
+                <select
+                  id="select-tools"
+                  multiple
+                  placeholder="Chọn tỉnh"
+                ></select>
               </div>
               <div id="buttons"></div>
             </div>
           </div>
         </div>
-        <div class="position-relative h-100 w-100 overflow-auto">
+        <div class="position-relative w-100 overflow-auto">
           <table id="dulieu" class="display table table-striped h-100">
             <thead>
               <tr id="tieude">

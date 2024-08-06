@@ -5,6 +5,7 @@ import datatables_bs from "datatables.net-bs";
 import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
+import "@selectize/selectize/dist/css/selectize.css";
 import alasql from "alasql";
 import XLSX from "xlsx";
 import "animate.css";
@@ -43,6 +44,8 @@ Template.category.onRendered(() => {
     "esri/widgets/Zoom",
     "esri/widgets/Slider",
     "esri/widgets/Sketch",
+    "esri/geometry/Point",
+    "esri/layers/GraphicsLayer",
     "esri/widgets/BasemapToggle",
     "esri/widgets/CoordinateConversion",
     "esri/layers/WebTileLayer",
@@ -50,7 +53,7 @@ Template.category.onRendered(() => {
     "esri/popup/content/CustomContent",
     "esri/layers/support/LabelClass",
     "esri/widgets/Popup",
-    "dojo/domReady!",
+    // "dojo/domReady!",
   ])
     .then(
       async ([
@@ -67,6 +70,8 @@ Template.category.onRendered(() => {
         Zoom,
         Slider,
         Sketch,
+        Point,
+        GraphicsLayer,
         BasemapToggle,
         CoordinateConversion,
         WebTileLayer,
@@ -192,7 +197,11 @@ Template.category.onRendered(() => {
             });
           });
         }
-        // Fetch Data From Iris
+        // Fetch Data From Arcgis Rest
+        const urlQuery =
+          "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query?where=1%3D1&f=pjson";
+        const response_tentinhVN = await fetch(urlQuery);
+        const tentinhVN = await response_tentinhVN.json();
         // const waitDataIris = await Promise.all(dataIris_final);
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
@@ -217,6 +226,10 @@ Template.category.onRendered(() => {
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
               infoEmpty: "Hiển thị 0 sự kiện",
               infoFiltered: " ",
+              paginate: {
+                previous: "Trước",
+                next: "Sau",
+              },
             },
             columns: [
               {
@@ -257,7 +270,7 @@ Template.category.onRendered(() => {
             value === "mag"
               ? $("#dulieu")
                   .DataTable()
-                  .order([[3, "asc"]])
+                  .order([[4, "asc"]])
                   .draw()
               : $("#dulieu")
                   .DataTable()
@@ -279,6 +292,10 @@ Template.category.onRendered(() => {
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
               infoEmpty: "Hiển thị 0 sự kiện",
               infoFiltered: " ",
+              paginate: {
+                previous: "Trước",
+                next: "Sau",
+              },
             },
             columns: [
               {
@@ -336,14 +353,22 @@ Template.category.onRendered(() => {
           $("#buttonRealtime").hasClass("activeButton")
             ? {}
             : ($("#buttonRealtime").addClass("activeButton"),
+              $("#select-tools").selectize()[0].selectize.clear(),
               loadDataRealtime(),
+              view.whenLayerView(layerRealTime).then((layerView) => {
+                layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
+              }),
               $("#buttonProcessedEvent").removeClass("activeButton"));
         });
         $("#buttonProcessedEvent").on("click", (e) => {
           $("#buttonProcessedEvent").hasClass("activeButton")
             ? {}
             : ($("#buttonProcessedEvent").addClass("activeButton"),
+              $("#select-tools").selectize()[0].selectize.clear(),
               loadProcessedEvent(),
+              view.whenLayerView(layerEvent).then((layerView) => {
+                layerView.filter = { where: "ml >= 0 and ml <= 1000" };
+              }),
               $("#buttonRealtime").removeClass("activeButton"));
         });
         /**
@@ -380,8 +405,12 @@ Template.category.onRendered(() => {
          * init view
          */
 
+        const graphicsLayer = new GraphicsLayer({
+          listMode: "hide",
+        });
         const map = new Map({
           basemap: weMap,
+          layers: [graphicsLayer],
         });
         // let floodLayerView;
         let highlightSelect;
@@ -680,17 +709,75 @@ Template.category.onRendered(() => {
         const realTimeGeojson = dataRealTime.filter((e) => {
           return !(e.lat === null && e.lon === null);
         });
-        realTimeGeojson.map((e) => {
-          e.Reporting_time = e.Reporting_time.getTime();
-          dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
-        });
+        await Promise.all(
+          realTimeGeojson.map(async (e, i) => {
+            const url =
+              "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query";
+            const param = {
+              outFields: "*",
+              geometryType: "esriGeometryPoint",
+              geometry: `'${e.lon},${e.lat}`,
+              f: "json",
+            };
+            await $.ajax({
+              url: url,
+              data: param,
+              type: "GET",
+              dataType: "json",
+            }).done((t) => {
+              console.log(t.features, "t.features");
+
+              if (t.features.length > 0) {
+                e["location"] = t.features[0].attributes.name;
+                e.Reporting_time = e.Reporting_time.getTime();
+                dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+                return e;
+              }
+            });
+          })
+        );
+        // const data = await Promise.all(
+        //   dataSet.map((e) => {
+        //     e.attributes.Reporting_time = new Date(e.attributes.Reporting_time);
+        //     return e;
+        //   })
+        // );
+        // realTimeGeojson.map((e) => {
+        //   e.Reporting_time = e.Reporting_time.getTime();
+        //   dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+        // });
         dataRealTimeEvent.map((e) => {
           dataGeojsonRealTimeEvent.push(turf.point([0, 0], e));
         });
-        eventGeojson.map((e) => {
-          e.datetime = e.datetime.getTime();
-          dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-        });
+        await Promise.all(
+          eventGeojson.map(async (e, i) => {
+            const url =
+              "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query";
+            const param = {
+              outFields: "*",
+              geometryType: "esriGeometryPoint",
+              geometry: `'${e.long},${e.lat}`,
+              f: "json",
+            };
+            await $.ajax({
+              url: url,
+              data: param,
+              type: "GET",
+              dataType: "json",
+            }).done((t) => {
+              if (t.features.length > 0) {
+                e["location"] = t.features[0].attributes.name;
+                e.datetime = e.datetime.getTime();
+                dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+                return e;
+              }
+            });
+          })
+        );
+        // eventGeojson.map((e) => {
+        //   e.datetime = e.datetime.getTime();
+        //   dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+        // });
         dataEventStations.map((e) => {
           dataGeojsonEventStations.push(turf.point([0, 0], e));
         });
@@ -912,7 +999,12 @@ Template.category.onRendered(() => {
           ],
         };
         // Kết thúc Content Trạm
-
+        const sketch = new Sketch({
+          layer: graphicsLayer,
+          view: view,
+          availableCreateTools: ["polygon", "rectangle", "circle"],
+          // container: drawDiv,
+        });
         // create new geojson layer using the blob url
 
         // const layerIris = new GeoJSONLayer({
@@ -1142,18 +1234,28 @@ Template.category.onRendered(() => {
           } else {
             start_time = new Date(min_datetime_event);
           }
+          // Cộng thêm 1 ngày vào End_time
+          function incrementDate(dateInput, increment) {
+            var dateFormatTotime = dateInput;
+            var increasedDate = new Date(
+              dateFormatTotime.getTime() + increment * 86400000
+            );
+            return increasedDate;
+          }
+          const end_time_addOneDay = incrementDate(end_time, 1);
+
           let flView = null;
           // set time slider's full extent to
           timeSlider.fullTimeExtent = {
             start: start_time,
-            end: end_time,
+            end: end_time_addOneDay,
           };
           // showing earthquakes with one day interval
           // Values property is set so that timeslider
           // widget show the first day. We are setting
           // the thumbs positions.
           timeSlider.values = [start_time, end_time];
-
+          console.log(timeSlider, "timeSlider");
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv;
             $("#filter").on("click", () => {
@@ -1315,19 +1417,91 @@ Template.category.onRendered(() => {
           // });
         });
         // Datatable
+        const listOption = [];
+        tentinhVN.features.map((e) => {
+          listOption.push({
+            name: e.attributes.name,
+          });
+        });
+        let arrayVN = [];
+        $("#select-tools").selectize({
+          maxItems: 1,
+          valueField: "name",
+          labelField: "name",
+          searchField: "name",
+          options: listOption,
+          create: false,
+          onChange: async function (value, isOnInitialize) {
+            if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+              let query_ProcessedEvent = layerEvent.createQuery();
+              query_ProcessedEvent.where = `location LIKE '${value}'`;
+              query_ProcessedEvent.outFields = "*";
+
+              layerEvent
+                .queryFeatures(query_ProcessedEvent)
+                .then(async function (response) {
+                  const dataSet = response.features;
+                  const data = await Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.time = new Date(e.attributes.time);
+                      return e;
+                    })
+                  );
+                  //load table when page loaded
+                  loadDataTableProcessedEvent(data);
+                });
+
+              view.whenLayerView(layerEvent).then((layerView) => {
+                flView = layerView;
+                flView.filter = { where: `location LIKE '${value}'` };
+              });
+            } else {
+              let query = layerRealTime.createQuery();
+              query.where = `location LIKE '${value}'`;
+              query.outFields = "*";
+
+              layerRealTime
+                .queryFeatures(query)
+                .then(async function (response) {
+                  const dataSet = response.features;
+
+                  Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.Reporting_time = new Date(
+                        e.attributes.Reporting_time
+                      );
+                      return e;
+                    })
+                  ).then((e) => {
+                    loadDataTable(e);
+                  });
+                });
+              view.whenLayerView(layerRealTime).then((layerView) => {
+                flView = layerView;
+                flView.filter = { where: `location LIKE '${value}'` };
+              });
+              console.log("chạy");
+            }
+            // dataSet.forEach((e) => {
+            //   e.attributes.lon, e.attributes.lat;
+            // });
+          },
+        });
         function loadProcessedEvent() {
           let query_ProcessedEvent = layerEvent.createQuery();
           query_ProcessedEvent.where = `md >= 0 and md <= 1000`;
           query_ProcessedEvent.outFields = "*";
           layerEvent
             .queryFeatures(query_ProcessedEvent)
-            .then(function (response) {
+            .then(async function (response) {
               const dataSet = response.features;
 
-              const data = dataSet.map((e) => {
-                e.attributes.time = new Date(e.attributes.time);
-                return e;
-              });
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.time = new Date(e.attributes.time);
+                  return e;
+                })
+              );
               //load table when page loaded
               loadDataTableProcessedEvent(data);
 
@@ -1355,14 +1529,17 @@ Template.category.onRendered(() => {
           query.where = `Mpd >= 0 and Mpd <= 1000`;
           query.outFields = "*";
 
-          layerRealTime.queryFeatures(query).then(function (response) {
+          layerRealTime.queryFeatures(query).then(async function (response) {
             const dataSet = response.features;
-            const data = dataSet.map((e) => {
-              e.attributes.Reporting_time = new Date(
-                e.attributes.Reporting_time
-              );
-              return e;
-            });
+            const data = await Promise.all(
+              dataSet.map((e) => {
+                e.attributes.Reporting_time = new Date(
+                  e.attributes.Reporting_time
+                );
+                return e;
+              })
+            );
+            console.log(data, "data");
             //load table when page loaded
             loadDataTable(data);
 
@@ -1374,10 +1551,13 @@ Template.category.onRendered(() => {
                   highlightSelect.remove();
                 }
                 highlightSelect = layerView.highlight(dataRow);
-                view.goTo({
-                  geometry: dataRow.geometry,
-                  zoom: 6,
+                const point = new Point({
+                  x: dataRow.attributes.lon,
+                  y: dataRow.attributes.lat,
+                  z: 6,
+                  spatialReference: 4326, // EPSG:4326 (WGS84)
                 });
+                view.goTo(point);
               });
               openPopupRightSide();
               loadPopupLayerRealtime(dataRow);
@@ -1440,7 +1620,11 @@ Template.category.onRendered(() => {
           <td colspan="3" class="mag">${result.attributes.Mtc}</td>
           </tr>
           </table>`);
-          // $("#location").html(fullTime);
+          $("#location").html(
+            result.attributes.location
+              ? result.attributes.location
+              : "Chưa có thông tin"
+          );
 
           const where = `realtime_id = ${result.attributes.id}`;
 

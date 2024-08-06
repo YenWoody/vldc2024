@@ -143,4 +143,14 @@ Template.nav.events({
       : ($(".navbar-collapse").addClass("show"),
         $(".navbar-collapse").height($(".navbar-nav").outerHeight(true)));
   },
+  "click .nav-link": () => {
+    $(".menu-bar").toggleClass("change");
+    $(".navbar-collapse").removeClass("d-none");
+    $(".list_nav").toggleClass("d-none");
+    $(".navbar-collapse").hasClass("show")
+      ? ($(".navbar-collapse").removeClass("show"),
+        $(".navbar-collapse").height(0))
+      : ($(".navbar-collapse").addClass("show"),
+        $(".navbar-collapse").height($(".navbar-nav").outerHeight(true)));
+  },
 });
