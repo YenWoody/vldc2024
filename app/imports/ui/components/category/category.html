@@ -28,6 +28,29 @@
                 Danh mục báo tin nhanh
               </button>
             </div>
+            <div class="d-flex mb-2 rounded bg-light">
+              <button
+                type="button"
+                class="w-50 p-2 m-2 btn btn-light activeButton p-0"
+                id="buttonTime"
+              >
+                Lọc theo thời gian
+              </button>
+              <button
+                type="button"
+                class="w-50 p-2 m-2 btn btn-light p-0"
+                id="buttonRegion"
+              >
+                Lọc theo khu vực
+              </button>
+              <!-- <button
+                type="button"
+                class="w-50 p-2 m-2 btn btn-light p-0"
+                id="buttonDraw"
+              >
+                Vẽ trên bản đồ
+              </button> -->
+            </div>
             <div id="infoDiv" class="border-top border-bottom mb-2 card">
               <div class="d-flex">
                 <div class="m-1 w-50 card">
@@ -74,6 +97,67 @@
                   >
                     <i class="fa fa-ban" aria-hidden="true"></i> Bỏ lọc
                   </button>
+                </div>
+              </div>
+            </div>
+            <div
+              id="filterRegion"
+              class="border-top border-bottom mb-2 card"
+              style="display: none"
+            >
+              <div class="m-1 d-flex justify-content-around align-items-center">
+                <!-- <div class="text-dark fs-6 p-2 fw-bold">Tìm theo khu vực:</div> -->
+                <div class="d-grid">
+                  <div style="position: relative; text-align: center">
+                    <span class="fw-bold">N</span><br /><input
+                      style="text-align: center; width: 50px; margin: 0.5em"
+                      id="maxLat"
+                      value="90"
+                      type="number"
+                    /><br /><span class="fw-bold">W</span
+                    ><input
+                      style="
+                        text-align: center;
+                        width: 50px;
+                        margin: 0.5em 1.5em 0.5em 0.5em;
+                      "
+                      type="number"
+                      id="minLong"
+                      value="-180"
+                    /><input
+                      style="
+                        text-align: center;
+                        width: 50px;
+                        margin: 0.5em 0.5em 0.5em 1.5em;
+                      "
+                      type="number"
+                      id="maxLong"
+                      value="180"
+                    /><span class="fw-bold">E</span><br /><input
+                      style="text-align: center; width: 50px; margin: 0.5em"
+                      id="minLat"
+                      value="-90"
+                      type="number"
+                    /><br /><span class="fw-bold">S</span>
+                  </div>
+                  <div class="d-flex justify-content-center mx-auto">
+                    <div class="m-2">
+                      <button
+                        class="btn btn-primary fw-bold text-white font-button"
+                        id="button_filterRegion"
+                      >
+                        <i class="fa fa-search" aria-hidden="true"></i> Lọc
+                      </button>
+                    </div>
+                    <div class="m-2">
+                      <button
+                        class="btn btn-danger fw-bold text-white font-button"
+                        id="coordinateReset"
+                      >
+                        <i class="fa fa-ban" aria-hidden="true"></i> Bỏ lọc
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

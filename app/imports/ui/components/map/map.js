@@ -52,6 +52,7 @@ Template.map.onRendered(() => {
     "esri/layers/support/LabelClass",
     "esri/widgets/Popup",
     "esri/layers/MapImageLayer",
+    "esri/geometry/Extent",
     // "dojo/domReady!",
   ])
     .then(
@@ -79,6 +80,7 @@ Template.map.onRendered(() => {
         LabelClass,
         Popup,
         MapImageLayer,
+        Extent,
       ]) => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
@@ -148,7 +150,11 @@ Template.map.onRendered(() => {
             });
           });
         }
-
+        function loadLayerView(layer, query) {
+          view.whenLayerView(layer).then((layerview) => {
+            layerview.filter = query;
+          });
+        }
         // Fetch Data From Iris
         var now = new Date();
         const oneWeekago = new Date(now.setDate(now.getDate() - 7));
@@ -223,6 +229,7 @@ Template.map.onRendered(() => {
                 previous: "Trước",
                 next: "Sau",
               },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -263,6 +270,24 @@ Template.map.onRendered(() => {
                   .order([[0, "asc"]])
                   .draw();
           });
+          $("#dulieu tbody").off("click", "tr");
+          $("#dulieu tbody").on("click", "tr", function () {
+            const dataRow = $("#dulieu").DataTable().row(this).data();
+            view.whenLayerView(dataRow.layer).then(function (layerView) {
+              if (highlightSelect) {
+                highlightSelect.remove();
+              }
+              highlightSelect = layerView.highlight(dataRow);
+              const point = new Point({
+                x: dataRow.attributes.lon,
+                y: dataRow.attributes.lat,
+                spatialReference: 4326, // EPSG:4326 (WGS84)
+              });
+              view.goTo(point);
+            });
+            openPopupRightSide();
+            loadPopupLayerRealtime(dataRow);
+          });
         }
         function loadDataTableGlobal(data) {
           const table = $("#dulieu").DataTable({
@@ -281,6 +306,7 @@ Template.map.onRendered(() => {
                 previous: "Trước",
                 next: "Sau",
               },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -315,6 +341,22 @@ Template.map.onRendered(() => {
                   .DataTable()
                   .order([[0, "asc"]])
                   .draw();
+          });
+          $("#dulieu tbody").off("click", "tr");
+          $("#dulieu tbody").on("click", "tr", function () {
+            const dataRow = $("#dulieu").DataTable().row(this).data();
+            view.whenLayerView(dataRow.layer).then(function (layerView) {
+              if (highlightSelect) {
+                highlightSelect.remove();
+              }
+              highlightSelect = layerView.highlight(dataRow);
+              view.goTo({
+                geometry: dataRow.geometry,
+                zoom: 6,
+              });
+            });
+            openPopupRightSide();
+            loadPopupLayerIris(dataRow);
           });
         }
 
@@ -971,10 +1013,7 @@ Template.map.onRendered(() => {
           ]);
           let flV = null;
           // Truy vấn ẩn Trạm
-          view.whenLayerView(layerStations).then((layerView) => {
-            layer = layerView;
-            layer.filter = { where: "id = -1" };
-          });
+          loadLayerView(layerStations, { where: "id = -1" });
 
           // view.whenLayerView(layerStations).then((layerView) => {
           //   floodLayerView = layerView;
@@ -997,9 +1036,8 @@ Template.map.onRendered(() => {
           create: false,
           onChange: async function (value, isOnInitialize) {
             arrayVN = [];
-            view.whenLayerView(layerRealTime).then((layerView) => {
-              layerView.filter = { where: `location LIKE '${value}'` };
-            });
+            loadLayerView(layerRealTime, { where: `location LIKE '${value}'` });
+
             let query = layerRealTime.createQuery();
             query.where = `location LIKE '${value}'`;
             query.outFields = "*";
@@ -1043,23 +1081,6 @@ Template.map.onRendered(() => {
             );
             //load table when page loaded
             loadDataTableGlobal(data);
-
-            $("#dulieu tbody").off("click", "tr");
-            $("#dulieu tbody").on("click", "tr", function () {
-              const dataRow = $("#dulieu").DataTable().row(this).data();
-              view.whenLayerView(dataRow.layer).then(function (layerView) {
-                if (highlightSelect) {
-                  highlightSelect.remove();
-                }
-                highlightSelect = layerView.highlight(dataRow);
-                view.goTo({
-                  geometry: dataRow.geometry,
-                  zoom: 6,
-                });
-              });
-              openPopupRightSide();
-              loadPopupLayerIris(dataRow);
-            });
           });
         }
 
@@ -1080,25 +1101,6 @@ Template.map.onRendered(() => {
             );
             //load table when page loaded
             loadDataTable(data);
-
-            $("#dulieu tbody").off("click", "tr");
-            $("#dulieu tbody").on("click", "tr", function () {
-              const dataRow = $("#dulieu").DataTable().row(this).data();
-              view.whenLayerView(dataRow.layer).then(function (layerView) {
-                if (highlightSelect) {
-                  highlightSelect.remove();
-                }
-                highlightSelect = layerView.highlight(dataRow);
-                const point = new Point({
-                  x: dataRow.attributes.lon,
-                  y: dataRow.attributes.lat,
-                  spatialReference: 4326, // EPSG:4326 (WGS84)
-                });
-                view.goTo(point);
-              });
-              openPopupRightSide();
-              loadPopupLayerRealtime(dataRow);
-            });
           });
         }
         loadDataRealtime();
@@ -1120,12 +1122,9 @@ Template.map.onRendered(() => {
         }
         //end highlight
         $("#closebtn").click(() => {
-          view.whenLayerView(layerStations).then((layerView) => {
-            layerView.filter = { where: "id = -1" };
-          });
-          view.whenLayerView(layerRealTime).then((layerView) => {
-            layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
-          });
+          loadLayerView(layerStations, { where: "id = -1" });
+          loadLayerView(layerRealTime, { where: "1=1" });
+
           if (highlightSelect) {
             highlightSelect.remove();
           }
@@ -1201,12 +1200,13 @@ Template.map.onRendered(() => {
                     <td>${e.attributes.Parr}</td>
                     </tr>`);
               });
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter =
-                  code_station.length > 0
-                    ? { where: code_station.join("OR") }
-                    : { where: "code = -1" };
-              });
+              loadLayerView(
+                layerStations,
+                code_station.length > 0
+                  ? { where: code_station.join("OR") }
+                  : { where: "code = -1" }
+              );
+
               const wavePicData = `
                 <table >
             
@@ -1268,16 +1268,15 @@ Template.map.onRendered(() => {
             if (response.results.length <= 1) {
               document.getElementById("popup").style.width = "0";
               document.getElementById("map").style.marginRight = "0";
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter = { where: "id = -1" };
+
+              loadLayerView(layerStations, {
+                where: "id = -1",
               });
-              view.whenLayerView(layerRealTime).then((layerView) => {
-                layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
+              loadLayerView(layerRealTime, {
+                where: "1=1",
               });
-              view.whenLayerView(layerIris).then((layerView) => {
-                layerView.filter = {
-                  where: "magnitude >= 0 and magnitude <= 1000",
-                };
+              loadLayerView(layerIris, {
+                where: "1=1",
               });
             } else {
               response.results.forEach(function (result) {
@@ -1296,6 +1295,96 @@ Template.map.onRendered(() => {
           });
         });
         // End add Layer
+        $("#buttonProvince").on("click", (e) => {
+          $("#buttonProvince").hasClass("activeButton")
+            ? {}
+            : ($("#buttonProvince").addClass("activeButton"),
+              $("#filterRegion").hide(),
+              $("#filterProvince").fadeIn(),
+              $("#buttonRegion").removeClass("activeButton"));
+        });
+        $("#buttonRegion").on("click", (e) => {
+          $("#buttonRegion").hasClass("activeButton")
+            ? {}
+            : ($("#buttonRegion").addClass("activeButton"),
+              $("#filterProvince").hide(),
+              $("#filterRegion").fadeIn(),
+              $("#buttonProvince").removeClass("activeButton"));
+        });
+        $("#coordinateReset").on("click", () => {
+          $("#maxLat").val("90");
+          $("#maxLong").val("180");
+          $("#minLat").val("-90");
+          $("#minLong").val("-180");
+
+          if ($("#buttonRealtime").hasClass("activeButton")) {
+            loadDataRealtime();
+            loadLayerView(layerRealTime, {
+              where: "1=1",
+            });
+          } else if ($("#buttonGlobal").hasClass("activeButton")) {
+            loadDataGlobal();
+            loadLayerView(layerIris, {
+              where: "1=1",
+            });
+          }
+        });
+        $("#button_filterRegion").on("click", () => {
+          const maxLat = $("#maxLat").val();
+          const maxLong = $("#maxLong").val();
+          const minLat = $("#minLat").val();
+          const minLong = $("#minLong").val();
+
+          const geometry = new Extent({
+            xmin: minLong,
+            ymin: minLat,
+            xmax: maxLong,
+            ymax: maxLat,
+            spatialReference: 4326,
+          });
+          if ($("#buttonRealtime").hasClass("activeButton")) {
+            let query = layerRealTime.createQuery();
+            query.geometry = geometry;
+            query.spatialRelationship = "intersects";
+            query.outFields = "*";
+            console.log(query, "query");
+            layerRealTime.queryFeatures(query).then(async function (response) {
+              const dataSet = response.features;
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.Reporting_time = new Date(
+                    e.attributes.Reporting_time
+                  );
+                  return e;
+                })
+              );
+              loadDataTable(data);
+            });
+            loadLayerView(layerRealTime, {
+              geometry: geometry,
+            });
+          } else if ($("#buttonGlobal").hasClass("activeButton")) {
+            let query = layerIris.createQuery();
+            query.geometry = geometry;
+            query.spatialRelationship = "intersects";
+            query.outFields = "*";
+            console.log(query, "query");
+            layerIris.queryFeatures(query).then(async function (response) {
+              const dataSet = response.features;
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.time = new Date(e.attributes.time);
+                  return e;
+                })
+              );
+              console.log(dataSet);
+              loadDataTableGlobal(data);
+            });
+            loadLayerView(layerIris, {
+              geometry: geometry,
+            });
+          }
+        });
         // Start add Legend
         // view.ui.add(new Legend({view: view}), "bottom-left");
         var legend = new Legend({
@@ -1376,9 +1465,7 @@ Template.map.onRendered(() => {
             : ($("#buttonRealtime").addClass("activeButton"),
               $("#select-tools").selectize()[0].selectize.clear(),
               loadDataRealtime(),
-              view.whenLayerView(layerRealTime).then((layerView) => {
-                layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
-              }),
+              loadLayerView(layerRealTime, { where: "1=1" }),
               $(".selectize-control").show(),
               $("#buttonGlobal").removeClass("activeButton"));
         });

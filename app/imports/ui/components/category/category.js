@@ -53,6 +53,7 @@ Template.category.onRendered(() => {
     "esri/popup/content/CustomContent",
     "esri/layers/support/LabelClass",
     "esri/widgets/Popup",
+    "esri/geometry/Extent",
     // "dojo/domReady!",
   ])
     .then(
@@ -79,6 +80,7 @@ Template.category.onRendered(() => {
         CustomContent,
         LabelClass,
         Popup,
+        Extent,
       ]) => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
@@ -197,6 +199,11 @@ Template.category.onRendered(() => {
             });
           });
         }
+        function loadLayerView(layer, query) {
+          view.whenLayerView(layer).then((layerview) => {
+            layerview.filter = query;
+          });
+        }
         // Fetch Data From Arcgis Rest
         const urlQuery =
           "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query?where=1%3D1&f=pjson";
@@ -230,6 +237,7 @@ Template.category.onRendered(() => {
                 previous: "Trước",
                 next: "Sau",
               },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -296,6 +304,7 @@ Template.category.onRendered(() => {
                 previous: "Trước",
                 next: "Sau",
               },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -355,8 +364,8 @@ Template.category.onRendered(() => {
             : ($("#buttonRealtime").addClass("activeButton"),
               $("#select-tools").selectize()[0].selectize.clear(),
               loadDataRealtime(),
-              view.whenLayerView(layerRealTime).then((layerView) => {
-                layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
+              loadLayerView(layerRealTime, {
+                where: "Mpd >= 0 and Mpd <= 1000",
               }),
               $("#buttonProcessedEvent").removeClass("activeButton"));
         });
@@ -366,9 +375,7 @@ Template.category.onRendered(() => {
             : ($("#buttonProcessedEvent").addClass("activeButton"),
               $("#select-tools").selectize()[0].selectize.clear(),
               loadProcessedEvent(),
-              view.whenLayerView(layerEvent).then((layerView) => {
-                layerView.filter = { where: "ml >= 0 and ml <= 1000" };
-              }),
+              loadLayerView(layerEvent, { where: "ml >= 0 and ml <= 1000" }),
               $("#buttonRealtime").removeClass("activeButton"));
         });
         /**
@@ -1318,18 +1325,6 @@ Template.category.onRendered(() => {
 
           view.whenLayerView(layerEvent).then((layerView) => {
             flView = layerView;
-            // watch for time slider timeExtent change
-            // timeSlider.watch("timeExtent", function () {
-            //   updateFilter();
-            // });
-
-            // depthSlider.on("thumb-drag", function () {
-            //   console.log("test")
-            //   updateFilter();
-            // });
-            // magnitudeSlider.on("thumb-drag", function () {
-            //   updateFilter();
-            // });
             $("#filter").on("click", () => {
               $("#buttonProcessedEvent").hasClass("activeButton")
                 ? updateFilter()
@@ -1450,11 +1445,7 @@ Template.category.onRendered(() => {
                   //load table when page loaded
                   loadDataTableProcessedEvent(data);
                 });
-
-              view.whenLayerView(layerEvent).then((layerView) => {
-                flView = layerView;
-                flView.filter = { where: `location LIKE '${value}'` };
-              });
+              loadLayerView(layerEvent, { where: `location LIKE '${value}'` });
             } else {
               let query = layerRealTime.createQuery();
               query.where = `location LIKE '${value}'`;
@@ -1476,11 +1467,9 @@ Template.category.onRendered(() => {
                     loadDataTable(e);
                   });
                 });
-              view.whenLayerView(layerRealTime).then((layerView) => {
-                flView = layerView;
-                flView.filter = { where: `location LIKE '${value}'` };
+              loadLayerView(layerRealTime, {
+                where: `location LIKE '${value}'`,
               });
-              console.log("chạy");
             }
             // dataSet.forEach((e) => {
             //   e.attributes.lon, e.attributes.lat;
@@ -1581,15 +1570,9 @@ Template.category.onRendered(() => {
         }
         //end highlight
         $("#closebtn").click(() => {
-          view.whenLayerView(layerStations).then((layerView) => {
-            layerView.filter = { where: "id = -1" };
-          });
-          view.whenLayerView(layerRealTime).then((layerView) => {
-            layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
-          });
-          view.whenLayerView(layerEvent).then((layerView) => {
-            layerView.filter = { where: "ml >= 0 and ml <= 1000" };
-          });
+          loadLayerView(layerStations, { where: "id = -1" });
+          loadLayerView(layerRealTime, { where: "1=1" });
+          loadLayerView(layerEvent, { where: "1=1" });
           if (highlightSelect) {
             highlightSelect.remove();
           }
@@ -1665,12 +1648,13 @@ Template.category.onRendered(() => {
                     <td>${e.attributes.Parr}</td>
                     </tr>`);
               });
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter =
-                  code_station.length > 0
-                    ? { where: code_station.join("OR") }
-                    : { where: "code = -1" };
-              });
+              loadLayerView(
+                layerStations,
+                code_station.length > 0
+                  ? { where: code_station.join("OR") }
+                  : { where: "code = -1" }
+              );
+
               // console.log(row_data, "row_data");
               const wavePicData = `
                 <table >
@@ -1735,12 +1719,13 @@ Template.category.onRendered(() => {
                 }
               });
               // Hiển thị các Trạm đo được lên bản đồ
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter =
-                  code_station.length > 0
-                    ? { where: code_station.join("OR") }
-                    : { where: "code = -1" };
-              });
+              loadLayerView(
+                layerStations,
+                code_station.length > 0
+                  ? { where: code_station.join("OR") }
+                  : { where: "code = -1" }
+              );
+
               const row_data = [];
               if (dataSet.length == 0) {
                 $("#wavePickTable").html("Chưa có thông tin");
@@ -1799,15 +1784,9 @@ Template.category.onRendered(() => {
             if (response.results.length <= 1) {
               document.getElementById("popup").style.width = "0";
               document.getElementById("map").style.marginRight = "0";
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter = { where: "id = -1" };
-                view.whenLayerView(layerRealTime).then((layerView) => {
-                  layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
-                });
-                view.whenLayerView(layerEvent).then((layerView) => {
-                  layerView.filter = { where: "ml >= 0 and ml <= 1000" };
-                });
-              });
+              loadLayerView(layerStations, { where: "id = -1" });
+              loadLayerView(layerRealTime, { where: "1=1" });
+              loadLayerView(layerEvent, { where: "1=1" });
             } else {
               response.results.forEach(function (result) {
                 // Popup LayerRealTime
@@ -1853,7 +1832,105 @@ Template.category.onRendered(() => {
           }
         }
         // End Legend
+        $("#buttonTime").on("click", (e) => {
+          $("#buttonTime").hasClass("activeButton")
+            ? {}
+            : ($("#buttonTime").addClass("activeButton"),
+              $("#filterRegion").hide(),
+              $("#infoDiv").fadeIn(),
+              $("#buttonRegion").removeClass("activeButton"));
+        });
+        $("#buttonRegion").on("click", (e) => {
+          $("#buttonRegion").hasClass("activeButton")
+            ? {}
+            : ($("#buttonRegion").addClass("activeButton"),
+              $("#infoDiv").hide(),
+              $("#filterRegion").fadeIn(),
+              $("#buttonTime").removeClass("activeButton"));
+        });
+        $("#coordinateReset").on("click", () => {
+          $("#maxLat").val("90");
+          $("#maxLong").val("180");
+          $("#minLat").val("-90");
+          $("#minLong").val("-180");
 
+          if ($("#buttonRealtime").hasClass("activeButton")) {
+            loadDataRealtime();
+            loadLayerView(layerRealTime, {
+              where: "1=1",
+            });
+            // view.whenLayerView(layerRealTime).then((layerView) => {
+            //   layerView.filter = {
+            //     where: "1=1",
+            //   };
+            // });
+          } else if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+            loadProcessedEvent();
+            loadLayerView(layerEvent, {
+              where: "1=1",
+            });
+          }
+        });
+        $("#button_filterRegion").on("click", () => {
+          const maxLat = $("#maxLat").val();
+          const maxLong = $("#maxLong").val();
+          const minLat = $("#minLat").val();
+          const minLong = $("#minLong").val();
+
+          const geometry = new Extent({
+            xmin: minLong,
+            ymin: minLat,
+            xmax: maxLong,
+            ymax: maxLat,
+            spatialReference: 4326,
+          });
+          if ($("#buttonRealtime").hasClass("activeButton")) {
+            let query = layerRealTime.createQuery();
+            query.geometry = geometry;
+            query.spatialRelationship = "intersects";
+            query.outFields = "*";
+            console.log(query, "query");
+            layerRealTime.queryFeatures(query).then(async function (response) {
+              const dataSet = response.features;
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.Reporting_time = new Date(
+                    e.attributes.Reporting_time
+                  );
+                  return e;
+                })
+              );
+              loadDataTable(data);
+            });
+            loadLayerView(layerRealTime, {
+              geometry: geometry,
+            });
+            // view.whenLayerView(layerRealTime).then((layerView) => {
+            //   layerView.filter = {
+            //     geometry: geometry,
+            //   };
+            // });
+          } else if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+            let query = layerEvent.createQuery();
+            query.geometry = geometry;
+            query.spatialRelationship = "intersects";
+            query.outFields = "*";
+            console.log(query, "query");
+            layerEvent.queryFeatures(query).then(async function (response) {
+              const dataSet = response.features;
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.time = new Date(e.attributes.time);
+                  return e;
+                })
+              );
+              loadDataTableProcessedEvent(data);
+            });
+            loadLayerView(layerEvent, {
+              geometry: geometry,
+            });
+          }
+        });
         // basemap Gallery
         const basemapGallery = new BasemapGallery({
           view: view,

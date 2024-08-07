@@ -286,8 +286,12 @@ Template.map_station.onRendered(() => {
           basemap: weMap,
           layers: [graphicsLayer],
         });
-        let floodLayerView;
         let highlightSelect;
+        function loadLayerView(layer, query) {
+          view.whenLayerView(layer).then((layerview) => {
+            layerview.filter = query;
+          });
+        }
         const view = new MapView({
           map: map,
           zoom: 4,
@@ -319,11 +323,11 @@ Template.map_station.onRendered(() => {
         $("#filter").on("click", () => {
           let selectedNetWork = $("#relationship-select option:selected").val();
           if (selectedNetWork === "all") {
-            return (floodLayerView.filter = null);
+            loadLayerView(layerStations, { where: "1=1" });
           } else {
-            floodLayerView.filter = {
+            loadLayerView(layerStations, {
               where: `network LIKE '%${selectedNetWork}%'`,
-            };
+            });
           }
         });
         const defaultSym = {
@@ -788,10 +792,11 @@ Template.map_station.onRendered(() => {
           }
         });
         function updateFilter() {
-          floodLayerView.filter = new FeatureFilter({
+          loadLayerView(layerStations, {
             geometry: sketchGeometry,
             spatialRelationship: "contains",
           });
+
           let query = layerStations.createQuery();
           query.geometry = sketchGeometry;
           query.spatialRelationship = "contains";
@@ -827,10 +832,12 @@ Template.map_station.onRendered(() => {
         view.when(function () {
           map.addMany([layerEvent, layerStations]);
           let flView = null;
-          view.whenLayerView(layerEvent).then((layerView) => {
-            layer = layerView;
-            layer.filter = { where: "id = -1" };
-          });
+          loadLayerView(layerEvent, { where: "id = -1" });
+          // view.whenLayerView(layerEvent).then((layerView) => {
+          //   console.log("yea");
+          //   layer = layerView;
+          //   layer.filter = { where: "id = -1" };
+          // });
         });
         function loadDataTableStation() {
           // Datatable
@@ -859,6 +866,7 @@ Template.map_station.onRendered(() => {
                 previous: "Trước",
                 next: "Sau",
               },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -950,13 +958,18 @@ Template.map_station.onRendered(() => {
                   }</td><td>${e.attributes.ml}</td></tr>`
                 );
               });
-
-              view.whenLayerView(layerEvent).then((layerView) => {
-                layerView.filter =
-                  id_query.length > 0
-                    ? { where: id_query.join("OR") }
-                    : { where: "id = -1" };
-              });
+              loadLayerView(
+                layerEvent,
+                id_query.length > 0
+                  ? { where: id_query.join("OR") }
+                  : { where: "id = -1" }
+              );
+              // view.whenLayerView(layerEvent).then((layerView) => {
+              //   layerView.filter =
+              //     id_query.length > 0
+              //       ? { where: id_query.join("OR") }
+              //       : { where: "id = -1" };
+              // });
 
               document.getElementById(
                 "_content"
@@ -1014,11 +1027,10 @@ Template.map_station.onRendered(() => {
           $("#maxLong").val("180");
           $("#minLat").val("-90");
           $("#minLong").val("-180");
-          view.whenLayerView(layerStations).then((layerView) => {
-            layerView.filter = {
-              where: "1=1",
-            };
+          loadLayerView(layerStations, {
+            where: "1=1",
           });
+
           loadDataTableStation();
         });
         $("#button_filterRegion").on("click", () => {
@@ -1026,8 +1038,7 @@ Template.map_station.onRendered(() => {
           const maxLong = $("#maxLong").val();
           const minLat = $("#minLat").val();
           const minLong = $("#minLong").val();
-          let query = layerStations.createQuery();
-          console.log(layerStations);
+
           const geometry = new Extent({
             xmin: minLong,
             ymin: minLat,
@@ -1035,6 +1046,7 @@ Template.map_station.onRendered(() => {
             ymax: maxLat,
             spatialReference: 4326,
           });
+          let query = layerStations.createQuery();
           query.geometry = geometry;
           query.spatialRelationship = "intersects";
           query.outFields = "*";
@@ -1044,12 +1056,15 @@ Template.map_station.onRendered(() => {
             console.log(dataSet);
             loadDataTable(dataSet);
           });
-          view.whenLayerView(layerStations).then((layerView) => {
-            layerView.filter = {
-              geometry: geometry,
-            };
+          loadLayerView(layerStations, {
+            geometry: geometry,
           });
-          console.log(maxLat, maxLong, minLat, minLong);
+          // view.whenLayerView(layerStations).then((layerView) => {
+          //   layerView.filter = {
+          //     geometry: geometry,
+          //   };
+          // });
+          // console.log(maxLat, maxLong, minLat, minLong);
         });
         // Highlight điểm click trên FeatureLayer
         function hightlightPoint(layer, point) {
@@ -1072,9 +1087,10 @@ Template.map_station.onRendered(() => {
             if (response.results.length <= 1) {
               document.getElementById("popup").style.width = "0";
               document.getElementById("map").style.marginRight = "0";
-              view.whenLayerView(layerEvent).then((layerView) => {
-                layerView.filter = { where: "id = -1" };
-              });
+              loadLayerView(layerEvent, { where: "id = -1" });
+              // view.whenLayerView(layerEvent).then((layerView) => {
+              //   layerView.filter = { where: "id = -1" };
+              // });
               // view.whenLayerView(layerStations).then((layerView) => {
               //   layerView.filter = {
               //     where: "1=1",
@@ -1091,11 +1107,14 @@ Template.map_station.onRendered(() => {
                   layerStationQuery.where = `id_key LIKE '%${result.graphic.attributes.id_key}%'`;
                   layerStationQuery.outFields = "*";
                   console.log(layerStationQuery, "layerStationQuery");
-                  view.whenLayerView(layerStations).then((layerView) => {
-                    layerView.filter = {
-                      where: `id_key = ${result.graphic.attributes.id_key}`,
-                    };
+                  loadLayerView(layerStations, {
+                    where: `id_key = ${result.graphic.attributes.id_key}`,
                   });
+                  // view.whenLayerView(layerStations).then((layerView) => {
+                  //   layerView.filter = {
+                  //     where: `id_key = ${result.graphic.attributes.id_key}`,
+                  //   };
+                  // });
                   hightlightPoint(layerStations, result.graphic);
                   let query = layerEventStaions.createQuery();
                   async function loadEventStation() {
@@ -1111,13 +1130,18 @@ Template.map_station.onRendered(() => {
                     id_event.map((e) => {
                       id_query.push(`(id = ${e})`);
                     });
-
-                    view.whenLayerView(layerEvent).then((layerView) => {
-                      layerView.filter =
-                        id_query.length > 0
-                          ? { where: id_query.join("OR") }
-                          : { where: "id = -1" };
-                    });
+                    loadLayerView(
+                      layerEvent,
+                      id_query.length > 0
+                        ? { where: id_query.join("OR") }
+                        : { where: "id = -1" }
+                    );
+                    // view.whenLayerView(layerEvent).then((layerView) => {
+                    //   layerView.filter =
+                    //     id_query.length > 0
+                    //       ? { where: id_query.join("OR") }
+                    //       : { where: "id = -1" };
+                    // });
                   }
                   loadEventStation();
                   loadInforStation(result.graphic);
@@ -1678,11 +1702,11 @@ Template.map_station.onRendered(() => {
         $("select").on("change", function () {
           let selectedNetWork = $("#listNetwork option:selected").val();
           if (selectedNetWork === "all") {
-            return (floodLayerView.filter = null);
+            loadLayerView(layerStations, { where: "1=1" });
           } else {
-            floodLayerView.filter = {
+            loadLayerView(layerStations, {
               where: `network LIKE '%${selectedNetWork}%'`,
-            };
+            });
           }
           let query = layerStations.createQuery();
           query.where =
