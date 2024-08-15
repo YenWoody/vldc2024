@@ -10,6 +10,7 @@ import alasql from "alasql";
 import XLSX from "xlsx";
 import "animate.css";
 import * as turf from "@turf/turf";
+import { provinceName } from "../../../api/provinceVN";
 Template.category.onCreated(() => {
   setDefaultOptions({
     version: "4.22",
@@ -159,66 +160,61 @@ Template.category.onRendered(() => {
             });
           });
         }
-        function dataBalers() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataBaler", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        function dataDatalogers() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataDataloger", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        function dataSensors() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataSensor", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        function dataEmployes() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataEmployee", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
+        // function dataBalers() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataBaler", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
+        // function dataDatalogers() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataDataloger", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
+        // function dataSensors() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataSensor", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
+        // function dataEmployes() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataEmployee", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
         function loadLayerView(layer, query) {
           view.whenLayerView(layer).then((layerview) => {
             layerview.filter = query;
           });
         }
-        // Fetch Data From Arcgis Rest
-        const urlQuery =
-          "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query?where=1%3D1&f=pjson";
-        const response_tentinhVN = await fetch(urlQuery);
-        const tentinhVN = await response_tentinhVN.json();
         // const waitDataIris = await Promise.all(dataIris_final);
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
         const dataStations = await dataStation();
-        const dataEmployee = await dataEmployes();
-        const dataBaler = await dataBalers();
-        const dataDataloger = await dataDatalogers();
-        const dataSensor = await dataSensors();
+        // const dataEmployee = await dataEmployes();
+        // const dataBaler = await dataBalers();
+        // const dataDataloger = await dataDatalogers();
+        // const dataSensor = await dataSensors();
         //DataTable
         function loadDataTable(data) {
           const table = $("#dulieu").DataTable({
@@ -704,12 +700,11 @@ Template.category.onRendered(() => {
         const dataGeojsonRealTimeEvent = [];
         const dataGeojsonEvents = [];
         const dataGeojsonEventStations = [];
-        const dataGeojsonIris = [];
         const dataGeojsonStations = [];
-        const dataGeojsonEmployee = [];
-        const dataGeojsonBaler = [];
-        const dataGeojsonDataloger = [];
-        const dataGeojsonSensor = [];
+        // const dataGeojsonEmployee = [];
+        // const dataGeojsonBaler = [];
+        // const dataGeojsonDataloger = [];
+        // const dataGeojsonSensor = [];
         const eventGeojson = dataEvents.filter((e) => {
           return !(e.geometry === null);
         });
@@ -726,21 +721,29 @@ Template.category.onRendered(() => {
               geometry: `'${e.lon},${e.lat}`,
               f: "json",
             };
-            await $.ajax({
-              url: url,
-              data: param,
-              type: "GET",
-              dataType: "json",
-            }).done((t) => {
-              // console.log(t.features, "t.features");
+            e["location"] = "Chưa có thông tin"
+            e.Reporting_time = e.Reporting_time.getTime();
+            dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
+            //     // e.Reporting_time = e.Reporting_time.getTime();
+            //     // dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
 
-              if (t.features.length > 0) {
-                e["location"] = t.features[0].attributes.name;
-                e.Reporting_time = e.Reporting_time.getTime();
-                dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
-                return e;
-              }
-            });
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
           })
         );
         // const data = await Promise.all(
@@ -766,19 +769,28 @@ Template.category.onRendered(() => {
               geometry: `'${e.long},${e.lat}`,
               f: "json",
             };
-            await $.ajax({
-              url: url,
-              data: param,
-              type: "GET",
-              dataType: "json",
-            }).done((t) => {
-              if (t.features.length > 0) {
-                e["location"] = t.features[0].attributes.name;
-                e.datetime = e.datetime.getTime();
-                dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-                return e;
-              }
-            });
+            e["location"] = "Chưa có thông tin"
+            e.datetime = e.datetime.getTime();
+            dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
+            //     // e.datetime = e.datetime.getTime();
+            //     // dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
           })
         );
         // eventGeojson.map((e) => {
@@ -796,18 +808,18 @@ Template.category.onRendered(() => {
         const stationsGeojson = dataStations.filter((e) => {
           return !(e.geometry === null);
         });
-        dataEmployee.map((e) => {
-          dataGeojsonEmployee.push(turf.point([1, 1], e));
-        });
-        dataBaler.map((e) => {
-          dataGeojsonBaler.push(turf.point([2, 2], e));
-        });
-        dataDataloger.map((e) => {
-          dataGeojsonDataloger.push(turf.point([3, 3], e));
-        });
-        dataSensor.map((e) => {
-          dataGeojsonSensor.push(turf.point([4, 4], e));
-        });
+        // dataEmployee.map((e) => {
+        //   dataGeojsonEmployee.push(turf.point([1, 1], e));
+        // });
+        // dataBaler.map((e) => {
+        //   dataGeojsonBaler.push(turf.point([2, 2], e));
+        // });
+        // dataDataloger.map((e) => {
+        //   dataGeojsonDataloger.push(turf.point([3, 3], e));
+        // });
+        // dataSensor.map((e) => {
+        //   dataGeojsonSensor.push(turf.point([4, 4], e));
+        // });
         stationsGeojson.map((e) => {
           dataGeojsonStations.push(turf.point([e.long, e.lat], e));
         });
@@ -823,10 +835,6 @@ Template.category.onRendered(() => {
         // let collection_dataIris = turf.featureCollection(dataGeojsonIris);
         // Trạm
         let collection_station = turf.featureCollection(dataGeojsonStations);
-        let collection_employee = turf.featureCollection(dataGeojsonEmployee);
-        let collection_baler = turf.featureCollection(dataGeojsonBaler);
-        let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
-        let collection_sensor = turf.featureCollection(dataGeojsonSensor);
         // create a new blob from geojson featurecollection
         const blob = new Blob([JSON.stringify(collection)], {
           type: "application/json",
@@ -853,21 +861,6 @@ Template.category.onRendered(() => {
         const blob_station = new Blob([JSON.stringify(collection_station)], {
           type: "application/json",
         });
-        const blob_employee = new Blob([JSON.stringify(collection_employee)], {
-          type: "application/json",
-        });
-        const blob_baler = new Blob([JSON.stringify(collection_baler)], {
-          type: "application/json",
-        });
-        const blob_dataloger = new Blob(
-          [JSON.stringify(collection_dataloger)],
-          {
-            type: "application/json",
-          }
-        );
-        const blob_sensor = new Blob([JSON.stringify(collection_sensor)], {
-          type: "application/json",
-        });
         // URL reference to the blob
         const url = URL.createObjectURL(blob);
         const url_event_station = URL.createObjectURL(blob_event_station);
@@ -876,10 +869,6 @@ Template.category.onRendered(() => {
         const url_realTimeEvent = URL.createObjectURL(blob_realTimeEvent);
         // Trạm
         const url_station = URL.createObjectURL(blob_station);
-        const url_employee = URL.createObjectURL(blob_employee);
-        const url_baler = URL.createObjectURL(blob_baler);
-        const url_dataloger = URL.createObjectURL(blob_dataloger);
-        const url_sensor = URL.createObjectURL(blob_sensor);
         // Khởi tạo layer
         const layerEventStaions = new GeoJSONLayer({
           url: url_event_station,
@@ -1006,12 +995,6 @@ Template.category.onRendered(() => {
           ],
         };
         // Kết thúc Content Trạm
-        const sketch = new Sketch({
-          layer: graphicsLayer,
-          view: view,
-          availableCreateTools: ["polygon", "rectangle", "circle"],
-          // container: drawDiv,
-        });
         // create new geojson layer using the blob url
 
         // const layerIris = new GeoJSONLayer({
@@ -1214,6 +1197,106 @@ Template.category.onRendered(() => {
             layer = layerView;
             layer.filter = { where: "id = -1" };
           });
+          const sketch = new Sketch({
+            layer: graphicsLayer,
+            view: view,
+            availableCreateTools: ["polygon", "rectangle", "circle"],
+            container: drawDiv,
+          });
+          let sketchGeometry = null;
+          $("#drawFilter").on("click", () => {
+            // console.log(sketch, "sketch");
+            sketchGeometry = null;
+            sketch.on("create", function (event) {
+              const graphicsLayer = sketch.layer;
+              // Only once the polygon is completed
+              if (event.state === "complete") {
+                if (graphicsLayer.graphics.items.length > 1) {
+                  graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+                }
+                sketchGeometry = event.graphic.geometry;
+                updateFilterDraw();
+              }
+            });
+            sketch.on("update", function (event) {
+              // Only once the polygon is completed
+              const eventInfo = event.toolEventInfo;
+              // update the filter every time the user moves the filtergeometry
+              if (eventInfo && eventInfo.type.includes("stop")) {
+                sketchGeometry = event.graphics[0].geometry;
+                updateFilterDraw();
+              }
+            });
+          });
+
+          sketch.on("create", function (event) {
+            const graphicsLayer = sketch.layer;
+            // Only once the polygon is completed
+            if (event.state === "complete") {
+              if (graphicsLayer.graphics.items.length > 1) {
+                graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+              }
+              sketchGeometry = event.graphic.geometry;
+              updateFilterDraw();
+            }
+          });
+          sketch.on("update", function (event) {
+            // Only once the polygon is completed
+            const eventInfo = event.toolEventInfo;
+            // update the filter every time the user moves the filtergeometry
+            if (eventInfo && eventInfo.type.includes("stop")) {
+              sketchGeometry = event.graphics[0].geometry;
+              updateFilterDraw();
+            }
+          });
+          function updateFilterDraw() {
+            let query;
+            let layerQuery;
+            if ($("#buttonRealtime").hasClass("activeButton")) {
+              loadLayerView(layerRealTime, {
+                geometry: sketchGeometry,
+                spatialRelationship: "contains",
+              });
+
+              query = layerRealTime.createQuery();
+              layerQuery = layerRealTime;
+            }
+            if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+              loadLayerView(layerEvent, {
+                geometry: sketchGeometry,
+                spatialRelationship: "contains",
+              });
+
+              query = layerEvent.createQuery();
+              layerQuery = layerEvent;
+            }
+            query.geometry = sketchGeometry;
+            query.spatialRelationship = "contains";
+            return layerQuery
+              .queryFeatures(query)
+              .then(async function (response) {
+                const dataSet = response.features;
+                if ($("#buttonRealtime").hasClass("activeButton")) {
+                  const data = await Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.Reporting_time = new Date(
+                        e.attributes.Reporting_time
+                      );
+                      return e;
+                    })
+                  );
+                  loadDataTable(data);
+                } else {
+                  const data = await Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.time = new Date(e.attributes.time);
+                      return e;
+                    })
+                  );
+                  loadDataTableProcessedEvent(data);
+                }
+              });
+          }
           // Tạo biến chứa dữ liệu của datetime event
           const max_datetime_event = Math.max(
             ...eventGeojson.map((e) => e.datetime)
@@ -1412,19 +1495,14 @@ Template.category.onRendered(() => {
           // });
         });
         // Datatable
-        const listOption = [];
-        tentinhVN.features.map((e) => {
-          listOption.push({
-            name: e.attributes.name,
-          });
-        });
         let arrayVN = [];
+        // console.log(provinceName);
         $("#select-tools").selectize({
           maxItems: 1,
           valueField: "name",
           labelField: "name",
           searchField: "name",
-          options: listOption,
+          options: provinceName,
           create: false,
           onChange: async function (value, isOnInitialize) {
             if ($("#buttonProcessedEvent").hasClass("activeButton")) {
@@ -1837,7 +1915,19 @@ Template.category.onRendered(() => {
             ? {}
             : ($("#buttonTime").addClass("activeButton"),
               $("#filterRegion").hide(),
+              $("#drawFilter").hide(),
               $("#infoDiv").fadeIn(),
+              $("#buttonDraw").removeClass("activeButton"),
+              $("#buttonRegion").removeClass("activeButton"));
+        });
+        $("#buttonDraw").on("click", (e) => {
+          $("#buttonDraw").hasClass("activeButton")
+            ? {}
+            : ($("#buttonDraw").addClass("activeButton"),
+              $("#filterRegion").hide(),
+              $("#infoDiv").hide(),
+              $("#drawFilter").fadeIn(),
+              $("#buttonTime").removeClass("activeButton"),
               $("#buttonRegion").removeClass("activeButton"));
         });
         $("#buttonRegion").on("click", (e) => {
@@ -1845,7 +1935,9 @@ Template.category.onRendered(() => {
             ? {}
             : ($("#buttonRegion").addClass("activeButton"),
               $("#infoDiv").hide(),
+              $("#drawFilter").hide(),
               $("#filterRegion").fadeIn(),
+              $("#buttonDraw").removeClass("activeButton"),
               $("#buttonTime").removeClass("activeButton"));
         });
         $("#coordinateReset").on("click", () => {
@@ -2006,8 +2098,8 @@ Template.category.onRendered(() => {
         // document.getElementById("infoDiv").style.display = "block";
         view.when().then(function () {
           // the webmap successfully loaded
-          $(".preloader").fadeOut();
           document.getElementById("legendDiv").style.display = "block";
+          $(".preloader").fadeOut();
         });
       }
     )
