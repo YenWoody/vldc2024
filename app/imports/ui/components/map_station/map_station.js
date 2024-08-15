@@ -491,7 +491,7 @@ Template.map_station.onRendered(() => {
 
         // Tạo Turf featurecollection
         let collection = turf.featureCollection(dataGeojsonEvents);
-        console.log(collection, "collection");
+        // console.log(collection, "collection");
         let collection_events_station = turf.featureCollection(
           dataGeojsonEventStations
         );
@@ -500,7 +500,7 @@ Template.map_station.onRendered(() => {
         const blob = new Blob([JSON.stringify(collection)], {
           type: "application/json",
         });
-        console.log(blob, "blob");
+        // console.log(blob, "blob");
         const blob_event_station = new Blob(
           [JSON.stringify(collection_events_station)],
           {
@@ -515,7 +515,7 @@ Template.map_station.onRendered(() => {
         const url = URL.createObjectURL(blob);
         const url_event_station = URL.createObjectURL(blob_event_station);
         const url_station = URL.createObjectURL(blob_station);
-        console.log(url_station, "url_station");
+        // console.log(url_station, "url_station");
         // Khởi tạo layer
         const layerEventStaions = new GeoJSONLayer({
           url: url_event_station,
@@ -736,7 +736,7 @@ Template.map_station.onRendered(() => {
           labelingInfo: [labelClass],
           outFields: ["*"],
         });
-        console.log(layerStations, "layerStations");
+        // console.log(layerStations, "layerStations");
         // Sketch
         const sketch = new Sketch({
           layer: graphicsLayer,
@@ -744,10 +744,10 @@ Template.map_station.onRendered(() => {
           availableCreateTools: ["polygon", "rectangle", "circle"],
           container: drawDiv,
         });
-        console.log(sketch, "sketch");
+        // console.log(sketch, "sketch");
         let sketchGeometry = null;
         $("#drawFilter").on("click", () => {
-          console.log(sketch, "sketch");
+          // console.log(sketch, "sketch");
           sketchGeometry = null;
           sketch.on("create", function (event) {
             const graphicsLayer = sketch.layer;
@@ -1050,10 +1050,10 @@ Template.map_station.onRendered(() => {
           query.geometry = geometry;
           query.spatialRelationship = "intersects";
           query.outFields = "*";
-          console.log(query, "query");
+          // console.log(query, "query");
           layerStations.queryFeatures(query).then(function (response) {
             const dataSet = response.features;
-            console.log(dataSet);
+            // console.log(dataSet);
             loadDataTable(dataSet);
           });
           loadLayerView(layerStations, {
@@ -1103,10 +1103,10 @@ Template.map_station.onRendered(() => {
                 if (result.graphic.layer === layerStations) {
                   openPopupRightSide();
                   let layerStationQuery = layerStations.createQuery();
-                  console.log(result.graphic, "result.graphic.layer");
+                  // console.log(result.graphic, "result.graphic.layer");
                   layerStationQuery.where = `id_key LIKE '%${result.graphic.attributes.id_key}%'`;
                   layerStationQuery.outFields = "*";
-                  console.log(layerStationQuery, "layerStationQuery");
+                  // console.log(layerStationQuery, "layerStationQuery");
                   loadLayerView(layerStations, {
                     where: `id_key = ${result.graphic.attributes.id_key}`,
                   });

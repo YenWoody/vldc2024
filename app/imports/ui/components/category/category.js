@@ -732,7 +732,7 @@ Template.category.onRendered(() => {
               type: "GET",
               dataType: "json",
             }).done((t) => {
-              console.log(t.features, "t.features");
+              // console.log(t.features, "t.features");
 
               if (t.features.length > 0) {
                 e["location"] = t.features[0].attributes.name;
@@ -1262,7 +1262,7 @@ Template.category.onRendered(() => {
           // widget show the first day. We are setting
           // the thumbs positions.
           timeSlider.values = [start_time, end_time];
-          console.log(timeSlider, "timeSlider");
+          // console.log(timeSlider, "timeSlider");
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv;
             $("#filter").on("click", () => {
@@ -1528,7 +1528,7 @@ Template.category.onRendered(() => {
                 return e;
               })
             );
-            console.log(data, "data");
+            // console.log(data, "data");
             //load table when page loaded
             loadDataTable(data);
 
@@ -1889,7 +1889,7 @@ Template.category.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            console.log(query, "query");
+            // console.log(query, "query");
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -1915,7 +1915,7 @@ Template.category.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            console.log(query, "query");
+            // console.log(query, "query");
             layerEvent.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(

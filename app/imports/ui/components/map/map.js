@@ -175,7 +175,7 @@ Template.map.onRendered(() => {
           "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query?where=1%3D1&f=pjson";
         const response_tentinhVN = await fetch(urlQuery);
         const tentinhVN = await response_tentinhVN.json();
-        console.log(tentinhVN, "tentinhVN");
+        // console.log(tentinhVN, "tentinhVN");
         const dataIris = await response.text();
         const dtIris = [];
         dataIris.split(/\r?\n/).forEach((lines) => {
@@ -667,10 +667,10 @@ Template.map.onRendered(() => {
             }).done((t) => {
               if (t.features.length > 0) {
                 e["location"] = t.features[0].attributes.name;
-                console.log(e.Reporting_time, "e.Reporting_time");
+                // console.log(e.Reporting_time, "e.Reporting_time");
 
                 e.Reporting_time = e.Reporting_time.getTime();
-                console.log(e.Reporting_time, "e.Reporting_timesá");
+                // console.log(e.Reporting_time, "e.Reporting_timesá");
 
                 dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
                 return e;
@@ -1044,7 +1044,7 @@ Template.map.onRendered(() => {
 
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
-              console.log(dataSet, "dataSet");
+              // console.log(dataSet, "dataSet");
 
               Promise.all(
                 dataSet.map((e) => {
@@ -1058,7 +1058,7 @@ Template.map.onRendered(() => {
               });
             });
 
-            console.log("chạy");
+            // console.log("chạy");
 
             // dataSet.forEach((e) => {
             //   e.attributes.lon, e.attributes.lat;
@@ -1347,7 +1347,7 @@ Template.map.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            console.log(query, "query");
+            // console.log(query, "query");
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -1368,7 +1368,7 @@ Template.map.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            console.log(query, "query");
+            // console.log(query, "query");
             layerIris.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -1377,7 +1377,7 @@ Template.map.onRendered(() => {
                   return e;
                 })
               );
-              console.log(dataSet);
+              // console.log(dataSet);
               loadDataTableGlobal(data);
             });
             loadLayerView(layerIris, {
