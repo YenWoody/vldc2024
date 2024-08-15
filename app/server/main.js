@@ -2,6 +2,7 @@
 import "/imports/startup/server";
 import "/imports/startup/both";
 import { Meteor } from "meteor/meteor";
+import { fetch, Headers, Request, Response } from "meteor/fetch";
 import Files from "/lib/files.collection.js";
 import FilesMachineHistory from "/lib/files.machineHistory.js";
 import FilesPdf from "/lib/files.pdf.js";
@@ -27,6 +28,35 @@ const pool = new pg.Pool({
   user: PG_USER,
   password: PG_PASSWORD,
 });
+
+///
+// async function postData(url, data) {
+//   try {
+//     const response = await fetch(url, {
+//       method: "GET",
+//       // headers: new Headers({
+//       //     Authorization: 'Bearer my-secret-key',
+//       //     'Content-Type': 'application/json'
+//       // }),
+//       // redirect: 'follow', // manual, *follow, error
+//       // referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+//       body: JSON.stringify(data), // body data type must match "Content-Type" header
+//     });
+//     const data = await response.json();
+//     console.log(data);
+//     return response(null, data);
+//   } catch (err) {}
+// }
+// const postDataCall = Meteor.wrapAsync(postData);
+// const results = postDataCall(
+//   "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query",
+//   {
+//     outFields: "*",
+//     geometryType: "esriGeometryPoint",
+//     where: "1=1",
+//     f: "json",
+//   }
+// );
 // Insert Realtime Data
 const FOLDER = "assets/app/files";
 function run() {

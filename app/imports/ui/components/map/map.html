@@ -43,13 +43,13 @@
               >
                 Lọc theo khu vực
               </button>
-              <!-- <button
+              <button
                 type="button"
                 class="w-50 p-2 m-2 btn btn-light p-0"
                 id="buttonDraw"
               >
                 Vẽ trên bản đồ
-              </button> -->
+              </button>
             </div>
             <div id="filterProvince" class="border-top border-bottom mb-2 card">
               <div class="my-1 w-50 mx-auto">
@@ -58,6 +58,15 @@
                   multiple
                   placeholder="Chọn tỉnh"
                 ></select>
+              </div>
+            </div>
+            <div
+              id="drawFilter"
+              class="border-top border-bottom card"
+              style="display: none"
+            >
+              <div class="m-1 d-flex justify-content-around align-items-center">
+                <div id="drawDiv"></div>
               </div>
             </div>
             <div

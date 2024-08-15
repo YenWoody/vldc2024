@@ -7,6 +7,7 @@ import "@selectize/selectize/dist/css/selectize.css";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
 import * as turf from "@turf/turf";
+import provinceName from "../../../api/provinceVN";
 import "animate.css";
 Template.map.onCreated(() => {
   setDefaultOptions({
@@ -171,11 +172,6 @@ Template.map.onRendered(() => {
         const response = await fetch(
           `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&limit=800&minmagnitude=1&output=text`
         );
-        const urlQuery =
-          "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query?where=1%3D1&f=pjson";
-        const response_tentinhVN = await fetch(urlQuery);
-        const tentinhVN = await response_tentinhVN.json();
-        console.log(tentinhVN, "tentinhVN");
         const dataIris = await response.text();
         const dtIris = [];
         dataIris.split(/\r?\n/).forEach((lines) => {
@@ -390,34 +386,35 @@ Template.map.onRendered(() => {
           thumbnailUrl:
             "https://stamen-tiles.a.ssl.fastly.net/terrain/10/177/409.png",
         });
-        const layerBoundaries = new MapImageLayer({
-          url: "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer",
-          visible: false,
-          title: "Tỉnh thành VN",
-          sublayers: [
-            {
-              // sets a definition expression on sublayer 3
-              id: 2,
-              visible: true,
-              minScale: 2311162.217,
-              title: "ward",
-            },
-            {
-              // sets a definition expression on sublayer 3
-              id: 1,
-              visible: true,
-              minScale: 2311162.217,
-              title: "district",
-            },
-            {
-              // sets a definition expression on sublayer 3
-              id: 0,
-              visible: true,
-              title: "province",
-            },
-          ],
-          listMode: "hide",
-        });
+
+        // const layerBoundaries = new MapImageLayer({
+        //   url: "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer",
+        //   visible: false,
+        //   title: "Tỉnh thành VN",
+        //   sublayers: [
+        //     {
+        //       // sets a definition expression on sublayer 3
+        //       id: 2,
+        //       visible: true,
+        //       minScale: 2311162.217,
+        //       title: "ward",
+        //     },
+        //     {
+        //       // sets a definition expression on sublayer 3
+        //       id: 1,
+        //       visible: true,
+        //       minScale: 2311162.217,
+        //       title: "district",
+        //     },
+        //     {
+        //       // sets a definition expression on sublayer 3
+        //       id: 0,
+        //       visible: true,
+        //       title: "province",
+        //     },
+        //   ],
+        //   listMode: "hide",
+        // });
         /**
          * init view
          */
@@ -426,7 +423,7 @@ Template.map.onRendered(() => {
         });
         const map = new Map({
           basemap: weMap,
-          layers: [graphicsLayer, layerBoundaries],
+          layers: [graphicsLayer],
         });
         // let floodLayerView;
         let highlightSelect;
@@ -649,6 +646,7 @@ Template.map.onRendered(() => {
         const realTimeGeojson = dataRealTime.filter((e) => {
           return !(e.lat === null && e.lon === null);
         });
+        console.log(realTimeGeojson, "realTimeGeojson");
         await Promise.all(
           realTimeGeojson.map(async (e, i) => {
             const url =
@@ -656,26 +654,29 @@ Template.map.onRendered(() => {
             const param = {
               outFields: "*",
               geometryType: "esriGeometryPoint",
-              geometry: `'${e.lon},${e.lat}`,
+              geometry: `'${e.lon},${e.lat}'`,
               f: "json",
             };
-            await $.ajax({
-              url: url,
-              data: param,
-              type: "GET",
-              dataType: "json",
-            }).done((t) => {
-              if (t.features.length > 0) {
-                e["location"] = t.features[0].attributes.name;
-                console.log(e.Reporting_time, "e.Reporting_time");
-
+            try {
+              await $.ajax({
+                url: url,
+                data: param,
+                type: "GET",
+                dataType: "json",
+              }).done((t) => {
                 e.Reporting_time = e.Reporting_time.getTime();
-                console.log(e.Reporting_time, "e.Reporting_timesá");
-
                 dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
-                return e;
-              }
-            });
+                if (!t.error) {
+                  if (t.features.length > 0) {
+                    e["location"] = t.features[0].attributes.name;
+
+                    return e;
+                  }
+                }
+              });
+            } catch (e) {
+              console.log();
+            }
           })
         );
         // realTimeGeojson.map((e) => {
@@ -997,11 +998,6 @@ Template.map.onRendered(() => {
           view: view,
           // listItemCreatedFunction : actionlayer,
         });
-        const sketch = new Sketch({
-          layer: graphicsLayer,
-          view: view,
-          availableCreateTools: ["polygon", "rectangle", "circle"],
-        });
         // wait till the layer view is loaded
         let layerView;
         view.when(function () {
@@ -1019,20 +1015,114 @@ Template.map.onRendered(() => {
           //   floodLayerView = layerView;
           // });
         });
-
-        const listOption = [];
-        tentinhVN.features.map((e) => {
-          listOption.push({
-            name: e.attributes.name,
+        const sketch = new Sketch({
+          layer: graphicsLayer,
+          view: view,
+          availableCreateTools: ["polygon", "rectangle", "circle"],
+          container: drawDiv,
+        });
+        let sketchGeometry = null;
+        $("#drawFilter").on("click", () => {
+          console.log(sketch, "sketch");
+          sketchGeometry = null;
+          sketch.on("create", function (event) {
+            const graphicsLayer = sketch.layer;
+            // Only once the polygon is completed
+            if (event.state === "complete") {
+              if (graphicsLayer.graphics.items.length > 1) {
+                graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+              }
+              sketchGeometry = event.graphic.geometry;
+              updateFilter();
+            }
+          });
+          sketch.on("update", function (event) {
+            // Only once the polygon is completed
+            const eventInfo = event.toolEventInfo;
+            // update the filter every time the user moves the filtergeometry
+            if (eventInfo && eventInfo.type.includes("stop")) {
+              sketchGeometry = event.graphics[0].geometry;
+              updateFilter();
+            }
           });
         });
+
+        sketch.on("create", function (event) {
+          const graphicsLayer = sketch.layer;
+          // Only once the polygon is completed
+          if (event.state === "complete") {
+            if (graphicsLayer.graphics.items.length > 1) {
+              graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+            }
+            sketchGeometry = event.graphic.geometry;
+            updateFilter();
+          }
+        });
+        sketch.on("update", function (event) {
+          // Only once the polygon is completed
+          const eventInfo = event.toolEventInfo;
+          // update the filter every time the user moves the filtergeometry
+          if (eventInfo && eventInfo.type.includes("stop")) {
+            sketchGeometry = event.graphics[0].geometry;
+            updateFilter();
+          }
+        });
+        function updateFilter() {
+          let query;
+          let layerQuery;
+          if ($("#buttonRealtime").hasClass("activeButton")) {
+            loadLayerView(layerRealTime, {
+              geometry: sketchGeometry,
+              spatialRelationship: "contains",
+            });
+
+            query = layerRealTime.createQuery();
+            layerQuery = layerRealTime;
+          }
+          if ($("#buttonGlobal").hasClass("activeButton")) {
+            loadLayerView(layerIris, {
+              geometry: sketchGeometry,
+              spatialRelationship: "contains",
+            });
+
+            query = layerIris.createQuery();
+            layerQuery = layerIris;
+          }
+          query.geometry = sketchGeometry;
+          query.spatialRelationship = "contains";
+          return layerQuery
+            .queryFeatures(query)
+            .then(async function (response) {
+              const dataSet = response.features;
+              if ($("#buttonRealtime").hasClass("activeButton")) {
+                const data = await Promise.all(
+                  dataSet.map((e) => {
+                    e.attributes.Reporting_time = new Date(
+                      e.attributes.Reporting_time
+                    );
+                    return e;
+                  })
+                );
+                loadDataTable(data);
+              } else {
+                const data = await Promise.all(
+                  dataSet.map((e) => {
+                    e.attributes.time = new Date(e.attributes.time);
+                    return e;
+                  })
+                );
+                loadDataTableGlobal(data);
+              }
+            });
+        }
+        console.log(provinceName, "provinceName");
         let arrayVN = [];
         $("#select-tools").selectize({
           maxItems: 1,
           valueField: "name",
           labelField: "name",
           searchField: "name",
-          options: listOption,
+          options: provinceName,
           create: false,
           onChange: async function (value, isOnInitialize) {
             arrayVN = [];
@@ -1300,7 +1390,19 @@ Template.map.onRendered(() => {
             ? {}
             : ($("#buttonProvince").addClass("activeButton"),
               $("#filterRegion").hide(),
+              $("#drawFilter").hide(),
               $("#filterProvince").fadeIn(),
+              $("#buttonDraw").removeClass("activeButton"),
+              $("#buttonRegion").removeClass("activeButton"));
+        });
+        $("#buttonDraw").on("click", (e) => {
+          $("#buttonDraw").hasClass("activeButton")
+            ? {}
+            : ($("#buttonDraw").addClass("activeButton"),
+              $("#filterRegion").hide(),
+              $("#filterProvince").hide(),
+              $("#drawFilter").fadeIn(),
+              $("#buttonProvince").removeClass("activeButton"),
               $("#buttonRegion").removeClass("activeButton"));
         });
         $("#buttonRegion").on("click", (e) => {
@@ -1308,7 +1410,9 @@ Template.map.onRendered(() => {
             ? {}
             : ($("#buttonRegion").addClass("activeButton"),
               $("#filterProvince").hide(),
+              $("#drawFilter").hide(),
               $("#filterRegion").fadeIn(),
+              $("#buttonDraw").removeClass("activeButton"),
               $("#buttonProvince").removeClass("activeButton"));
         });
         $("#coordinateReset").on("click", () => {
@@ -1491,8 +1595,8 @@ Template.map.onRendered(() => {
           $(".accounts-dialog.accounts-centered-dialog").html(
             '\n      <p >Email đã được xác thực.</p>\n      Bạn đã đăng nhập thành công !\n      <div class="login-button" id="just-verified-dismiss-button">Đồng ý</div>\n    '
           );
-          $(".preloader").fadeOut();
           document.getElementById("legendDiv").style.display = "block";
+          $(".preloader").fadeOut();
         });
       }
     )

@@ -463,19 +463,25 @@ Template.map_station.onRendered(() => {
               geometry: `'${e.long},${e.lat}`,
               f: "json",
             };
-            await $.ajax({
-              url: url,
-              data: param,
-              type: "GET",
-              dataType: "json",
-            }).done((t) => {
-              if (t.features.length > 0) {
-                e["location"] = t.features[0].attributes.name;
-                e.datetime = e.datetime.getTime();
-                dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-                return e;
-              }
-            });
+            e.datetime = e.datetime.getTime();
+            dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+            try {
+              await $.ajax({
+                url: url,
+                data: param,
+                type: "GET",
+                dataType: "json",
+              }).done((t) => {
+                if (!t.error) {
+                  if (t.features.length > 0) {
+                    e["location"] = t.features[0].attributes.name;
+                    return e;
+                  }
+                }
+              });
+            } catch (e) {
+              console.log();
+            }
           })
         );
         // eventGeojson.map((e) => {
@@ -1678,8 +1684,8 @@ Template.map_station.onRendered(() => {
         // ccWidget.multipleConversions = false;
         view.when().then(function () {
           // the webmap successfully loaded
-          $(".preloader").fadeOut();
           document.getElementById("legendDiv").style.display = "block";
+          $(".preloader").fadeOut();
           // document.getElementById("infoDiv").style.display = "block";
         });
         var modal = document.getElementById("_modal");
