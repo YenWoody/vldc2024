@@ -31,14 +31,14 @@
             <div class="d-flex mb-2 rounded bg-light">
               <button
                 type="button"
-                class="w-50 p-2 m-2 btn btn-light activeButton p-0"
+                class="w-50 p-2 m-2 btn btn-light  p-0 d-none"
                 id="buttonProvince"
               >
                 Lọc theo tỉnh
               </button>
               <button
                 type="button"
-                class="w-50 p-2 m-2 btn btn-light p-0 d-none"
+                class="w-50 p-2 m-2 activeButton btn btn-light p-0"
                 id="buttonRegion"
               >
                 Lọc theo khu vực
@@ -51,7 +51,7 @@
                 Vẽ trên bản đồ
               </button>
             </div>
-            <div id="filterProvince" class="border-top border-bottom mb-2 card">
+            <div id="filterProvince" class="border-top border-bottom mb-2 card" style="display: none">
               <div class="my-1 w-50 mx-auto">
                 <select
                   id="select-tools"
@@ -72,7 +72,7 @@
             <div
               id="filterRegion"
               class="border-top border-bottom mb-2 card"
-              style="display: none"
+              
             >
               <div class="m-1 d-flex justify-content-around align-items-center">
                 <!-- <div class="text-dark fs-6 p-2 fw-bold">Tìm theo khu vực:</div> -->
