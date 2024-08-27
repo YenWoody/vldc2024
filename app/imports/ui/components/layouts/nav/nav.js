@@ -8,8 +8,6 @@ Template.nav.onCreated(function () {
 });
 
 Template.nav.onRendered(() => {
-  var timeout = 0;
-  var delay = 250;
   var windowsize;
   var sidebar = $(".sidebar__menu_wrap");
   // sidebar in mobile mode
@@ -41,15 +39,14 @@ Template.nav.onRendered(() => {
       $(".contents__sidebar").addClass("fixedsticky");
     }
   }
-
-  // window.resize event listener
-  window.addEventListener("resize", function () {
-    clearTimeout(timeout);
-    timeout = setTimeout(checkWidth, delay);
-  });
-
   // Execute on load
   checkWidth();
+  //Close the dropdown if the user clicks outside of it
+  window.onclick = function (event) {
+    if (!event.target.matches(".dropbtn")) {
+      $("#content_dropdown").removeClass("show");
+    }
+  };
 });
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
@@ -132,6 +129,9 @@ Template.nav.helpers({
 Template.nav.events({
   "click .header__references_logout": () => {
     Meteor.logout();
+  },
+  "click #account_dropdown": () => {
+    $("#content_dropdown").toggleClass("show");
   },
   "click .menu-bar": () => {
     $(".menu-bar").toggleClass("change");

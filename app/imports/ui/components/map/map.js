@@ -657,26 +657,28 @@ Template.map.onRendered(() => {
               geometry: `'${e.lon},${e.lat}'`,
               f: "json",
             };
-            try {
-              await $.ajax({
-                url: url,
-                data: param,
-                type: "GET",
-                dataType: "json",
-              }).done((t) => {
-                e.Reporting_time = e.Reporting_time.getTime();
-                dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
-                if (!t.error) {
-                  if (t.features.length > 0) {
-                    e["location"] = t.features[0].attributes.name;
+            e.Reporting_time = e.Reporting_time.getTime();
+            dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+            e["location"] = "Chưa có thông tin";
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
 
-                    return e;
-                  }
-                }
-              });
-            } catch (e) {
-              console.log();
-            }
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
+
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
           })
         );
         // realTimeGeojson.map((e) => {

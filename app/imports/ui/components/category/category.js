@@ -721,28 +721,29 @@ Template.category.onRendered(() => {
               geometry: `'${e.lon},${e.lat}`,
               f: "json",
             };
+            e["location"] = "Chưa có thông tin";
             e.Reporting_time = e.Reporting_time.getTime();
             dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
-            try {
-              await $.ajax({
-                url: url,
-                data: param,
-                type: "GET",
-                dataType: "json",
-              }).done((t) => {
-                // e.Reporting_time = e.Reporting_time.getTime();
-                // dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
-                if (!t.error) {
-                  if (t.features.length > 0) {
-                    e["location"] = t.features[0].attributes.name;
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
+            //     // e.Reporting_time = e.Reporting_time.getTime();
+            //     // dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
 
-                    return e;
-                  }
-                }
-              });
-            } catch (e) {
-              console.log();
-            }
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
           })
         );
         // const data = await Promise.all(
@@ -768,27 +769,28 @@ Template.category.onRendered(() => {
               geometry: `'${e.long},${e.lat}`,
               f: "json",
             };
+            e["location"] = "Chưa có thông tin";
             e.datetime = e.datetime.getTime();
             dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-            try {
-              await $.ajax({
-                url: url,
-                data: param,
-                type: "GET",
-                dataType: "json",
-              }).done((t) => {
-                // e.datetime = e.datetime.getTime();
-                // dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-                if (!t.error) {
-                  if (t.features.length > 0) {
-                    e["location"] = t.features[0].attributes.name;
-                    return e;
-                  }
-                }
-              });
-            } catch (e) {
-              console.log();
-            }
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
+            //     // e.datetime = e.datetime.getTime();
+            //     // dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
           })
         );
         // eventGeojson.map((e) => {
