@@ -126,6 +126,15 @@ FlowRouter.route("/manage-baler", {
     this.render("dashboardTemplate", "manageBaler");
   },
 });
+FlowRouter.route("/verify/:token", {
+  action: function () {
+    var token = FlowRouter.getParam("token");
+    console.log(token);
+    Accounts.verifyEmail(token, function (err) {
+      FlowRouter.go("/dashboard");
+    });
+  },
+});
 FlowRouter.route("/manage-station", {
   name: "dashboard",
   action() {

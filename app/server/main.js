@@ -190,7 +190,7 @@ function insertRealtime(realtime) {
                   Trận động đất có độ lớn <b>${realtime.Mpd}</b> độ Richter, xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
                   </p>
                    
-                  <a href="http://222.252.30.117:3000"
+                  <a href="https://earthquake.wemap.asia/"
                       style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
               </td>
           </tr>
@@ -257,6 +257,10 @@ Meteor.startup(function () {
   };
 
   Accounts.emailTemplates.enrollAccount.text = (user, url) => {
+    url = url.replace(
+      "http://222.252.30.117:3000/",
+      "https://earthquake.wemap.asia/"
+    );
     return (
       "You have been selected to participate in building a better future!" +
       " To activate your account, simply click the link below:\n\n" +
@@ -272,6 +276,10 @@ Meteor.startup(function () {
   Accounts.emailTemplates.resetPassword.html = (user, url) => {
     // Overrides the value set in `Accounts.emailTemplates.from` when resetting
     // passwords.
+    url = url.replace(
+      "http://222.252.30.117:3000/",
+      "https://earthquake.wemap.asia/"
+    );
     return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
         style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
         <tr>
@@ -297,11 +305,16 @@ Meteor.startup(function () {
   Accounts.emailTemplates.resetPassword.subject = () => {
     return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`;
   };
+
   Accounts.emailTemplates.verifyEmail = {
     subject() {
       return "Kích hoạt tài khoản - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam";
     },
     html(user, url) {
+      url = url.replace(
+        "http://222.252.30.117:3000/",
+        "https://earthquake.wemap.asia/"
+      );
       return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
           style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
           <tr>
@@ -347,9 +360,6 @@ Meteor.startup(function () {
   }
 });
 Meteor.methods({
-  callLog: (e) => {
-    console.log(e);
-  },
   importRealtimeData: function () {},
   findUsers: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
