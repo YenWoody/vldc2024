@@ -43,8 +43,21 @@ Template.nav.onRendered(() => {
   checkWidth();
   //Close the dropdown if the user clicks outside of it
   window.onclick = function (event) {
+    // console.log(event, "event.target");
     if (!event.target.matches(".dropbtn")) {
       $("#content_dropdown").removeClass("show");
+    }
+    if (
+      event.target.offsetParent &&
+      !event.target.offsetParent.matches(".nav-class")
+    ) {
+      $(".menu-bar").removeClass("change");
+      $(".navbar-collapse").removeClass("d-none");
+      $(".list_nav").addClass("d-none");
+      $(".navbar-collapse").hasClass("show")
+        ? ($(".navbar-collapse").removeClass("show"),
+          $(".navbar-collapse").height(0))
+        : {};
     }
   };
 });
@@ -94,6 +107,11 @@ Template.nav.helpers({
         code: "dashboard",
         link: "/dashboard",
       },
+      {
+        name: "Hỏi đáp / Liên hệ",
+        code: "faq",
+        link: "/faq",
+      },
     ];
   },
   listsGuest() {
@@ -112,6 +130,11 @@ Template.nav.helpers({
         name: "Trạm quan trắc",
         code: "station",
         link: "/station",
+      },
+      {
+        name: "Hỏi đáp / Liên hệ",
+        code: "faq",
+        link: "/faq",
       },
       // {
       //   name: "Số liệu",
@@ -132,6 +155,15 @@ Template.nav.events({
   },
   "click #account_dropdown": () => {
     $("#content_dropdown").toggleClass("show");
+  },
+  "click .dropdown-item": () => {
+    $(".menu-bar").removeClass("change");
+    $(".navbar-collapse").removeClass("d-none");
+    $(".list_nav").addClass("d-none");
+    $(".navbar-collapse").hasClass("show")
+      ? ($(".navbar-collapse").removeClass("show"),
+        $(".navbar-collapse").height(0))
+      : {};
   },
   "click .menu-bar": () => {
     $(".menu-bar").toggleClass("change");

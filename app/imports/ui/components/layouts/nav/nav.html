@@ -34,7 +34,7 @@
   </style>
   {{#if userVerified }}
   <nav
-    class="navbar navbar-expand-lg navbar-light py-1 px-3"
+    class="navbar navbar-expand-lg navbar-light py-1 px-3 nav-class"
     style="background-color: #3d77b1 !important"
   >
     <div class="container-fluid">
@@ -65,7 +65,7 @@
           > -->
             {{/each}}
           </ul>
-          <div class="dropdown">
+          <div class="dropdown nav-class">
             <i
               class="dropbtn dropdown-toggle fa fa-user-circle-o me-2 fa-2x nav-link-a"
               data-bs-toggle="tooltip"
@@ -115,7 +115,7 @@
 
   {{else}} {{#if isUserLogged}}
   <nav
-    class="navbar navbar-expand-lg navbar-light px-3"
+    class="navbar navbar-expand-lg navbar-light px-3 nav-class"
     style="background-color: #3d77b1 !important"
   >
     <div class="container-fluid">
@@ -147,7 +147,7 @@
             {{/each}}
           </ul>
 
-          <div class="dropdown">
+          <div class="dropdown nav-class">
             <i
               class="dropbtn dropdown-toggle fa fa-user-circle-o me-2 fa-2x nav-link-a"
               data-bs-toggle="tooltip"
