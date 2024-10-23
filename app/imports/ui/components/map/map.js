@@ -1594,9 +1594,9 @@ Template.map.onRendered(() => {
         // document.getElementById("infoDiv").style.display = "block";
         view.when().then(function () {
           // the webmap successfully loaded
-          $(".accounts-dialog.accounts-centered-dialog").html(
-            '\n      <p >Email đã được xác thực.</p>\n      Bạn đã đăng nhập thành công !\n      <div class="login-button" id="just-verified-dismiss-button">Đồng ý</div>\n    '
-          );
+          // $(".accounts-dialog.accounts-centered-dialog").html(
+          //   '\n      <p >Email đã được xác thực.</p>\n      Bạn đã đăng nhập thành công !\n      <div class="login-button" id="just-verified-dismiss-button">Đồng ý</div>\n    '
+          // );
           document.getElementById("legendDiv").style.display = "block";
           $(".preloader").fadeOut();
         });

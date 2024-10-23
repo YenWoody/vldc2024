@@ -44,7 +44,7 @@ Template.dashboardTemplate.onRendered(function () {
   if (window.innerWidth < 768) {
     $("#sidebar").addClass("activeMobile sidebarMobile");
     $("#sidebar").innerWidth("60%");
-    console.log($("#content_dashboard").innerHeight(), "$.innerHeight()");
+    // console.log($("#content_dashboard").innerHeight(), "$.innerHeight()");
     $("#sidebar").innerHeight($("#content_dashboard").innerHeight());
   }
   $("#sidebarCollapse").on("click", function () {
@@ -57,18 +57,16 @@ Template.dashboardTemplate.onRendered(function () {
     }
   });
   $(".sidebar-item").on("click", (e) => {
-    $("#button_sidebar").toggleClass("fa-arrow-right");
-    $("#button_sidebar").toggleClass("fa-arrow-left");
     if (window.innerWidth < 768) {
+      $("#button_sidebar").toggleClass("fa-arrow-right");
+      $("#button_sidebar").toggleClass("fa-arrow-left");
       $("#sidebar").toggleClass("activeMobile");
-    } else {
-      $("#sidebar").toggleClass("active");
     }
   });
-  $(document).ready(function () {
-    // do stuff
-    console.log($("#content_dashboard").innerHeight(), "$.innerHeight()");
-  });
+  // $(document).ready(function () {
+  //   // do stuff
+  //   console.log($("#content_dashboard").innerHeight(), "$.innerHeight()");
+  // });
 });
 Template.dashboardTemplate.helpers({
   checkScreenSize() {

@@ -15,6 +15,7 @@ import "../../ui/components/register-event/register-event.js";
 import "../../ui/pages/changepass/changepass.js";
 import "../../ui/pages/login/login.js";
 import "../../ui/pages/reset/reset";
+import "../../ui/pages/faq-page/faq-page";
 import "../../ui/pages/verify/verify";
 import "../../ui/pages/category/category";
 import "../../ui/components/category/category";
@@ -35,6 +36,7 @@ import "../../ui/components/manage-internet/manage-internet";
 import "../../ui/components/machine-history/machine-history";
 import "../../ui/components/upload-pdf/upload-pdf";
 import "../../ui/components/dashboard/dashboard";
+import "../../ui/components/faq/faq";
 // Set up all routes in the app
 FlowRouter.route("/main", {
   name: "App.event",
@@ -124,6 +126,19 @@ FlowRouter.route("/manage-baler", {
   name: "dashboard",
   action() {
     this.render("dashboardTemplate", "manageBaler");
+  },
+});
+FlowRouter.route("/faq", {
+  name: "faq",
+  action() {
+    this.render("BodyTemplate", "faqPage");
+  },
+});
+FlowRouter.route("/manage-battery/:token", {
+  action: function () {
+    var token = FlowRouter.getParam("token");
+    console.log(token);
+    this.render("dashboardTemplate", "manageBatteryItem");
   },
 });
 FlowRouter.route("/manage-station", {
