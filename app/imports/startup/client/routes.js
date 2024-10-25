@@ -1,6 +1,7 @@
 import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 // Import needed templates
 import "../../ui/layouts/body/body.js";
+import "../../ui/layouts/body_form/body_form.js";
 import "../../ui/layouts/dashboardpage/dashboardpage.js";
 import "../../ui/pages/home/home.js";
 import "../../ui/pages/event/event.js";
@@ -219,7 +220,7 @@ FlowRouter.route("*", {
 FlowRouter.route("/register", {
   name: "App.register",
   action() {
-    this.render("BodyTemplate", "register_form");
+    this.render("BodyFormTemplate", "register_form");
   },
 });
 FlowRouter.route("/changepass", {
@@ -231,14 +232,14 @@ FlowRouter.route("/changepass", {
 FlowRouter.route("/login", {
   name: "App.login",
   action() {
-    this.render("BodyTemplate", "login_form");
+    this.render("BodyFormTemplate", "login_form");
   },
 });
 
 FlowRouter.route("/reset", {
   name: "App.reset",
   action() {
-    this.render("BodyTemplate", "reset_form");
+    this.render("BodyFormTemplate", "reset_form");
   },
 });
 FlowRouter.route("/verify", {
