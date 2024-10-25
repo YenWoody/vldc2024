@@ -63,6 +63,10 @@ Template.dashboardTemplate.onRendered(function () {
       $("#sidebar").toggleClass("activeMobile");
     }
   });
+  // $(document).ready(function () {
+  //   // do stuff
+  //   console.log($("#content_dashboard").innerHeight(), "$.innerHeight()");
+  // });
 });
 Template.dashboardTemplate.helpers({
   checkScreenSize() {

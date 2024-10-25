@@ -646,7 +646,7 @@ Template.map.onRendered(() => {
         const realTimeGeojson = dataRealTime.filter((e) => {
           return !(e.lat === null && e.lon === null);
         });
-        console.log(realTimeGeojson, "realTimeGeojson");
+        // console.log(realTimeGeojson, "realTimeGeojson");
         await Promise.all(
           realTimeGeojson.map(async (e, i) => {
             const url =
@@ -1025,7 +1025,7 @@ Template.map.onRendered(() => {
         });
         let sketchGeometry = null;
         $("#drawFilter").on("click", () => {
-          console.log(sketch, "sketch");
+          // console.log(sketch, "sketch");
           sketchGeometry = null;
           sketch.on("create", function (event) {
             const graphicsLayer = sketch.layer;
@@ -1117,7 +1117,7 @@ Template.map.onRendered(() => {
               }
             });
         }
-        console.log(provinceName, "provinceName");
+        // console.log(provinceName, "provinceName");
         let arrayVN = [];
         $("#select-tools").selectize({
           maxItems: 1,
@@ -1136,7 +1136,7 @@ Template.map.onRendered(() => {
 
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
-              console.log(dataSet, "dataSet");
+              // console.log(dataSet, "dataSet");
 
               Promise.all(
                 dataSet.map((e) => {
@@ -1150,7 +1150,7 @@ Template.map.onRendered(() => {
               });
             });
 
-            console.log("chạy");
+            // console.log("chạy");
 
             // dataSet.forEach((e) => {
             //   e.attributes.lon, e.attributes.lat;
@@ -1453,7 +1453,7 @@ Template.map.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            console.log(query, "query");
+            // console.log(query, "query");
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -1474,7 +1474,7 @@ Template.map.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            console.log(query, "query");
+            // console.log(query, "query");
             layerIris.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -1483,7 +1483,7 @@ Template.map.onRendered(() => {
                   return e;
                 })
               );
-              console.log(dataSet);
+              // console.log(dataSet);
               loadDataTableGlobal(data);
             });
             loadLayerView(layerIris, {
