@@ -13,6 +13,7 @@ import "../../ui/pages/not-found/not-found.js";
 import "../../ui/components/upload/upload.js";
 import "../../ui/pages/register/register.js";
 import "../../ui/components/register-event/register-event.js";
+import "../../ui/components/deleteAccount/deleteAccount.js";
 import "../../ui/pages/changepass/changepass.js";
 import "../../ui/pages/login/login.js";
 import "../../ui/pages/reset/reset";
@@ -226,7 +227,13 @@ FlowRouter.route("/register", {
 FlowRouter.route("/changepass", {
   name: "App.changepass",
   action() {
-    this.render("dashboardTemplate", "changepass_form");
+    this.render("BodyFormTemplate", "changepass_form");
+  },
+});
+FlowRouter.route("/delete-account", {
+  name: "App.deleteaccount",
+  action() {
+    this.render("BodyFormTemplate", "deleteAccount");
   },
 });
 FlowRouter.route("/login", {
