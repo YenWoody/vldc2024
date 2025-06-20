@@ -2,6 +2,7 @@
 import "/imports/startup/server";
 import "/imports/startup/both";
 import { Meteor } from "meteor/meteor";
+import { fetch, Headers, Request, Response } from "meteor/fetch";
 import Files from "/lib/files.collection.js";
 import FilesMachineHistory from "/lib/files.machineHistory.js";
 import FilesPdf from "/lib/files.pdf.js";
@@ -12,8 +13,14 @@ import os from "os";
 import { check } from "meteor/check";
 import { Accounts } from "meteor/accounts-base";
 import { Email } from "meteor/email";
-
+import '/imports/api/fcm/methods.js';
 // server.js
+// const PG_HOST = "127.0.0.1";
+// const PG_PORT = "5432";
+// const PG_DATABASE = "vldc";
+// const PG_USER = "postgres";
+// const PG_PASSWORD = "vldcaA@1234!";
+
 const PG_HOST = "localhost";
 const PG_PORT = "5432";
 const PG_DATABASE = "vldc";
@@ -27,6 +34,35 @@ const pool = new pg.Pool({
   user: PG_USER,
   password: PG_PASSWORD,
 });
+
+///
+// async function postData(url, data) {
+//   try {
+//     const response = await fetch(url, {
+//       method: "GET",
+//       // headers: new Headers({
+//       //     Authorization: 'Bearer my-secret-key',
+//       //     'Content-Type': 'application/json'
+//       // }),
+//       // redirect: 'follow', // manual, *follow, error
+//       // referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+//       body: JSON.stringify(data), // body data type must match "Content-Type" header
+//     });
+//     const data = await response.json();
+//     console.log(data);
+//     return response(null, data);
+//   } catch (err) {}
+// }
+// const postDataCall = Meteor.wrapAsync(postData);
+// const results = postDataCall(
+//   "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query",
+//   {
+//     outFields: "*",
+//     geometryType: "esriGeometryPoint",
+//     where: "1=1",
+//     f: "json",
+//   }
+// );
 // Insert Realtime Data
 const FOLDER = "assets/app/files";
 function run() {
@@ -141,6 +177,7 @@ function insertRealtime(realtime) {
                 Number(realtime.Mpd) <= Number(user.mag[1])
               ) {
                 const email = user.event_mail;
+                if (email && email.trim() !== '') {
                 Email.send({
                   to: `${email}`,
                   from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
@@ -160,7 +197,7 @@ function insertRealtime(realtime) {
                   Trận động đất có độ lớn <b>${realtime.Mpd}</b> độ Richter, xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
                   </p>
                    
-                  <a href="http://222.252.30.117:3000"
+                  <a href="https://earthquake.wemap.asia/"
                       style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
               </td>
           </tr>
@@ -169,6 +206,20 @@ function insertRealtime(realtime) {
           </tr>
       </table>`,
                 });
+                }
+        // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
+      const magnitude = Number(realtime.Mpd);
+            const token = user.profile?.fcmToken;
+            if (token && user.profile?.subscribed) {
+              const title = "🌋 Cảnh báo động đất";
+              const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
+          
+                  Meteor.call('fcm.sendToTopic', 'earthquake', title, body, (err, res) => {
+                  if (err) console.error('❌ Lỗi:', err);
+                  else console.log('✅ Đã gửi:', res);
+                });
+             
+            }
               }
             }
           } catch (e) {
@@ -227,6 +278,10 @@ Meteor.startup(function () {
   };
 
   Accounts.emailTemplates.enrollAccount.text = (user, url) => {
+    url = url.replace(
+      "http://222.252.30.117:3000/",
+      "https://earthquake.wemap.asia/"
+    );
     return (
       "You have been selected to participate in building a better future!" +
       " To activate your account, simply click the link below:\n\n" +
@@ -242,6 +297,10 @@ Meteor.startup(function () {
   Accounts.emailTemplates.resetPassword.html = (user, url) => {
     // Overrides the value set in `Accounts.emailTemplates.from` when resetting
     // passwords.
+    url = url.replace(
+      "http://222.252.30.117:3000/",
+      "https://earthquake.wemap.asia/"
+    );
     return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
         style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
         <tr>
@@ -267,11 +326,16 @@ Meteor.startup(function () {
   Accounts.emailTemplates.resetPassword.subject = () => {
     return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`;
   };
+
   Accounts.emailTemplates.verifyEmail = {
     subject() {
       return "Kích hoạt tài khoản - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam";
     },
     html(user, url) {
+      url = url.replace(
+        "http://222.252.30.117:3000/",
+        "https://earthquake.wemap.asia/"
+      );
       return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
           style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
           <tr>
@@ -317,9 +381,6 @@ Meteor.startup(function () {
   }
 });
 Meteor.methods({
-  callLog: (e) => {
-    console.log(e);
-  },
   importRealtimeData: function () {},
   findUsers: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
@@ -1453,7 +1514,7 @@ Meteor.methods({
                     Number(event.ml) <= Number(user.mag[1])
                   ) {
                     const email = user.event_mail;
-
+                    if (email && email.trim() !== '') {
                     Email.send({
                       to: `${email}`,
                       from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
@@ -1482,6 +1543,20 @@ Meteor.methods({
                                     </tr>
                                 </table>`,
                     });
+                  }
+                  // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
+      const magnitude = Number(realtime.Mpd);
+            const token = user.profile?.fcmToken;
+            if (token && user.profile?.subscribed) {
+              const title = "🌋 Cảnh báo động đất";
+              const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
+          
+                  Meteor.call('fcm.sendToTopic', 'earthquake', title, body, (err, res) => {
+                  if (err) console.error('❌ Lỗi:', err);
+                  else console.log('✅ Đã gửi:', res);
+                });
+             
+            }
                   }
                 }
               } catch (e) {
@@ -1719,6 +1794,10 @@ Meteor.methods({
     });
   },
   "delete-user": (id) => {
+    Meteor.users.remove(id);
+  },
+  "delete-myAccount": () => {
+    const id = Meteor.userId();
     Meteor.users.remove(id);
   },
   serverCreateUser(username, password, email) {

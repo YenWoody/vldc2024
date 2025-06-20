@@ -5,10 +5,12 @@ import datatables_bs from "datatables.net-bs";
 import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 import { $ } from "meteor/jquery";
 import "datatables.net-bs/css/dataTables.bootstrap.css";
+import "@selectize/selectize/dist/css/selectize.css";
 import alasql from "alasql";
 import XLSX from "xlsx";
 import "animate.css";
 import * as turf from "@turf/turf";
+import { provinceName } from "../../../api/provinceVN";
 Template.category.onCreated(() => {
   setDefaultOptions({
     version: "4.22",
@@ -43,6 +45,8 @@ Template.category.onRendered(() => {
     "esri/widgets/Zoom",
     "esri/widgets/Slider",
     "esri/widgets/Sketch",
+    "esri/geometry/Point",
+    "esri/layers/GraphicsLayer",
     "esri/widgets/BasemapToggle",
     "esri/widgets/CoordinateConversion",
     "esri/layers/WebTileLayer",
@@ -50,7 +54,8 @@ Template.category.onRendered(() => {
     "esri/popup/content/CustomContent",
     "esri/layers/support/LabelClass",
     "esri/widgets/Popup",
-    "dojo/domReady!",
+    "esri/geometry/Extent",
+    // "dojo/domReady!",
   ])
     .then(
       async ([
@@ -67,6 +72,8 @@ Template.category.onRendered(() => {
         Zoom,
         Slider,
         Sketch,
+        Point,
+        GraphicsLayer,
         BasemapToggle,
         CoordinateConversion,
         WebTileLayer,
@@ -74,6 +81,7 @@ Template.category.onRendered(() => {
         CustomContent,
         LabelClass,
         Popup,
+        Extent,
       ]) => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
@@ -152,57 +160,61 @@ Template.category.onRendered(() => {
             });
           });
         }
-        function dataBalers() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataBaler", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
+        // function dataBalers() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataBaler", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
+        // function dataDatalogers() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataDataloger", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
+        // function dataSensors() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataSensor", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
+        // function dataEmployes() {
+        //   return new Promise(function (resolve, reject) {
+        //     Meteor.call("dataEmployee", function (error, result) {
+        //       if (error) {
+        //         reject(error);
+        //       }
+        //       resolve(result.rows);
+        //     });
+        //   });
+        // }
+        function loadLayerView(layer, query) {
+          view.whenLayerView(layer).then((layerview) => {
+            layerview.filter = query;
           });
         }
-        function dataDatalogers() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataDataloger", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        function dataSensors() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataSensor", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        function dataEmployes() {
-          return new Promise(function (resolve, reject) {
-            Meteor.call("dataEmployee", function (error, result) {
-              if (error) {
-                reject(error);
-              }
-              resolve(result.rows);
-            });
-          });
-        }
-        // Fetch Data From Iris
         // const waitDataIris = await Promise.all(dataIris_final);
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
         const dataEventStations = await dataEventStation();
         const dataEvents = await dataEvent();
         const dataStations = await dataStation();
-        const dataEmployee = await dataEmployes();
-        const dataBaler = await dataBalers();
-        const dataDataloger = await dataDatalogers();
-        const dataSensor = await dataSensors();
+        // const dataEmployee = await dataEmployes();
+        // const dataBaler = await dataBalers();
+        // const dataDataloger = await dataDatalogers();
+        // const dataSensor = await dataSensors();
         //DataTable
         function loadDataTable(data) {
           const table = $("#dulieu").DataTable({
@@ -217,6 +229,11 @@ Template.category.onRendered(() => {
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
               infoEmpty: "Hiển thị 0 sự kiện",
               infoFiltered: " ",
+              paginate: {
+                previous: "Trước",
+                next: "Sau",
+              },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -257,7 +274,7 @@ Template.category.onRendered(() => {
             value === "mag"
               ? $("#dulieu")
                   .DataTable()
-                  .order([[3, "asc"]])
+                  .order([[4, "asc"]])
                   .draw()
               : $("#dulieu")
                   .DataTable()
@@ -279,6 +296,11 @@ Template.category.onRendered(() => {
               info: "Hiển thị từ _START_ đến _END_ sự kiện",
               infoEmpty: "Hiển thị 0 sự kiện",
               infoFiltered: " ",
+              paginate: {
+                previous: "Trước",
+                next: "Sau",
+              },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -336,14 +358,20 @@ Template.category.onRendered(() => {
           $("#buttonRealtime").hasClass("activeButton")
             ? {}
             : ($("#buttonRealtime").addClass("activeButton"),
+              $("#select-tools").selectize()[0].selectize.clear(),
               loadDataRealtime(),
+              loadLayerView(layerRealTime, {
+                where: "Mpd >= 0 and Mpd <= 1000",
+              }),
               $("#buttonProcessedEvent").removeClass("activeButton"));
         });
         $("#buttonProcessedEvent").on("click", (e) => {
           $("#buttonProcessedEvent").hasClass("activeButton")
             ? {}
             : ($("#buttonProcessedEvent").addClass("activeButton"),
+              $("#select-tools").selectize()[0].selectize.clear(),
               loadProcessedEvent(),
+              loadLayerView(layerEvent, { where: "ml >= 0 and ml <= 1000" }),
               $("#buttonRealtime").removeClass("activeButton"));
         });
         /**
@@ -380,8 +408,12 @@ Template.category.onRendered(() => {
          * init view
          */
 
+        const graphicsLayer = new GraphicsLayer({
+          listMode: "hide",
+        });
         const map = new Map({
           basemap: weMap,
+          layers: [graphicsLayer],
         });
         // let floodLayerView;
         let highlightSelect;
@@ -668,29 +700,103 @@ Template.category.onRendered(() => {
         const dataGeojsonRealTimeEvent = [];
         const dataGeojsonEvents = [];
         const dataGeojsonEventStations = [];
-        const dataGeojsonIris = [];
         const dataGeojsonStations = [];
-        const dataGeojsonEmployee = [];
-        const dataGeojsonBaler = [];
-        const dataGeojsonDataloger = [];
-        const dataGeojsonSensor = [];
+        // const dataGeojsonEmployee = [];
+        // const dataGeojsonBaler = [];
+        // const dataGeojsonDataloger = [];
+        // const dataGeojsonSensor = [];
         const eventGeojson = dataEvents.filter((e) => {
           return !(e.geometry === null);
         });
         const realTimeGeojson = dataRealTime.filter((e) => {
           return !(e.lat === null && e.lon === null);
         });
-        realTimeGeojson.map((e) => {
-          e.Reporting_time = e.Reporting_time.getTime();
-          dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
-        });
+        await Promise.all(
+          realTimeGeojson.map(async (e, i) => {
+            const url =
+              "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query";
+            const param = {
+              outFields: "*",
+              geometryType: "esriGeometryPoint",
+              geometry: `'${e.lon},${e.lat}`,
+              f: "json",
+            };
+            e["location"] = "Chưa có thông tin";
+            e.Reporting_time = e.Reporting_time.getTime();
+            dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
+            //     // e.Reporting_time = e.Reporting_time.getTime();
+            //     // dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
+
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
+          })
+        );
+        // const data = await Promise.all(
+        //   dataSet.map((e) => {
+        //     e.attributes.Reporting_time = new Date(e.attributes.Reporting_time);
+        //     return e;
+        //   })
+        // );
+        // realTimeGeojson.map((e) => {
+        //   e.Reporting_time = e.Reporting_time.getTime();
+        //   dataGeojsonRealTime.push(turf.point([e.lon, e.lat], e));
+        // });
         dataRealTimeEvent.map((e) => {
           dataGeojsonRealTimeEvent.push(turf.point([0, 0], e));
         });
-        eventGeojson.map((e) => {
-          e.datetime = e.datetime.getTime();
-          dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-        });
+        await Promise.all(
+          eventGeojson.map(async (e, i) => {
+            const url =
+              "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query";
+            const param = {
+              outFields: "*",
+              geometryType: "esriGeometryPoint",
+              geometry: `'${e.long},${e.lat}`,
+              f: "json",
+            };
+            e["location"] = "Chưa có thông tin";
+            e.datetime = e.datetime.getTime();
+            dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
+            //     // e.datetime = e.datetime.getTime();
+            //     // dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
+          })
+        );
+        // eventGeojson.map((e) => {
+        //   e.datetime = e.datetime.getTime();
+        //   dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+        // });
         dataEventStations.map((e) => {
           dataGeojsonEventStations.push(turf.point([0, 0], e));
         });
@@ -702,18 +808,18 @@ Template.category.onRendered(() => {
         const stationsGeojson = dataStations.filter((e) => {
           return !(e.geometry === null);
         });
-        dataEmployee.map((e) => {
-          dataGeojsonEmployee.push(turf.point([1, 1], e));
-        });
-        dataBaler.map((e) => {
-          dataGeojsonBaler.push(turf.point([2, 2], e));
-        });
-        dataDataloger.map((e) => {
-          dataGeojsonDataloger.push(turf.point([3, 3], e));
-        });
-        dataSensor.map((e) => {
-          dataGeojsonSensor.push(turf.point([4, 4], e));
-        });
+        // dataEmployee.map((e) => {
+        //   dataGeojsonEmployee.push(turf.point([1, 1], e));
+        // });
+        // dataBaler.map((e) => {
+        //   dataGeojsonBaler.push(turf.point([2, 2], e));
+        // });
+        // dataDataloger.map((e) => {
+        //   dataGeojsonDataloger.push(turf.point([3, 3], e));
+        // });
+        // dataSensor.map((e) => {
+        //   dataGeojsonSensor.push(turf.point([4, 4], e));
+        // });
         stationsGeojson.map((e) => {
           dataGeojsonStations.push(turf.point([e.long, e.lat], e));
         });
@@ -729,10 +835,6 @@ Template.category.onRendered(() => {
         // let collection_dataIris = turf.featureCollection(dataGeojsonIris);
         // Trạm
         let collection_station = turf.featureCollection(dataGeojsonStations);
-        let collection_employee = turf.featureCollection(dataGeojsonEmployee);
-        let collection_baler = turf.featureCollection(dataGeojsonBaler);
-        let collection_dataloger = turf.featureCollection(dataGeojsonDataloger);
-        let collection_sensor = turf.featureCollection(dataGeojsonSensor);
         // create a new blob from geojson featurecollection
         const blob = new Blob([JSON.stringify(collection)], {
           type: "application/json",
@@ -759,21 +861,6 @@ Template.category.onRendered(() => {
         const blob_station = new Blob([JSON.stringify(collection_station)], {
           type: "application/json",
         });
-        const blob_employee = new Blob([JSON.stringify(collection_employee)], {
-          type: "application/json",
-        });
-        const blob_baler = new Blob([JSON.stringify(collection_baler)], {
-          type: "application/json",
-        });
-        const blob_dataloger = new Blob(
-          [JSON.stringify(collection_dataloger)],
-          {
-            type: "application/json",
-          }
-        );
-        const blob_sensor = new Blob([JSON.stringify(collection_sensor)], {
-          type: "application/json",
-        });
         // URL reference to the blob
         const url = URL.createObjectURL(blob);
         const url_event_station = URL.createObjectURL(blob_event_station);
@@ -782,10 +869,6 @@ Template.category.onRendered(() => {
         const url_realTimeEvent = URL.createObjectURL(blob_realTimeEvent);
         // Trạm
         const url_station = URL.createObjectURL(blob_station);
-        const url_employee = URL.createObjectURL(blob_employee);
-        const url_baler = URL.createObjectURL(blob_baler);
-        const url_dataloger = URL.createObjectURL(blob_dataloger);
-        const url_sensor = URL.createObjectURL(blob_sensor);
         // Khởi tạo layer
         const layerEventStaions = new GeoJSONLayer({
           url: url_event_station,
@@ -912,7 +995,6 @@ Template.category.onRendered(() => {
           ],
         };
         // Kết thúc Content Trạm
-
         // create new geojson layer using the blob url
 
         // const layerIris = new GeoJSONLayer({
@@ -1115,6 +1197,106 @@ Template.category.onRendered(() => {
             layer = layerView;
             layer.filter = { where: "id = -1" };
           });
+          const sketch = new Sketch({
+            layer: graphicsLayer,
+            view: view,
+            availableCreateTools: ["polygon", "rectangle", "circle"],
+            container: drawDiv,
+          });
+          let sketchGeometry = null;
+          $("#drawFilter").on("click", () => {
+            // console.log(sketch, "sketch");
+            sketchGeometry = null;
+            sketch.on("create", function (event) {
+              const graphicsLayer = sketch.layer;
+              // Only once the polygon is completed
+              if (event.state === "complete") {
+                if (graphicsLayer.graphics.items.length > 1) {
+                  graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+                }
+                sketchGeometry = event.graphic.geometry;
+                updateFilterDraw();
+              }
+            });
+            sketch.on("update", function (event) {
+              // Only once the polygon is completed
+              const eventInfo = event.toolEventInfo;
+              // update the filter every time the user moves the filtergeometry
+              if (eventInfo && eventInfo.type.includes("stop")) {
+                sketchGeometry = event.graphics[0].geometry;
+                updateFilterDraw();
+              }
+            });
+          });
+
+          sketch.on("create", function (event) {
+            const graphicsLayer = sketch.layer;
+            // Only once the polygon is completed
+            if (event.state === "complete") {
+              if (graphicsLayer.graphics.items.length > 1) {
+                graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+              }
+              sketchGeometry = event.graphic.geometry;
+              updateFilterDraw();
+            }
+          });
+          sketch.on("update", function (event) {
+            // Only once the polygon is completed
+            const eventInfo = event.toolEventInfo;
+            // update the filter every time the user moves the filtergeometry
+            if (eventInfo && eventInfo.type.includes("stop")) {
+              sketchGeometry = event.graphics[0].geometry;
+              updateFilterDraw();
+            }
+          });
+          function updateFilterDraw() {
+            let query;
+            let layerQuery;
+            if ($("#buttonRealtime").hasClass("activeButton")) {
+              loadLayerView(layerRealTime, {
+                geometry: sketchGeometry,
+                spatialRelationship: "contains",
+              });
+
+              query = layerRealTime.createQuery();
+              layerQuery = layerRealTime;
+            }
+            if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+              loadLayerView(layerEvent, {
+                geometry: sketchGeometry,
+                spatialRelationship: "contains",
+              });
+
+              query = layerEvent.createQuery();
+              layerQuery = layerEvent;
+            }
+            query.geometry = sketchGeometry;
+            query.spatialRelationship = "contains";
+            return layerQuery
+              .queryFeatures(query)
+              .then(async function (response) {
+                const dataSet = response.features;
+                if ($("#buttonRealtime").hasClass("activeButton")) {
+                  const data = await Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.Reporting_time = new Date(
+                        e.attributes.Reporting_time
+                      );
+                      return e;
+                    })
+                  );
+                  loadDataTable(data);
+                } else {
+                  const data = await Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.time = new Date(e.attributes.time);
+                      return e;
+                    })
+                  );
+                  loadDataTableProcessedEvent(data);
+                }
+              });
+          }
           // Tạo biến chứa dữ liệu của datetime event
           const max_datetime_event = Math.max(
             ...eventGeojson.map((e) => e.datetime)
@@ -1142,18 +1324,28 @@ Template.category.onRendered(() => {
           } else {
             start_time = new Date(min_datetime_event);
           }
+          // Cộng thêm 1 ngày vào End_time
+          function incrementDate(dateInput, increment) {
+            var dateFormatTotime = dateInput;
+            var increasedDate = new Date(
+              dateFormatTotime.getTime() + increment * 86400000
+            );
+            return increasedDate;
+          }
+          const end_time_addOneDay = incrementDate(end_time, 1);
+
           let flView = null;
           // set time slider's full extent to
           timeSlider.fullTimeExtent = {
             start: start_time,
-            end: end_time,
+            end: end_time_addOneDay,
           };
           // showing earthquakes with one day interval
           // Values property is set so that timeslider
           // widget show the first day. We are setting
           // the thumbs positions.
           timeSlider.values = [start_time, end_time];
-
+          // console.log(timeSlider, "timeSlider");
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv;
             $("#filter").on("click", () => {
@@ -1216,18 +1408,6 @@ Template.category.onRendered(() => {
 
           view.whenLayerView(layerEvent).then((layerView) => {
             flView = layerView;
-            // watch for time slider timeExtent change
-            // timeSlider.watch("timeExtent", function () {
-            //   updateFilter();
-            // });
-
-            // depthSlider.on("thumb-drag", function () {
-            //   console.log("test")
-            //   updateFilter();
-            // });
-            // magnitudeSlider.on("thumb-drag", function () {
-            //   updateFilter();
-            // });
             $("#filter").on("click", () => {
               $("#buttonProcessedEvent").hasClass("activeButton")
                 ? updateFilter()
@@ -1315,19 +1495,80 @@ Template.category.onRendered(() => {
           // });
         });
         // Datatable
+        let arrayVN = [];
+        // console.log(provinceName);
+        $("#select-tools").selectize({
+          maxItems: 1,
+          valueField: "name",
+          labelField: "name",
+          searchField: "name",
+          options: provinceName,
+          create: false,
+          onChange: async function (value, isOnInitialize) {
+            if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+              let query_ProcessedEvent = layerEvent.createQuery();
+              query_ProcessedEvent.where = `location LIKE '${value}'`;
+              query_ProcessedEvent.outFields = "*";
+
+              layerEvent
+                .queryFeatures(query_ProcessedEvent)
+                .then(async function (response) {
+                  const dataSet = response.features;
+                  const data = await Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.time = new Date(e.attributes.time);
+                      return e;
+                    })
+                  );
+                  //load table when page loaded
+                  loadDataTableProcessedEvent(data);
+                });
+              loadLayerView(layerEvent, { where: `location LIKE '${value}'` });
+            } else {
+              let query = layerRealTime.createQuery();
+              query.where = `location LIKE '${value}'`;
+              query.outFields = "*";
+
+              layerRealTime
+                .queryFeatures(query)
+                .then(async function (response) {
+                  const dataSet = response.features;
+
+                  Promise.all(
+                    dataSet.map((e) => {
+                      e.attributes.Reporting_time = new Date(
+                        e.attributes.Reporting_time
+                      );
+                      return e;
+                    })
+                  ).then((e) => {
+                    loadDataTable(e);
+                  });
+                });
+              loadLayerView(layerRealTime, {
+                where: `location LIKE '${value}'`,
+              });
+            }
+            // dataSet.forEach((e) => {
+            //   e.attributes.lon, e.attributes.lat;
+            // });
+          },
+        });
         function loadProcessedEvent() {
           let query_ProcessedEvent = layerEvent.createQuery();
           query_ProcessedEvent.where = `md >= 0 and md <= 1000`;
           query_ProcessedEvent.outFields = "*";
           layerEvent
             .queryFeatures(query_ProcessedEvent)
-            .then(function (response) {
+            .then(async function (response) {
               const dataSet = response.features;
 
-              const data = dataSet.map((e) => {
-                e.attributes.time = new Date(e.attributes.time);
-                return e;
-              });
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.time = new Date(e.attributes.time);
+                  return e;
+                })
+              );
               //load table when page loaded
               loadDataTableProcessedEvent(data);
 
@@ -1355,14 +1596,17 @@ Template.category.onRendered(() => {
           query.where = `Mpd >= 0 and Mpd <= 1000`;
           query.outFields = "*";
 
-          layerRealTime.queryFeatures(query).then(function (response) {
+          layerRealTime.queryFeatures(query).then(async function (response) {
             const dataSet = response.features;
-            const data = dataSet.map((e) => {
-              e.attributes.Reporting_time = new Date(
-                e.attributes.Reporting_time
-              );
-              return e;
-            });
+            const data = await Promise.all(
+              dataSet.map((e) => {
+                e.attributes.Reporting_time = new Date(
+                  e.attributes.Reporting_time
+                );
+                return e;
+              })
+            );
+            // console.log(data, "data");
             //load table when page loaded
             loadDataTable(data);
 
@@ -1374,10 +1618,13 @@ Template.category.onRendered(() => {
                   highlightSelect.remove();
                 }
                 highlightSelect = layerView.highlight(dataRow);
-                view.goTo({
-                  geometry: dataRow.geometry,
-                  zoom: 6,
+                const point = new Point({
+                  x: dataRow.attributes.lon,
+                  y: dataRow.attributes.lat,
+                  z: 6,
+                  spatialReference: 4326, // EPSG:4326 (WGS84)
                 });
+                view.goTo(point);
               });
               openPopupRightSide();
               loadPopupLayerRealtime(dataRow);
@@ -1401,15 +1648,9 @@ Template.category.onRendered(() => {
         }
         //end highlight
         $("#closebtn").click(() => {
-          view.whenLayerView(layerStations).then((layerView) => {
-            layerView.filter = { where: "id = -1" };
-          });
-          view.whenLayerView(layerRealTime).then((layerView) => {
-            layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
-          });
-          view.whenLayerView(layerEvent).then((layerView) => {
-            layerView.filter = { where: "ml >= 0 and ml <= 1000" };
-          });
+          loadLayerView(layerStations, { where: "id = -1" });
+          loadLayerView(layerRealTime, { where: "1=1" });
+          loadLayerView(layerEvent, { where: "1=1" });
           if (highlightSelect) {
             highlightSelect.remove();
           }
@@ -1440,7 +1681,11 @@ Template.category.onRendered(() => {
           <td colspan="3" class="mag">${result.attributes.Mtc}</td>
           </tr>
           </table>`);
-          // $("#location").html(fullTime);
+          $("#location").html(
+            result.attributes.location
+              ? result.attributes.location
+              : "Chưa có thông tin"
+          );
 
           const where = `realtime_id = ${result.attributes.id}`;
 
@@ -1481,12 +1726,13 @@ Template.category.onRendered(() => {
                     <td>${e.attributes.Parr}</td>
                     </tr>`);
               });
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter =
-                  code_station.length > 0
-                    ? { where: code_station.join("OR") }
-                    : { where: "code = -1" };
-              });
+              loadLayerView(
+                layerStations,
+                code_station.length > 0
+                  ? { where: code_station.join("OR") }
+                  : { where: "code = -1" }
+              );
+
               // console.log(row_data, "row_data");
               const wavePicData = `
                 <table >
@@ -1551,12 +1797,13 @@ Template.category.onRendered(() => {
                 }
               });
               // Hiển thị các Trạm đo được lên bản đồ
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter =
-                  code_station.length > 0
-                    ? { where: code_station.join("OR") }
-                    : { where: "code = -1" };
-              });
+              loadLayerView(
+                layerStations,
+                code_station.length > 0
+                  ? { where: code_station.join("OR") }
+                  : { where: "code = -1" }
+              );
+
               const row_data = [];
               if (dataSet.length == 0) {
                 $("#wavePickTable").html("Chưa có thông tin");
@@ -1615,15 +1862,9 @@ Template.category.onRendered(() => {
             if (response.results.length <= 1) {
               document.getElementById("popup").style.width = "0";
               document.getElementById("map").style.marginRight = "0";
-              view.whenLayerView(layerStations).then((layerView) => {
-                layerView.filter = { where: "id = -1" };
-                view.whenLayerView(layerRealTime).then((layerView) => {
-                  layerView.filter = { where: "Mpd >= 0 and Mpd <= 1000" };
-                });
-                view.whenLayerView(layerEvent).then((layerView) => {
-                  layerView.filter = { where: "ml >= 0 and ml <= 1000" };
-                });
-              });
+              loadLayerView(layerStations, { where: "id = -1" });
+              loadLayerView(layerRealTime, { where: "1=1" });
+              loadLayerView(layerEvent, { where: "1=1" });
             } else {
               response.results.forEach(function (result) {
                 // Popup LayerRealTime
@@ -1669,7 +1910,119 @@ Template.category.onRendered(() => {
           }
         }
         // End Legend
+        $("#buttonTime").on("click", (e) => {
+          $("#buttonTime").hasClass("activeButton")
+            ? {}
+            : ($("#buttonTime").addClass("activeButton"),
+              $("#filterRegion").hide(),
+              $("#drawFilter").hide(),
+              $("#infoDiv").fadeIn(),
+              $("#buttonDraw").removeClass("activeButton"),
+              $("#buttonRegion").removeClass("activeButton"));
+        });
+        $("#buttonDraw").on("click", (e) => {
+          $("#buttonDraw").hasClass("activeButton")
+            ? {}
+            : ($("#buttonDraw").addClass("activeButton"),
+              $("#filterRegion").hide(),
+              $("#infoDiv").hide(),
+              $("#drawFilter").fadeIn(),
+              $("#buttonTime").removeClass("activeButton"),
+              $("#buttonRegion").removeClass("activeButton"));
+        });
+        $("#buttonRegion").on("click", (e) => {
+          $("#buttonRegion").hasClass("activeButton")
+            ? {}
+            : ($("#buttonRegion").addClass("activeButton"),
+              $("#infoDiv").hide(),
+              $("#drawFilter").hide(),
+              $("#filterRegion").fadeIn(),
+              $("#buttonDraw").removeClass("activeButton"),
+              $("#buttonTime").removeClass("activeButton"));
+        });
+        $("#coordinateReset").on("click", () => {
+          $("#maxLat").val("90");
+          $("#maxLong").val("180");
+          $("#minLat").val("-90");
+          $("#minLong").val("-180");
 
+          if ($("#buttonRealtime").hasClass("activeButton")) {
+            loadDataRealtime();
+            loadLayerView(layerRealTime, {
+              where: "1=1",
+            });
+            // view.whenLayerView(layerRealTime).then((layerView) => {
+            //   layerView.filter = {
+            //     where: "1=1",
+            //   };
+            // });
+          } else if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+            loadProcessedEvent();
+            loadLayerView(layerEvent, {
+              where: "1=1",
+            });
+          }
+        });
+        $("#button_filterRegion").on("click", () => {
+          const maxLat = $("#maxLat").val();
+          const maxLong = $("#maxLong").val();
+          const minLat = $("#minLat").val();
+          const minLong = $("#minLong").val();
+
+          const geometry = new Extent({
+            xmin: minLong,
+            ymin: minLat,
+            xmax: maxLong,
+            ymax: maxLat,
+            spatialReference: 4326,
+          });
+          if ($("#buttonRealtime").hasClass("activeButton")) {
+            let query = layerRealTime.createQuery();
+            query.geometry = geometry;
+            query.spatialRelationship = "intersects";
+            query.outFields = "*";
+            // console.log(query, "query");
+            layerRealTime.queryFeatures(query).then(async function (response) {
+              const dataSet = response.features;
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.Reporting_time = new Date(
+                    e.attributes.Reporting_time
+                  );
+                  return e;
+                })
+              );
+              loadDataTable(data);
+            });
+            loadLayerView(layerRealTime, {
+              geometry: geometry,
+            });
+            // view.whenLayerView(layerRealTime).then((layerView) => {
+            //   layerView.filter = {
+            //     geometry: geometry,
+            //   };
+            // });
+          } else if ($("#buttonProcessedEvent").hasClass("activeButton")) {
+            let query = layerEvent.createQuery();
+            query.geometry = geometry;
+            query.spatialRelationship = "intersects";
+            query.outFields = "*";
+            // console.log(query, "query");
+            layerEvent.queryFeatures(query).then(async function (response) {
+              const dataSet = response.features;
+              const data = await Promise.all(
+                dataSet.map((e) => {
+                  e.attributes.time = new Date(e.attributes.time);
+                  return e;
+                })
+              );
+              loadDataTableProcessedEvent(data);
+            });
+            loadLayerView(layerEvent, {
+              geometry: geometry,
+            });
+          }
+        });
         // basemap Gallery
         const basemapGallery = new BasemapGallery({
           view: view,
@@ -1745,8 +2098,8 @@ Template.category.onRendered(() => {
         // document.getElementById("infoDiv").style.display = "block";
         view.when().then(function () {
           // the webmap successfully loaded
-          $(".preloader").fadeOut();
           document.getElementById("legendDiv").style.display = "block";
+          $(".preloader").fadeOut();
         });
       }
     )

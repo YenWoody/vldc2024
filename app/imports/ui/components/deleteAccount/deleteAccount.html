@@ -1,0 +1,36 @@
+<template name="deleteAccount">
+  <style>
+    #deleteAccount {
+      border-radius: 10px;
+      display: grid;
+      justify-items: center;
+    }
+  </style>
+
+  <div class="container" id="deleteAccount">
+    {{#if userUnVerified}} {{> verify_form }} {{else}}
+    <div class="container alert-container">
+      <div class="alert alert-danger" role="alert">
+        <h3 class="alert-heading text-center">Cảnh Báo!</h3>
+        <p>
+          Bạn sắp xóa vĩnh viễn tài khoản của mình. Hành động này không thể hoàn
+          tác.
+        </p>
+        <p>
+          Tất cả dữ liệu liên quan đến tài khoản sẽ bị xóa và không thể phục
+          hồi. Vui lòng chắc chắn rằng bạn muốn tiếp tục.
+        </p>
+        <hr />
+        <div class="d-flex justify-content-end">
+          <a href="/" class="btn btn-primary m-1"
+            ><i class="fa fa-home me-1" aria-hidden="true"></i>Về trang chủ</a
+          >
+          <button id="delete-account" class="btn btn-danger m-1">
+            <i class="fa fa-trash-o me-1" aria-hidden="true"></i>Xóa Tài Khoản
+          </button>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</template>

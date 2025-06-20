@@ -32,6 +32,7 @@ Template.map_station.onRendered(() => {
     "esri/layers/VectorTileLayer",
     "esri/layers/GeoJSONLayer",
     "esri/Basemap",
+    "esri/widgets/TimeSlider",
     "esri/widgets/BasemapGallery",
     "esri/layers/TileLayer",
     "esri/widgets/Legend",
@@ -46,7 +47,8 @@ Template.map_station.onRendered(() => {
     "esri/layers/support/FeatureFilter",
     "esri/layers/support/LabelClass",
     "esri/widgets/Zoom",
-    "dojo/domReady!",
+    "esri/geometry/Extent",
+    // "dojo/domReady!",
   ])
     .then(
       async ([
@@ -55,6 +57,7 @@ Template.map_station.onRendered(() => {
         VectorTileLayer,
         GeoJSONLayer,
         Basemap,
+        TimeSlider,
         BasemapGallery,
         TileLayer,
         Legend,
@@ -69,6 +72,7 @@ Template.map_station.onRendered(() => {
         FeatureFilter,
         LabelClass,
         Zoom,
+        Extent,
       ]) => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
@@ -282,8 +286,12 @@ Template.map_station.onRendered(() => {
           basemap: weMap,
           layers: [graphicsLayer],
         });
-        let floodLayerView;
         let highlightSelect;
+        function loadLayerView(layer, query) {
+          view.whenLayerView(layer).then((layerview) => {
+            layerview.filter = query;
+          });
+        }
         const view = new MapView({
           map: map,
           zoom: 4,
@@ -315,11 +323,11 @@ Template.map_station.onRendered(() => {
         $("#filter").on("click", () => {
           let selectedNetWork = $("#relationship-select option:selected").val();
           if (selectedNetWork === "all") {
-            return (floodLayerView.filter = null);
+            loadLayerView(layerStations, { where: "1=1" });
           } else {
-            floodLayerView.filter = {
+            loadLayerView(layerStations, {
               where: `network LIKE '%${selectedNetWork}%'`,
-            };
+            });
           }
         });
         const defaultSym = {
@@ -445,11 +453,42 @@ Template.map_station.onRendered(() => {
         const stationsGeojson = dataStations.filter((e) => {
           return !(e.geometry === null);
         });
-
-        eventGeojson.map((e) => {
-          e.datetime = e.datetime.getTime();
-          dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-        });
+        await Promise.all(
+          eventGeojson.map(async (e, i) => {
+            const url =
+              "https://gis.fimo.com.vn/arcgis/rest/services/GIS-CLOUD/administrative_boundaries_v1_1/MapServer/0/query";
+            const param = {
+              outFields: "*",
+              geometryType: "esriGeometryPoint",
+              geometry: `'${e.long},${e.lat}`,
+              f: "json",
+            };
+            e.datetime = e.datetime.getTime();
+            e["location"] = "Chưa có thông tin";
+            dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+            // try {
+            //   await $.ajax({
+            //     url: url,
+            //     data: param,
+            //     type: "GET",
+            //     dataType: "json",
+            //   }).done((t) => {
+            //     if (!t.error) {
+            //       if (t.features.length > 0) {
+            //         e["location"] = t.features[0].attributes.name;
+            //         return e;
+            //       }
+            //     }
+            //   });
+            // } catch (e) {
+            //   console.log();
+            // }
+          })
+        );
+        // eventGeojson.map((e) => {
+        //   e.datetime = e.datetime.getTime();
+        //   dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
+        // });
         dataEventStations.map((e) => {
           dataGeojsonEventStations.push(turf.point([0, 0], e));
         });
@@ -459,6 +498,7 @@ Template.map_station.onRendered(() => {
 
         // Tạo Turf featurecollection
         let collection = turf.featureCollection(dataGeojsonEvents);
+        // console.log(collection, "collection");
         let collection_events_station = turf.featureCollection(
           dataGeojsonEventStations
         );
@@ -467,6 +507,7 @@ Template.map_station.onRendered(() => {
         const blob = new Blob([JSON.stringify(collection)], {
           type: "application/json",
         });
+        // console.log(blob, "blob");
         const blob_event_station = new Blob(
           [JSON.stringify(collection_events_station)],
           {
@@ -481,7 +522,7 @@ Template.map_station.onRendered(() => {
         const url = URL.createObjectURL(blob);
         const url_event_station = URL.createObjectURL(blob_event_station);
         const url_station = URL.createObjectURL(blob_station);
-
+        // console.log(url_station, "url_station");
         // Khởi tạo layer
         const layerEventStaions = new GeoJSONLayer({
           url: url_event_station,
@@ -520,15 +561,18 @@ Template.map_station.onRendered(() => {
                               <th class="content_popup">Thời gian (GMT)</th>
                               <th class="content_popup">Độ sâu</th>
                               <th class="content_popup">Độ lớn (Ml)</th>
+                              <th class="content_popup">Vị trí</th>
                               <th class="content_popup">Vĩ độ</th>
                               <th class="content_popup">Kinh độ</th>
+                              
                           </tr>
                       </thead>
                       <tbody>
                       <tr>
                       <td>${dateFormat}</td>
                       <td>${event.graphic.attributes.md}</td>
-                      <td>${event.graphic.attributes.ml}</td>              
+                      <td>${event.graphic.attributes.ml}</td>
+                      <td>${event.graphic.attributes.location}</td>               
                       <td>${event.graphic.attributes.lat}</td>
                       <td>${event.graphic.attributes.long}</td>
                       </tr>
@@ -699,6 +743,7 @@ Template.map_station.onRendered(() => {
           labelingInfo: [labelClass],
           outFields: ["*"],
         });
+        // console.log(layerStations, "layerStations");
         // Sketch
         const sketch = new Sketch({
           layer: graphicsLayer,
@@ -706,11 +751,40 @@ Template.map_station.onRendered(() => {
           availableCreateTools: ["polygon", "rectangle", "circle"],
           container: drawDiv,
         });
-
+        // console.log(sketch, "sketch");
         let sketchGeometry = null;
+        $("#drawFilter").on("click", () => {
+          // console.log(sketch, "sketch");
+          sketchGeometry = null;
+          sketch.on("create", function (event) {
+            const graphicsLayer = sketch.layer;
+            // Only once the polygon is completed
+            if (event.state === "complete") {
+              if (graphicsLayer.graphics.items.length > 1) {
+                graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+              }
+              sketchGeometry = event.graphic.geometry;
+              updateFilter();
+            }
+          });
+          sketch.on("update", function (event) {
+            // Only once the polygon is completed
+            const eventInfo = event.toolEventInfo;
+            // update the filter every time the user moves the filtergeometry
+            if (eventInfo && eventInfo.type.includes("stop")) {
+              sketchGeometry = event.graphics[0].geometry;
+              updateFilter();
+            }
+          });
+        });
+
         sketch.on("create", function (event) {
+          const graphicsLayer = sketch.layer;
           // Only once the polygon is completed
           if (event.state === "complete") {
+            if (graphicsLayer.graphics.items.length > 1) {
+              graphicsLayer.remove(graphicsLayer.graphics.items[0]);
+            }
             sketchGeometry = event.graphic.geometry;
             updateFilter();
           }
@@ -725,10 +799,11 @@ Template.map_station.onRendered(() => {
           }
         });
         function updateFilter() {
-          floodLayerView.filter = new FeatureFilter({
+          loadLayerView(layerStations, {
             geometry: sketchGeometry,
             spatialRelationship: "contains",
           });
+
           let query = layerStations.createQuery();
           query.geometry = sketchGeometry;
           query.spatialRelationship = "contains";
@@ -764,13 +839,12 @@ Template.map_station.onRendered(() => {
         view.when(function () {
           map.addMany([layerEvent, layerStations]);
           let flView = null;
-          view.whenLayerView(layerStations).then((layerView) => {
-            floodLayerView = layerView;
-          });
-          view.whenLayerView(layerEvent).then((layerView) => {
-            layer = layerView;
-            layer.filter = { where: "id = -1" };
-          });
+          loadLayerView(layerEvent, { where: "id = -1" });
+          // view.whenLayerView(layerEvent).then((layerView) => {
+          //   console.log("yea");
+          //   layer = layerView;
+          //   layer.filter = { where: "id = -1" };
+          // });
         });
         function loadDataTableStation() {
           // Datatable
@@ -789,12 +863,17 @@ Template.map_station.onRendered(() => {
             destroy: true,
             searching: false,
             scrollX: "true",
-            scrollY: "calc(100vh - 440px)",
+            scrollY: "calc(100vh - 400px)",
             language: {
               sSearch: "Tìm kiếm :",
               emptyTable: "Sử dụng bộ lọc để hiển thị dữ liệu",
               info: "Hiển thị từ _START_ đến _END_ Trạm",
               infoEmpty: "Hiển thị 0 Events",
+              paginate: {
+                previous: "Trước",
+                next: "Sau",
+              },
+              lengthMenu: "Hiển thị _MENU_ mục",
             },
             columns: [
               {
@@ -886,13 +965,18 @@ Template.map_station.onRendered(() => {
                   }</td><td>${e.attributes.ml}</td></tr>`
                 );
               });
-
-              view.whenLayerView(layerEvent).then((layerView) => {
-                layerView.filter =
-                  id_query.length > 0
-                    ? { where: id_query.join("OR") }
-                    : { where: "id = -1" };
-              });
+              loadLayerView(
+                layerEvent,
+                id_query.length > 0
+                  ? { where: id_query.join("OR") }
+                  : { where: "id = -1" }
+              );
+              // view.whenLayerView(layerEvent).then((layerView) => {
+              //   layerView.filter =
+              //     id_query.length > 0
+              //       ? { where: id_query.join("OR") }
+              //       : { where: "id = -1" };
+              // });
 
               document.getElementById(
                 "_content"
@@ -920,18 +1004,75 @@ Template.map_station.onRendered(() => {
             ? {}
             : ($("#buttonNetwork").addClass("activeButton"),
               $("#drawFilter").hide(),
+              $("#filterRegion").hide(),
               $("#infoDiv").fadeIn(),
+              $("#buttonRegion").removeClass("activeButton"),
               $("#buttonDraw").removeClass("activeButton"));
+        });
+        $("#buttonRegion").on("click", (e) => {
+          $("#buttonRegion").hasClass("activeButton")
+            ? {}
+            : ($("#buttonRegion").addClass("activeButton"),
+              $("#drawFilter").hide(),
+              $("#infoDiv").hide(),
+              $("#filterRegion").fadeIn(),
+              $("#buttonDraw").removeClass("activeButton"),
+              $("#buttonNetwork").removeClass("activeButton"));
         });
         $("#buttonDraw").on("click", (e) => {
           $("#buttonDraw").hasClass("activeButton")
             ? {}
             : ($("#buttonDraw").addClass("activeButton"),
               $("#infoDiv").hide(),
+              $("#filterRegion").hide(),
               $("#drawFilter").fadeIn(),
-              $("#buttonNetwork").removeClass("activeButton"));
+              $("#buttonNetwork").removeClass("activeButton"),
+              $("#buttonRegion").removeClass("activeButton"));
         });
+        $("#coordinateReset").on("click", () => {
+          $("#maxLat").val("90");
+          $("#maxLong").val("180");
+          $("#minLat").val("-90");
+          $("#minLong").val("-180");
+          loadLayerView(layerStations, {
+            where: "1=1",
+          });
 
+          loadDataTableStation();
+        });
+        $("#button_filterRegion").on("click", () => {
+          const maxLat = $("#maxLat").val();
+          const maxLong = $("#maxLong").val();
+          const minLat = $("#minLat").val();
+          const minLong = $("#minLong").val();
+
+          const geometry = new Extent({
+            xmin: minLong,
+            ymin: minLat,
+            xmax: maxLong,
+            ymax: maxLat,
+            spatialReference: 4326,
+          });
+          let query = layerStations.createQuery();
+          query.geometry = geometry;
+          query.spatialRelationship = "intersects";
+          query.outFields = "*";
+          // console.log(query, "query");
+          layerStations.queryFeatures(query).then(function (response) {
+            const dataSet = response.features;
+            // console.log(dataSet);
+            loadDataTable(dataSet);
+          });
+          loadLayerView(layerStations, {
+            geometry: geometry,
+          });
+          // view.whenLayerView(layerStations).then((layerView) => {
+          //   layerView.filter = {
+          //     geometry: geometry,
+          //   };
+          // });
+          // console.log(maxLat, maxLong, minLat, minLong);
+        });
         // Highlight điểm click trên FeatureLayer
         function hightlightPoint(layer, point) {
           view.whenLayerView(layer).then(function (layerView) {
@@ -953,15 +1094,34 @@ Template.map_station.onRendered(() => {
             if (response.results.length <= 1) {
               document.getElementById("popup").style.width = "0";
               document.getElementById("map").style.marginRight = "0";
-              view.whenLayerView(layerEvent).then((layerView) => {
-                layerView.filter = { where: "id = -1" };
-              });
+              loadLayerView(layerEvent, { where: "id = -1" });
+              // view.whenLayerView(layerEvent).then((layerView) => {
+              //   layerView.filter = { where: "id = -1" };
+              // });
+              // view.whenLayerView(layerStations).then((layerView) => {
+              //   layerView.filter = {
+              //     where: "1=1",
+              //   };
+              // });
             } else {
               response.results.forEach(async function (result) {
                 // Popup LayerRealTime
+
                 if (result.graphic.layer === layerStations) {
                   openPopupRightSide();
-
+                  let layerStationQuery = layerStations.createQuery();
+                  // console.log(result.graphic, "result.graphic.layer");
+                  layerStationQuery.where = `id_key LIKE '%${result.graphic.attributes.id_key}%'`;
+                  layerStationQuery.outFields = "*";
+                  // console.log(layerStationQuery, "layerStationQuery");
+                  loadLayerView(layerStations, {
+                    where: `id_key = ${result.graphic.attributes.id_key}`,
+                  });
+                  // view.whenLayerView(layerStations).then((layerView) => {
+                  //   layerView.filter = {
+                  //     where: `id_key = ${result.graphic.attributes.id_key}`,
+                  //   };
+                  // });
                   hightlightPoint(layerStations, result.graphic);
                   let query = layerEventStaions.createQuery();
                   async function loadEventStation() {
@@ -977,13 +1137,18 @@ Template.map_station.onRendered(() => {
                     id_event.map((e) => {
                       id_query.push(`(id = ${e})`);
                     });
-
-                    view.whenLayerView(layerEvent).then((layerView) => {
-                      layerView.filter =
-                        id_query.length > 0
-                          ? { where: id_query.join("OR") }
-                          : { where: "id = -1" };
-                    });
+                    loadLayerView(
+                      layerEvent,
+                      id_query.length > 0
+                        ? { where: id_query.join("OR") }
+                        : { where: "id = -1" }
+                    );
+                    // view.whenLayerView(layerEvent).then((layerView) => {
+                    //   layerView.filter =
+                    //     id_query.length > 0
+                    //       ? { where: id_query.join("OR") }
+                    //       : { where: "id = -1" };
+                    // });
                   }
                   loadEventStation();
                   loadInforStation(result.graphic);
@@ -1520,8 +1685,8 @@ Template.map_station.onRendered(() => {
         // ccWidget.multipleConversions = false;
         view.when().then(function () {
           // the webmap successfully loaded
-          $(".preloader").fadeOut();
           document.getElementById("legendDiv").style.display = "block";
+          $(".preloader").fadeOut();
           // document.getElementById("infoDiv").style.display = "block";
         });
         var modal = document.getElementById("_modal");
@@ -1544,11 +1709,11 @@ Template.map_station.onRendered(() => {
         $("select").on("change", function () {
           let selectedNetWork = $("#listNetwork option:selected").val();
           if (selectedNetWork === "all") {
-            return (floodLayerView.filter = null);
+            loadLayerView(layerStations, { where: "1=1" });
           } else {
-            floodLayerView.filter = {
+            loadLayerView(layerStations, {
               where: `network LIKE '%${selectedNetWork}%'`,
-            };
+            });
           }
           let query = layerStations.createQuery();
           query.where =

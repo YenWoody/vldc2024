@@ -8,8 +8,6 @@ Template.nav.onCreated(function () {
 });
 
 Template.nav.onRendered(() => {
-  var timeout = 0;
-  var delay = 250;
   var windowsize;
   var sidebar = $(".sidebar__menu_wrap");
   // sidebar in mobile mode
@@ -41,15 +39,27 @@ Template.nav.onRendered(() => {
       $(".contents__sidebar").addClass("fixedsticky");
     }
   }
-
-  // window.resize event listener
-  window.addEventListener("resize", function () {
-    clearTimeout(timeout);
-    timeout = setTimeout(checkWidth, delay);
-  });
-
   // Execute on load
   checkWidth();
+  //Close the dropdown if the user clicks outside of it
+  window.onclick = function (event) {
+    // console.log(event, "event.target");
+    if (!event.target.matches(".dropbtn")) {
+      $("#content_dropdown").removeClass("show");
+    }
+    if (
+      event.target.offsetParent &&
+      !event.target.offsetParent.matches(".nav-class")
+    ) {
+      $(".menu-bar").removeClass("change");
+      $(".navbar-collapse").removeClass("d-none");
+      $(".list_nav").addClass("d-none");
+      $(".navbar-collapse").hasClass("show")
+        ? ($(".navbar-collapse").removeClass("show"),
+          $(".navbar-collapse").height(0))
+        : {};
+    }
+  };
 });
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
@@ -97,6 +107,11 @@ Template.nav.helpers({
         code: "dashboard",
         link: "/dashboard",
       },
+      {
+        name: "Hỏi đáp / Liên hệ",
+        code: "faq",
+        link: "/faq",
+      },
     ];
   },
   listsGuest() {
@@ -116,6 +131,11 @@ Template.nav.helpers({
         code: "station",
         link: "/station",
       },
+      {
+        name: "Hỏi đáp / Liên hệ",
+        code: "faq",
+        link: "/faq",
+      },
       // {
       //   name: "Số liệu",
       //   code: "statistics",
@@ -133,7 +153,29 @@ Template.nav.events({
   "click .header__references_logout": () => {
     Meteor.logout();
   },
+  "click #account_dropdown": () => {
+    $("#content_dropdown").toggleClass("show");
+  },
+  "click .dropdown-item": () => {
+    $(".menu-bar").removeClass("change");
+    $(".navbar-collapse").removeClass("d-none");
+    $(".list_nav").addClass("d-none");
+    $(".navbar-collapse").hasClass("show")
+      ? ($(".navbar-collapse").removeClass("show"),
+        $(".navbar-collapse").height(0))
+      : {};
+  },
   "click .menu-bar": () => {
+    $(".menu-bar").toggleClass("change");
+    $(".navbar-collapse").removeClass("d-none");
+    $(".list_nav").toggleClass("d-none");
+    $(".navbar-collapse").hasClass("show")
+      ? ($(".navbar-collapse").removeClass("show"),
+        $(".navbar-collapse").height(0))
+      : ($(".navbar-collapse").addClass("show"),
+        $(".navbar-collapse").height($(".navbar-nav").outerHeight(true)));
+  },
+  "click .nav-link": () => {
     $(".menu-bar").toggleClass("change");
     $(".navbar-collapse").removeClass("d-none");
     $(".list_nav").toggleClass("d-none");

@@ -87,3 +87,4 @@ typings/
 
 # vscode
 .vscode/
+app/imports/api/fcm/firebase-service-account.json

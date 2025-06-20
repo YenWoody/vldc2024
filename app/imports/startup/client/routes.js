@@ -1,6 +1,7 @@
 import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 // Import needed templates
 import "../../ui/layouts/body/body.js";
+import "../../ui/layouts/body_form/body_form.js";
 import "../../ui/layouts/dashboardpage/dashboardpage.js";
 import "../../ui/pages/home/home.js";
 import "../../ui/pages/event/event.js";
@@ -12,9 +13,11 @@ import "../../ui/pages/not-found/not-found.js";
 import "../../ui/components/upload/upload.js";
 import "../../ui/pages/register/register.js";
 import "../../ui/components/register-event/register-event.js";
+import "../../ui/components/deleteAccount/deleteAccount.js";
 import "../../ui/pages/changepass/changepass.js";
 import "../../ui/pages/login/login.js";
 import "../../ui/pages/reset/reset";
+import "../../ui/pages/faq-page/faq-page";
 import "../../ui/pages/verify/verify";
 import "../../ui/pages/category/category";
 import "../../ui/components/category/category";
@@ -35,6 +38,7 @@ import "../../ui/components/manage-internet/manage-internet";
 import "../../ui/components/machine-history/machine-history";
 import "../../ui/components/upload-pdf/upload-pdf";
 import "../../ui/components/dashboard/dashboard";
+import "../../ui/components/faq/faq";
 // Set up all routes in the app
 FlowRouter.route("/main", {
   name: "App.event",
@@ -126,6 +130,19 @@ FlowRouter.route("/manage-baler", {
     this.render("dashboardTemplate", "manageBaler");
   },
 });
+FlowRouter.route("/faq", {
+  name: "faq",
+  action() {
+    this.render("BodyTemplate", "faqPage");
+  },
+});
+FlowRouter.route("/manage-battery/:token", {
+  action: function () {
+    var token = FlowRouter.getParam("token");
+    console.log(token);
+    this.render("dashboardTemplate", "manageBatteryItem");
+  },
+});
 FlowRouter.route("/manage-station", {
   name: "dashboard",
   action() {
@@ -204,26 +221,32 @@ FlowRouter.route("*", {
 FlowRouter.route("/register", {
   name: "App.register",
   action() {
-    this.render("BodyTemplate", "register_form");
+    this.render("BodyFormTemplate", "register_form");
   },
 });
 FlowRouter.route("/changepass", {
   name: "App.changepass",
   action() {
-    this.render("dashboardTemplate", "changepass_form");
+    this.render("BodyFormTemplate", "changepass_form");
+  },
+});
+FlowRouter.route("/delete-account", {
+  name: "App.deleteaccount",
+  action() {
+    this.render("BodyFormTemplate", "deleteAccount");
   },
 });
 FlowRouter.route("/login", {
   name: "App.login",
   action() {
-    this.render("BodyTemplate", "login_form");
+    this.render("BodyFormTemplate", "login_form");
   },
 });
 
 FlowRouter.route("/reset", {
   name: "App.reset",
   action() {
-    this.render("BodyTemplate", "reset_form");
+    this.render("BodyFormTemplate", "reset_form");
   },
 });
 FlowRouter.route("/verify", {
