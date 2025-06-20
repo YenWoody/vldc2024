@@ -1600,6 +1600,7 @@ Template.map.onRendered(() => {
           document.getElementById("legendDiv").style.display = "block";
           $(".preloader").fadeOut();
         });
+ 
       }
     )
     .catch((e) => {

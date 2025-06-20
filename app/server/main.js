@@ -13,13 +13,19 @@ import os from "os";
 import { check } from "meteor/check";
 import { Accounts } from "meteor/accounts-base";
 import { Email } from "meteor/email";
-
+import '/imports/api/fcm/methods.js';
 // server.js
-const PG_HOST = "127.0.0.1";
+// const PG_HOST = "127.0.0.1";
+// const PG_PORT = "5432";
+// const PG_DATABASE = "vldc";
+// const PG_USER = "postgres";
+// const PG_PASSWORD = "vldcaA@1234!";
+
+const PG_HOST = "localhost";
 const PG_PORT = "5432";
 const PG_DATABASE = "vldc";
 const PG_USER = "postgres";
-const PG_PASSWORD = "vldcaA@1234!";
+const PG_PASSWORD = "040696";
 // const DIR_PATH = f
 const pool = new pg.Pool({
   host: PG_HOST,
@@ -171,6 +177,7 @@ function insertRealtime(realtime) {
                 Number(realtime.Mpd) <= Number(user.mag[1])
               ) {
                 const email = user.event_mail;
+                if (email && email.trim() !== '') {
                 Email.send({
                   to: `${email}`,
                   from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
@@ -199,6 +206,20 @@ function insertRealtime(realtime) {
           </tr>
       </table>`,
                 });
+                }
+        // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
+      const magnitude = Number(realtime.Mpd);
+            const token = user.profile?.fcmToken;
+            if (token && user.profile?.subscribed) {
+              const title = "🌋 Cảnh báo động đất";
+              const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
+          
+                  Meteor.call('fcm.sendToTopic', 'earthquake', title, body, (err, res) => {
+                  if (err) console.error('❌ Lỗi:', err);
+                  else console.log('✅ Đã gửi:', res);
+                });
+             
+            }
               }
             }
           } catch (e) {
@@ -1493,7 +1514,7 @@ Meteor.methods({
                     Number(event.ml) <= Number(user.mag[1])
                   ) {
                     const email = user.event_mail;
-
+                    if (email && email.trim() !== '') {
                     Email.send({
                       to: `${email}`,
                       from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
@@ -1522,6 +1543,20 @@ Meteor.methods({
                                     </tr>
                                 </table>`,
                     });
+                  }
+                  // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
+      const magnitude = Number(realtime.Mpd);
+            const token = user.profile?.fcmToken;
+            if (token && user.profile?.subscribed) {
+              const title = "🌋 Cảnh báo động đất";
+              const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
+          
+                  Meteor.call('fcm.sendToTopic', 'earthquake', title, body, (err, res) => {
+                  if (err) console.error('❌ Lỗi:', err);
+                  else console.log('✅ Đã gửi:', res);
+                });
+             
+            }
                   }
                 }
               } catch (e) {
