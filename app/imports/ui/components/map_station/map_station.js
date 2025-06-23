@@ -266,7 +266,7 @@ Template.map_station.onRendered(() => {
           title: "Satellite",
           id: "Satellite",
           thumbnailUrl:
-            "https://s3.amazonaws.com/digitaltrends-uploads-prod/2016/08/Google-Earth-Header.jpg",
+            "/img/satellite.png",
         });
         const weMap = new Basemap({
           // baseLayers: [tileLayer, adminBasemap, adminSea],
@@ -274,7 +274,7 @@ Template.map_station.onRendered(() => {
           title: "WeMap",
           id: "WeMap",
           thumbnailUrl:
-            "https://stamen-tiles.a.ssl.fastly.net/terrain/10/177/409.png",
+           "/img/wemap.png",
         });
         /**
          * init view

@@ -130,12 +130,12 @@ Template.map_world.onRendered(() => {
         const satelliteLayer = new WebTileLayer({
           urlTemplate: "https://mts1.google.com/vt?lyrs=s&x={x}&y={y}&z={z}",
         });
-        const satellite = new Basemap({
+       const satellite = new Basemap({
           baseLayers: [satelliteLayer, adminSea],
           title: "Satellite",
           id: "Satellite",
           thumbnailUrl:
-            "https://s3.amazonaws.com/digitaltrends-uploads-prod/2016/08/Google-Earth-Header.jpg",
+            "/img/satellite.png",
         });
         const weMap = new Basemap({
           // baseLayers: [tileLayer, adminBasemap, adminSea],
@@ -143,7 +143,7 @@ Template.map_world.onRendered(() => {
           title: "WeMap",
           id: "WeMap",
           thumbnailUrl:
-            "https://stamen-tiles.a.ssl.fastly.net/terrain/10/177/409.png",
+           "/img/wemap.png",
         });
         /**
          * init view
