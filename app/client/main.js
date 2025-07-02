@@ -6,7 +6,7 @@ import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
 import "/imports/startup/client/index.js";
 import { Meteor } from 'meteor/meteor';
-import { messaging, getToken, onMessage } from '/client/firebase-init';
+import { messaging, getToken, onMessage } from './firebase-init';
 
 Meteor.startup(() => {
   if ('serviceWorker' in navigator) {

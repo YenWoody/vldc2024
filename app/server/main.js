@@ -2,6 +2,7 @@
 import "/imports/startup/server";
 import "/imports/startup/both";
 import { Meteor } from "meteor/meteor";
+import "./api/fcm-token.js";
 import { fetch, Headers, Request, Response } from "meteor/fetch";
 import Files from "/lib/files.collection.js";
 import FilesMachineHistory from "/lib/files.machineHistory.js";
@@ -13,7 +14,7 @@ import os from "os";
 import { check } from "meteor/check";
 import { Accounts } from "meteor/accounts-base";
 import { Email } from "meteor/email";
-import '/imports/api/fcm/methods.js';
+import "/imports/api/fcm/methods.js";
 // server.js
 // const PG_HOST = "127.0.0.1";
 // const PG_PORT = "5432";
@@ -72,7 +73,7 @@ function run() {
       if (realtime != undefined) insertRealtime(realtime).catch(console.log);
     }
   });
-  setTimeout(run, 60000);
+  setTimeout(run, 30000);
 }
 run();
 function getRealtime(filename) {
@@ -122,7 +123,7 @@ function getRealtime(filename) {
   }
 }
 
-function insertRealtime(realtime) {
+async function insertRealtime(realtime) {
   const keys = [
     "filename",
     "Reporting_time",
@@ -167,29 +168,34 @@ function insertRealtime(realtime) {
     )
     .then(({ rowCount, rows }) => {
       if (rowCount === 1) {
-        // Check user đăng kí nhận tin động đất
+        const magnitude = Number(realtime.Mpd);
+        const title = "🌋 Cảnh báo động đất";
+        const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
+        Meteor.call("broadcastFCM", title, body); // Gửi thông báo FCM đến các thiết bị Android
         const users = Meteor.users.find({}).fetch();
+        // Check user đăng kí nhận tin động đất
         users.forEach((user) => {
           try {
             if (user.mag) {
               if (
-                Number(realtime.Mpd) >= Number(user.mag[0]) &&
-                Number(realtime.Mpd) <= Number(user.mag[1])
+                magnitude >= Number(user.mag[0]) &&
+                magnitude <= Number(user.mag[1])
               ) {
                 const email = user.event_mail;
-                if (email && email.trim() !== '') {
-                Email.send({
-                  to: `${email}`,
-                  from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
-                  subject: "Thông báo tin động đất",
-                  html: `
+
+                if (email && email.trim() !== "") {
+                  Email.send({
+                    to: `${email}`,
+                    from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
+                    subject: "Thông báo tin động đất",
+                    html: `
                                 <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
-          style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
-          <tr>
-              <td style="height:40px;">&nbsp;</td>
-          </tr>
-          <tr>
-              <td style="padding:0 35px;">
+                    style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+                    <tr>
+                        <td style="height:40px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                    <td style="padding:0 35px;">
                   <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Đây là tin nhắn tự động thông báo động đất của Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam</h1>
                   <span
                       style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
@@ -199,27 +205,29 @@ function insertRealtime(realtime) {
                    
                   <a href="https://earthquake.wemap.asia/"
                       style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
-              </td>
-          </tr>
-          <tr>
-              <td style="height:40px;">&nbsp;</td>
-          </tr>
-      </table>`,
-                });
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="height:40px;">&nbsp;</td>
+                    </tr>
+                </table>`,
+                  });
                 }
-        // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
-      const magnitude = Number(realtime.Mpd);
-            const token = user.profile?.fcmToken;
-            if (token && user.profile?.subscribed) {
-              const title = "🌋 Cảnh báo động đất";
-              const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
-          
-                  Meteor.call('fcm.sendToTopic', 'earthquake', title, body, (err, res) => {
-                  if (err) console.error('❌ Lỗi:', err);
-                  else console.log('✅ Đã gửi:', res);
-                });
-             
-            }
+                // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
+
+                const token = user.profile?.fcmToken;
+                if (token && user.profile?.subscribed) {
+                  Meteor.call(
+                    "fcm.sendToTopic",
+                    "earthquake",
+                    title,
+                    body,
+                    (err, res) => {
+                      if (err) console.error("❌ Lỗi:", err);
+                      else console.log("✅ Đã gửi:", res);
+                    }
+                  );
+                }
               }
             }
           } catch (e) {
@@ -381,7 +389,6 @@ Meteor.startup(function () {
   }
 });
 Meteor.methods({
-  importRealtimeData: function () {},
   findUsers: function () {
     return Meteor.users.find({ _id: { $ne: Meteor.userId() } }).fetch();
   },
@@ -1506,6 +1513,10 @@ Meteor.methods({
           .then(() => {
             // Check user đăng kí nhận tin động đất
             const users = Meteor.users.find({}).fetch();
+            const magnitude = Number(event.ml);
+            const title = "🌋 Cảnh báo động đất";
+            const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${event.lat}, kinh độ ${event.long}, thời gian ghi nhận  ${event.datetime}`;
+            Meteor.call("broadcastFCM", title, body); // Gửi thông báo FCM đến các thiết bị Android
             users.forEach((user) => {
               try {
                 if (user.mag) {
@@ -1514,12 +1525,12 @@ Meteor.methods({
                     Number(event.ml) <= Number(user.mag[1])
                   ) {
                     const email = user.event_mail;
-                    if (email && email.trim() !== '') {
-                    Email.send({
-                      to: `${email}`,
-                      from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
-                      subject: "Thông báo tin động đất",
-                      html: `
+                    if (email && email.trim() !== "") {
+                      Email.send({
+                        to: `${email}`,
+                        from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
+                        subject: "Thông báo tin động đất",
+                        html: `
                                                             <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
                                     style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
                                     <tr>
@@ -1542,21 +1553,23 @@ Meteor.methods({
                                         <td style="height:40px;">&nbsp;</td>
                                     </tr>
                                 </table>`,
-                    });
-                  }
-                  // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
-      const magnitude = Number(realtime.Mpd);
-            const token = user.profile?.fcmToken;
-            if (token && user.profile?.subscribed) {
-              const title = "🌋 Cảnh báo động đất";
-              const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
-          
-                  Meteor.call('fcm.sendToTopic', 'earthquake', title, body, (err, res) => {
-                  if (err) console.error('❌ Lỗi:', err);
-                  else console.log('✅ Đã gửi:', res);
-                });
-             
-            }
+                      });
+                    }
+                    // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
+
+                    const token = user.profile?.fcmToken;
+                    if (token && user.profile?.subscribed) {
+                      Meteor.call(
+                        "fcm.sendToTopic",
+                        "earthquake",
+                        title,
+                        body,
+                        (err, res) => {
+                          if (err) console.error("❌ Lỗi:", err);
+                          else console.log("✅ Đã gửi:", res);
+                        }
+                      );
+                    }
                   }
                 }
               } catch (e) {

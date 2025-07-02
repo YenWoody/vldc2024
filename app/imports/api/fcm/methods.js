@@ -1,8 +1,7 @@
 // 📁 /imports/api/fcm/methods.js
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { sendNotificationToTopic, subscribeToTopic,unsubscribeFromTopic } from './server.js';
-
+import { sendNotificationToTopic, subscribeToTopic,unsubscribeFromTopic,sendNotificationToAllTokens  } from './server.js';
 Meteor.methods({
     'fcm.registerPushToken'(token) {
     check(token, String);
@@ -57,5 +56,12 @@ Meteor.methods({
       throw new Meteor.Error('unauthorized', 'Phải đăng nhập để subscribe');
     }
     return subscribeToTopic(token, topic);
+  },
+   async broadcastFCM(title, body, data = {}) {
+    check(data, Object)
+    check(title,String)
+
+    return sendNotificationToAllTokens(title, body, data = {})
+    
   }
 });

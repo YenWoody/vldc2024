@@ -5,9 +5,6 @@ import "../../ui/layouts/body_form/body_form.js";
 import "../../ui/layouts/dashboardpage/dashboardpage.js";
 import "../../ui/pages/home/home.js";
 import "../../ui/pages/event/event.js";
-import "../../ui/pages/map_event_vn/map_event_vn.js";
-import "../../ui/pages/map_realtime/map_realtime.js";
-import "../../ui/pages/map_world/map_world.js";
 import "../../ui/pages/station/station.js";
 import "../../ui/pages/not-found/not-found.js";
 import "../../ui/components/upload/upload.js";
@@ -171,24 +168,6 @@ FlowRouter.route("/category", {
   name: "category",
   action() {
     this.render("BodyTemplate", "categoryPage");
-  },
-});
-FlowRouter.route("/map_event_vietnam", {
-  name: "App.map_event_vietnam",
-  action() {
-    this.render("BodyTemplate", "map_event_vietnam");
-  },
-});
-FlowRouter.route("/map_realtime_vietnam", {
-  name: "App.map_realtime_vietnam",
-  action() {
-    this.render("BodyTemplate", "map_realtime_vietnam");
-  },
-});
-FlowRouter.route("/map_world", {
-  name: "App.map_world",
-  action() {
-    this.render("BodyTemplate", "map_event_world");
   },
 });
 /// Reload the page when the route changes

@@ -394,7 +394,7 @@ Template.category.onRendered(() => {
           title: "Satellite",
           id: "Satellite",
           thumbnailUrl:
-            "https://s3.amazonaws.com/digitaltrends-uploads-prod/2016/08/Google-Earth-Header.jpg",
+            "/img/satellite.png",
         });
         const weMap = new Basemap({
           // baseLayers: [tileLayer, adminBasemap, adminSea],
@@ -402,7 +402,7 @@ Template.category.onRendered(() => {
           title: "WeMap",
           id: "WeMap",
           thumbnailUrl:
-            "https://stamen-tiles.a.ssl.fastly.net/terrain/10/177/409.png",
+            "/img/wemap.png",
         });
         /**
          * init view
@@ -1205,7 +1205,6 @@ Template.category.onRendered(() => {
           });
           let sketchGeometry = null;
           $("#drawFilter").on("click", () => {
-            // console.log(sketch, "sketch");
             sketchGeometry = null;
             sketch.on("create", function (event) {
               const graphicsLayer = sketch.layer;
@@ -1345,7 +1344,6 @@ Template.category.onRendered(() => {
           // widget show the first day. We are setting
           // the thumbs positions.
           timeSlider.values = [start_time, end_time];
-          // console.log(timeSlider, "timeSlider");
           view.whenLayerView(layerRealTime).then(function (lv) {
             flV = lv;
             $("#filter").on("click", () => {
@@ -1496,7 +1494,6 @@ Template.category.onRendered(() => {
         });
         // Datatable
         let arrayVN = [];
-        // console.log(provinceName);
         $("#select-tools").selectize({
           maxItems: 1,
           valueField: "name",
@@ -1606,7 +1603,6 @@ Template.category.onRendered(() => {
                 return e;
               })
             );
-            // console.log(data, "data");
             //load table when page loaded
             loadDataTable(data);
 
@@ -1733,7 +1729,6 @@ Template.category.onRendered(() => {
                   : { where: "code = -1" }
               );
 
-              // console.log(row_data, "row_data");
               const wavePicData = `
                 <table >
             
@@ -1754,11 +1749,9 @@ Template.category.onRendered(() => {
                 </tbody>
                 </table>`;
               $("#wavePickTable").html(wavePicData);
-              // $("#shortData").html(shortData);
             });
         }
         async function loadPopupLayerEvent(result) {
-          // console.log(result, "result");
           const date = new Date(result.attributes.datetime);
 
           const time = date.toLocaleString();
@@ -1862,7 +1855,7 @@ Template.category.onRendered(() => {
             if (response.results.length <= 1) {
               document.getElementById("popup").style.width = "0";
               document.getElementById("map").style.marginRight = "0";
-              loadLayerView(layerStations, { where: "id = -1" });
+              loadLayerView(layerStations, { where: "1=0" });
               loadLayerView(layerRealTime, { where: "1=1" });
               loadLayerView(layerEvent, { where: "1=1" });
             } else {
@@ -1871,9 +1864,11 @@ Template.category.onRendered(() => {
                 if (result.graphic.layer === layerRealTime) {
                   hightlightPoint(layerRealTime, result.graphic);
                   loadPopupLayerRealtime(result.graphic);
+                  loadLayerView(layerEvent, { where: "1=0" });
                 } else if (result.graphic.layer === layerEvent) {
                   hightlightPoint(layerEvent, result.graphic);
                   loadPopupLayerEvent(result.graphic);
+                  loadLayerView(layerRealTime, { where: "1=0" });
                 }
               });
               // do something with the result graphic
@@ -1892,13 +1887,7 @@ Template.category.onRendered(() => {
         function openPopupRightSide() {
           if ($("#sidebarCollapse").hasClass("active")) {
             $("#sidebarCollapse").toggleClass("active");
-            $("#iconArrow").hasClass("fa-caret-left")
-              ? $("#iconArrow")
-                  .addClass("fa-caret-right")
-                  .removeClass("fa-caret-left")
-              : $("#iconArrow")
-                  .addClass("fa-caret-left")
-                  .removeClass("fa-caret-right");
+              $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
             $("#leftSideBar").toggleClass("active");
           }
           if ($(window).width() <= 900) {
@@ -1981,7 +1970,6 @@ Template.category.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            // console.log(query, "query");
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -2007,7 +1995,6 @@ Template.category.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            // console.log(query, "query");
             layerEvent.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -2099,6 +2086,11 @@ Template.category.onRendered(() => {
         view.when().then(function () {
           // the webmap successfully loaded
           document.getElementById("legendDiv").style.display = "block";
+                    if ($(window).width() <= 768) {
+                                $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+                                $('#leftSideBar').addClass('active')       
+                                $('#sidebarCollapse').removeClass('active')  
+                               }
           $(".preloader").fadeOut();
         });
       }
@@ -2127,9 +2119,7 @@ Template.category.helpers({
 Template.category.events({
   "click  #sidebarCollapse": () => {
     $("#sidebarCollapse").toggleClass("active");
-    $("#iconArrow").hasClass("fa-caret-left")
-      ? $("#iconArrow").addClass("fa-caret-right").removeClass("fa-caret-left")
-      : $("#iconArrow").addClass("fa-caret-left").removeClass("fa-caret-right");
+     $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
   },
   "click #closebtn": () => {

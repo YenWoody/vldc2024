@@ -28,7 +28,6 @@ Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
 Template.map.onRendered(() => {
-  var dojoConfig = { isDebug: true };
   loadModules([
     "esri/Map",
     "esri/views/MapView",
@@ -97,7 +96,7 @@ Template.map.onRendered(() => {
               resolve(resulteventStation.rows);
             });
           });
-        }
+        }               
         function dataRealTimeEvents() {
           return new Promise(function (resolve, reject) {
             Meteor.call(
@@ -169,14 +168,14 @@ Template.map.onRendered(() => {
           ("0" + (oneWeekago.getMonth() + 1)).slice(-2),
           ("0" + lastday).slice(-2),
         ].join("-");
+         // ====== Bắt đầu xử lý IRIS ======
         const response = await fetch(
-          `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&limit=800&minmagnitude=1&output=text`
+          `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&limit=300&minmagnitude=1&output=text`
         );
         const dataIris = await response.text();
         const dtIris = [];
         dataIris.split(/\r?\n/).forEach((lines) => {
           const line = lines.split("|");
-
           dtIris.push({
             time: line[1],
             lat: Number(line[2]),
@@ -186,23 +185,70 @@ Template.map.onRendered(() => {
             magtype: line[9],
             magnitude: line[10],
             location: line[12],
+            source: "IRIS",
           });
         });
         const dataIris_final = dtIris.map((e) => {
           for (const prop in e) {
-            if (e[prop] == undefined) {
-              e[prop] = "Chưa có thông tin";
-            }
-            if (e[prop] == null) {
-              e[prop] = "Chưa có thông tin";
-            }
-            if (prop == undefined) {
+            if (e[prop] === undefined || e[prop] === null || e[prop] === "") {
               e[prop] = "Chưa có thông tin";
             }
           }
           return e;
         });
+        // ====== Chuẩn bị lọc trùng ======
+        const dataGeojsonCombined = [];
+        const seenCoords = new Set();
+        function roundCoord(coord) {
+          return Math.round(coord * 10000) / 10000;
+        }
+        // ====== Đưa IRIS vào mảng ======
         const waitDataIris = await Promise.all(dataIris_final);
+        waitDataIris.forEach((e) => {
+          if (!isNaN(e.long) && !isNaN(e.lat)) {
+            const key = `${roundCoord(e.lat)}_${roundCoord(e.long)}`;
+            if (!seenCoords.has(key)) {
+              seenCoords.add(key);
+              dataGeojsonCombined.push(turf.point([e.long, e.lat], e));
+            }
+          }
+        });
+        // ====== Bắt đầu xử lý USGS ======
+        const responseUSGS = await fetch(
+          `https://earthquake.usgs.gov/fdsnws/event/1/query?format=text&starttime=${getDate}&minmagnitude=1&limit=300`
+        );
+        const textUSGS = await responseUSGS.text();
+        const linesUSGS = textUSGS.split(/\r?\n/);
+
+        linesUSGS.forEach((line) => {
+          const cols = line.split("|");
+          if (cols.length < 13) return;
+
+          const lat = Number(cols[2]);
+          const lon = Number(cols[3]);
+          if (isNaN(lat) || isNaN(lon)) return;
+
+          const key = `${roundCoord(lat)}_${roundCoord(lon)}`;
+          if (seenCoords.has(key)) return;
+          seenCoords.add(key);
+
+          const e = {
+            time: cols[1] || "Chưa có thông tin",
+            lat,
+            long: lon,
+            depth: cols[4] || "Chưa có thông tin",
+            catalog: cols[6] || "USGS",
+            magtype: cols[9] || "Chưa có thông tin",
+            magnitude: cols[10] || "Chưa có thông tin",
+            location: cols[12] || "Chưa có thông tin",
+            source: "USGS",
+          };
+
+          dataGeojsonCombined.push(turf.point([lon, lat], e));
+        });
+        const run_ = dataGeojsonCombined.filter((e) => {
+          return e.properties.source === "USGS";
+        });
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
         const dataEventStations = await dataEventStation();
@@ -384,7 +430,7 @@ Template.map.onRendered(() => {
           title: "WeMap",
           id: "WeMap",
           thumbnailUrl:
-           "/img/wemap.png",
+            "/img/wemap.png",
         });
 
         // const layerBoundaries = new MapImageLayer({
@@ -646,7 +692,6 @@ Template.map.onRendered(() => {
         const realTimeGeojson = dataRealTime.filter((e) => {
           return !(e.lat === null && e.lon === null);
         });
-        // console.log(realTimeGeojson, "realTimeGeojson");
         await Promise.all(
           realTimeGeojson.map(async (e, i) => {
             const url =
@@ -692,11 +737,11 @@ Template.map.onRendered(() => {
         dataEventStations.map((e) => {
           dataGeojsonEventStations.push(turf.point([0, 0], e));
         });
-        waitDataIris.map((e) => {
-          if (isNaN(e.long) === false) {
-            dataGeojsonIris.push(turf.point([e.long, e.lat], e));
-          }
-        });
+        // waitDataIris.map((e) => {
+        //   if (isNaN(e.long) === false) {
+        //     dataGeojsonIris.push(turf.point([e.long, e.lat], e));
+        //   }
+        // });
         const stationsGeojson = dataStations.filter((e) => {
           return !(e.geometry === null);
         });
@@ -712,14 +757,18 @@ Template.map.onRendered(() => {
         let collection_realtimeEvent = turf.featureCollection(
           dataGeojsonRealTimeEvent
         );
-        let collection_dataIris = turf.featureCollection(dataGeojsonIris);
+        let collection_dataIrisUSGS =
+          turf.featureCollection(dataGeojsonCombined);
         // Trạm
         let collection_station = turf.featureCollection(dataGeojsonStations);
         // create a new blob from geojson featurecollection
 
-        const blob_dataIris = new Blob([JSON.stringify(collection_dataIris)], {
-          type: "application/json",
-        });
+        const blob_dataIrisUSGS = new Blob(
+          [JSON.stringify(collection_dataIrisUSGS)],
+          {
+            type: "application/json",
+          }
+        );
         const blob_event_station = new Blob(
           [JSON.stringify(collection_events_station)],
           {
@@ -741,7 +790,7 @@ Template.map.onRendered(() => {
         });
         // URL reference to the blob
         const url_event_station = URL.createObjectURL(blob_event_station);
-        const url_dataIris = URL.createObjectURL(blob_dataIris);
+        const url_dataIrisUSGS = URL.createObjectURL(blob_dataIrisUSGS);
         const url_realTime = URL.createObjectURL(blob_realTime);
         const url_realTimeEvent = URL.createObjectURL(blob_realTimeEvent);
         // Trạm
@@ -895,7 +944,7 @@ Template.map.onRendered(() => {
           minScale: 8000000,
         };
         const layerIris = new GeoJSONLayer({
-          url: url_dataIris,
+          url: url_dataIrisUSGS,
           listMode: "show",
           renderer: renderer,
           legendEnabled: false,
@@ -1025,7 +1074,6 @@ Template.map.onRendered(() => {
         });
         let sketchGeometry = null;
         $("#drawFilter").on("click", () => {
-          // console.log(sketch, "sketch");
           sketchGeometry = null;
           sketch.on("create", function (event) {
             const graphicsLayer = sketch.layer;
@@ -1117,7 +1165,6 @@ Template.map.onRendered(() => {
               }
             });
         }
-        // console.log(provinceName, "provinceName");
         let arrayVN = [];
         $("#select-tools").selectize({
           maxItems: 1,
@@ -1136,8 +1183,6 @@ Template.map.onRendered(() => {
 
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
-              // console.log(dataSet, "dataSet");
-
               Promise.all(
                 dataSet.map((e) => {
                   e.attributes.Reporting_time = new Date(
@@ -1375,9 +1420,16 @@ Template.map.onRendered(() => {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerRealTime) {
                   hightlightPoint(layerRealTime, result.graphic);
+                  console.log('click vào real time')
+                  loadLayerView(layerIris, {
+                      where: "1=0",
+                    });
                   loadPopupLayerRealtime(result.graphic);
                 } else if (result.graphic.layer === layerIris) {
                   hightlightPoint(layerIris, result.graphic);
+                  loadLayerView(layerRealTime, {
+                      where: "1=0",
+                    });
                   loadPopupLayerIris(result.graphic);
                 }
               });
@@ -1453,7 +1505,6 @@ Template.map.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            // console.log(query, "query");
             layerRealTime.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -1474,7 +1525,6 @@ Template.map.onRendered(() => {
             query.geometry = geometry;
             query.spatialRelationship = "intersects";
             query.outFields = "*";
-            // console.log(query, "query");
             layerIris.queryFeatures(query).then(async function (response) {
               const dataSet = response.features;
               const data = await Promise.all(
@@ -1483,7 +1533,6 @@ Template.map.onRendered(() => {
                   return e;
                 })
               );
-              // console.log(dataSet);
               loadDataTableGlobal(data);
             });
             loadLayerView(layerIris, {
@@ -1500,13 +1549,7 @@ Template.map.onRendered(() => {
         function openPopupRightSide() {
           if ($("#sidebarCollapse").hasClass("active")) {
             $("#sidebarCollapse").toggleClass("active");
-            $("#iconArrow").hasClass("fa-caret-left")
-              ? $("#iconArrow")
-                  .addClass("fa-caret-right")
-                  .removeClass("fa-caret-left")
-              : $("#iconArrow")
-                  .addClass("fa-caret-left")
-                  .removeClass("fa-caret-right");
+          $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
             $("#leftSideBar").toggleClass("active");
           }
           if ($(window).width() <= 900) {
@@ -1598,7 +1641,13 @@ Template.map.onRendered(() => {
           //   '\n      <p >Email đã được xác thực.</p>\n      Bạn đã đăng nhập thành công !\n      <div class="login-button" id="just-verified-dismiss-button">Đồng ý</div>\n    '
           // );
           document.getElementById("legendDiv").style.display = "block";
+           if ($(window).width() <= 768) {
+            $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+            $('#leftSideBar').addClass('active')
+            $('#sidebarCollapse').removeClass('active')
+           }
           $(".preloader").fadeOut();
+
         });
  
       }
@@ -1656,9 +1705,7 @@ Template.map.events({
   },
   "click  #sidebarCollapse": () => {
     $("#sidebarCollapse").toggleClass("active");
-    $("#iconArrow").hasClass("fa-caret-left")
-      ? $("#iconArrow").addClass("fa-caret-right").removeClass("fa-caret-left")
-      : $("#iconArrow").addClass("fa-caret-left").removeClass("fa-caret-right");
+   $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
   },
 });

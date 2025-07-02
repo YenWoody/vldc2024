@@ -1,5 +1,6 @@
-import admin from 'firebase-admin';
-import serviceAccount from './firebase-service-account.json'; // ✅ Đặt cùng thư mục
+import admin from "firebase-admin";
+import serviceAccount from "./firebase-service-account.json"; // ✅ Đặt cùng thư mục
+import { FcmTokens } from "/imports/api/fcm/fcmTokensApp";
 
 // Khởi tạo Firebase Admin SDK
 admin.initializeApp({
@@ -17,9 +18,9 @@ export function sendNotificationToTopic(topic, title, body, data = {}) {
     topic,
     notification: {
       title,
-      body
+      body,
     },
-    data
+    data,
   });
 }
 
@@ -30,12 +31,54 @@ export function sendNotificationToTopic(topic, title, body, data = {}) {
  */
 export function subscribeToTopic(token, topic) {
   return admin.messaging().subscribeToTopic([token], topic);
-}  
+}
 /**
  * Hủy đăng ký FCM token khỏi một topic
- * @param {string} token 
- * @param {string} topic 
+ * @param {string} token
+ * @param {string} topic
  */
 export function unsubscribeFromTopic(token, topic) {
   return admin.messaging().unsubscribeFromTopic([token], topic);
+}
+
+/**
+ * Gửi thông báo đến tất cả token đã lưu trong DB
+ * @param {string} title
+ * @param {string} body
+ * @param {Object} data
+ */
+export async function sendNotificationToAllTokens(title, body, data = {}) {
+  try {
+    const tokens = FcmTokens.find({}, { fields: { token: 1 } })
+      .fetch()
+      .map((t) => t.token);
+    if (tokens.length === 0)
+      throw new Meteor.Error("no-tokens", "Không có token");
+
+    for (const token of tokens) {
+      const message = {
+        token,
+        notification: { title, body },
+        data: typeof data === "object" && data !== null ? data : {},
+      };
+      try {
+        const res = await admin.messaging().send(message);
+        // console.log("✅ Đã gửi:", res);
+      } catch (err) {
+        console.error("❌ Gửi lỗi:", err.message);
+        if (
+          err.code === "messaging/registration-token-not-registered" ||
+          err.message.includes("registration-token-not-registered")
+        ) {
+          FcmTokens.remove({ token });
+          // console.log(`❌ Token không hợp lệ, đã xóa: ${token}`);
+        }
+      }
+    }
+
+    return "done";
+  } catch (err) {
+    // console.error("❌ Lỗi tổng:", err.message);
+    throw new Meteor.Error("send-failed", err.message);
+  }
 }
