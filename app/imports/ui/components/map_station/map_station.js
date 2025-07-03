@@ -862,13 +862,16 @@ Template.map_station.onRendered(() => {
               {
                 data: null,
                 render: function (data, type, row) {
+
                   const network = dataNetworks.filter((e) => {
                     return e.code === data.attributes.network;
                   });
+                  console.log(network,data.attributes.name,"network")
+                  const net = network?.[0]?.net ?? "Chưa có thông tin"
                   return `    
                   <div>
                          <h6 class="fw-bold">${data.attributes.name}</h1> 
-                       ${network[0].net}
+                       ${net}
                   </div>`;
                 },
               },

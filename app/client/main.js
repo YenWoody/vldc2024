@@ -28,12 +28,12 @@ function initFCM(registration) {
         vapidKey: "BLODi6dH9_w0rRP3b3_k_81pVM0QmhLMgzewRA5zNYgEv3S58yl-SV9UPjDQyl1wqr7K9lvalaGLQXwj_UupvaM",
         serviceWorkerRegistration: registration,
       }).then((token) => {
-        if (token) {
-          console.log('✅ FCM Token:', token);
-          // 👉 Gửi token này lên server nếu cần
-        } else {
-          console.warn('⚠️ Không lấy được token, cần cấp quyền');
-        }
+        // if (token) {
+        //   // console.log('✅ FCM Token:', token);
+        //   // 👉 Gửi token này lên server nếu cần
+        // } else {
+        //   console.warn('⚠️ Không lấy được token, cần cấp quyền');
+        // }
       }).catch((err) => {
         console.error('❌ Lỗi khi lấy token:', err);
       });

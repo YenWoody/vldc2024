@@ -22,8 +22,7 @@ const app = initializeApp(firebaseConfig);
 let messaging = null;
 let getToken = null;
 let onMessage = null;
-
-if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+if (location.hostname === 'localhost' ||location.hostname === 'earthquake.wemap.asia' || location.hostname === '127.0.0.1') {
   messaging = _getMessaging(app);
   getToken = _getToken;
   onMessage = _onMessage;
