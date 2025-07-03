@@ -2,18 +2,15 @@ import { Meteor } from "meteor/meteor";
 import "./manage-users.html";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import "../not_access/not_access";
-import { loadCss } from "esri-loader";
-import DataTable from "datatables.net-dt";
 import "datatables.net-responsive-dt";
 import "@selectize/selectize/dist/css/selectize.css";
+// import 'datatables.net-plugins/sorting/datetime-moment';
+// $.fn.dataTable.moment('DD/MM/YYYY HH:mm:ss');
 let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
+
 Template.manageUsers.onCreated(function () {
-  loadCss(
-    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
-  );
-  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
@@ -25,6 +22,7 @@ function callDatatable() {
       console.log(error);
     }
     $("#loading_datatables").show();
+    
     let table = new DataTable("#data_users", {
       data: resultdata,
       paging: true,
@@ -83,13 +81,8 @@ function callDatatable() {
         {
           data: "createdAt",
           render: function (data) {
-            const date = new Date(data);
-
-            const time = date.toLocaleString();
-
-            const fullTime = time.split(" ")[1] + " " + time.split(" ")[0];
-            return fullTime;
-          },
+            return moment(data).format('DD/MM/YYYY HH:mm:ss');
+          }
         },
         {
           data: null,

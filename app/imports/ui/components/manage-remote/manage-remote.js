@@ -1,11 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import "./manage-remote.html";
 import "../not_access/not_access";
-import { $ } from "meteor/jquery";
-import DataTable from "datatables.net-dt";
-import "datatables.net-responsive-dt";
 import "@selectize/selectize/dist/css/selectize.css";
-import { loadCss } from "esri-loader";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 let state = false;
 const getUser = () => Meteor.user();
@@ -15,10 +11,6 @@ Template.manageRemotes.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  loadCss(
-    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
-  );
-  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
 function loadDatatable() {
   Meteor.call("dataRemote", function (error, resultdata) {

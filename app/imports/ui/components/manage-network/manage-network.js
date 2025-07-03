@@ -1,11 +1,6 @@
 import { Meteor } from "meteor/meteor";
 import "./manage-network.html";
 import "../not_access/not_access";
-import { $ } from "meteor/jquery";
-
-import DataTable from "datatables.net-dt";
-import "datatables.net-responsive-dt";
-import { loadCss } from "esri-loader";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 let state = false;
 const getUser = () => Meteor.user();
@@ -15,13 +10,6 @@ Template.manageNetwork.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  // loadCss('https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css');
-  loadCss(
-    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
-  );
-  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
-  // datatables(window, $);
-  // datatables_bs(window, $);
 });
 function callDatatable() {
   Meteor.call("dataNetwork", function (error, resultdata) {

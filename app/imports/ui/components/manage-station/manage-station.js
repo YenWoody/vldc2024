@@ -1,8 +1,6 @@
 import { Meteor } from "meteor/meteor";
 import "./manage-station.html";
 import "../not_access/not_access";
-import DataTable from "datatables.net-dt";
-import { loadCss } from "esri-loader";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import XLSX from "xlsx";
 let state = false;
@@ -13,10 +11,6 @@ Template.manageStation.onCreated(function () {
   this.subscribe("users");
   Meteor.subscribe("allUsers");
   Meteor.users.find({}).fetch(); // will return all users
-  loadCss(
-    "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"
-  );
-  loadCss("https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css");
 });
 function callDatatable() {
   Meteor.call("dataStation", function (error, resultdataStation) {

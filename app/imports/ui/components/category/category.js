@@ -1,10 +1,5 @@
 import "./category.html";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
-import datatables from "datatables.net";
-import datatables_bs from "datatables.net-bs";
-import { FlowRouter } from "meteor/ostrio:flow-router-extra";
-import { $ } from "meteor/jquery";
-import "datatables.net-bs/css/dataTables.bootstrap.css";
 import "@selectize/selectize/dist/css/selectize.css";
 import alasql from "alasql";
 import XLSX from "xlsx";
@@ -18,19 +13,11 @@ Template.category.onCreated(() => {
     insertCssBefore: "style",
   });
   loadCss("https://js.arcgis.com/4.22/esri/themes/light/main.css");
-  loadCss("https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css");
-  loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
-  );
-  datatables(window, $);
-  datatables_bs(window, $);
-  var dojoConfig = { isDebug: true };
 });
 Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
 Template.category.onRendered(() => {
-  var dojoConfig = { isDebug: true };
   loadModules([
     "esri/Map",
     "esri/views/MapView",

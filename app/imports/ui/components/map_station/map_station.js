@@ -1,12 +1,6 @@
 import "./map_station.html";
 import { Template } from "meteor/templating";
-import { ReactiveDict } from "meteor/reactive-dict";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
-import { FlowRouter } from "meteor/ostrio:flow-router-extra";
-import datatables from "datatables.net";
-import datatables_bs from "datatables.net-bs";
-import { $ } from "meteor/jquery";
-import "datatables.net-bs/css/dataTables.bootstrap.css";
 import * as turf from "@turf/turf";
 import "animate.css";
 Template.map_station.onCreated(async () => {
@@ -16,16 +10,8 @@ Template.map_station.onCreated(async () => {
     insertCssBefore: "style",
   });
   loadCss("https://js.arcgis.com/4.22/esri/themes/light/main.css");
-  loadCss("https://cdn.datatables.net/1.11.5/css/dataTables.material.min.css");
-  loadCss(
-    "https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-html5-2.0.1/cr-1.5.4/datatables.min.css"
-  );
-  datatables(window, $);
-  datatables_bs(window, $);
-  var dojoConfig = { isDebug: true };
 });
 Template.map_station.onRendered(() => {
-  var dojoConfig = { isDebug: true };
   loadModules([
     "esri/Map",
     "esri/views/MapView",
