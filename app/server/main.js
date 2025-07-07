@@ -17,17 +17,17 @@ import { Email } from "meteor/email";
 import "/imports/api/fcm/methods.js";
 // server.js
 /**Ubuntu */
-// const PG_HOST = "127.0.0.1";
-// const PG_PORT = "5432";
-// const PG_DATABASE = "vldc";
-// const PG_USER = "postgres";
-// const PG_PASSWORD = "vldcaA@1234!";
-/**Window*/
-const PG_HOST = "localhost";
+const PG_HOST = "127.0.0.1";
 const PG_PORT = "5432";
 const PG_DATABASE = "vldc";
 const PG_USER = "postgres";
-const PG_PASSWORD = "040696";
+const PG_PASSWORD = "vldcaA@1234!";
+/**Window */
+// const PG_HOST = "localhost";
+// const PG_PORT = "5432";
+// const PG_DATABASE = "vldc";
+// const PG_USER = "postgres";
+// const PG_PASSWORD = "040696";
 // const DIR_PATH = f
 const pool = new pg.Pool({
   host: PG_HOST,
@@ -294,7 +294,7 @@ Meteor.startup(function () {
 
   Accounts.emailTemplates.enrollAccount.text = (user, url) => {
     url = url.replace(
-      "http://222.252.30.117:3000/",
+      "http://localhost:3000/",
       "https://earthquake.wemap.asia/"
     );
     return (
@@ -309,11 +309,49 @@ Meteor.startup(function () {
     // passwords.
     return "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam - Khôi phục mật khẩu <no-reply@example.com>";
   };
+  Accounts.emailTemplates.resetPassword = {
+  subject(user, url) {
+    return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`;
+  },
+  html(user, url) {
+    // Overrides the value set in `Accounts.emailTemplates.from` when resetting
+    // passwords.
+    url = url.replace(
+      "http://localhost:3000/",
+      "https://earthquake.wemap.asia/"
+    );
+    return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+        style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+        <tr>
+            <td style="height:40px;">&nbsp;</td>
+        </tr>
+        <tr>
+            <td style="padding:0 35px;">
+                <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Chào ${user.username}! Bạn đã yêu cầu đặt lại mật khẩu của mình</h1>
+                <span
+                    style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                Chúng tôi không thể chỉ gửi cho bạn mật khẩu cũ. Một liên kết duy nhất để đặt lại mật khẩu của bạn đã được tạo cho bạn. Để đặt lại mật khẩu của bạn, hãy nhấp vào liên kết sau và làm theo hướng dẫn.
+                </p>
+                <a href="${url}"
+                    style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Khôi phục mật khẩu</a>
+            </td>
+        </tr>
+        <tr>
+            <td style="height:40px;">&nbsp;</td>
+        </tr>
+    </table>`;
+  }
+  // Có thể dùng thêm html nếu muốn email có định dạng đẹp
+  // html(user, url) {
+  //   return `<p>...</p>`;
+  // }
+}
   Accounts.emailTemplates.resetPassword.html = (user, url) => {
     // Overrides the value set in `Accounts.emailTemplates.from` when resetting
     // passwords.
     url = url.replace(
-      "http://222.252.30.117:3000/",
+      "http://localhost:3000/",
       "https://earthquake.wemap.asia/"
     );
     return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
@@ -338,17 +376,13 @@ Meteor.startup(function () {
         </tr>
     </table>`;
   };
-  Accounts.emailTemplates.resetPassword.subject = () => {
-    return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`;
-  };
-
   Accounts.emailTemplates.verifyEmail = {
     subject() {
       return "Kích hoạt tài khoản - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam";
     },
     html(user, url) {
       url = url.replace(
-        "http://222.252.30.117:3000/",
+        "http://localhost:3000/",
         "https://earthquake.wemap.asia/"
       );
       return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
