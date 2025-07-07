@@ -71,24 +71,25 @@ function run() {
   fs.readdirSync(FOLDER).forEach((file) => {
     if (/^.+\.rep$/.test(file)) {
       let realtime = getRealtime(file);
-      if (realtime != undefined) insertRealtime(realtime).catch(console.log);
+      if (realtime != undefined) insertRealtime(realtime).catch((error)=>{
+       console.error(`❌ Lỗi khi insert file ${realtime.filename}:`, error?.stack || error);
+      });
     }
   });
-  setTimeout(run, 30000);
+  // setTimeout(run, 30000);
 }
 run();
 function getRealtime(filename) {
   try {
     const content = fs.readFileSync(path.join(FOLDER, filename)).toString();
-    const lines = content.split(os.EOL);
-
+    const lines = content.toString().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
     let realtime = { filename };
-
-    const i0 = lines.findIndex((x) => /^Reporting time/.test(x));
+const i0 = lines.findIndex((x) => x && x.includes("Reporting time"));
+ if (i0 === -1) throw new Error("Không tìm thấy dòng 'Reporting time'");
     realtime.Reporting_time = lines[i0].match(
       /^Reporting time(?:\s+)(\S+\s+\S+)/
     )[1];
-
+ 
     const i1 = lines.findIndex((x, i) => i > i0 && /^year/.test(x));
     let temp = lines[i1 + 1].match(/\S+/g);
     lines[i1].match(/\S+/g).forEach((e, i) => {
@@ -120,11 +121,12 @@ function getRealtime(filename) {
 
     return realtime;
   } catch (e) {
-    console.log(filename, e);
+    throw new Error(e)
   }
 }
 
 async function insertRealtime(realtime) {
+  try {
   const keys = [
     "filename",
     "Reporting_time",
@@ -253,7 +255,11 @@ async function insertRealtime(realtime) {
           );
         }
       }
-    });
+    });}
+    catch (err){
+       console.error("❌ insertRealtime gặp lỗi:", err?.stack || err);
+    throw err;
+    }
 }
 
 Accounts.onCreateUser(function (options, user) {
@@ -1633,7 +1639,6 @@ Meteor.methods({
       const giatriW = new RegExp("W", "g");
       let gtW = [...lines[headerLine].matchAll(giatriW)];
       const keyW = gtW.map((key) => {
-        // console.log(key, "keu")
         const startW = key.index;
 
         return { key: "W", key1: "w", start: startW };
