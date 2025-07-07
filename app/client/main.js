@@ -29,7 +29,7 @@ Meteor.startup(() => {
         console.log('Service Worker registered:', registration.scope);
 
         // 👉 chỉ import FCM khi không phải WebView
-        import('./firebase-messaging.js').then(({ messaging, getToken, onMessage }) => {
+        import('../imports/firebase/firebase-messaging.js').then(({ messaging, getToken, onMessage }) => {
           initFCM(messaging, getToken, onMessage, registration);
         }).catch((err) => {
           console.error("🚫 Không thể load firebase-messaging.js", err);

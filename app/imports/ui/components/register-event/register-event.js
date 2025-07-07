@@ -5,9 +5,6 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import "./register-event.html";
 import * as noUiSlider from "nouislider";
 import "nouislider/dist/nouislider.css";
-import { messaging, getToken } from "../../../../client/firebase-init";
-let state = false;
-
 Session.setDefault("counter", 0);
 
 // slider starts at 20 and 80
@@ -86,13 +83,15 @@ Template.registerEvent.onRendered(() => {
       function proceedFCM() {
         navigator.serviceWorker
           .register("/firebase-messaging-sw.js")
-          .then((registration) => {
+          .then(async (registration) => {
+            return import("/imports/firebase/firebase-messaging.js").then(({messaging, getToken}) => {
             return getToken(messaging, {
               vapidKey:
                 "BLODi6dH9_w0rRP3b3_k_81pVM0QmhLMgzewRA5zNYgEv3S58yl-SV9UPjDQyl1wqr7K9lvalaGLQXwj_UupvaM",
               serviceWorkerRegistration: registration,
             });
           })
+        })
           .then((token) => {
             if (!token) {
               console.warn("⚠️ Không lấy được FCM token.");
@@ -122,13 +121,14 @@ Template.registerEvent.onRendered(() => {
 
       // Cần lấy lại token để hủy subscribe
       navigator.serviceWorker.ready
-        .then((registration) =>
-          getToken(messaging, {
+        .then(async (registration) => { return import("/imports/firebase/firebase-messaging.js").then(({ messaging, getToken }) => {
+          return getToken(messaging, {
             vapidKey:
               "BLODi6dH9_w0rRP3b3_k_81pVM0QmhLMgzewRA5zNYgEv3S58yl-SV9UPjDQyl1wqr7K9lvalaGLQXwj_UupvaM",
             serviceWorkerRegistration: registration,
           })
-        )
+        })
+      })
         .then((token) => {
           if (token) {
             Meteor.call(
