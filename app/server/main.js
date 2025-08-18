@@ -71,25 +71,73 @@ function run() {
   fs.readdirSync(FOLDER).forEach((file) => {
     if (/^.+\.rep$/.test(file)) {
       let realtime = getRealtime(file);
-      if (realtime != undefined) insertRealtime(realtime).catch((error)=>{
-       console.error(`❌ Lỗi khi insert file ${realtime.filename}:`, error?.stack || error);
-      });
+      if (realtime != undefined)
+        insertRealtime(realtime).catch((error) => {
+          console.error(
+            `❌ Lỗi khi insert file ${realtime.filename}:`,
+            error?.stack || error
+          );
+        });
     }
   });
   // setTimeout(run, 30000);
 }
 run();
+function convertUTCtoVN(timeStr) {
+  // tách ngày & giờ
+  const [datePart, timePart] = timeStr.split(" ");
+  const [year, month, day] = datePart.split("/").map(Number);
+
+  // tách mili giây (nếu có)
+  let [hms, msRaw] = timePart.split(".");
+  const [hour, minute, second] = hms.split(":").map(Number);
+  const millisecond = msRaw ? Number(msRaw) : 0;
+
+  // tính timestamp UTC -> +7h
+  const utcTimestamp = Date.UTC(
+    year,
+    month - 1,
+    day,
+    hour,
+    minute,
+    second,
+    millisecond
+  );
+  const vnTimestamp = utcTimestamp + 7 * 60 * 60 * 1000;
+  const dateVN = new Date(vnTimestamp);
+
+  // format lại
+  const pad = (n, size = 2) => String(n).padStart(size, "0");
+  let result = `${dateVN.getUTCFullYear()}/${pad(
+    dateVN.getUTCMonth() + 1
+  )}/${pad(dateVN.getUTCDate())} ${pad(dateVN.getUTCHours())}:${pad(
+    dateVN.getUTCMinutes()
+  )}:${pad(dateVN.getUTCSeconds())}`;
+
+  // nếu input có mili giây thì nối lại đúng như input
+  if (msRaw !== undefined) {
+    result += `.${msRaw}`;
+  }
+
+  return result;
+}
+
 function getRealtime(filename) {
   try {
     const content = fs.readFileSync(path.join(FOLDER, filename)).toString();
-    const lines = content.toString().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const lines = content
+      .toString()
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
     let realtime = { filename };
-const i0 = lines.findIndex((x) => x && x.includes("Reporting time"));
- if (i0 === -1) throw new Error("Không tìm thấy dòng 'Reporting time'");
+    const i0 = lines.findIndex((x) => x && x.includes("Reporting time"));
+    if (i0 === -1) throw new Error("Không tìm thấy dòng 'Reporting time'");
     realtime.Reporting_time = lines[i0].match(
       /^Reporting time(?:\s+)(\S+\s+\S+)/
     )[1];
- 
+    realtime.Reporting_time = convertUTCtoVN(realtime.Reporting_time);
+    console.log(realtime.Reporting_time, "đa è");
     const i1 = lines.findIndex((x, i) => i > i0 && /^year/.test(x));
     let temp = lines[i1 + 1].match(/\S+/g);
     lines[i1].match(/\S+/g).forEach((e, i) => {
@@ -121,77 +169,78 @@ const i0 = lines.findIndex((x) => x && x.includes("Reporting time"));
 
     return realtime;
   } catch (e) {
-    throw new Error(e)
+    throw new Error(e);
   }
 }
 
 async function insertRealtime(realtime) {
   try {
-  const keys = [
-    "filename",
-    "Reporting_time",
-    "year",
-    "month",
-    "day",
-    "hour",
-    "min",
-    "sec",
-    "milli",
-    "lat",
-    "lon",
-    "dep",
-    "Mall",
-    "Mpd",
-    "Mtc",
-    "process_time",
-  ];
-  const keys1 = [
-    "realtime_id",
-    "Sta",
-    "pa",
-    "pv",
-    "pd",
-    "tc",
-    "Mtc",
-    "MPd",
-    "Dis",
-    "Parr",
-  ];
-  let values = [];
-  return pool
-    .query(
-      `INSERT INTO "realtime"
+    const keys = [
+      "filename",
+      "Reporting_time",
+      "year",
+      "month",
+      "day",
+      "hour",
+      "min",
+      "sec",
+      "milli",
+      "lat",
+      "lon",
+      "dep",
+      "Mall",
+      "Mpd",
+      "Mtc",
+      "process_time",
+    ];
+    const keys1 = [
+      "realtime_id",
+      "Sta",
+      "pa",
+      "pv",
+      "pd",
+      "tc",
+      "Mtc",
+      "MPd",
+      "Dis",
+      "Parr",
+    ];
+    let values = [];
+    return pool
+      .query(
+        `INSERT INTO "realtime"
             (${keys.map((e) => `"${e}"`).join(", ")})
             SELECT ${keys.map((e) => `$${values.push(realtime[e])}`).join(", ")}
             WHERE NOT EXISTS (SELECT 1 FROM "realtime" WHERE "filename" = $${values.push(
               realtime.filename
             )})
             RETURNING "id"`,
-      values
-    )
-    .then(({ rowCount, rows }) => {
-      if (rowCount === 1) {
-        const magnitude = Number(realtime.Mpd);
-        const title = "🌋 Cảnh báo động đất";
-        const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
-        Meteor.call("broadcastFCM", title, body); // Gửi thông báo FCM đến các thiết bị Android
-        const users = Meteor.users.find({}).fetch();
-        // Check user đăng kí nhận tin động đất
-        users.forEach((user) => {
-          try {
-            if (user.mag) {
-              if (
-                magnitude >= Number(user.mag[0]) &&
-                magnitude <= Number(user.mag[1])
-              ) {
-                const email = user.event_mail;
+        values
+      )
+      .then(({ rowCount, rows }) => {
+        if (rowCount === 1) {
+          const magnitude = Number(realtime.Mpd);
+          const title = "🌋 Cảnh báo động đất";
+          console.log(realtime.Reporting_time, "realtime.Reporting_time");
+          const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
+          Meteor.call("broadcastFCM", title, body); // Gửi thông báo FCM đến các thiết bị Android
+          const users = Meteor.users.find({}).fetch();
+          // Check user đăng kí nhận tin động đất
+          users.forEach((user) => {
+            try {
+              if (user.mag) {
+                if (
+                  magnitude >= Number(user.mag[0]) &&
+                  magnitude <= Number(user.mag[1])
+                ) {
+                  const email = user.event_mail;
 
-                if (email && email.trim() !== "") {
-                  Email.send({
-                    to: `${email}`,
-                    from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
-                    subject: "Thông báo tin động đất",
-                    html: `
+                  if (email && email.trim() !== "") {
+                    Email.send({
+                      to: `${email}`,
+                      from: "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam",
+                      subject: "Thông báo tin động đất",
+                      html: `
                                 <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
                     style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
                     <tr>
@@ -214,52 +263,52 @@ async function insertRealtime(realtime) {
                         <td style="height:40px;">&nbsp;</td>
                     </tr>
                 </table>`,
-                  });
-                }
-                // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
+                    });
+                  }
+                  // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
 
-                const token = user.profile?.fcmToken;
-                if (token && user.profile?.subscribed) {
-                  Meteor.call(
-                    "fcm.sendToTopic",
-                    "earthquake",
-                    title,
-                    body,
-                    (err, res) => {
-                      if (err) console.error("❌ Lỗi:", err);
-                      else console.log("✅ Đã gửi:", res);
-                    }
-                  );
+                  const token = user.profile?.fcmToken;
+                  if (token && user.profile?.subscribed) {
+                    Meteor.call(
+                      "fcm.sendToTopic",
+                      "earthquake",
+                      title,
+                      body,
+                      (err, res) => {
+                        if (err) console.error("❌ Lỗi:", err);
+                        else console.log("✅ Đã gửi:", res);
+                      }
+                    );
+                  }
                 }
               }
+            } catch (e) {
+              console.log(e, "Error");
             }
-          } catch (e) {
-            console.log(e, "Error");
-          }
-        });
-        if (realtime.event.length > 0) {
-          let values1 = [];
-          let temp = realtime.event
-            .map((event) => {
-              event.realtime_id = rows[0].id;
-              return `(${keys1
-                .map((e) => `$${values1.push(event[e])}`)
-                .join(", ")})`;
-            })
-            .join(", ");
-          return pool.query(
-            `INSERT INTO "realtime_event"
+          });
+          if (realtime.event.length > 0) {
+            let values1 = [];
+            let temp = realtime.event
+              .map((event) => {
+                event.realtime_id = rows[0].id;
+                return `(${keys1
+                  .map((e) => `$${values1.push(event[e])}`)
+                  .join(", ")})`;
+              })
+              .join(", ");
+            return pool.query(
+              `INSERT INTO "realtime_event"
                   (${keys1.map((e) => `"${e}"`).join(", ")})
                   VALUES ${temp}`,
-            values1
-          );
+              values1
+            );
+          }
         }
-      }
-    });}
-    catch (err){
-       console.error("❌ insertRealtime gặp lỗi:", err?.stack || err);
+      });
+  } catch (err) {
+    console.error("❌ insertRealtime gặp lỗi:", err?.stack || err);
     throw err;
-    }
+  }
 }
 
 Accounts.onCreateUser(function (options, user) {
@@ -310,17 +359,17 @@ Meteor.startup(function () {
     return "Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam - Khôi phục mật khẩu <no-reply@example.com>";
   };
   Accounts.emailTemplates.resetPassword = {
-  subject(user, url) {
-    return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`;
-  },
-  html(user, url) {
-    // Overrides the value set in `Accounts.emailTemplates.from` when resetting
-    // passwords.
-    url = url.replace(
-      "http://localhost:3000/",
-      "https://earthquake.wemap.asia/"
-    );
-    return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+    subject(user, url) {
+      return `Khôi phục mật khẩu - Hệ thống tự động báo tin nhanh động đất khu vực miền Bắc Việt Nam`;
+    },
+    html(user, url) {
+      // Overrides the value set in `Accounts.emailTemplates.from` when resetting
+      // passwords.
+      url = url.replace(
+        "http://localhost:3000/",
+        "https://earthquake.wemap.asia/"
+      );
+      return `<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
         style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
         <tr>
             <td style="height:40px;">&nbsp;</td>
@@ -341,12 +390,12 @@ Meteor.startup(function () {
             <td style="height:40px;">&nbsp;</td>
         </tr>
     </table>`;
-  }
-  // Có thể dùng thêm html nếu muốn email có định dạng đẹp
-  // html(user, url) {
-  //   return `<p>...</p>`;
-  // }
-}
+    },
+    // Có thể dùng thêm html nếu muốn email có định dạng đẹp
+    // html(user, url) {
+    //   return `<p>...</p>`;
+    // }
+  };
   Accounts.emailTemplates.resetPassword.html = (user, url) => {
     // Overrides the value set in `Accounts.emailTemplates.from` when resetting
     // passwords.

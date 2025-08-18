@@ -4,6 +4,7 @@ import "@selectize/selectize/dist/css/selectize.css";
 // import { $ } from "meteor/jquery";
 import * as turf from "@turf/turf";
 import provinceName from "../../../api/provinceVN";
+import ProgressBar from "progressbar.js";
 import "animate.css";
 Template.map.onCreated(() => {
   setDefaultOptions({
@@ -42,6 +43,7 @@ Template.map.onRendered(() => {
     "esri/widgets/Popup",
     "esri/layers/MapImageLayer",
     "esri/geometry/Extent",
+    "esri/core/watchUtils",
     // "dojo/domReady!",
   ])
     .then(
@@ -70,11 +72,38 @@ Template.map.onRendered(() => {
         Popup,
         MapImageLayer,
         Extent,
+        watchUtils,
       ]) => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
         $(".menu-bar").removeClass("change");
         //end active navbar
+        const bar = new ProgressBar.Circle("#progress-circle", {
+          strokeWidth: 7,
+          trailWidth: 3,
+          color: "#3d77b1",
+          trailColor: "#eee",
+          duration: 1300,
+          easing: "easeInOut",
+          text: {
+            autoStyleContainer: false,
+          },
+          svgStyle: null,
+        });
+
+        // bar.set(0.75); // 75%
+        // bar.setText("75%");
+        // 👉 Cập nhật phần trăm giả định
+        let percent = 0;
+        const interval = setInterval(() => {
+          percent = Math.min(percent + Math.random() / 10, 0.95);
+          bar.animate(percent, {
+            step: function (state, circle) {
+              const value = Math.round(circle.value() * 100);
+              circle.setText(`${value}%`);
+            },
+          });
+        }, 100);
         function dataRealTimes() {
           return new Promise(function (resolve, reject) {
             Meteor.call("dataRealTime", function (error, resulteventStation) {
@@ -85,7 +114,7 @@ Template.map.onRendered(() => {
               resolve(resulteventStation.rows);
             });
           });
-        }               
+        }
         function dataRealTimeEvents() {
           return new Promise(function (resolve, reject) {
             Meteor.call(
@@ -157,7 +186,7 @@ Template.map.onRendered(() => {
           ("0" + (oneWeekago.getMonth() + 1)).slice(-2),
           ("0" + lastday).slice(-2),
         ].join("-");
-         // ====== Bắt đầu xử lý IRIS ======
+        // ====== Bắt đầu xử lý IRIS ======
         const response = await fetch(
           `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&limit=300&minmagnitude=1&output=text`
         );
@@ -410,16 +439,14 @@ Template.map.onRendered(() => {
           baseLayers: [satelliteLayer, adminSea],
           title: "Satellite",
           id: "Satellite",
-          thumbnailUrl:
-            "/img/satellite.png",
+          thumbnailUrl: "/img/satellite.png",
         });
         const weMap = new Basemap({
           // baseLayers: [tileLayer, adminBasemap, adminSea],
           baseLayers: [weMapVectorTile, adminSea],
           title: "WeMap",
           id: "WeMap",
-          thumbnailUrl:
-            "/img/wemap.png",
+          thumbnailUrl: "/img/wemap.png",
         });
 
         // const layerBoundaries = new MapImageLayer({
@@ -1409,16 +1436,16 @@ Template.map.onRendered(() => {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerRealTime) {
                   hightlightPoint(layerRealTime, result.graphic);
-                  console.log('click vào real time')
+                  console.log("click vào real time");
                   loadLayerView(layerIris, {
-                      where: "1=0",
-                    });
+                    where: "1=0",
+                  });
                   loadPopupLayerRealtime(result.graphic);
                 } else if (result.graphic.layer === layerIris) {
                   hightlightPoint(layerIris, result.graphic);
                   loadLayerView(layerRealTime, {
-                      where: "1=0",
-                    });
+                    where: "1=0",
+                  });
                   loadPopupLayerIris(result.graphic);
                 }
               });
@@ -1538,7 +1565,7 @@ Template.map.onRendered(() => {
         function openPopupRightSide() {
           if ($("#sidebarCollapse").hasClass("active")) {
             $("#sidebarCollapse").toggleClass("active");
-          $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+            $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
             $("#leftSideBar").toggleClass("active");
           }
           if ($(window).width() <= 900) {
@@ -1624,21 +1651,60 @@ Template.map.onRendered(() => {
         // });
         view.ui.add([layerListExpand, legendExpand], "top-right");
         // document.getElementById("infoDiv").style.display = "block";
+
+        view.when(async () => {
+          try {
+            // Đợi tất cả layers load xong
+            const layerPromises =
+              view.map?.layers.map((layer) => layer.when()) || [];
+            await Promise.all(layerPromises);
+
+            const viewPromises =
+              view.map?.layers.map((layer) => view.whenLayerView(layer)) || [];
+            await Promise.all(viewPromises);
+          } catch (err) {
+            console.error("Lỗi khi tải bản đồ hoặc lớp:", err);
+          } finally {
+            // 👉 Đợi khi bản đồ render xong
+            await watchUtils.when(view, "updating", (updating) => !updating);
+            clearInterval(interval);
+            bar.animate(
+              1.0,
+              {
+                duration: 1000,
+                step: function (state, circle) {
+                  circle.setText(`100%`);
+                },
+              },
+              function () {
+                $(".preloader").fadeOut();
+                // console.log("Animation has finished");
+              }
+            ); // đến 100%
+
+            // Hoàn tất loading
+          }
+        });
+
+        /**
+         * Theo dõi tiến độ load layer của bản đồ
+         * @param {__esri.MapView} view - View của bản đồ
+         * @param {(percent: number) => void} onProgress - Callback mỗi khi phần trăm thay đổi
+         * @returns {Promise<void>} - Promise resolve khi toàn bộ layer load xong
+         */
+
         view.when().then(function () {
           // the webmap successfully loaded
           // $(".accounts-dialog.accounts-centered-dialog").html(
           //   '\n      <p >Email đã được xác thực.</p>\n      Bạn đã đăng nhập thành công !\n      <div class="login-button" id="just-verified-dismiss-button">Đồng ý</div>\n    '
           // );
           document.getElementById("legendDiv").style.display = "block";
-           if ($(window).width() <= 768) {
+          if ($(window).width() <= 768) {
             $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
-            $('#leftSideBar').addClass('active')
-            $('#sidebarCollapse').removeClass('active')
-           }
-          $(".preloader").fadeOut();
-
+            $("#leftSideBar").addClass("active");
+            $("#sidebarCollapse").removeClass("active");
+          }
         });
- 
       }
     )
     .catch((e) => {
@@ -1647,7 +1713,7 @@ Template.map.onRendered(() => {
       $("#navbarButton").removeClass("show");
       $(".menu-bar").removeClass("change");
       //end active navbar
-      location.reload();
+      // location.reload();
     });
 });
 
@@ -1694,7 +1760,7 @@ Template.map.events({
   },
   "click  #sidebarCollapse": () => {
     $("#sidebarCollapse").toggleClass("active");
-   $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+    $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
   },
 });
