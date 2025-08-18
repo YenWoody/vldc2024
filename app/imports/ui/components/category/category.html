@@ -6,48 +6,26 @@
           <i class="fa fa-caret-left" id="iconArrow"></i>
         </button>
       </div>
-      <div
-        class="pb-4 pt-2 px-2 position-relative z-2 bg-white overflow-auto h-100"
-      >
+      <div class="pb-4 pt-2 px-2 position-relative z-2 bg-white overflow-auto h-100">
         <div class="mb-1">
-           <h5 class="text-light text-center heading p-2 fw-bold">Các sự kiện gần đây</h5>
+          <h5 class="text-light text-center heading p-2 fw-bold">Các sự kiện gần đây</h5>
           <div class="d-grid">
             <div class="d-flex mb-2 rounded bg-light">
-              <button
-                type="button"
-                class="w-50 m-2 btn btn-light activeButton p-0"
-                id="buttonProcessedEvent"
-              >
+              <button type="button" class="w-50 m-2 btn btn-light activeButton p-0" id="buttonProcessedEvent">
                 Danh mục đã chuẩn hóa
               </button>
-              <button
-                type="button"
-                class="w-50 m-2 btn btn-light p-0"
-                id="buttonRealtime"
-              >
+              <button type="button" class="w-50 m-2 btn btn-light p-0" id="buttonRealtime">
                 Danh mục báo tin nhanh
               </button>
             </div>
             <div class="d-flex mb-2 rounded bg-light">
-              <button
-                type="button"
-                class="w-50 p-2 m-2 btn btn-light activeButton p-0"
-                id="buttonTime"
-              >
+              <button type="button" class="w-50 p-2 m-2 btn btn-light activeButton p-0" id="buttonTime">
                 Lọc theo thời gian
               </button>
-              <button
-                type="button"
-                class="w-50 p-2 m-2 btn btn-light p-0"
-                id="buttonRegion"
-              >
+              <button type="button" class="w-50 p-2 m-2 btn btn-light p-0" id="buttonRegion">
                 Lọc theo khu vực
               </button>
-              <button
-                type="button"
-                class="w-50 p-2 m-2 btn btn-light p-0"
-                id="buttonDraw"
-              >
+              <button type="button" class="w-50 p-2 m-2 btn btn-light p-0" id="buttonDraw">
                 Vẽ trên bản đồ
               </button>
             </div>
@@ -58,20 +36,12 @@
                     <span>Lọc sự kiện</span>
                   </p>
                   <div class="d-grid">
-                    <label for="depthSlider" class="text-dark my-2 ms-2"
-                      >Độ sâu (km):</label
-                    >
+                    <label for="depthSlider" class="text-dark my-2 ms-2">Độ sâu (km):</label>
                     <div id="depthSlider" style="height: 50px !important"></div>
                   </div>
                   <div class="d-grid">
-                    <label for="magnitudeSlider" class="text-dark my-2 ms-2"
-                      >Cường độ:</label
-                    >
-                    <div
-                      id="magnitudeSlider"
-                      class="mb-1"
-                      style="height: 50px !important"
-                    ></div>
+                    <label for="magnitudeSlider" class="text-dark my-2 ms-2">Cường độ:</label>
+                    <div id="magnitudeSlider" class="mb-1" style="height: 50px !important"></div>
                   </div>
                 </div>
                 <div class="m-1 w-50 card">
@@ -83,86 +53,48 @@
               </div>
               <div class="d-flex justify-content-center mx-auto">
                 <div class="m-2">
-                  <button
-                    class="btn btn-primary fw-bold text-white font-button"
-                    id="filter"
-                  >
+                  <button class="btn btn-primary fw-bold text-white font-button" id="filter">
                     <i class="fa fa-search" aria-hidden="true"></i> Lọc
                   </button>
                 </div>
                 <div class="m-2">
-                  <button
-                    class="btn btn-danger fw-bold text-white font-button"
-                    id="clearFilter"
-                  >
+                  <button class="btn btn-danger fw-bold text-white font-button" id="clearFilter">
                     <i class="fa fa-ban" aria-hidden="true"></i> Bỏ lọc
                   </button>
                 </div>
               </div>
             </div>
-            <div
-              id="drawFilter"
-              class="border-top border-bottom card mb-2"
-              style="display: none"
-            >
+            <div id="drawFilter" class="border-top border-bottom card mb-2" style="display: none">
               <div class="m-1 d-flex justify-content-around align-items-center">
                 <div id="drawDiv"></div>
               </div>
             </div>
-            <div
-              id="filterRegion"
-              class="border-top border-bottom mb-2 card"
-              style="display: none"
-            >
+            <div id="filterRegion" class="border-top border-bottom mb-2 card" style="display: none">
               <div class="m-1 d-flex justify-content-around align-items-center">
                 <!-- <div class="text-dark fs-6 p-2 fw-bold">Tìm theo khu vực:</div> -->
                 <div class="d-grid">
                   <div style="position: relative; text-align: center">
-                    <span class="fw-bold">N</span><br /><input
-                      style="text-align: center; width: 50px; margin: 0.5em"
-                      id="maxLat"
-                      value="90"
-                      type="number"
-                    /><br /><span class="fw-bold">W</span
-                    ><input
-                      style="
+                    <span class="fw-bold">N</span><br /><input style="text-align: center; width: 50px; margin: 0.5em"
+                      id="maxLat" value="90" type="number" /><br /><span class="fw-bold">W</span><input style="
                         text-align: center;
                         width: 50px;
                         margin: 0.5em 1.5em 0.5em 0.5em;
-                      "
-                      type="number"
-                      id="minLong"
-                      value="-180"
-                    /><input
-                      style="
+                      " type="number" id="minLong" value="-180" /><input style="
                         text-align: center;
                         width: 50px;
                         margin: 0.5em 0.5em 0.5em 1.5em;
-                      "
-                      type="number"
-                      id="maxLong"
-                      value="180"
-                    /><span class="fw-bold">E</span><br /><input
-                      style="text-align: center; width: 50px; margin: 0.5em"
-                      id="minLat"
-                      value="-90"
-                      type="number"
-                    /><br /><span class="fw-bold">S</span>
+                      " type="number" id="maxLong" value="180" /><span class="fw-bold">E</span><br /><input
+                      style="text-align: center; width: 50px; margin: 0.5em" id="minLat" value="-90"
+                      type="number" /><br /><span class="fw-bold">S</span>
                   </div>
                   <div class="d-flex justify-content-center mx-auto">
                     <div class="m-2">
-                      <button
-                        class="btn btn-primary fw-bold text-white font-button"
-                        id="button_filterRegion"
-                      >
+                      <button class="btn btn-primary fw-bold text-white font-button" id="button_filterRegion">
                         <i class="fa fa-search" aria-hidden="true"></i> Lọc
                       </button>
                     </div>
                     <div class="m-2">
-                      <button
-                        class="btn btn-danger fw-bold text-white font-button"
-                        id="coordinateReset"
-                      >
+                      <button class="btn btn-danger fw-bold text-white font-button" id="coordinateReset">
                         <i class="fa fa-ban" aria-hidden="true"></i> Bỏ lọc
                       </button>
                     </div>
@@ -176,12 +108,7 @@
                   <option value="date" selected>Sắp xếp theo Ngày</option>
                   <option value="mag">Sắp xếp theo Cường độ</option>
                 </select>
-                <select
-                  id="select-tools"
-                  class="d-none"
-                  multiple
-                  placeholder="Chọn tỉnh"
-                ></select>
+                <select id="select-tools" class="d-none" multiple placeholder="Chọn tỉnh"></select>
               </div>
               <div id="buttons"></div>
             </div>
@@ -206,11 +133,7 @@
     </nav>
     <div class="col-md-12">
       <div id="bando">
-        <div
-          class="bg-light p-0 h-100"
-          id="map"
-          style="transition: margin-right 0.5s"
-        >
+        <div class="bg-light p-0 h-100" id="map" style="transition: margin-right 0.5s">
           <div id="viewDiv">
             <div id="legendDiv" style="display: none">
               <h3 class="titleLegend">
@@ -221,244 +144,100 @@
                   Độ lớn
                 </h2>
                 <div class="row overflow-auto mx-auto" style="width: 450px">
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="8"
-                      height="8"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8">
                       <g transform="matrix(1,0,0,1,4,4)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="3.3333333333333335"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="3.3333333333333335"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">1</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
-                      height="12"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12">
                       <g transform="matrix(1,0,0,1,6,6)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="5.333333333333333"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="5.333333333333333"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">2</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
                       <g transform="matrix(1,0,0,1,8,8)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="7.333333333333334"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="7.333333333333334"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">3</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
                       <g transform="matrix(1,0,0,1,10,10)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="9.333333333333334"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="9.333333333333334"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">4</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
                       <g transform="matrix(1,0,0,1,12,12)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="11.333333333333332"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="11.333333333333332"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">5</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="28"
-                      height="28"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
                       <g transform="matrix(1,0,0,1,14,14)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="13.333333333333334"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="13.333333333333334"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">6</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="32"
-                      height="32"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
                       <g transform="matrix(1,0,0,1,16,16)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="15.333333333333332"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="15.333333333333332"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">7</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="36"
-                      height="36"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36">
                       <g transform="matrix(1,0,0,1,18,18)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="17.333333333333332"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="17.333333333333332"></circle>
                       </g>
                     </svg>
 
                     <span class="text-center">8</span>
                   </div>
-                  <div
-                    class="col d-grid justify-content-center align-items-end"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="41"
-                      height="41"
-                    >
+                  <div class="col d-grid justify-content-center align-items-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="41" height="41">
                       <g transform="matrix(1,0,0,1,20.5,20.5)">
-                        <circle
-                          fill="rgba(232, 112, 0, 0.5)"
-                          fill-rule="evenodd"
-                          stroke="rgba(238, 174, 15, 1)"
-                          stroke-width="1.3333333333333333"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-dasharray="none"
-                          stroke-miterlimit="4"
-                          cx="0"
-                          cy="0"
-                          r="19.333333333333336"
-                        ></circle>
+                        <circle fill="rgba(232, 112, 0, 0.5)" fill-rule="evenodd" stroke="rgba(238, 174, 15, 1)"
+                          stroke-width="1.3333333333333333" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="none" stroke-miterlimit="4" cx="0" cy="0" r="19.333333333333336"></circle>
                       </g>
                     </svg>
 
@@ -495,29 +274,25 @@
                 <div class="row">
                   <div class="col-4">
                     <div class="text-center">
-                      <span
-                        style="
+                      <span style="
                           height: 30px;
                           width: 30px;
                           background-color: #83c7e8;
                           border-radius: 50%;
                           display: inline-block;
-                        "
-                      ></span>
+                        "></span>
                     </div>
                     <div class="text-center">Động đất toàn cầu</div>
                   </div>
                   <div class="col-4">
                     <div class="text-center">
-                      <span
-                        style="
+                      <span style="
                           height: 30px;
                           width: 30px;
                           background-color: #80d1c4;
                           border-radius: 50%;
                           display: inline-block;
-                        "
-                      ></span>
+                        "></span>
                     </div>
 
                     <div class="text-center">
@@ -526,15 +301,13 @@
                   </div>
                   <div class="col-4">
                     <div class="text-center">
-                      <span
-                        style="
+                      <span style="
                           height: 30px;
                           width: 30px;
                           background-color: #f3b77f;
                           border-radius: 50%;
                           display: inline-block;
-                        "
-                      ></span>
+                        "></span>
                     </div>
                     <div class="text-center">Thông báo nhanh động đất</div>
                   </div>
@@ -545,20 +318,14 @@
         </div>
         <div id="popup" class="d-flex flex-column">
           <div class="p-2 shadow d-flex align-items-center" id="head_title">
-            <button
-              class="bg-white me-2"
-              id="closebtn"
-              style="border: unset !important"
-            >
+            <button class="bg-white me-2" id="closebtn" style="border: unset !important">
               <i class="fa fa-chevron-right" aria-hidden="true"></i>
             </button>
             <span class="user-select-none">Thông tin chi tiết</span>
           </div>
           <div class="mt-1 overflow-auto">
             <div class="my-2">
-              <div
-                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-              >
+              <div class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none">
                 Tóm tắt
               </div>
               <div class="mb-2">
@@ -587,14 +354,8 @@
               </div>
             </div>
             <div class="my-2">
-              <div
-                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-                data-bs-toggle="collapse"
-                data-bs-target="#magCollapse"
-                aria-expanded="false"
-                aria-controls="magCollapse"
-                id="magHeading"
-              >
+              <div class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none" data-bs-toggle="collapse"
+                data-bs-target="#magCollapse" aria-expanded="false" aria-controls="magCollapse" id="magHeading">
                 <i id="point" class="fa fa-plus-circle me-1"> </i>
                 Độ lớn
               </div>
@@ -603,37 +364,23 @@
             </div>
             {{#if rolesCheck }}
             <div class="my-2">
-              <div
-                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-                data-bs-toggle="collapse"
-                data-bs-target="#wavePickCollapse"
-                aria-expanded="false"
-                aria-controls="wavePickCollapse"
-                id="wavePickHeading"
-              >
+              <div class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none" data-bs-toggle="collapse"
+                data-bs-target="#wavePickCollapse" aria-expanded="false" aria-controls="wavePickCollapse"
+                id="wavePickHeading">
                 <i id="pointWavePick" class="fa fa-plus-circle me-1"> </i>
                 Thông tin pick sóng
               </div>
 
               <div class="collapse" id="wavePickCollapse">
-                <div
-                  id="wavePickTable"
-                  style="max-height: 50vh"
-                  class="overflow-auto p-1 text-center"
-                >
+                <div id="wavePickTable" style="max-height: 50vh" class="overflow-auto p-1 text-center">
                   Chưa có thông tin
                 </div>
               </div>
             </div>
             <div class="my-2">
-              <div
-                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-                data-bs-toggle="collapse"
-                data-bs-target="#wavePictureCollapse"
-                aria-expanded="false"
-                aria-controls="wavePictureCollapse"
-                id="wavePictureHeading"
-              >
+              <div class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none" data-bs-toggle="collapse"
+                data-bs-target="#wavePictureCollapse" aria-expanded="false" aria-controls="wavePictureCollapse"
+                id="wavePictureHeading">
                 <i id="pointWavePicture" class="fa fa-plus-circle me-1"> </i>
                 Hình ảnh băng sóng
               </div>
@@ -643,14 +390,9 @@
               </div>
             </div>
             <div class="my-2">
-              <div
-                class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none"
-                data-bs-toggle="collapse"
-                data-bs-target="#shakemapCollapse"
-                aria-expanded="false"
-                aria-controls="shakemapCollapse"
-                id="shakemapHeading"
-              >
+              <div class="bg-primary bg-gradient text-white p-2 mb-2 user-select-none" data-bs-toggle="collapse"
+                data-bs-target="#shakemapCollapse" aria-expanded="false" aria-controls="shakemapCollapse"
+                id="shakemapHeading">
                 <i id="pointShakemap" class="fa fa-plus-circle me-1"> </i>
                 Bản đồ shakemap
               </div>
@@ -665,11 +407,13 @@
       </div>
     </div>
   </div>
-  <div class="preloader">
-    <div class="lds-ripple">
-      <div class="lds-pos"></div>
-      <div class="lds-pos"></div>
-    </div>
+  <div class="preloader align-items-center">
+    <div id="progress-circle" style="
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  position: relative;"></div>
   </div>
-<script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/b-2.4.1/b-html5-2.4.1/b-print-2.4.1/jszip-3.10.1/datatables.min.js"></script>
+  <script
+    src="https://cdn.datatables.net/v/bs5/dt-1.13.6/b-2.4.1/b-html5-2.4.1/b-print-2.4.1/jszip-3.10.1/datatables.min.js"></script>
 </template>

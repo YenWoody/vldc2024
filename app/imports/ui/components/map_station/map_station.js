@@ -1,6 +1,7 @@
 import "./map_station.html";
 import { Template } from "meteor/templating";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
+import ProgressBar from "progressbar.js";
 import * as turf from "@turf/turf";
 import "animate.css";
 Template.map_station.onCreated(async () => {
@@ -34,6 +35,7 @@ Template.map_station.onRendered(() => {
     "esri/layers/support/LabelClass",
     "esri/widgets/Zoom",
     "esri/geometry/Extent",
+    "esri/core/watchUtils",
     // "dojo/domReady!",
   ])
     .then(
@@ -59,11 +61,38 @@ Template.map_station.onRendered(() => {
         LabelClass,
         Zoom,
         Extent,
+        watchUtils,
       ]) => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
         $(".menu-bar").removeClass("change");
         //end active navbar
+        const bar = new ProgressBar.Circle("#progress-circle", {
+          strokeWidth: 7,
+          trailWidth: 3,
+          color: "#3d77b1",
+          trailColor: "#eee",
+          duration: 1300,
+          easing: "easeInOut",
+          text: {
+            autoStyleContainer: false,
+          },
+          svgStyle: null,
+        });
+
+        // bar.set(0.75); // 75%
+        // bar.setText("75%");
+        // 👉 Cập nhật phần trăm giả định
+        let percent = 0;
+        const interval = setInterval(() => {
+          percent = Math.min(percent + Math.random() / 10, 0.95);
+          bar.animate(percent, {
+            step: function (state, circle) {
+              const value = Math.round(circle.value() * 100);
+              circle.setText(`${value}%`);
+            },
+          });
+        }, 100);
         function dataEventStation() {
           return new Promise(function (resolve, reject) {
             Meteor.call(
@@ -251,16 +280,14 @@ Template.map_station.onRendered(() => {
           baseLayers: [satelliteLayer, adminSea],
           title: "Satellite",
           id: "Satellite",
-          thumbnailUrl:
-            "/img/satellite.png",
+          thumbnailUrl: "/img/satellite.png",
         });
         const weMap = new Basemap({
           // baseLayers: [tileLayer, adminBasemap, adminSea],
           baseLayers: [weMapVectorTile, adminSea],
           title: "WeMap",
           id: "WeMap",
-          thumbnailUrl:
-           "/img/wemap.png",
+          thumbnailUrl: "/img/wemap.png",
         });
         /**
          * init view
@@ -862,12 +889,11 @@ Template.map_station.onRendered(() => {
               {
                 data: null,
                 render: function (data, type, row) {
-
                   const network = dataNetworks.filter((e) => {
                     return e.code === data.attributes.network;
                   });
-                  console.log(network,data.attributes.name,"network")
-                  const net = network?.[0]?.net ?? "Chưa có thông tin"
+                  console.log(network, data.attributes.name, "network");
+                  const net = network?.[0]?.net ?? "Chưa có thông tin";
                   return `    
                   <div>
                          <h6 class="fw-bold">${data.attributes.name}</h1> 
@@ -1064,7 +1090,7 @@ Template.map_station.onRendered(() => {
             if (response.results.length <= 1) {
               document.getElementById("popup").style.width = "0";
               document.getElementById("map").style.marginRight = "0";
-              loadLayerView(layerEvent, { where: "1=0" });          
+              loadLayerView(layerEvent, { where: "1=0" });
               loadLayerView(layerStations).then((layerView) => {
                 layerView.filter = {
                   where: "1=1",
@@ -1595,7 +1621,7 @@ Template.map_station.onRendered(() => {
         function openPopupRightSide() {
           if ($("#sidebarCollapse").hasClass("active")) {
             $("#sidebarCollapse").toggleClass("active");
-           $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+            $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
             $("#leftSideBar").toggleClass("active");
           }
           if ($(window).width() <= 900) {
@@ -1637,15 +1663,46 @@ Template.map_station.onRendered(() => {
         // });
         // view.ui.add(ccWidget, "manual");
         // ccWidget.multipleConversions = false;
-        view.when().then(function () {
-          // the webmap successfully loaded
-          document.getElementById("legendDiv").style.display = "block";
-          if ($(window).width() <= 768) {
-                      $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
-                      $('#leftSideBar').addClass('active')
-                      $('#sidebarCollapse').removeClass('active')         
-                     }
-          $(".preloader").fadeOut();
+        view.when(async () => {
+          try {
+            // Đợi tất cả layers load xong
+            const layerPromises =
+              view.map?.layers.map((layer) => layer.when()) || [];
+            await Promise.all(layerPromises);
+
+            const viewPromises =
+              view.map?.layers.map((layer) => view.whenLayerView(layer)) || [];
+            await Promise.all(viewPromises);
+          } catch (err) {
+            console.error("Lỗi khi tải bản đồ hoặc lớp:", err);
+          } finally {
+            // 👉 Đợi khi bản đồ render xong
+            await watchUtils.when(view, "updating", (updating) => !updating);
+            clearInterval(interval);
+            bar.animate(
+              1.0,
+              {
+                duration: 1000,
+                step: function (state, circle) {
+                  circle.setText(`100%`);
+                },
+              },
+              function () {
+                $(".preloader").fadeOut();
+                // console.log("Animation has finished");
+              }
+            ); // đến 100%
+
+            // Hoàn tất loading
+
+            // the webmap successfully loaded
+            document.getElementById("legendDiv").style.display = "block";
+            if ($(window).width() <= 768) {
+              $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+              $("#leftSideBar").addClass("active");
+              $("#sidebarCollapse").removeClass("active");
+            }
+          }
           // document.getElementById("infoDiv").style.display = "block";
         });
         var modal = document.getElementById("_modal");
@@ -1836,7 +1893,7 @@ Template.map_station.events({
   },
   "click  #sidebarCollapse": () => {
     $("#sidebarCollapse").toggleClass("active");
-  $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+    $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
   },
 });
