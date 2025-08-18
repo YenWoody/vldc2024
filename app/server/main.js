@@ -137,7 +137,6 @@ function getRealtime(filename) {
       /^Reporting time(?:\s+)(\S+\s+\S+)/
     )[1];
     realtime.Reporting_time = convertUTCtoVN(realtime.Reporting_time);
-    console.log(realtime.Reporting_time, "đa è");
     const i1 = lines.findIndex((x, i) => i > i0 && /^year/.test(x));
     let temp = lines[i1 + 1].match(/\S+/g);
     lines[i1].match(/\S+/g).forEach((e, i) => {
@@ -221,7 +220,6 @@ async function insertRealtime(realtime) {
         if (rowCount === 1) {
           const magnitude = Number(realtime.Mpd);
           const title = "🌋 Cảnh báo động đất";
-          console.log(realtime.Reporting_time, "realtime.Reporting_time");
           const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
           Meteor.call("broadcastFCM", title, body); // Gửi thông báo FCM đến các thiết bị Android
           const users = Meteor.users.find({}).fetch();
