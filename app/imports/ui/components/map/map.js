@@ -5,14 +5,41 @@ import "@selectize/selectize/dist/css/selectize.css";
 import * as turf from "@turf/turf";
 import provinceName from "../../../api/provinceVN";
 import ProgressBar from "progressbar.js";
+import toVNISOStringNoOffset from "../../../utils/convertISOtoVN";
 import "animate.css";
-Template.map.onCreated(() => {
+let layerIris, layerRealTime, emptyTable;
+function setActiveLayer(layerName) {
+  if (!layerRealTime || !layerIris) {
+    console.warn("Layer chưa sẵn sàng");
+    return;
+  }
+  if (layerName === "layerRealTime") {
+    layerRealTime.visible = true;
+    layerIris.visible = false;
+  } else if (layerName == "layerIris") {
+    layerRealTime.visible = false;
+    layerIris.visible = true;
+  }
+}
+
+const resetLayers = () => {
+  if (layerRealTime && layerIris) {
+    emptyTable.clear().draw();
+    layerRealTime.visible = true;
+    layerIris.visible = true;
+    Template.instance().activeLayer.set(null);
+    $(".btn-layer").removeClass("activeButton");
+  }
+};
+Template.map.onCreated(function () {
   setDefaultOptions({
     version: "4.22",
     css: true,
     insertCssBefore: "style",
   });
   loadCss("https://js.arcgis.com/4.22/esri/themes/light/main.css");
+
+  this.activeLayer = new ReactiveVar(null);
 });
 Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
@@ -104,6 +131,25 @@ Template.map.onRendered(() => {
             },
           });
         }, 100);
+        emptyTable = $("#dulieu").DataTable({
+          data: [],
+          paging: true,
+          destroy: true,
+          searching: false,
+          scrollX: "true",
+          scrollY: "calc(100vh - 420px)",
+          language: {
+            emptyTable: "Chọn lớp dữ liệu để hiển thị",
+            info: "Hiển thị từ _START_ đến _END_ sự kiện",
+            infoEmpty: "Hiển thị 0 sự kiện",
+            infoFiltered: " ",
+            paginate: {
+              previous: "Trước",
+              next: "Sau",
+            },
+            lengthMenu: "Hiển thị _MENU_ mục",
+          },
+        });
         function dataRealTimes() {
           return new Promise(function (resolve, reject) {
             Meteor.call("dataRealTime", function (error, resulteventStation) {
@@ -195,7 +241,7 @@ Template.map.onRendered(() => {
         dataIris.split(/\r?\n/).forEach((lines) => {
           const line = lines.split("|");
           dtIris.push({
-            time: line[1],
+            time: toVNISOStringNoOffset(line[1]) || "Chưa có thông tin",
             lat: Number(line[2]),
             long: Number(line[3]),
             depth: line[4],
@@ -249,9 +295,8 @@ Template.map.onRendered(() => {
           const key = `${roundCoord(lat)}_${roundCoord(lon)}`;
           if (seenCoords.has(key)) return;
           seenCoords.add(key);
-
           const e = {
-            time: cols[1] || "Chưa có thông tin",
+            time: toVNISOStringNoOffset(cols[1]) || "Chưa có thông tin",
             lat,
             long: lon,
             depth: cols[4] || "Chưa có thông tin",
@@ -263,9 +308,6 @@ Template.map.onRendered(() => {
           };
 
           dataGeojsonCombined.push(turf.point([lon, lat], e));
-        });
-        const run_ = dataGeojsonCombined.filter((e) => {
-          return e.properties.source === "USGS";
         });
         const dataRealTimeEvent = await dataRealTimeEvents();
         const dataRealTime = await dataRealTimes();
@@ -959,7 +1001,7 @@ Template.map.onRendered(() => {
           maxScale: 0,
           minScale: 8000000,
         };
-        const layerIris = new GeoJSONLayer({
+        layerIris = new GeoJSONLayer({
           url: url_dataIrisUSGS,
           listMode: "show",
           renderer: renderer,
@@ -992,7 +1034,7 @@ Template.map.onRendered(() => {
           minScale: 8000000,
         };
 
-        const layerRealTime = new GeoJSONLayer({
+        layerRealTime = new GeoJSONLayer({
           url: url_realTime,
           renderer: renderer_realtime,
           legendEnabled: false,
@@ -1239,7 +1281,7 @@ Template.map.onRendered(() => {
 
         function loadDataRealtime() {
           let query = layerRealTime.createQuery();
-          query.where = `Mpd >= 0 and Mpd <= 1000`;
+          query.where = "1=1";
           query.outFields = "*";
 
           layerRealTime.queryFeatures(query).then(async function (response) {
@@ -1256,7 +1298,6 @@ Template.map.onRendered(() => {
             loadDataTable(data);
           });
         }
-        loadDataRealtime();
         // Highlight điểm click trên FeatureLayer
         function hightlightPoint(layer, point) {
           view.whenLayerView(layer).then(function (layerView) {
@@ -1277,7 +1318,9 @@ Template.map.onRendered(() => {
         $("#closebtn").click(() => {
           loadLayerView(layerStations, { where: "id = -1" });
           loadLayerView(layerRealTime, { where: "1=1" });
-
+          loadLayerView(layerIris, { where: "1=1" });
+          layerIris.visible = true;
+          layerRealTime.visible = true;
           if (highlightSelect) {
             highlightSelect.remove();
           }
@@ -1431,12 +1474,13 @@ Template.map.onRendered(() => {
               loadLayerView(layerIris, {
                 where: "1=1",
               });
+              layerRealTime.visible = true;
+              layerIris.visible = true;
             } else {
               response.results.forEach(function (result) {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerRealTime) {
                   hightlightPoint(layerRealTime, result.graphic);
-                  console.log("click vào real time");
                   loadLayerView(layerIris, {
                     where: "1=0",
                   });
@@ -1725,6 +1769,9 @@ Template.map.helpers({
     }
     return status; // look at the current user
   },
+  isDisabled() {
+    return !Template.instance().activeLayer.get();
+  },
 });
 
 Template.map.events({
@@ -1762,5 +1809,15 @@ Template.map.events({
     $("#sidebarCollapse").toggleClass("active");
     $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
+
+    resetLayers();
+  },
+  "click #buttonRealtime": () => {
+    setActiveLayer("layerRealTime");
+    Template.instance().activeLayer.set("layerRealTime");
+  },
+  "click #buttonGlobal": () => {
+    setActiveLayer("layerIris");
+    Template.instance().activeLayer.set("layerIris");
   },
 });
