@@ -4,6 +4,10 @@ import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
 import ProgressBar from "progressbar.js";
 import * as turf from "@turf/turf";
 import "animate.css";
+function hideRightSideBar() {
+  document.getElementById("popup").style.width = "0";
+  document.getElementById("map").style.marginRight = "0";
+}
 Template.map_station.onCreated(async () => {
   setDefaultOptions({
     version: "4.22",
@@ -93,6 +97,7 @@ Template.map_station.onRendered(() => {
             },
           });
         }, 100);
+
         function dataEventStation() {
           return new Promise(function (resolve, reject) {
             Meteor.call(
@@ -422,16 +427,49 @@ Template.map_station.onRendered(() => {
             },
           ],
         };
-        const iconstation = {
-          type: "picture-marker", // autocasts as new PictureMarkerSymbol()
-          url: "/img/station.png",
-          width: "16px",
-          height: "16px",
-        };
         const renderstation = {
-          type: "simple", // autocasts as new SimpleRenderer()
-          symbol: iconstation,
+          type: "unique-value", // kiểu renderer phân loại
+          field: "status", // field trong dữ liệu của bạn
+          uniqueValueInfos: [
+            {
+              value: "Đang hoạt động",
+              symbol: {
+                type: "picture-marker",
+                url: "/img/station.png",
+                width: "16px",
+                height: "16px",
+              },
+              label: "Đang hoạt động",
+            },
+            {
+              value: "Dừng hoạt động",
+              symbol: {
+                type: "picture-marker",
+                url: "/img/stop-station.png",
+                width: "16px",
+                height: "16px",
+              },
+              label: "Dừng hoạt động",
+            },
+            {
+              value: "Tạm dừng hoạt động",
+              symbol: {
+                type: "picture-marker",
+                url: "/img/pending-station.png",
+                width: "16px",
+                height: "16px",
+              },
+              label: "Tạm dừng hoạt động",
+            },
+          ],
+          defaultSymbol: {
+            type: "simple-marker",
+            style: "circle",
+            color: "gray",
+            size: "12px",
+          },
         };
+
         const labelClass = {
           // autocasts as new LabelClass()
           symbol: {
@@ -479,29 +517,8 @@ Template.map_station.onRendered(() => {
             e.datetime = e.datetime.getTime();
             e["location"] = "Chưa có thông tin";
             dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-            // try {
-            //   await $.ajax({
-            //     url: url,
-            //     data: param,
-            //     type: "GET",
-            //     dataType: "json",
-            //   }).done((t) => {
-            //     if (!t.error) {
-            //       if (t.features.length > 0) {
-            //         e["location"] = t.features[0].attributes.name;
-            //         return e;
-            //       }
-            //     }
-            //   });
-            // } catch (e) {
-            //   console.log();
-            // }
           })
         );
-        // eventGeojson.map((e) => {
-        //   e.datetime = e.datetime.getTime();
-        //   dataGeojsonEvents.push(turf.point([e.long, e.lat], e));
-        // });
         dataEventStations.map((e) => {
           dataGeojsonEventStations.push(turf.point([0, 0], e));
         });
@@ -845,7 +862,6 @@ Template.map_station.onRendered(() => {
         let layer;
         view.when(function () {
           map.addMany([layerEvent, layerStations]);
-          let flView = null;
           loadLayerView(layerEvent, { where: "id = -1" });
         });
         function loadDataTableStation() {
@@ -912,6 +928,7 @@ Template.map_station.onRendered(() => {
           $("#dulieu tbody").on("click", "tr", function () {
             const data = $("#dulieu").DataTable().row(this).data();
             view.whenLayerView(data.layer).then(function (layerView) {
+              layerView.filter = null;
               if (highlightSelect) {
                 highlightSelect.remove();
                 view.graphics.removeAll();
@@ -1088,14 +1105,14 @@ Template.map_station.onRendered(() => {
           }
           view.hitTest(event.screenPoint).then(function (response) {
             if (response.results.length <= 1) {
-              document.getElementById("popup").style.width = "0";
-              document.getElementById("map").style.marginRight = "0";
+              // if (!$("#leftSideBar").hasClass("active")) {
+              //   $("#sidebarCollapse").toggleClass("active");
+              //   $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+              //   $("#leftSideBar").toggleClass("active");
+              // }
+              hideRightSideBar();
               loadLayerView(layerEvent, { where: "1=0" });
-              loadLayerView(layerStations).then((layerView) => {
-                layerView.filter = {
-                  where: "1=1",
-                };
-              });
+              loadLayerView(layerStations, { where: "1=1" });
             } else {
               response.results.forEach(async function (result) {
                 // Popup LayerRealTime
@@ -1855,8 +1872,7 @@ Template.map_station.events({
     document.getElementById("_modal").style.display = "none";
   },
   "click #closebtn": () => {
-    document.getElementById("popup").style.width = "0";
-    document.getElementById("map").style.marginRight = "0";
+    hideRightSideBar();
   },
   "click #magHeading": (e) => {
     $("#point").toggleClass("fa-plus-circle");
@@ -1895,5 +1911,6 @@ Template.map_station.events({
     $("#sidebarCollapse").toggleClass("active");
     $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
+    hideRightSideBar();
   },
 });

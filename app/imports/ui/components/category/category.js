@@ -1,5 +1,6 @@
 import "./category.html";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
+import { ReactiveVar } from "meteor/reactive-var";
 import "@selectize/selectize/dist/css/selectize.css";
 import alasql from "alasql";
 import ProgressBar from "progressbar.js";
@@ -7,18 +8,48 @@ import XLSX from "xlsx";
 import "animate.css";
 import * as turf from "@turf/turf";
 import { provinceName } from "../../../api/provinceVN";
-Template.category.onCreated(() => {
+let layerEvent, layerRealTime, layerStations, emptyTable;
+function setActiveLayer(layerName) {
+  if (!layerRealTime || !layerEvent) {
+    console.warn("Layer chưa sẵn sàng");
+    return;
+  }
+  if (layerName === "layerRealTime") {
+    layerRealTime.visible = true;
+    layerEvent.visible = false;
+  } else if (layerName == "layerEvent") {
+    layerRealTime.visible = false;
+    layerEvent.visible = true;
+  }
+}
+
+const resetLayers = (instance) => {
+  if (layerRealTime && layerEvent) {
+    emptyTable.clear().draw();
+    layerRealTime.visible = true;
+    layerEvent.visible = true;
+    instance.activeLayer.set(null);
+    $(".btn-layer").removeClass("activeButton");
+  }
+};
+function hideRightSideBar() {
+  document.getElementById("popup").style.width = "0";
+  document.getElementById("map").style.marginRight = "0";
+}
+Template.category.onCreated(function () {
   setDefaultOptions({
     version: "4.22",
     css: true,
     insertCssBefore: "style",
   });
   loadCss("https://js.arcgis.com/4.22/esri/themes/light/main.css");
+
+  this.activeLayer = new ReactiveVar(null);
 });
 Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
-Template.category.onRendered(() => {
+Template.category.onRendered(function () {
   loadModules([
     "esri/Map",
     "esri/views/MapView",
@@ -76,6 +107,7 @@ Template.category.onRendered(() => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
         $(".menu-bar").removeClass("change");
+        const self = this;
         //end active navbar
         const bar = new ProgressBar.Circle("#progress-circle", {
           strokeWidth: 7,
@@ -103,6 +135,26 @@ Template.category.onRendered(() => {
             },
           });
         }, 100);
+
+        emptyTable = $("#dulieu").DataTable({
+          data: [],
+          paging: true,
+          destroy: true,
+          searching: false,
+          scrollX: "true",
+          scrollY: "calc(100vh - 420px)",
+          language: {
+            emptyTable: "Chọn lớp dữ liệu để hiển thị",
+            info: "Hiển thị từ _START_ đến _END_ sự kiện",
+            infoEmpty: "Hiển thị 0 sự kiện",
+            infoFiltered: " ",
+            paginate: {
+              previous: "Trước",
+              next: "Sau",
+            },
+            lengthMenu: "Hiển thị _MENU_ mục",
+          },
+        });
         function dataRealTimes() {
           return new Promise(function (resolve, reject) {
             Meteor.call("dataRealTime", function (error, resulteventStation) {
@@ -1063,7 +1115,7 @@ Template.category.onRendered(() => {
           maxScale: 0,
           minScale: 8000000,
         };
-        const layerEvent = new GeoJSONLayer({
+        layerEvent = new GeoJSONLayer({
           url: url,
 
           listMode: "show",
@@ -1083,7 +1135,7 @@ Template.category.onRendered(() => {
           labelingInfo: [labelClass_event],
           outFields: ["*"],
         });
-        const layerRealTime = new GeoJSONLayer({
+        layerRealTime = new GeoJSONLayer({
           url: url_realTime,
           renderer: renderer_realtime,
           legendEnabled: false,
@@ -1124,7 +1176,7 @@ Template.category.onRendered(() => {
         };
 
         // Thêm Layer Trạm
-        const layerStations = new GeoJSONLayer({
+        layerStations = new GeoJSONLayer({
           url: url_station,
           popupTemplate: stationPopupTemplate,
           listMode: "hide",
@@ -1641,19 +1693,29 @@ Template.category.onRendered(() => {
             });
           });
         }
-        loadProcessedEvent();
+        // loadProcessedEvent();
         // Highlight điểm click trên FeatureLayer
-        function hightlightPoint(layer, point) {
-          view.whenLayerView(layer).then(function (layerView) {
-            layerView.filter = { where: `id = ${point.attributes.id}` };
+        function highlightPoint(layer, point) {
+          return view.whenLayerView(layer).then(function (layerView) {
             if (highlightSelect) {
               highlightSelect.remove();
             }
-            highlightSelect = layerView.highlight(point);
-            view.goTo({
-              geometry: point.geometry,
-              zoom: 6,
-            });
+            layerView.filter = { where: `id = ${point.attributes.id}` };
+
+            view
+              .goTo(
+                {
+                  target: point.geometry,
+                  zoom: 6,
+                },
+                {
+                  duration: 1200,
+                  easing: "ease-in-out",
+                }
+              )
+              .then(() => {
+                highlightSelect = layerView.highlight(point);
+              });
           });
         }
         //end highlight
@@ -1867,22 +1929,32 @@ Template.category.onRendered(() => {
 
           view.hitTest(event.screenPoint).then(function (response) {
             if (response.results.length <= 1) {
-              document.getElementById("popup").style.width = "0";
-              document.getElementById("map").style.marginRight = "0";
+              if (!$("#leftSideBar").hasClass("active")) {
+                $("#sidebarCollapse").toggleClass("active");
+                $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+                $("#leftSideBar").toggleClass("active");
+                resetLayers(self);
+              }
+
+              hideRightSideBar();
               loadLayerView(layerStations, { where: "1=0" });
               loadLayerView(layerRealTime, { where: "1=1" });
               loadLayerView(layerEvent, { where: "1=1" });
+              layerRealTime.visible = true;
+              layerEvent.visible = true;
             } else {
               response.results.forEach(function (result) {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerRealTime) {
-                  hightlightPoint(layerRealTime, result.graphic);
-                  loadPopupLayerRealtime(result.graphic);
-                  loadLayerView(layerEvent, { where: "1=0" });
+                  highlightPoint(layerRealTime, result.graphic).then(() => {
+                    loadPopupLayerRealtime(result.graphic);
+                    loadLayerView(layerEvent, { where: "1=0" });
+                  });
                 } else if (result.graphic.layer === layerEvent) {
-                  hightlightPoint(layerEvent, result.graphic);
-                  loadPopupLayerEvent(result.graphic);
-                  loadLayerView(layerRealTime, { where: "1=0" });
+                  highlightPoint(layerEvent, result.graphic).then(() => {
+                    loadPopupLayerEvent(result.graphic);
+                    loadLayerView(layerRealTime, { where: "1=0" });
+                  });
                 }
               });
               // do something with the result graphic
@@ -1897,7 +1969,6 @@ Template.category.onRendered(() => {
           view: view,
           container: legendDiv,
         });
-
         function openPopupRightSide() {
           if ($("#sidebarCollapse").hasClass("active")) {
             $("#sidebarCollapse").toggleClass("active");
@@ -2160,17 +2231,29 @@ Template.category.helpers({
     }
     return status; // look at the current user
   },
+  isDisabled() {
+    return !Template.instance().activeLayer.get();
+  },
 });
 
 Template.category.events({
-  "click  #sidebarCollapse": () => {
+  "click  #sidebarCollapse": (event, instance) => {
     $("#sidebarCollapse").toggleClass("active");
     $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
+    resetLayers(instance);
+    hideRightSideBar();
+  },
+  "click #buttonProcessedEvent": () => {
+    setActiveLayer("layerEvent");
+    Template.instance().activeLayer.set("layerEvent");
+  },
+  "click #buttonRealtime": () => {
+    setActiveLayer("layerRealTime");
+    Template.instance().activeLayer.set("layerRealTime");
   },
   "click #closebtn": () => {
-    document.getElementById("popup").style.width = "0";
-    document.getElementById("map").style.marginRight = "0";
+    hideRightSideBar();
   },
   "click #magHeading": (e) => {
     $("#point").toggleClass("fa-plus-circle");

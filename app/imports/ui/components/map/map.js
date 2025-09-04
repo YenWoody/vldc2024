@@ -1,5 +1,6 @@
 import "./map.html";
 import { loadModules, setDefaultOptions, loadCss } from "esri-loader";
+import { FlowRouter } from "meteor/ostrio:flow-router-extra";
 import "@selectize/selectize/dist/css/selectize.css";
 // import { $ } from "meteor/jquery";
 import * as turf from "@turf/turf";
@@ -22,15 +23,19 @@ function setActiveLayer(layerName) {
   }
 }
 
-const resetLayers = () => {
+const resetLayers = (instance) => {
   if (layerRealTime && layerIris) {
     emptyTable.clear().draw();
     layerRealTime.visible = true;
     layerIris.visible = true;
-    Template.instance().activeLayer.set(null);
+    instance.activeLayer.set(null);
     $(".btn-layer").removeClass("activeButton");
   }
 };
+function hideRightSideBar() {
+  document.getElementById("popup").style.width = "0";
+  document.getElementById("map").style.marginRight = "0";
+}
 Template.map.onCreated(function () {
   setDefaultOptions({
     version: "4.22",
@@ -44,7 +49,7 @@ Template.map.onCreated(function () {
 Meteor.startup(() => {
   Meteor.call("importRealtimeData", function (e, r) {});
 });
-Template.map.onRendered(() => {
+Template.map.onRendered(function () {
   loadModules([
     "esri/Map",
     "esri/views/MapView",
@@ -104,6 +109,7 @@ Template.map.onRendered(() => {
         //remove active navbar
         $("#navbarButton").removeClass("show");
         $(".menu-bar").removeClass("change");
+        const self = this;
         //end active navbar
         const bar = new ProgressBar.Circle("#progress-circle", {
           strokeWidth: 7,
@@ -1299,19 +1305,32 @@ Template.map.onRendered(() => {
           });
         }
         // Highlight điểm click trên FeatureLayer
-        function hightlightPoint(layer, point) {
-          view.whenLayerView(layer).then(function (layerView) {
-            layerView.filter = point.attributes.id
-              ? { where: `id = ${point.attributes.id}` }
-              : { where: `__OBJECTID = ${point.attributes.__OBJECTID}` };
+        function highlightPoint(layer, point) {
+          return view.whenLayerView(layer).then(function (layerView) {
             if (highlightSelect) {
               highlightSelect.remove();
             }
-            highlightSelect = layerView.highlight(point);
-            view.goTo({
-              geometry: point.geometry,
-              zoom: 6,
-            });
+
+            const where = point.attributes.id
+              ? `id = ${point.attributes.id}`
+              : `__OBJECTID = ${point.attributes.__OBJECTID}`;
+            layerView.filter = { where };
+
+            // Dùng geometry trực tiếp
+            view
+              .goTo(
+                {
+                  target: point.geometry,
+                  zoom: 6,
+                },
+                {
+                  duration: 1200,
+                  easing: "ease-in-out",
+                }
+              )
+              .then(() => {
+                highlightSelect = layerView.highlight(point);
+              });
           });
         }
         //end highlight
@@ -1462,9 +1481,13 @@ Template.map.onRendered(() => {
 
           view.hitTest(event.screenPoint).then(function (response) {
             if (response.results.length <= 1) {
-              document.getElementById("popup").style.width = "0";
-              document.getElementById("map").style.marginRight = "0";
-
+              if (!$("#leftSideBar").hasClass("active")) {
+                $("#sidebarCollapse").toggleClass("active");
+                $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+                $("#leftSideBar").toggleClass("active");
+                resetLayers(self);
+              }
+              hideRightSideBar();
               loadLayerView(layerStations, {
                 where: "id = -1",
               });
@@ -1480,17 +1503,20 @@ Template.map.onRendered(() => {
               response.results.forEach(function (result) {
                 // Popup LayerRealTime
                 if (result.graphic.layer === layerRealTime) {
-                  hightlightPoint(layerRealTime, result.graphic);
-                  loadLayerView(layerIris, {
-                    where: "1=0",
+                  highlightPoint(layerRealTime, result.graphic).then(() => {
+                    loadLayerView(layerIris, {
+                      where: "1=0",
+                    });
+                    console.log(result.graphic.attributes, "result");
+                    loadPopupLayerRealtime(result.graphic);
                   });
-                  loadPopupLayerRealtime(result.graphic);
                 } else if (result.graphic.layer === layerIris) {
-                  hightlightPoint(layerIris, result.graphic);
-                  loadLayerView(layerRealTime, {
-                    where: "1=0",
+                  highlightPoint(layerIris, result.graphic).then(() => {
+                    loadLayerView(layerRealTime, {
+                      where: "1=0",
+                    });
+                    loadPopupLayerIris(result.graphic);
                   });
-                  loadPopupLayerIris(result.graphic);
                 }
               });
               // do something with the result graphic
@@ -1696,6 +1722,9 @@ Template.map.onRendered(() => {
         view.ui.add([layerListExpand, legendExpand], "top-right");
         // document.getElementById("infoDiv").style.display = "block";
 
+        const quakeFile = FlowRouter.getQueryParam("quakename"); // nếu bạn truyền id
+        // chờ ArcGIS map view sẵn sàng
+
         view.when(async () => {
           try {
             // Đợi tất cả layers load xong
@@ -1711,6 +1740,40 @@ Template.map.onRendered(() => {
           } finally {
             // 👉 Đợi khi bản đồ render xong
             await watchUtils.when(view, "updating", (updating) => !updating);
+            if (quakeFile) {
+              // ✅ Trường hợp có id → query trong layer
+              view.whenLayerView(layerRealTime).then((layerView) => {
+                const query = layerRealTime.createQuery();
+                query.where = `filename = '${quakeFile}'`; // đổi thành OBJECTID nếu cần
+                layerView.filter = { where: `filename = '${quakeFile}'` };
+                query.returnGeometry = true;
+                layerRealTime.queryFeatures(query).then((result) => {
+                  console.log(result.graphic, "result.graphic");
+                  if (result.features.length) {
+                    const feature = result.features[0];
+                    const point = new Point({
+                      x: feature.attributes.lon,
+                      y: feature.attributes.lat,
+                      spatialReference: 4326, // EPSG:4326 (WGS84)
+                    });
+                    if (highlightSelect) {
+                      highlightSelect.remove();
+                    }
+                    view.goTo({
+                      target: point,
+                      zoom: 7,
+                      animate: true,
+                      duration: 2000,
+                      easing: "ease-out",
+                    });
+
+                    highlightSelect = layerView.highlight(feature);
+                    loadPopupLayerRealtime(feature);
+                    openPopupRightSide();
+                  }
+                });
+              });
+            }
             clearInterval(interval);
             bar.animate(
               1.0,
@@ -1786,8 +1849,7 @@ Template.map.events({
       .removeClass("animate__animated animate__rubberBand");
   },
   "click #closebtn": () => {
-    document.getElementById("popup").style.width = "0";
-    document.getElementById("map").style.marginRight = "0";
+    hideRightSideBar();
   },
   "click #magHeading": (e) => {
     $("#point").toggleClass("fa-plus-circle");
@@ -1805,12 +1867,13 @@ Template.map.events({
     $("#pointShakemap").toggleClass("fa-plus-circle");
     $("#pointShakemap").toggleClass("fa-minus-circle");
   },
-  "click  #sidebarCollapse": () => {
+  "click  #sidebarCollapse": (event, instance) => {
     $("#sidebarCollapse").toggleClass("active");
     $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
-
-    resetLayers();
+    console.log(instance);
+    hideRightSideBar();
+    resetLayers(instance);
   },
   "click #buttonRealtime": () => {
     setActiveLayer("layerRealTime");

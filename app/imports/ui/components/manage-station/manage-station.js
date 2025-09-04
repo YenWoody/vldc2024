@@ -7,52 +7,45 @@ let state = false;
 const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
-Template.manageStation.onCreated(function () {
-  this.subscribe("users");
-  Meteor.subscribe("allUsers");
-  Meteor.users.find({}).fetch(); // will return all users
-});
+Template.manageStation.onCreated(function () {});
 function callDatatable() {
   Meteor.call("dataStation", function (error, resultdataStation) {
-    if (error) {
-      reject(error);
-    } else {
-      $("#loading_datatables").show();
-      let table = new DataTable("#data_tram", {
-        data: resultdataStation.rows,
-        paging: true,
-        // responsive: true,
-        destroy: true,
-        scrollX: true,
-        pageLength: 10,
-        initComplete: function (settings, json) {
-          $("#loading_datatables").hide();
-        },
-        language: {
-          sSearch: "Tìm kiếm :",
-          emptyTable: "Dữ liệu chưa tải thành công",
-          info: "Hiển thị từ _START_ đến _END_ Trạm",
-          infoEmpty: "Hiển thị 0 Trạm",
-          lengthMenu: "Hiển thị _MENU_ Trạm mỗi trang",
-          infoFiltered: "(Lọc từ tổng số _MAX_ Trạm)",
-        },
-        columns: [
-          { data: "id_key" },
-          { data: "name" },
-          { data: "code" },
-          { data: "network" },
-          { data: "address" },
-          { data: "lat" },
-          { data: "long" },
-          { data: "height" },
-          { data: "tunnel_type" },
-          { data: "active_date" },
-          { data: "status" },
-          { data: "machineHistory" },
-          {
-            data: null,
-            className: "dt-center control",
-            defaultContent: `<div class="btn-group btn-group-sm">
+    $("#loading_datatables").show();
+    let table = new DataTable("#data_tram", {
+      data: resultdataStation.rows,
+      paging: true,
+      // responsive: true,
+      destroy: true,
+      scrollX: true,
+      pageLength: 10,
+      initComplete: function (settings, json) {
+        $("#loading_datatables").hide();
+      },
+      language: {
+        sSearch: "Tìm kiếm :",
+        emptyTable: "Dữ liệu chưa tải thành công",
+        info: "Hiển thị từ _START_ đến _END_ Trạm",
+        infoEmpty: "Hiển thị 0 Trạm",
+        lengthMenu: "Hiển thị _MENU_ Trạm mỗi trang",
+        infoFiltered: "(Lọc từ tổng số _MAX_ Trạm)",
+      },
+      columns: [
+        { data: "id_key" },
+        { data: "name" },
+        { data: "code" },
+        { data: "network" },
+        { data: "address" },
+        { data: "lat" },
+        { data: "long" },
+        { data: "height" },
+        { data: "tunnel_type" },
+        { data: "active_date" },
+        { data: "status" },
+        { data: "machineHistory" },
+        {
+          data: null,
+          className: "dt-center control",
+          defaultContent: `<div class="btn-group btn-group-sm">
             <button type="button" class="btn btn-primary btn-sm me-2 editor-edit" data-bs-toggle="tooltip"
             data-bs-placement="top"
             title="Chỉnh sửa" ><span class="fa fa-edit fa-lg editor-edit"/></span></button>
@@ -60,11 +53,10 @@ function callDatatable() {
             data-bs-placement="top"
             title="Xóa"><span class="fa fa-trash fa-lg editor-delete"/></span></button>
           </div>`,
-            orderable: false,
-          },
-        ],
-      });
-    }
+          orderable: false,
+        },
+      ],
+    });
   });
 }
 Template.manageStation.onRendered(async () => {
@@ -73,7 +65,15 @@ Template.manageStation.onRendered(async () => {
   });
   $("#dashboard-title").html("Quản lí các trạm đo");
   callDatatable();
-
+  function checkEmpty(value, type = "string") {
+    if (type === "number") {
+      const num = parseFloat(value);
+      return isNaN(num) ? null : num;
+    }
+    return value && value.toString().trim() !== ""
+      ? value.toString().trim()
+      : "Chưa có thông tin";
+  }
   document.getElementById("add-station-excel").onclick = async function () {
     document.getElementById("modal_add_station_excel").style.display = "block";
     var ExcelToJSON = function () {
@@ -156,23 +156,21 @@ Template.manageStation.onRendered(async () => {
     document.getElementById("modal_add_station").style.display = "block";
     document.getElementById("save_add_station").onclick = function () {
       const key_tram_ = maxKey + 1;
-      function checkEmpty(data) {
-        return data ? data : "Chưa có thông tin";
-      }
       const insert = {
         id_key: key_tram_,
-        code: checkEmpty($("#code_a").val()),
-        name: checkEmpty($("#name_a").val()),
-        lat: parseFloat($("#lat_a").val()),
-        long: parseFloat($("#long_a").val()),
-        height: parseFloat($("#height_a").val()),
-        network: checkEmpty($("#network_a").val()),
-        status: checkEmpty($("#status_a").val()),
-        machineHistory: checkEmpty($("#machineHistory_a").val()),
-        active_date: parseFloat($("#active_date_a").val()),
-        tunnel_type: checkEmpty($("#tunnel_type_a").val()),
-        address: checkEmpty($("#address_a").val()),
+        code: checkEmpty($("#code_a").val(), "string"),
+        name: checkEmpty($("#name_a").val(), "string"),
+        lat: checkEmpty($("#lat_a").val(), "number"),
+        long: checkEmpty($("#long_a").val(), "number"),
+        height: checkEmpty($("#height_a").val(), "number"),
+        network: checkEmpty($("#network_a").val(), "string"),
+        status: checkEmpty($("#status_a").val(), "string"),
+        machineHistory: checkEmpty($("#machineHistory_a").val(), "string"),
+        active_date: checkEmpty($("#active_date_a").val(), "number"),
+        tunnel_type: checkEmpty($("#tunnel_type_a").val(), "string"),
+        address: checkEmpty($("#address_a").val(), "string"),
       };
+
       $("#lat_a").change(() => {
         $("#alert_lat_a").html("");
       });
@@ -268,23 +266,23 @@ Template.manageStation.onRendered(async () => {
         }
         document.getElementById(e).value = data[e];
       });
-      function checkEmpty(data) {
-        return data ? data : "Chưa có thông tin";
-      }
+      // function checkEmpty(data) {
+      //   return data ? data : "Chưa có thông tin";
+      // }
       document.getElementById("save_edit_station").onclick = function () {
         const insert = {
           id_key: $("#id_key").val(),
-          code: checkEmpty($("#code").val()),
-          name: checkEmpty($("#name").val()),
-          lat: parseFloat($("#lat").val()),
-          long: parseFloat($("#long").val()),
-          height: parseFloat($("#height").val()),
-          network: checkEmpty($("#network").val()),
-          status: checkEmpty($("#status").val()),
-          machineHistory: checkEmpty($("#machineHistory").val()),
-          active_date: parseFloat($("#active_date").val()),
-          tunnel_type: checkEmpty($("#tunnel_type").val()),
-          address: checkEmpty($("#address").val()),
+          code: checkEmpty($("#code").val(), "string"),
+          name: checkEmpty($("#name").val(), "string"),
+          lat: checkEmpty($("#lat").val(), "number"),
+          long: checkEmpty($("#long").val(), "number"),
+          height: checkEmpty($("#height").val(), "number"),
+          network: checkEmpty($("#network").val(), "string"),
+          status: checkEmpty($("#status").val(), "string"),
+          machineHistory: checkEmpty($("#machineHistory").val(), "string"),
+          active_date: checkEmpty($("#active_date").val(), "number"),
+          tunnel_type: checkEmpty($("#tunnel_type").val(), "string"),
+          address: checkEmpty($("#address").val(), "string"),
         };
         Meteor.call("editStation", insert, (error) => {
           if (error) {
@@ -346,14 +344,6 @@ Template.manageStation.onRendered(async () => {
   });
 });
 
-Template.manageStation.events({
-  "click #close-modal": function () {
-    document.getElementById("_modal").style.display = "none";
-    document.getElementById("modal_add_station").style.display = "none";
-    document.getElementById("modal_delete_station").style.display = "none";
-    document.getElementById("modal_add_station_excel").style.display = "none";
-  },
-});
 Template.manageStation.helpers({
   stations: () => {
     return dataTram;
@@ -373,7 +363,7 @@ Template.manageStation.helpers({
       { id: "address", text: "Địa chỉ", type: "text" },
       { id: "tunnel_type", text: "Loại hầm", type: "text" },
       { id: "active_date", text: "Năm hoạt động", type: "number" },
-      { id: "status", text: "Trạng thái", type: "text" },
+      { id: "status", text: "Trạng thái", type: "select" },
       { id: "machineHistory", text: "Lịch sử đặt máy", type: "text" },
       { id: "height", text: "Độ cao", type: "number" },
     ];
@@ -382,7 +372,7 @@ Template.manageStation.helpers({
   addStation: () => {
     const t = [
       { id: "id_key_a", text: "STT", type: "text" },
-      { id: "code", text: "Mã trạm", type: "text" },
+      { id: "code_a", text: "Mã trạm", type: "text" },
       {
         text: "Tên trạm",
         id: "name_a",
@@ -394,8 +384,8 @@ Template.manageStation.helpers({
       { id: "address_a", text: "Địa chỉ", type: "text" },
       { id: "tunnel_type_a", text: "Loại hầm", type: "text" },
       { id: "active_date_a", text: "Năm hoạt động", type: "number" },
-      { id: "status_a", text: "Trạng thái", type: "text" },
-      { id: "machineHistory", text: "Lịch sử đặt máy", type: "text" },
+      { id: "status_a", text: "Trạng thái", type: "select" },
+      { id: "machineHistory_a", text: "Lịch sử đặt máy", type: "text" },
       { id: "height_a", text: "Độ cao", type: "number" },
     ];
     return t;
@@ -436,5 +426,11 @@ Template.manageStation.events({
       // there was multiple files selected
       var file = e.currentTarget.files[0];
     }
+  },
+  "click #close-modal": function () {
+    document.getElementById("_modal").style.display = "none";
+    document.getElementById("modal_add_station").style.display = "none";
+    document.getElementById("modal_delete_station").style.display = "none";
+    document.getElementById("modal_add_station_excel").style.display = "none";
   },
 });

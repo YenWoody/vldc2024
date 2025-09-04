@@ -13,14 +13,21 @@ admin.initializeApp({
  * @param {string} title - Tiêu đề thông báo
  * @param {string} body - Nội dung thông báo
  */
-export function sendNotificationToTopic(topic, title, body, data = {}) {
+export function sendNotificationToTopic(
+  topic,
+  title,
+  body,
+  quakeFile,
+  data = {}
+) {
   return admin.messaging().send({
     topic,
-    notification: {
+    data: {
+      ...data,
       title,
       body,
+      url: `https://earthquake.wemap.asia/?quakename=${quakeFile}`,
     },
-    data,
   });
 }
 
@@ -47,7 +54,12 @@ export function unsubscribeFromTopic(token, topic) {
  * @param {string} body
  * @param {Object} data
  */
-export async function sendNotificationToAllTokens(title, body, data = {}) {
+export async function sendNotificationToAllTokens(
+  title,
+  body,
+  quakeFile,
+  data = {}
+) {
   try {
     const tokens = FcmTokens.find({}, { fields: { token: 1 } })
       .fetch()
@@ -58,8 +70,14 @@ export async function sendNotificationToAllTokens(title, body, data = {}) {
     for (const token of tokens) {
       const message = {
         token,
-        notification: { title, body },
-        data: typeof data === "object" && data !== null ? data : {},
+        notification: {
+          title,
+          body,
+        },
+        data: {
+          url: `https://earthquake.wemap.asia/?quakename=${quakeFile}`,
+          ...(typeof data === "object" && data !== null ? data : {}),
+        },
       };
       try {
         const res = await admin.messaging().send(message);

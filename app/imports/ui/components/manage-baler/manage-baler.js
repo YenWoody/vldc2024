@@ -7,16 +7,14 @@ const getUser = () => Meteor.user();
 const isUserLogged = () => !!getUser();
 
 Template.manageBaler.onCreated(function () {
-  this.subscribe("users");
   Meteor.subscribe("allUsers");
-  Meteor.users.find({}).fetch(); // will return all users
 });
+
 function callDatatable() {
   Meteor.call("dataBaler", function (error, resultdata) {
     if (error) {
       reject(error);
     }
-
     const dt = resultdata.rows;
     $("#loading_datatables").show();
     $("#data_baler").DataTable().clear().destroy();

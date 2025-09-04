@@ -1,67 +1,72 @@
 // 📁 /imports/api/fcm/methods.js
-import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { sendNotificationToTopic, subscribeToTopic,unsubscribeFromTopic,sendNotificationToAllTokens  } from './server.js';
+import { Meteor } from "meteor/meteor";
+import { check } from "meteor/check";
+import {
+  sendNotificationToTopic,
+  subscribeToTopic,
+  unsubscribeFromTopic,
+  sendNotificationToAllTokens,
+} from "./server.js";
 Meteor.methods({
-    'fcm.registerPushToken'(token) {
+  "fcm.registerPushToken"(token) {
     check(token, String);
     const userId = this.userId;
 
-    if (!userId) throw new Meteor.Error('unauthorized', 'Bạn cần đăng nhập');
+    if (!userId) throw new Meteor.Error("unauthorized", "Bạn cần đăng nhập");
 
     Meteor.users.update(userId, {
       $set: {
-        'profile.fcmToken': token,
-        'profile.subscribed': true
-      }
+        "profile.fcmToken": token,
+        "profile.subscribed": true,
+      },
     });
 
     return true;
   },
 
-  'fcm.unregisterPushToken'() {
+  "fcm.unregisterPushToken"() {
     const userId = this.userId;
 
-    if (!userId) throw new Meteor.Error('unauthorized', 'Bạn cần đăng nhập');
+    if (!userId) throw new Meteor.Error("unauthorized", "Bạn cần đăng nhập");
 
     Meteor.users.update(userId, {
       $unset: {
-        'profile.fcmToken': "",
-        'profile.subscribed': ""
-      }
+        "profile.fcmToken": "",
+        "profile.subscribed": "",
+      },
     });
 
     return true;
   },
-  'fcm.sendToTopic'(topic, title, body) {
-        check(topic, String);
+  "fcm.sendToTopic"(topic, title, body, quakeFile) {
+    check(topic, String);
     check(title, String);
     check(body, String);
-    return sendNotificationToTopic(topic, title, body);
+    check(quakeFile, String);
+    return sendNotificationToTopic(topic, title, body, quakeFile);
   },
-  'fcm.subscribeToTopic'(token, topic) {
+  "fcm.subscribeToTopic"(token, topic) {
     check(token, String);
     check(topic, String);
     return subscribeToTopic(token, topic);
   },
-   'fcm.unsubscribeFromTopic'(token, topic) {
+  "fcm.unsubscribeFromTopic"(token, topic) {
     check(token, String);
     check(topic, String);
     return unsubscribeFromTopic(token, topic);
   },
-  'fcm.subscribeToken'(token, topic) {
+  "fcm.subscribeToken"(token, topic) {
     check(token, String);
     check(topic, String);
     if (!this.userId) {
-      throw new Meteor.Error('unauthorized', 'Phải đăng nhập để subscribe');
+      throw new Meteor.Error("unauthorized", "Phải đăng nhập để subscribe");
     }
     return subscribeToTopic(token, topic);
   },
-   async broadcastFCM(title, body, data = {}) {
-    check(data, Object)
-    check(title,String)
-
-    return sendNotificationToAllTokens(title, body, data = {})
-    
-  }
+  async broadcastFCM(title, body, quakeFile, data = {}) {
+    check(data, Object);
+    check(title, String);
+    check(quakeFile, String);
+    return sendNotificationToAllTokens(title, body, quakeFile, (data = {}));
+  },
 });

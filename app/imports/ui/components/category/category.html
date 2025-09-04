@@ -9,15 +9,16 @@
       <div class="pb-4 pt-2 px-2 position-relative z-2 bg-white overflow-auto h-100">
         <div class="mb-1">
           <h5 class="text-light text-center heading p-2 fw-bold">Các sự kiện gần đây</h5>
-          <div class="d-grid">
-            <div class="d-flex mb-2 rounded bg-light">
-              <button type="button" class="w-50 m-2 btn btn-light activeButton p-0" id="buttonProcessedEvent">
-                Danh mục đã chuẩn hóa
-              </button>
-              <button type="button" class="w-50 m-2 btn btn-light p-0" id="buttonRealtime">
-                Danh mục báo tin nhanh
-              </button>
-            </div>
+
+          <div class="d-flex mb-2 rounded bg-light">
+            <button type="button" class="w-50 m-2 p-0 btn btn-outline-secondary btn-layer" id="buttonProcessedEvent">
+              Danh mục đã chuẩn hóa
+            </button>
+            <button type="button" class="w-50 m-2 p-0 btn btn-outline-secondary btn-layer" id="buttonRealtime">
+              Danh mục báo tin nhanh
+            </button>
+          </div>
+          <div class="{{#if isDisabled}}disabled{{/if}}">
             <div class="d-flex mb-2 rounded bg-light">
               <button type="button" class="w-50 p-2 m-2 btn btn-light activeButton p-0" id="buttonTime">
                 Lọc theo thời gian
@@ -112,23 +113,26 @@
               </div>
               <div id="buttons"></div>
             </div>
+
+
+            <div class="position-relative w-100">
+              <table id="dulieu" class="display table table-striped h-100">
+                <thead>
+                  <tr id="tieude">
+                    <th>Ngày/Giờ</th>
+                    <th>Vị trí</th>
+                    <th>Vĩ độ</th>
+                    <th>Kinh độ</th>
+                    <th>Độ lớn</th>
+                    <th>Độ sâu</th>
+                    <th>Số liệu</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
           </div>
         </div>
-        <div class="position-relative w-100 overflow-auto">
-          <table id="dulieu" class="display table table-striped h-100">
-            <thead>
-              <tr id="tieude">
-                <th>Ngày/Giờ</th>
-                <th>Vị trí</th>
-                <th>Vĩ độ</th>
-                <th>Kinh độ</th>
-                <th>Độ lớn</th>
-                <th>Độ sâu</th>
-                <th>Số liệu</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
+
       </div>
     </nav>
     <div class="col-md-12">
@@ -351,6 +355,22 @@
                     <td colspan="3" id="location">Chưa có thông tin</td>
                   </tr>
                 </table>
+                <!-- {{#if isDisabled}}
+                <div class="position-relative w-100 overflow-auto">
+                  <table id="dulieu" class="display table table-striped h-100">
+                    <thead>
+                      <tr id="tieude">
+                        <th>Ngày/Giờ</th>
+                        <th>Vị trí</th>
+                        <th>Vĩ độ</th>
+                        <th>Kinh độ</th>
+                        <th>Độ lớn</th>
+                        <th>Độ sâu</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+                {{/if}} -->
               </div>
             </div>
             <div class="my-2">

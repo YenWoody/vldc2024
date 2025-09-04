@@ -1,15 +1,15 @@
-import { WebApp } from 'meteor/webapp';
-import bodyParser from 'body-parser';
-import { FcmTokens } from '/imports/api/fcm/fcmTokensApp.js'; // file này bạn đã có
+import { WebApp } from "meteor/webapp";
+import bodyParser from "body-parser";
+import { FcmTokens } from "/imports/api/fcm/fcmTokensApp.js"; // file này bạn đã có
 
 WebApp.connectHandlers.use(bodyParser.json());
 
-WebApp.connectHandlers.use('/api/fcm-token', (req, res) => {
+WebApp.connectHandlers.use("/api/fcm-token", (req, res) => {
   const { token } = req.body;
 
   if (!token) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Thiếu token' }));
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Thiếu token" }));
     return;
   }
 
@@ -22,6 +22,6 @@ WebApp.connectHandlers.use('/api/fcm-token', (req, res) => {
     });
   }
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.writeHead(200, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ success: true }));
 });

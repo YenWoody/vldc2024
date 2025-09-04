@@ -221,7 +221,7 @@ async function insertRealtime(realtime) {
           const magnitude = Number(realtime.Mpd);
           const title = "🌋 Cảnh báo động đất";
           const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${realtime.lat}, kinh độ ${realtime.lon}, thời gian ghi nhận  ${realtime.Reporting_time}`;
-          Meteor.call("broadcastFCM", title, body); // Gửi thông báo FCM đến các thiết bị Android
+          Meteor.call("broadcastFCM", title, body, realtime.filename); // Gửi thông báo FCM đến các thiết bị Android
           const users = Meteor.users.find({}).fetch();
           // Check user đăng kí nhận tin động đất
           users.forEach((user) => {
@@ -253,8 +253,8 @@ async function insertRealtime(realtime) {
                   Trận động đất có độ lớn <b>${realtime.Mpd}</b> độ Richter, xảy ra tại vĩ độ <b>${realtime.lat}</b> , kinh độ <b>${realtime.lon}</b>, thời gian ghi nhận sự kiện <b>${realtime.Reporting_time}</b>
                   </p>
                    
-                  <a href="https://earthquake.wemap.asia/"
-                      style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
+                  <a href="https://earthquake.wemap.asia/?quakename=${realtime.filename}"
+                      style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi tại đây</a>
                         </td>
                     </tr>
                     <tr>
@@ -272,6 +272,7 @@ async function insertRealtime(realtime) {
                       "earthquake",
                       title,
                       body,
+                      realtime.filename,
                       (err, res) => {
                         if (err) console.error("❌ Lỗi:", err);
                         else console.log("✅ Đã gửi:", res);
@@ -1604,7 +1605,7 @@ Meteor.methods({
             const magnitude = Number(event.ml);
             const title = "🌋 Cảnh báo động đất";
             const body = `Độ lớn ${magnitude} độ Richter xảy ra tại vĩ độ ${event.lat}, kinh độ ${event.long}, thời gian ghi nhận  ${event.datetime}`;
-            Meteor.call("broadcastFCM", title, body); // Gửi thông báo FCM đến các thiết bị Android
+            // Meteor.call("broadcastFCM", title, body, event.id); // Gửi thông báo FCM đến các thiết bị Android
             users.forEach((user) => {
               try {
                 if (user.mag) {
@@ -1633,7 +1634,7 @@ Meteor.methods({
                                             Trận động đất có độ lớn <b>${event.ml}</b> độ Richter, xảy ra tại vĩ độ <b>${event.lat}</b> , kinh độ <b>${event.long}</b>, thời gian ghi nhận sự kiện <b>${event.datetime}</b>
                                             </p>
                                             
-                                            <a href="http://222.252.30.117:3000"
+                                            <a href="https://earthquake.wemap.asia/"
                                                 style="background:#707cd2;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Theo dõi thêm</a>
                                         </td>
                                     </tr>
@@ -1645,19 +1646,19 @@ Meteor.methods({
                     }
                     // 📬 Gửi FCM nếu đã đăng ký nhận cảnh báo trình duyệt
 
-                    const token = user.profile?.fcmToken;
-                    if (token && user.profile?.subscribed) {
-                      Meteor.call(
-                        "fcm.sendToTopic",
-                        "earthquake",
-                        title,
-                        body,
-                        (err, res) => {
-                          if (err) console.error("❌ Lỗi:", err);
-                          else console.log("✅ Đã gửi:", res);
-                        }
-                      );
-                    }
+                    // const token = user.profile?.fcmToken;
+                    // if (token && user.profile?.subscribed) {
+                    //   Meteor.call(
+                    //     "fcm.sendToTopic",
+                    //     "earthquake",
+                    //     title,
+                    //     body,
+                    //     (err, res) => {
+                    //       if (err) console.error("❌ Lỗi:", err);
+                    //       else console.log("✅ Đã gửi:", res);
+                    //     }
+                    //   );
+                    // }
                   }
                 }
               } catch (e) {

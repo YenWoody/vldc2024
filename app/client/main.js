@@ -1,3 +1,4 @@
+//client/main.js
 import "/imports/startup/client";
 import "/imports/startup/both";
 import "sweetalert2/dist/sweetalert2.css";
@@ -71,6 +72,12 @@ function initFCM(messaging, getToken, onMessage, registration) {
 
   onMessage(messaging, (payload) => {
     console.log("📥 Nhận thông báo khi đang mở app:", payload);
-    alert(payload.notification.title + "\n" + payload.notification.body);
+    const title =
+      payload.notification?.title || payload.data?.title || "Thông báo";
+    const body = payload.notification?.body || payload.data?.body || "";
+    const url = payload.data?.url || "https://earthquake.wemap.asia";
+    if (confirm(`${title}\n${body}\n\n👉 Bạn có muốn mở chi tiết?`)) {
+      window.location.href = url; // mở tab mới
+    }
   });
 }
