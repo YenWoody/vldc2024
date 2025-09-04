@@ -937,13 +937,23 @@ Template.map_station.onRendered(() => {
               // view.popup.open({
               //   features: [data],
               // });
-              view.goTo({
-                geometry: data.geometry,
-                zoom: 6,
-              });
+              view
+                .goTo(
+                  {
+                    geometry: data.geometry,
+                    zoom: 6,
+                  },
+                  {
+                    duration: 1200, // thời gian animation (ms)
+                    easing: "ease-in-out", // kiểu animation
+                  }
+                )
+                .then(() => {
+                  openPopupRightSide();
+                  loadInforStation(data);
+                });
             });
-            openPopupRightSide();
-            loadInforStation(data);
+
             // Load event of Station
             async function id() {
               let query = layerEventStaions.createQuery();
@@ -1093,10 +1103,20 @@ Template.map_station.onRendered(() => {
               highlightSelect.remove();
             }
             highlightSelect = layerView.highlight(point);
-            view.goTo({
-              geometry: point.geometry,
-              zoom: 6,
-            });
+            view
+              .goTo(
+                {
+                  geometry: point.geometry,
+                  zoom: 6,
+                },
+                {
+                  duration: 1200, // thời gian animation (ms)
+                  easing: "ease-in-out", // kiểu animation
+                }
+              )
+              .then(() => {
+                openPopupRightSide();
+              });
           });
         }
         view.on("click", async (event) => {
@@ -1118,7 +1138,6 @@ Template.map_station.onRendered(() => {
                 // Popup LayerRealTime
 
                 if (result.graphic.layer === layerStations) {
-                  openPopupRightSide();
                   let layerStationQuery = layerStations.createQuery();
                   layerStationQuery.where = `id_key LIKE '%${result.graphic.attributes.id_key}%'`;
                   layerStationQuery.outFields = "*";

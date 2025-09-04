@@ -391,10 +391,23 @@ Template.map.onRendered(function () {
                 y: dataRow.attributes.lat,
                 spatialReference: 4326, // EPSG:4326 (WGS84)
               });
-              view.goTo(point);
+
+              view
+                .goTo(
+                  {
+                    target: point,
+                    zoom: 6,
+                  },
+                  {
+                    duration: 1200, // thời gian animation (ms)
+                    easing: "ease-in-out", // kiểu animation
+                  }
+                )
+                .then(() => {
+                  openPopupRightSide();
+                  loadPopupLayerRealtime(dataRow);
+                });
             });
-            openPopupRightSide();
-            loadPopupLayerRealtime(dataRow);
           });
         }
         function loadDataTableGlobal(data) {
@@ -458,13 +471,22 @@ Template.map.onRendered(function () {
                 highlightSelect.remove();
               }
               highlightSelect = layerView.highlight(dataRow);
-              view.goTo({
-                geometry: dataRow.geometry,
-                zoom: 6,
-              });
+              view
+                .goTo(
+                  {
+                    geometry: dataRow.geometry,
+                    zoom: 6,
+                  },
+                  {
+                    duration: 1200, // thời gian animation (ms)
+                    easing: "ease-in-out", // kiểu animation
+                  }
+                )
+                .then(() => {
+                  loadPopupLayerIris(dataRow);
+                  openPopupRightSide();
+                });
             });
-            openPopupRightSide();
-            loadPopupLayerIris(dataRow);
           });
         }
 
@@ -1122,7 +1144,6 @@ Template.map.onRendered(function () {
             layerIris,
             layerStations,
           ]);
-          let flV = null;
           // Truy vấn ẩn Trạm
           loadLayerView(layerStations, { where: "id = -1" });
 
@@ -1258,12 +1279,6 @@ Template.map.onRendered(function () {
                 loadDataTable(e);
               });
             });
-
-            // console.log("chạy");
-
-            // dataSet.forEach((e) => {
-            //   e.attributes.lon, e.attributes.lat;
-            // });
           },
         });
 
@@ -1315,8 +1330,7 @@ Template.map.onRendered(function () {
               ? `id = ${point.attributes.id}`
               : `__OBJECTID = ${point.attributes.__OBJECTID}`;
             layerView.filter = { where };
-
-            // Dùng geometry trực tiếp
+            highlightSelect = layerView.highlight(point);
             view
               .goTo(
                 {
@@ -1329,7 +1343,7 @@ Template.map.onRendered(function () {
                 }
               )
               .then(() => {
-                highlightSelect = layerView.highlight(point);
+                openPopupRightSide();
               });
           });
         }
@@ -1507,7 +1521,6 @@ Template.map.onRendered(function () {
                     loadLayerView(layerIris, {
                       where: "1=0",
                     });
-                    console.log(result.graphic.attributes, "result");
                     loadPopupLayerRealtime(result.graphic);
                   });
                 } else if (result.graphic.layer === layerIris) {
@@ -1520,7 +1533,6 @@ Template.map.onRendered(function () {
                 }
               });
               // do something with the result graphic
-              openPopupRightSide();
             }
           });
         });
@@ -1748,7 +1760,6 @@ Template.map.onRendered(function () {
                 layerView.filter = { where: `filename = '${quakeFile}'` };
                 query.returnGeometry = true;
                 layerRealTime.queryFeatures(query).then((result) => {
-                  console.log(result.graphic, "result.graphic");
                   if (result.features.length) {
                     const feature = result.features[0];
                     const point = new Point({
@@ -1759,17 +1770,20 @@ Template.map.onRendered(function () {
                     if (highlightSelect) {
                       highlightSelect.remove();
                     }
-                    view.goTo({
-                      target: point,
-                      zoom: 7,
-                      animate: true,
-                      duration: 2000,
-                      easing: "ease-out",
-                    });
+                    view
+                      .goTo({
+                        target: point,
+                        zoom: 6,
+                        animate: true,
+                        duration: 1200,
+                        easing: "ease-out",
+                      })
+                      .then(() => {
+                        loadPopupLayerRealtime(feature);
+                        openPopupRightSide();
+                      });
 
                     highlightSelect = layerView.highlight(feature);
-                    loadPopupLayerRealtime(feature);
-                    openPopupRightSide();
                   }
                 });
               });
@@ -1785,7 +1799,6 @@ Template.map.onRendered(function () {
               },
               function () {
                 $(".preloader").fadeOut();
-                // console.log("Animation has finished");
               }
             ); // đến 100%
 
@@ -1871,7 +1884,6 @@ Template.map.events({
     $("#sidebarCollapse").toggleClass("active");
     $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
     $("#leftSideBar").toggleClass("active");
-    console.log(instance);
     hideRightSideBar();
     resetLayers(instance);
   },

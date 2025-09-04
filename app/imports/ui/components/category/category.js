@@ -1257,11 +1257,11 @@ Template.category.onRendered(function () {
 
             layerStations,
           ]);
-          let flV = null;
+          let realTimeLayerView = null;
+          let eventLayerView = null;
           // Truy vấn ẩn Trạm
           view.whenLayerView(layerStations).then((layerView) => {
-            layer = layerView;
-            layer.filter = { where: "id = -1" };
+            layerView.filter = { where: "id = -1" };
           });
           const sketch = new Sketch({
             layer: graphicsLayer,
@@ -1399,7 +1399,6 @@ Template.category.onRendered(function () {
           }
           const end_time_addOneDay = incrementDate(end_time, 1);
 
-          let flView = null;
           // set time slider's full extent to
           timeSlider.fullTimeExtent = {
             start: start_time,
@@ -1411,12 +1410,13 @@ Template.category.onRendered(function () {
           // the thumbs positions.
           timeSlider.values = [start_time, end_time];
           view.whenLayerView(layerRealTime).then(function (lv) {
-            flV = lv;
+            realTimeLayerView = lv;
             $("#filter").on("click", () => {
               $("#buttonRealtime").hasClass("activeButton")
                 ? updateFilter_realtime()
                 : "";
             });
+            let depthMin, depthMax, magnitudeMin, magnitudeMax;
             function updateFilter_realtime() {
               depthMin = depthSlider.values[0];
               depthMax = depthSlider.values[1];
@@ -1436,7 +1436,7 @@ Template.category.onRendered(function () {
                   `(Reporting_time >= ${timeSlider.timeExtent.start.getTime()} AND Reporting_time <= ${timeSlider.timeExtent.end.getTime()})`
                 );
               }
-              flV.filter =
+              realTimeLayerView.filter =
                 conditions.length > 0
                   ? { where: conditions.join("AND") }
                   : null;
@@ -1471,7 +1471,7 @@ Template.category.onRendered(function () {
           });
 
           view.whenLayerView(layerEvent).then((layerView) => {
-            flView = layerView;
+            eventLayerView = layerView;
             $("#filter").on("click", () => {
               $("#buttonProcessedEvent").hasClass("activeButton")
                 ? updateFilter()
@@ -1497,7 +1497,7 @@ Template.category.onRendered(function () {
                   `(datetime > ${timeSlider.timeExtent.start.getTime()} AND datetime < ${timeSlider.timeExtent.end.getTime()})`
                 );
               }
-              flView.filter =
+              eventLayerView.filter =
                 conditions.length > 0
                   ? { where: conditions.join("AND") }
                   : null;
@@ -1534,8 +1534,8 @@ Template.category.onRendered(function () {
             $("#clearFilter").on("click", function clearFilter() {
               //  depthSlider.filter = null;
               //  magnitudeSlider.filter = null;
-              flView.filter = null;
-              flV.filter = null;
+              eventLayerView.filter = null;
+              realTimeLayerView.filter = null;
               depthSlider.values = [0, 1000];
               magnitudeSlider.values = [0, 10];
               timeSlider.values = [start_time, end_time];
@@ -1643,13 +1643,22 @@ Template.category.onRendered(function () {
                     highlightSelect.remove();
                   }
                   highlightSelect = layerView.highlight(dataRow);
-                  view.goTo({
-                    geometry: dataRow.geometry,
-                    zoom: 6,
-                  });
+                  view
+                    .goTo(
+                      {
+                        geometry: dataRow.geometry,
+                        zoom: 6,
+                      },
+                      {
+                        duration: 1200, // thời gian animation (ms)
+                        easing: "ease-in-out", // kiểu animation
+                      }
+                    )
+                    .then(() => {
+                      openPopupRightSide();
+                      loadPopupLayerEvent(dataRow);
+                    });
                 });
-                openPopupRightSide();
-                loadPopupLayerEvent(dataRow);
               });
             });
         }
@@ -1686,10 +1695,23 @@ Template.category.onRendered(function () {
                   z: 6,
                   spatialReference: 4326, // EPSG:4326 (WGS84)
                 });
-                view.goTo(point);
+
+                view
+                  .goTo(
+                    {
+                      target: point,
+                      zoom: 6,
+                    },
+                    {
+                      duration: 1200, // thời gian animation (ms)
+                      easing: "ease-in-out", // kiểu animation
+                    }
+                  )
+                  .then(() => {
+                    openPopupRightSide();
+                    loadPopupLayerRealtime(dataRow);
+                  });
               });
-              openPopupRightSide();
-              loadPopupLayerRealtime(dataRow);
             });
           });
         }
@@ -1701,7 +1723,7 @@ Template.category.onRendered(function () {
               highlightSelect.remove();
             }
             layerView.filter = { where: `id = ${point.attributes.id}` };
-
+            highlightSelect = layerView.highlight(point);
             view
               .goTo(
                 {
@@ -1714,7 +1736,7 @@ Template.category.onRendered(function () {
                 }
               )
               .then(() => {
-                highlightSelect = layerView.highlight(point);
+                openPopupRightSide();
               });
           });
         }
@@ -1957,8 +1979,6 @@ Template.category.onRendered(function () {
                   });
                 }
               });
-              // do something with the result graphic
-              openPopupRightSide();
             }
           });
         });
