@@ -8,6 +8,9 @@ import XLSX from "xlsx";
 import "animate.css";
 import * as turf from "@turf/turf";
 import { provinceName } from "../../../api/provinceVN";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/themes/airbnb.css"; // CSS theme
+import { Vietnamese } from "flatpickr/dist/l10n/vn.js"; // locale
 let layerEvent, layerRealTime, layerStations, emptyTable;
 function setActiveLayer(layerName) {
   if (!layerRealTime || !layerEvent) {
@@ -121,7 +124,6 @@ Template.category.onRendered(function () {
           },
           svgStyle: null,
         });
-
         // bar.set(0.75); // 75%
         // bar.setText("75%");
         // 👉 Cập nhật phần trăm giả định
@@ -268,6 +270,17 @@ Template.category.onRendered(function () {
         //     });
         //   });
         // }
+        //format date
+        function formatFromDateString(str) {
+          const d = new Date(str);
+          const day = String(d.getDate()).padStart(2, "0");
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const year = d.getFullYear();
+          const hours = String(d.getHours()).padStart(2, "0");
+          const minutes = String(d.getMinutes()).padStart(2, "0");
+          const seconds = String(d.getSeconds()).padStart(2, "0");
+          return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+        }
         function loadLayerView(layer, query) {
           view.whenLayerView(layer).then((layerview) => {
             layerview.filter = query;
@@ -307,9 +320,7 @@ Template.category.onRendered(function () {
               {
                 data: "attributes.Reporting_time",
                 render: function (data, type, row) {
-                  const date = data.toLocaleString();
-                  const dataSplit = date.split(" ");
-                  return dataSplit[1] + " " + dataSplit[0];
+                  return formatFromDateString(data);
                 },
               },
               {
@@ -374,9 +385,7 @@ Template.category.onRendered(function () {
               {
                 data: "attributes.datetime",
                 render: function (data, type, row) {
-                  const date = new Date(data).toLocaleString();
-                  const dataSplit = date.split(" ");
-                  return dataSplit[1] + " " + dataSplit[0];
+                  return formatFromDateString(data);
                 },
               },
               {
@@ -499,6 +508,7 @@ Template.category.onRendered(function () {
             },
           },
         });
+
         // Removes all default UI components, except Attribution.
         view.ui.components = ["attribution"];
         // end init view
@@ -1123,7 +1133,7 @@ Template.category.onRendered(function () {
           legendEnabled: false,
           title: "Thông tin động đất tại Việt Nam (đã chuẩn hoá)",
           visible: true,
-          popupEnabled: false,
+          popupEnabled: true,
           timeInfo: {
             startField: "datetime", // name of the date field
             interval: {
@@ -1141,7 +1151,7 @@ Template.category.onRendered(function () {
           legendEnabled: false,
           title: "Thông báo nhanh động đất tại Việt Nam (Thử nghiệm)",
           visible: true,
-          popupEnabled: false,
+          popupEnabled: true,
           timeInfo: {
             startField: "Reporting_time", // name of the date field
             interval: {
@@ -1214,22 +1224,9 @@ Template.category.onRendered(function () {
             labels: true,
           },
         });
-
-        const timeSlider = new TimeSlider({
-          container: "timeSlider",
-          playRate: 5,
-          stops: {
-            interval: {
-              value: 1,
-              unit: "days",
-            },
-          },
-          timeVisible: true, // show the time stamps on the timeslider
-          loop: true,
-          layout: "auto",
-        });
-        // const timeSlider_realtime = new TimeSlider({
-        //   container: "timeSlider_realtime",
+        let timeSlider;
+        // const timeSlider = new TimeSlider({
+        //   container: "timeSlider",
         //   playRate: 5,
         //   stops: {
         //     interval: {
@@ -1238,8 +1235,10 @@ Template.category.onRendered(function () {
         //     },
         //   },
         //   timeVisible: true, // show the time stamps on the timeslider
-        //   loop: true
+        //   loop: true,
+        //   layout: "auto",
         // });
+
         // LayerList
         const layerList = new LayerList({
           container: document.createElement("div"),
@@ -1400,15 +1399,38 @@ Template.category.onRendered(function () {
           const end_time_addOneDay = incrementDate(end_time, 1);
 
           // set time slider's full extent to
-          timeSlider.fullTimeExtent = {
-            start: start_time,
-            end: end_time_addOneDay,
-          };
+          flatpickr("#startTime", {
+            enableTime: true, // Bật chọn giờ
+            time_24hr: true, // Giờ 24h (VD: 13:00 thay vì 1:00 PM)
+            dateFormat: "H:i d-m-Y", // Định dạng hiển thị
+            defaultDate: start_time,
+            locale: Vietnamese,
+            position: "auto",
+          });
+
+          flatpickr("#endTime", {
+            enableTime: true,
+            time_24hr: true,
+            dateFormat: "H:i d-m-Y",
+            defaultDate: end_time_addOneDay,
+            position: "auto",
+            locale: Vietnamese,
+          });
           // showing earthquakes with one day interval
           // Values property is set so that timeslider
           // widget show the first day. We are setting
           // the thumbs positions.
-          timeSlider.values = [start_time, end_time];
+          // timeSlider.values = [start_time, end_time];
+
+          function parseCustomDateTime(str) {
+            const [time, date] = str.trim().split(" ");
+            const [hour, minute] = time.split(":").map(Number);
+            const [day, month, year] = date.split("-").map(Number);
+
+            // Tạo đối tượng Date theo giờ địa phương (local time)
+            const d = new Date(year, month - 1, day, hour, minute, 0);
+            return d.getTime();
+          }
           view.whenLayerView(layerRealTime).then(function (lv) {
             realTimeLayerView = lv;
             $("#filter").on("click", () => {
@@ -1417,11 +1439,18 @@ Template.category.onRendered(function () {
                 : "";
             });
             let depthMin, depthMax, magnitudeMin, magnitudeMax;
+
             function updateFilter_realtime() {
               depthMin = depthSlider.values[0];
               depthMax = depthSlider.values[1];
               magnitudeMin = magnitudeSlider.values[0];
               magnitudeMax = magnitudeSlider.values[1];
+              const startTimeInput = document.getElementById("startTime").value;
+              const endTimeInput = document.getElementById("endTime").value;
+
+              const startTime = parseCustomDateTime(startTimeInput);
+              const endTime = parseCustomDateTime(endTimeInput);
+
               let conditions = [];
               if (depthSlider) {
                 conditions.push(`(dep >= ${depthMin} and dep <= ${depthMax})`);
@@ -1431,11 +1460,11 @@ Template.category.onRendered(function () {
                   `(Mpd >= ${magnitudeMin} and Mpd <= ${magnitudeMax})`
                 );
               }
-              if (timeSlider) {
-                conditions.push(
-                  `(Reporting_time >= ${timeSlider.timeExtent.start.getTime()} AND Reporting_time <= ${timeSlider.timeExtent.end.getTime()})`
-                );
-              }
+
+              conditions.push(
+                `(Reporting_time >= ${startTime} AND Reporting_time <= ${endTime})`
+              );
+
               realTimeLayerView.filter =
                 conditions.length > 0
                   ? { where: conditions.join("AND") }
@@ -1447,10 +1476,8 @@ Template.category.onRendered(function () {
               layerRealTime.queryFeatures(query).then(function (response) {
                 const dataSet = response.features.filter((item) => {
                   return (
-                    item.attributes.Reporting_time >=
-                      timeSlider.timeExtent.start.getTime() &&
-                    item.attributes.Reporting_time <=
-                      timeSlider.timeExtent.end.getTime() &&
+                    item.attributes.Reporting_time >= startTime &&
+                    item.attributes.Reporting_time <= endTime &&
                     item.attributes.dep >= depthMin &&
                     item.attributes.dep <= depthMax &&
                     item.attributes.Mpd >= magnitudeMin &&
@@ -1462,6 +1489,7 @@ Template.category.onRendered(function () {
                   e.attributes.Reporting_time = new Date(
                     e.attributes.Reporting_time
                   );
+
                   return e;
                 });
                 //load table when filter button clicked
@@ -1492,11 +1520,16 @@ Template.category.onRendered(function () {
                   `(ml >= ${magnitudeMin} and ml <= ${magnitudeMax})`
                 );
               }
-              if (timeSlider) {
-                conditions.push(
-                  `(datetime > ${timeSlider.timeExtent.start.getTime()} AND datetime < ${timeSlider.timeExtent.end.getTime()})`
-                );
-              }
+
+              const startTimeInput = document.getElementById("startTime").value;
+              const endTimeInput = document.getElementById("endTime").value;
+
+              const startTime = parseCustomDateTime(startTimeInput);
+              const endTime = parseCustomDateTime(endTimeInput);
+              conditions.push(
+                `(datetime > ${startTime} AND datetime < ${endTime})`
+              );
+
               eventLayerView.filter =
                 conditions.length > 0
                   ? { where: conditions.join("AND") }
@@ -1510,10 +1543,8 @@ Template.category.onRendered(function () {
               layerEvent.queryFeatures(query).then(function (response) {
                 const dataSet = response.features.filter((item) => {
                   return (
-                    item.attributes.datetime >=
-                      timeSlider.timeExtent.start.getTime() &&
-                    item.attributes.datetime <=
-                      timeSlider.timeExtent.end.getTime() &&
+                    item.attributes.datetime >= startTime &&
+                    item.attributes.datetime <= endTime &&
                     item.attributes.md >= depthMin &&
                     item.attributes.md <= depthMax &&
                     item.attributes.ml >= magnitudeMin &&
@@ -1949,39 +1980,121 @@ Template.category.onRendered(function () {
             highlightSelect.remove();
           }
 
-          view.hitTest(event.screenPoint).then(function (response) {
-            if (response.results.length <= 1) {
-              if (!$("#leftSideBar").hasClass("active")) {
-                $("#sidebarCollapse").toggleClass("active");
-                $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
-                $("#leftSideBar").toggleClass("active");
-                resetLayers(self);
-              }
+          // Mỗi click mới đều chắc chắn đóng modal cũ
+          $("#mapFeatureModal").remove();
 
-              hideRightSideBar();
-              loadLayerView(layerStations, { where: "1=0" });
-              loadLayerView(layerRealTime, { where: "1=1" });
-              loadLayerView(layerEvent, { where: "1=1" });
-              layerRealTime.visible = true;
-              layerEvent.visible = true;
-            } else {
-              response.results.forEach(function (result) {
-                // Popup LayerRealTime
-                if (result.graphic.layer === layerRealTime) {
-                  highlightPoint(layerRealTime, result.graphic).then(() => {
-                    loadPopupLayerRealtime(result.graphic);
-                    loadLayerView(layerEvent, { where: "1=0" });
-                  });
-                } else if (result.graphic.layer === layerEvent) {
-                  highlightPoint(layerEvent, result.graphic).then(() => {
-                    loadPopupLayerEvent(result.graphic);
-                    loadLayerView(layerRealTime, { where: "1=0" });
-                  });
-                }
+          const response = await view.hitTest(event.screenPoint);
+
+          // Không có feature hoặc chỉ có 1 feature
+          if (response.results.length <= 1) {
+            if (!$("#leftSideBar").hasClass("active")) {
+              $("#sidebarCollapse").toggleClass("active");
+              $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+              $("#leftSideBar").toggleClass("active");
+              resetLayers(self);
+            }
+
+            hideRightSideBar();
+            loadLayerView(layerStations, { where: "1=0" });
+            loadLayerView(layerRealTime, { where: "1=1" });
+            loadLayerView(layerEvent, { where: "1=1" });
+            layerRealTime.visible = true;
+            layerEvent.visible = true;
+            return;
+          }
+
+          // Có nhiều feature trùng nhau
+          const resultLayerRealTime = response.results.filter(
+            (r) => r.graphic.layer === layerRealTime
+          );
+          const resultLayerEvent = response.results.filter(
+            (r) => r.graphic.layer === layerEvent
+          );
+
+          const allResults = [...resultLayerRealTime, ...resultLayerEvent];
+          if (allResults.length === 0) return;
+
+          // Nếu chỉ có 1 feature thì xử lý bình thường
+          if (allResults.length === 1) {
+            const g = allResults[0].graphic;
+            if (g.layer === layerRealTime) {
+              highlightPoint(layerRealTime, g).then(() => {
+                loadPopupLayerRealtime(g);
+                loadLayerView(layerEvent, { where: "1=0" });
+              });
+            } else if (g.layer === layerEvent) {
+              highlightPoint(layerEvent, g).then(() => {
+                loadPopupLayerEvent(g);
+                loadLayerView(layerRealTime, { where: "1=0" });
               });
             }
-          });
+            return;
+          }
+
+          // 👉 Có nhiều feature trùng — hiển thị modal chọn
+          const listHtml = allResults
+            .map((r, i) => {
+              const attr = r.graphic.attributes;
+              const magnitude = attr.Mpd || attr.ml;
+              console.log(attr, "attr");
+              const name = `Trận động đất ${i + 1} (Cường độ ${magnitude})`;
+              return `<div class="feature-choice" data-idx="${i}" 
+                style="padding:8px;cursor:pointer;border-bottom:1px solid #ddd;">
+                ${name}
+              </div>`;
+            })
+            .join("");
+
+          const modalHtml = `
+    <div id="mapFeatureModal" 
+         style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+                background:white;z-index:9999;border-radius:8px;
+                box-shadow:0 2px 10px rgba(0,0,0,0.3);
+                max-width:300px;width:90%;">
+      <div style="font-weight:600;background-color:#3d77b1" class="rounded-top text-white p-2 text-center">Các trận động đất trùng nhau</div>
+      <div class="p-2">
+      <div>${listHtml}</div>
+      <div style="text-align:right;margin-top:8px;">
+        <button id="closeFeatureModal" 
+                style="padding:4px 10px;border:none;background:#ccc;border-radius:4px;cursor:pointer;">
+          Đóng
+        </button>
+      </div>
+      </div>
+    </div>
+  `;
+
+          $("body").append(modalHtml);
+
+          // Xử lý chọn điểm
+          $(document)
+            .off("click", ".feature-choice")
+            .on("click", ".feature-choice", function () {
+              const idx = parseInt($(this).data("idx"));
+              const chosen = allResults[idx].graphic;
+              $("#mapFeatureModal").remove();
+
+              if (chosen.layer === layerRealTime) {
+                highlightPoint(layerRealTime, chosen).then(() => {
+                  loadPopupLayerRealtime(chosen);
+                  loadLayerView(layerEvent, { where: "1=0" });
+                });
+              } else if (chosen.layer === layerEvent) {
+                highlightPoint(layerEvent, chosen).then(() => {
+                  loadPopupLayerEvent(chosen);
+                  loadLayerView(layerRealTime, { where: "1=0" });
+                });
+              }
+            });
+
+          // Nút đóng
+          $(document)
+            .off("click", "#closeFeatureModal")
+            .on("click", "#closeFeatureModal", () => {
+              $("#mapFeatureModal").remove();
+            });
         });
+
         // End add Layer
         // Start add Legend
         // view.ui.add(new Legend({view: view}), "bottom-left");

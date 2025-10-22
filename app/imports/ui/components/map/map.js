@@ -1493,49 +1493,124 @@ Template.map.onRendered(function () {
             highlightSelect.remove();
           }
 
-          view.hitTest(event.screenPoint).then(function (response) {
-            if (response.results.length <= 1) {
-              if (!$("#leftSideBar").hasClass("active")) {
-                $("#sidebarCollapse").toggleClass("active");
-                $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
-                $("#leftSideBar").toggleClass("active");
-                resetLayers(self);
-              }
-              hideRightSideBar();
-              loadLayerView(layerStations, {
-                where: "id = -1",
-              });
-              loadLayerView(layerRealTime, {
-                where: "1=1",
-              });
-              loadLayerView(layerIris, {
-                where: "1=1",
-              });
-              layerRealTime.visible = true;
-              layerIris.visible = true;
-            } else {
-              response.results.forEach(function (result) {
-                // Popup LayerRealTime
-                if (result.graphic.layer === layerRealTime) {
-                  highlightPoint(layerRealTime, result.graphic).then(() => {
-                    loadLayerView(layerIris, {
-                      where: "1=0",
-                    });
-                    loadPopupLayerRealtime(result.graphic);
-                  });
-                } else if (result.graphic.layer === layerIris) {
-                  highlightPoint(layerIris, result.graphic).then(() => {
-                    loadLayerView(layerRealTime, {
-                      where: "1=0",
-                    });
-                    loadPopupLayerIris(result.graphic);
-                  });
-                }
-              });
-              // do something with the result graphic
+          // Luôn đóng modal cũ nếu đang mở
+          $("#mapFeatureModal").remove();
+
+          const response = await view.hitTest(event.screenPoint);
+
+          // Không có feature hoặc chỉ có 1 feature
+          if (response.results.length <= 1) {
+            if (!$("#leftSideBar").hasClass("active")) {
+              $("#sidebarCollapse").toggleClass("active");
+              $("#iconArrow").toggleClass("fa-caret-left fa-caret-right");
+              $("#leftSideBar").toggleClass("active");
+              resetLayers(self);
             }
-          });
+
+            hideRightSideBar();
+            loadLayerView(layerStations, { where: "id = -1" });
+            loadLayerView(layerRealTime, { where: "1=1" });
+            loadLayerView(layerIris, { where: "1=1" });
+            layerRealTime.visible = true;
+            layerIris.visible = true;
+            return;
+          }
+
+          // Có nhiều feature trùng nhau
+          const resultLayerRealTime = response.results.filter(
+            (r) => r.graphic.layer === layerRealTime
+          );
+          const resultLayerIris = response.results.filter(
+            (r) => r.graphic.layer === layerIris
+          );
+
+          const allResults = [...resultLayerRealTime, ...resultLayerIris];
+          if (allResults.length === 0) return;
+          console.log(allResults, "allResults");
+          // Nếu chỉ có 1 feature thì xử lý bình thường
+          if (allResults.length === 1) {
+            const g = allResults[0].graphic;
+            if (g.layer === layerRealTime) {
+              highlightPoint(layerRealTime, g).then(() => {
+                loadPopupLayerRealtime(g);
+                loadLayerView(layerIris, { where: "1=0" });
+              });
+            } else if (g.layer === layerIris) {
+              highlightPoint(layerIris, g).then(() => {
+                loadPopupLayerIris(g);
+                loadLayerView(layerRealTime, { where: "1=0" });
+              });
+            }
+            return;
+          }
+
+          // 👉 Có nhiều feature trùng — hiển thị modal chọn
+          const listHtml = allResults
+            .map((r, i) => {
+              const attr = r.graphic.attributes;
+              const magnitude = attr.Mpd || attr.magnitude || "?";
+              const name = `Trận động đất ${i + 1} (Cường độ ${magnitude})`;
+              return `<div class="feature-choice" data-idx="${i}" 
+              style="padding:8px;cursor:pointer;border-bottom:1px solid #ddd;">
+              ${name}
+            </div>`;
+            })
+            .join("");
+
+          const modalHtml = `
+    <div id="mapFeatureModal" 
+        style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+              background:white;z-index:9999;border-radius:8px;
+              box-shadow:0 2px 10px rgba(0,0,0,0.3);
+              max-width:300px;width:90%;">
+      <div style="font-weight:600;background-color:#3d77b1" 
+           class="rounded-top text-white p-2 text-center">
+        Các trận động đất trùng nhau
+      </div>
+      <div class="p-2">
+        <div>${listHtml}</div>
+        <div style="text-align:right;margin-top:8px;">
+          <button id="closeFeatureModal" 
+                  style="padding:4px 10px;border:none;background:#ccc;
+                  border-radius:4px;cursor:pointer;">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+          $("body").append(modalHtml);
+
+          // Gắn sự kiện chọn điểm
+          $(document)
+            .off("click", ".feature-choice")
+            .on("click", ".feature-choice", function () {
+              const idx = parseInt($(this).data("idx"));
+              const chosen = allResults[idx].graphic;
+              $("#mapFeatureModal").remove();
+
+              if (chosen.layer === layerRealTime) {
+                highlightPoint(layerRealTime, chosen).then(() => {
+                  loadPopupLayerRealtime(chosen);
+                  loadLayerView(layerIris, { where: "1=0" });
+                });
+              } else if (chosen.layer === layerIris) {
+                highlightPoint(layerIris, chosen).then(() => {
+                  loadPopupLayerIris(chosen);
+                  loadLayerView(layerRealTime, { where: "1=0" });
+                });
+              }
+            });
+
+          // Nút đóng modal
+          $(document)
+            .off("click", "#closeFeatureModal")
+            .on("click", "#closeFeatureModal", () => {
+              $("#mapFeatureModal").remove();
+            });
         });
+
         // End add Layer
         $("#buttonProvince").on("click", (e) => {
           $("#buttonProvince").hasClass("activeButton")
@@ -1833,7 +1908,7 @@ Template.map.onRendered(function () {
       $("#navbarButton").removeClass("show");
       $(".menu-bar").removeClass("change");
       //end active navbar
-      // location.reload();
+      location.reload();
     });
 });
 
