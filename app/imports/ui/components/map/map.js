@@ -239,50 +239,56 @@ Template.map.onRendered(function () {
           ("0" + lastday).slice(-2),
         ].join("-");
         // ====== Bắt đầu xử lý IRIS ======
-        const response = await fetch(
-          `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&limit=300&minmagnitude=1&output=text`
-        );
-        const dataIris = await response.text();
-        const dtIris = [];
-        dataIris.split(/\r?\n/).forEach((lines) => {
-          const line = lines.split("|");
-          dtIris.push({
-            time: toVNISOStringNoOffset(line[1]) || "Chưa có thông tin",
-            lat: Number(line[2]),
-            long: Number(line[3]),
-            depth: line[4],
-            catalog: line[6],
-            magtype: line[9],
-            magnitude: line[10],
-            location: line[12],
-            source: "IRIS",
-          });
-        });
-        const dataIris_final = dtIris.map((e) => {
-          for (const prop in e) {
-            if (e[prop] === undefined || e[prop] === null || e[prop] === "") {
-              e[prop] = "Chưa có thông tin";
-            }
-          }
-          return e;
-        });
+        // const response = await fetch(
+        //   `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&limit=300&minmagnitude=1&output=text`
+        // );
+        // const dataIris = await response.text();
+        // const dtIris = [];
+        // dataIris.split(/\r?\n/).forEach((lines) => {
+        //   const line = lines.split("|");
+        //   dtIris.push({
+        //     time: toVNISOStringNoOffset(line[1]) || "Chưa có thông tin",
+        //     lat: Number(line[2]),
+        //     long: Number(line[3]),
+        //     depth: line[4],
+        //     catalog: line[6],
+        //     magtype: line[9],
+        //     magnitude: line[10],
+        //     location: line[12],
+        //     source: "IRIS",
+        //   });
+        // });
+        // const dataIris_final = dtIris.map((e) => {
+        //   for (const prop in e) {
+        //     if (e[prop] === undefined || e[prop] === null || e[prop] === "") {
+        //       e[prop] = "Chưa có thông tin";
+        //     }
+        //   }
+        //   return e;
+        // });
+        // // ====== Chuẩn bị lọc trùng ======
+        // const dataGeojsonCombined = [];
+        // const seenCoords = new Set();
+        // function roundCoord(coord) {
+        //   return Math.round(coord * 10000) / 10000;
+        // }
+        // // ====== Đưa IRIS vào mảng ======
+        // const waitDataIris = await Promise.all(dataIris_final);
+        // waitDataIris.forEach((e) => {
+        //   if (!isNaN(e.long) && !isNaN(e.lat)) {
+        //     const key = `${roundCoord(e.lat)}_${roundCoord(e.long)}`;
+        //     if (!seenCoords.has(key)) {
+        //       seenCoords.add(key);
+        //       dataGeojsonCombined.push(turf.point([e.long, e.lat], e));
+        //     }
+        //   }
+        // });
         // ====== Chuẩn bị lọc trùng ======
         const dataGeojsonCombined = [];
         const seenCoords = new Set();
         function roundCoord(coord) {
           return Math.round(coord * 10000) / 10000;
         }
-        // ====== Đưa IRIS vào mảng ======
-        const waitDataIris = await Promise.all(dataIris_final);
-        waitDataIris.forEach((e) => {
-          if (!isNaN(e.long) && !isNaN(e.lat)) {
-            const key = `${roundCoord(e.lat)}_${roundCoord(e.long)}`;
-            if (!seenCoords.has(key)) {
-              seenCoords.add(key);
-              dataGeojsonCombined.push(turf.point([e.long, e.lat], e));
-            }
-          }
-        });
         // ====== Bắt đầu xử lý USGS ======
         const responseUSGS = await fetch(
           `https://earthquake.usgs.gov/fdsnws/event/1/query?format=text&starttime=${getDate}&minmagnitude=1&limit=300`
@@ -1908,7 +1914,7 @@ Template.map.onRendered(function () {
       $("#navbarButton").removeClass("show");
       $(".menu-bar").removeClass("change");
       //end active navbar
-      location.reload();
+      // location.reload();
     });
 });
 

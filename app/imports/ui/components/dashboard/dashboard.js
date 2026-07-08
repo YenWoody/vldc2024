@@ -49,7 +49,7 @@ Template.dashboardComponent.helpers({
   },
 });
 Template.dashboardComponent.onRendered(async function () {
-  // Fetch Data From Iris
+  // Fetch Data From USGS
   var now = new Date();
   const oneWeekago = new Date(now.setDate(now.getDate()));
   var lastday = oneWeekago.getDate();
@@ -62,7 +62,7 @@ Template.dashboardComponent.onRendered(async function () {
     ("0" + lastday).slice(-2),
   ].join("-");
   const response = await fetch(
-    `https://service.iris.edu/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&output=text`
+    `https://earthquake.usgs.gov/fdsnws/event/1/query?starttime=${getDate}&minmagnitude=1&format=text`
   );
   const dataIris = await response.text();
   const dtIris = [];

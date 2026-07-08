@@ -2352,7 +2352,7 @@ Template.category.onRendered(function () {
       $("#navbarButton").removeClass("show");
       $(".menu-bar").removeClass("change");
       //end active navbar
-      location.reload();
+      // location.reload();
     });
 });
 

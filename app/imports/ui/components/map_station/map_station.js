@@ -1787,7 +1787,7 @@ Template.map_station.onRendered(() => {
       $("#navbarButton").removeClass("show");
       $(".menu-bar").removeClass("change");
       //end active navbar
-      location.reload();
+      // location.reload();
     });
 });
 
